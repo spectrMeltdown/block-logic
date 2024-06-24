@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1095252928508",
+    "project_id": "block-logic-1d051",
+    "storage_bucket": "block-logic-1d051.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1095252928508:android:8c3a7f55c2bca0c666b479",
+        "android_client_info": {
+          "package_name": "com.uncaughtexception.blocklogic"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9fTkFqoVfktsqU5HirVOdmp7FfihlQs0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
