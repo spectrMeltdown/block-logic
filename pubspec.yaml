@@ -54,6 +54,9 @@ dependencies:
   flame_forge2d: ^0.18.1
   flame_lottie: ^0.4.1
   flame_splash_screen: ^0.3.0
+  animate_do: ^3.3.4
+  firebase_messaging: ^14.9.4
+  flutter_local_notifications: ^17.1.2
 
 dev_dependencies:
   flutter_test:

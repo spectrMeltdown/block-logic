@@ -1,4 +1,5 @@
-import 'package:block_logic/game/assets.dart';
+import 'package:block_logic/logic/audio.dart';
+import 'package:block_logic/logic/assets.dart';
 import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/material.dart';
 
@@ -22,7 +23,7 @@ class _BtnState extends State<BLTextButton> {
     return TextButton(
         onPressed: () {
           widget.onPressed.call();
-          FlameAudio.play(Assets.btn1);
+          BLAudio.playBtn();
         },
         child: widget.child);
   }

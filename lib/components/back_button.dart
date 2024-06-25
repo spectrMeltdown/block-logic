@@ -1,5 +1,6 @@
-import 'package:block_logic/game/assets.dart';
-import 'package:block_logic/game/utils.dart';
+import 'package:block_logic/logic/audio.dart';
+import 'package:block_logic/logic/assets.dart';
+import 'package:block_logic/logic/utils.dart';
 import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -18,7 +19,7 @@ class _BLBackButtonState extends State<BLBackButton> {
       padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 10),
       child: IconButton(
           onPressed: () {
-            FlameAudio.play(Assets.btn1);
+            BLAudio.playBtn();
             Utils.pop(context);
           },
           icon: const Icon(

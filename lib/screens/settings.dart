@@ -5,7 +5,7 @@ import 'package:block_logic/components/profile_pic.dart';
 import 'package:block_logic/components/text.dart';
 import 'package:block_logic/components/text_button.dart';
 import 'package:block_logic/components/toggle.dart';
-import 'package:block_logic/game/utils.dart';
+import 'package:block_logic/logic/utils.dart';
 import 'package:block_logic/screens/about_us.dart';
 import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/material.dart';

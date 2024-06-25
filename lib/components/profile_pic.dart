@@ -1,4 +1,5 @@
-import 'package:block_logic/game/assets.dart';
+import 'package:block_logic/logic/audio.dart';
+import 'package:block_logic/logic/assets.dart';
 import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -31,7 +32,7 @@ class _BLProfilePicState extends State<BLProfilePic> {
         isTapped = true;
         opacity = 1;
       });
-      FlameAudio.play(Assets.btn1);
+      BLAudio.playBtn();
     }
 
     void onTapCancel() {

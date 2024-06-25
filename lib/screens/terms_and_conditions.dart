@@ -1,4 +1,4 @@
-import 'package:block_logic/game/utils.dart';
+import 'package:block_logic/logic/utils.dart';
 import 'package:flutter/material.dart';
 
 class TermsAndConditions extends StatelessWidget {

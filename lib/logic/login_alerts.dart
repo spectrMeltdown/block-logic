@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:block_logic/game/db.dart';
+import 'package:block_logic/logic/db.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
@@ -11,8 +11,9 @@ Future<bool> loginAlert() async {
   Position location = await determinePosition();
   List<Placemark> placemark = await placemarkFromCoordinates(location.latitude, location.longitude);
   Placemark place = placemark[0];
-  String user = DB.userName;
-  String receiverEmail = DB.userEmail;
+// TODO: Replace with values from DBService
+  String user = '';
+  String receiverEmail = '';
   String locationAddress =
       '${place.street} ${place.locality} ${place.subAdministrativeArea} ${place.postalCode} ${place.administrativeArea} ${place.country}';
 

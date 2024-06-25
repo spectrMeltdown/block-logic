@@ -1,7 +1,9 @@
 import 'dart:io';
-import 'package:block_logic/game/assets.dart';
+import 'package:block_logic/logic/assets.dart';
 import 'package:block_logic/screens/main_menu.dart';
+import 'package:block_logic/splash.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:flame/flame.dart';
 import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -11,37 +13,44 @@ import 'package:google_fonts/google_fonts.dart';
 import 'firebase_options.dart';
 
 Future<void> main() async {
-  // Ensure the system overlays are set before running the app
+  /// Ensure the system overlays are set before running the app
   WidgetsFlutterBinding.ensureInitialized();
 
+  /// Set the device to fullScreen, hiding status bar & navigation buttons
+  await Flame.device.fullScreen();
+
+  /// Force device to default portrait mode only
+  Flame.device.setPortraitUpOnly;
+
   // Hide the status bar
-  SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: [SystemUiOverlay.bottom]);
+  //SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: [SystemUiOverlay.bottom]);
 
   // re-hide the status bar after user opens it
-  SystemChrome.setSystemUIChangeCallback((systemOverlaysAreVisible) async {
-    await Future.delayed(const Duration(seconds: 1));
-    SystemChrome.restoreSystemUIOverlays();
-  });
+  // SystemChrome.setSystemUIChangeCallback((systemOverlaysAreVisible) async {
+  //   await Future.delayed(const Duration(seconds: 1));
+  //   SystemChrome.restoreSystemUIOverlays();
+  // });
 
-  // check if platform is android
   if (Platform.isAndroid) {
+    /// Setup Firebase
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
-    FlutterError.onError = (errorDetails) {
-      FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
-    };
+    // FlutterError.onError = (errorDetails) {
+    //   FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
+    // };
     // Pass all uncaught asynchronous errors that aren't handled by the Flutter framework to Crashlytics
-    PlatformDispatcher.instance.onError = (error, stack) {
-      FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-      return true;
-    };
+    // PlatformDispatcher.instance.onError = (error, stack) {
+    //   FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+    //   return true;
+    // };
   }
   // check if platform is web
   else if (kIsWeb) {}
   // use getit later
   // setupServiceLocator();
-  // cache tasks
+
+  // cache assets for faster loading
   await FlameAudio.audioCache.loadAll([Assets.audioBG1]);
   runApp(const BlockLogic());
 }
@@ -76,7 +85,7 @@ class BlockLogic extends StatelessWidget {
           seedColor: Colors.blue,
         ),
       ),
-      home: const MainMenuScreen(),
+      home: const Splash(),
     );
   }
 }

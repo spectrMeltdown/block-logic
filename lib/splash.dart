@@ -1,38 +1,43 @@
+import 'package:block_logic/components/text.dart';
+import 'package:block_logic/logic/assets.dart';
+import 'package:block_logic/logic/utils.dart';
+import 'package:block_logic/screens/main_menu.dart';
 import 'package:flame_splash_screen/flame_splash_screen.dart';
 import 'package:flutter/material.dart';
 
-class SplashScreenGameState extends State<SplashScreenGame> {
-  FlameSplashController controller;
-  @override
-  void initState() {
-    super.initState();
-    controller = FlameSplashController(
-      fadeInDuration: Duration(seconds: 1),
-      fadeOutDuration: Duration(milliseconds: 250),
-      waitDuration: Duration(seconds: 2),
-      autoStart: false,
-    );
-  }
+class Splash extends StatefulWidget {
+  const Splash({super.key});
 
   @override
-  void dispose() {
-    controller.dispose(); // dispose it when necessary
-    super.dispose();
-  }
+  State<Splash> createState() => _Splash();
+}
+
+class _Splash extends State<Splash> {
+  // Adding the controller breaks the splash screen for some reason (stuck on loading)
+
+  // final FlameSplashController controller = FlameSplashController(
+  //   fadeInDuration: const Duration(seconds: 1),
+  //   fadeOutDuration: const Duration(milliseconds: 250),
+  //   waitDuration: const Duration(seconds: 1),
+  //   autoStart: false,
+  // );
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       body: FlameSplashScreen(
         showBefore: (BuildContext context) {
-          return Text("Before the logo");
+          return const BLTitle("Uncaught Exception");
         },
-        showAfter: (BuildContext context) {
-          return Text("After the logo");
-        },
-        theme: FlameSplashTheme.white,
-        onFinish: (context) => Navigator.pushNamed(context, '/the-game-initial-screen'),
-        controller: controller,
+        theme: FlameSplashTheme(
+            backgroundDecoration:
+                const BoxDecoration(image: DecorationImage(image: AssetImage(Assets.backgroundNoGrid))),
+            logoBuilder: (context) => Image.asset(
+                  Assets.logo,
+                  fit: BoxFit.cover,
+                )),
+        onFinish: (context) => Utils.pushReplace(context, const MainMenuScreen()),
       ),
     );
   }

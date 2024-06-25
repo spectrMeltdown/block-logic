@@ -3,8 +3,8 @@ import 'package:block_logic/components/background.dart';
 import 'package:block_logic/components/button.dart';
 import 'package:block_logic/components/panel.dart';
 import 'package:block_logic/components/text.dart';
-import 'package:block_logic/game/assets.dart';
-import 'package:block_logic/game/utils.dart';
+import 'package:block_logic/logic/assets.dart';
+import 'package:block_logic/logic/utils.dart';
 import 'package:flutter/material.dart';
 
 class AboutUs extends StatefulWidget {

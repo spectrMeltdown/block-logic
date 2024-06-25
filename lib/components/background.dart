@@ -1,4 +1,4 @@
-import 'package:block_logic/game/assets.dart';
+import 'package:block_logic/logic/assets.dart';
 import 'package:flutter/cupertino.dart';
 
 class Background extends StatelessWidget {
