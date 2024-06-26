@@ -22,18 +22,18 @@ class _AboutUsState extends State<AboutUs> {
       body: Background(
           child: Column(
         children: [
-          Row(
+          const Row(
             children: [BLBackButton()],
           ),
-          Padding(
-            padding: const EdgeInsets.only(),
+          const Padding(
+            padding: EdgeInsets.only(),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [BLTitle('About Us')],
             ),
           ),
           BLPanel(
-              padding: EdgeInsets.symmetric(vertical: 40, horizontal: 35),
+              padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 35),
               child: Column(
                 children: [
                   Image.asset(
@@ -41,37 +41,37 @@ class _AboutUsState extends State<AboutUs> {
                     width: 250,
                     height: 250,
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 40,
                   ),
-                  BLText(
+                  const BLText(
                     'Hey programmer!',
                     color: Colors.white,
                     size: 20,
                   ),
-                  BLText(
+                  const BLText(
                     'Hope you loved our game!',
                     color: Colors.white,
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 40,
                   ),
-                  BLText('Made by:'),
+                  const BLText('Made by:'),
                   BLSmallTitle('Uncaught Exception', color: Colors.lightBlue[100]),
-                  BLText(
+                  const BLText(
                     'A Capstone Project \nfrom USTP Oroquieta',
                     alignCenter: true,
                   ),
                 ],
               )),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
           BLButton(
             onPressed: () => Utils.pop(context),
             type: BtnType.red,
-            child: BLText('Back'),
-            padding: EdgeInsets.symmetric(horizontal: 50, vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 10),
+            child: const BLText('Back'),
           )
         ],
       )),

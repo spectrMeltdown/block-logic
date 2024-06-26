@@ -1,12 +1,14 @@
 import 'package:block_logic/logic/models.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 
 /// All database interactions are found here
 class DBService {
   /// the database
   final FirebaseFirestore _db = FirebaseFirestore.instance;
+
+  /// the user's current user
+  String userUID = FirebaseAuth.instance.currentUser?.uid ?? '';
 
   /// the user's display name
   String userDisplayName = FirebaseAuth.instance.currentUser?.displayName ?? 'Guest';

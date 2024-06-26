@@ -7,8 +7,10 @@ import 'package:block_logic/components/text_button.dart';
 import 'package:block_logic/components/toggle.dart';
 import 'package:block_logic/logic/utils.dart';
 import 'package:block_logic/screens/about_us.dart';
+import 'package:block_logic/screens/dialogs/change_email.dart';
 import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class Settings extends StatefulWidget {
@@ -41,184 +43,179 @@ class _SettingsState extends State<Settings> {
             const BLTitle(
               'Settings',
             ),
-            const SizedBox(),
-            BLPanel(
-                child: Wrap(
-              direction: Axis.vertical,
-              crossAxisAlignment: WrapCrossAlignment.center,
-              spacing: 10,
-              children: [
-                const BLSmallTitle('Account'),
-                Wrap(
-                  spacing: 20,
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.only(left: 8.0),
-                      child: Wrap(
-                        direction: Axis.vertical,
-                        crossAxisAlignment: WrapCrossAlignment.center,
-                        spacing: 10,
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.only(top: 10),
-                            child: BLProfilePic(size: 100),
-                          ),
-                          BLText(
-                            'Tap to edit',
-                            fontStyle: FontStyle.italic,
-                          )
-                        ],
-                      ),
-                    ),
-                    Wrap(
-                      direction: Axis.vertical,
-                      children: [
-                        BLTextButton(
-                            onPressed: () {},
-                            child: Wrap(
-                              spacing: 10,
-                              children: [
-                                const Icon(FontAwesomeIcons.user, color: Colors.white),
-                                const BLText('Guest'),
-                                editIcon
-                              ],
-                            )),
-                        BLTextButton(
-                            onPressed: () {},
-                            child: Wrap(
-                              spacing: 10,
-                              children: [
-                                const Icon(FontAwesomeIcons.envelope, color: Colors.white),
-                                const BLText('Email'),
-                                editIcon
-                              ],
-                            )),
-                        BLTextButton(
-                            onPressed: () {},
-                            child: Wrap(
-                              spacing: 10,
-                              alignment: WrapAlignment.center,
-                              crossAxisAlignment: WrapCrossAlignment.center,
-                              children: [
-                                const Icon(FontAwesomeIcons.lock, color: Colors.white),
-                                const BLText('Change \npassword'),
-                                editIcon
-                              ],
-                            ))
-                      ],
-                    )
-                  ],
-                )
-              ],
-            )),
-            const SizedBox(
-              height: 20,
-            ),
-            BLPanel(
-                padding: const EdgeInsets.symmetric(horizontal: 35, vertical: 15),
-                child: Wrap(
-                  direction: Axis.vertical,
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  children: [
-                    const BLSmallTitle(
-                      'System',
-                    ),
-                    Wrap(
-                      direction: Axis.vertical,
+            Expanded(
+              child: ListView(
+                shrinkWrap: true,
+                children: [
+                  BLPanel(
+                      child: SizedBox(
+                    width: Utils.screenW(context) / 1.2,
+                    child: Column(
                       children: [
                         SizedBox(
-                          width: Utils.screenW(context) / 1.5,
-                          child: Wrap(
-                              crossAxisAlignment: WrapCrossAlignment.center,
-                              alignment: WrapAlignment.spaceBetween,
-                              spacing: 15,
-                              children: [
-                                const Wrap(
-                                  spacing: 20,
-                                  children: [
-                                    Icon(FontAwesomeIcons.volumeHigh),
-                                    BLText('Sound Effects'),
-                                  ],
-                                ),
-                                BLSwitch(
-                                  state: false,
-                                  onPressed: () {},
-                                )
-                              ]),
+                          height: 5,
                         ),
-                        SizedBox(
-                          width: Utils.screenW(context) / 1.5,
-                          child: Wrap(
-                              crossAxisAlignment: WrapCrossAlignment.center,
-                              alignment: WrapAlignment.spaceBetween,
-                              spacing: 15,
-                              children: [
-                                const Wrap(
-                                  spacing: 20,
-                                  children: [
-                                    Icon(FontAwesomeIcons.music),
-                                    BLText('Background'),
-                                  ],
-                                ),
-                                BLSwitch(
-                                  state: FlameAudio.bgm.isPlaying,
-                                  onPressed: () {
-                                    if (FlameAudio.bgm.isPlaying == false) {
-                                      FlameAudio.bgm.resume();
-                                    } else {
-                                      FlameAudio.bgm.pause();
-                                    }
-                                  },
-                                )
-                              ]),
+                        const BLSmallTitle('Account'),
+                        const Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            BLProfilePic(size: 100),
+                            SizedBox(height: 10),
+                            BLText(
+                              'Tap to edit',
+                              fontStyle: FontStyle.italic,
+                            )
+                          ],
                         ),
-                        SizedBox(
-                          width: Utils.screenW(context) / 1.5,
-                          child: Wrap(
-                              crossAxisAlignment: WrapCrossAlignment.center,
-                              alignment: WrapAlignment.spaceBetween,
-                              spacing: 15,
-                              children: [
-                                const Wrap(
-                                  spacing: 20,
+                        const SizedBox(width: 15),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            BLTextButton(
+                                onPressed: () {},
+                                child: Row(
                                   children: [
-                                    Icon(FontAwesomeIcons.bell),
-                                    BLText('Notifications'),
+                                    const Icon(FontAwesomeIcons.user, color: Colors.white),
+                                    const SizedBox(width: 15),
+                                    const BLText('Guest'),
+                                    const SizedBox(width: 5),
+                                    editIcon
                                   ],
-                                ),
-                                BLSwitch(state: false, onPressed: () {})
-                              ]),
-                        ),
-                        SizedBox(
-                          width: Utils.screenW(context) / 1.5,
-                          child: Wrap(
-                              crossAxisAlignment: WrapCrossAlignment.center,
-                              alignment: WrapAlignment.spaceBetween,
-                              spacing: 15,
-                              children: [
-                                const Wrap(
-                                  spacing: 20,
+                                )),
+                            BLTextButton(
+                                onPressed: () {
+                                  showDialog(context: context, builder: (context) => ChangeEmail());
+                                },
+                                child: Row(
                                   children: [
-                                    Icon(FontAwesomeIcons.triangleExclamation),
-                                    BLText('Login Alerts'),
+                                    const Icon(FontAwesomeIcons.envelope, color: Colors.white),
+                                    const SizedBox(width: 15),
+                                    const BLText('Email'),
+                                    const SizedBox(width: 5),
+                                    editIcon
                                   ],
-                                ),
-                                BLSwitch(state: false, onPressed: () {})
-                              ]),
+                                )),
+                            BLTextButton(
+                                onPressed: () {},
+                                child: Row(
+                                  children: [
+                                    const Icon(FontAwesomeIcons.lock, color: Colors.white),
+                                    const SizedBox(width: 15),
+                                    const BLText('Change \npassword'),
+                                    const SizedBox(width: 5),
+                                    editIcon
+                                  ],
+                                ))
+                          ],
                         )
                       ],
-                    )
-                  ],
-                )),
-            SizedBox(
-              height: Utils.screenH(context) / 15,
-            ),
-            BLTextButton(
-                onPressed: () => Utils.push(context, AboutUs()),
-                child: const BLText(
-                  'About Us',
-                  underlined: true,
-                ))
+                    ),
+                  )),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  BLPanel(
+                      padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          const BLSmallTitle(
+                            'System',
+                          ),
+                          Column(
+                            children: [
+                              SizedBox(
+                                width: Utils.screenW(context) / 1.4,
+                                child: Row(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      const Row(
+                                        children: [
+                                          Icon(FontAwesomeIcons.volumeHigh),
+                                          SizedBox(width: 20),
+                                          BLText('Sound Effects'),
+                                        ],
+                                      ),
+                                      BLSwitch(
+                                        state: false,
+                                        onPressed: () {},
+                                      )
+                                    ]),
+                              ),
+                              SizedBox(
+                                width: Utils.screenW(context) / 1.4,
+                                child: Row(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      const Row(
+                                        children: [
+                                          Icon(FontAwesomeIcons.music),
+                                          SizedBox(width: 20),
+                                          BLText('Background Music'),
+                                        ],
+                                      ),
+                                      BLSwitch(
+                                        state: FlameAudio.bgm.isPlaying,
+                                        onPressed: () {
+                                          if (FlameAudio.bgm.isPlaying == false) {
+                                            FlameAudio.bgm.resume();
+                                          } else {
+                                            FlameAudio.bgm.pause();
+                                          }
+                                        },
+                                      )
+                                    ]),
+                              ),
+                              SizedBox(
+                                width: Utils.screenW(context) / 1.4,
+                                child: Row(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      const Row(
+                                        children: [
+                                          Icon(FontAwesomeIcons.bell),
+                                          SizedBox(width: 20),
+                                          BLText('Notifications'),
+                                        ],
+                                      ),
+                                      BLSwitch(state: false, onPressed: () {})
+                                    ]),
+                              ),
+                              SizedBox(
+                                width: Utils.screenW(context) / 1.4,
+                                child: Row(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      const Row(
+                                        children: [
+                                          Icon(FontAwesomeIcons.triangleExclamation),
+                                          SizedBox(width: 20),
+                                          BLText('Login Alerts'),
+                                        ],
+                                      ),
+                                      BLSwitch(state: false, onPressed: () {})
+                                    ]),
+                              )
+                            ],
+                          )
+                        ],
+                      )),
+                  SizedBox(
+                    height: Utils.screenH(context) / 15,
+                  ),
+                  BLTextButton(
+                      onPressed: () => Utils.push(context, const AboutUs()),
+                      child: const BLText(
+                        'About Us',
+                        underlined: true,
+                      ))
+                ],
+              ),
+            )
           ],
         ),
       ),

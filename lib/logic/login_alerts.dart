@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:block_logic/logic/db.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';

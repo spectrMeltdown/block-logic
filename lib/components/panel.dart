@@ -11,7 +11,7 @@ class BLPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ZoomIn(
-        duration: Duration(milliseconds: 500),
+        duration: const Duration(milliseconds: 500),
         child: Container(
           decoration: BoxDecoration(
             color: Colors.grey.withAlpha(20),

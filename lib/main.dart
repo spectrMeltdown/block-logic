@@ -1,14 +1,11 @@
 import 'dart:io';
 import 'package:block_logic/logic/assets.dart';
-import 'package:block_logic/screens/main_menu.dart';
 import 'package:block_logic/splash.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flame/flame.dart';
 import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'firebase_options.dart';
 
