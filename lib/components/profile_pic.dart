@@ -1,8 +1,11 @@
 import 'package:block_logic/logic/audio.dart';
 import 'package:block_logic/logic/assets.dart';
+import 'package:block_logic/logic/db.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
 
 class BLProfilePic extends StatefulWidget {
   const BLProfilePic({super.key, this.size = 50, this.onPressed});
@@ -14,33 +17,37 @@ class BLProfilePic extends StatefulWidget {
 }
 
 class _BLProfilePicState extends State<BLProfilePic> {
-  double opacity = 0;
+  final db = DBService();
+  double _opacity = 0;
+  bool _isTapped = false;
+
+  void onTapUp(TapUpDetails tapUp) {
+    setState(() {
+      _isTapped = false;
+      _opacity = 0;
+    });
+    widget.onPressed?.call();
+  }
+
+  void onTapDown(TapDownDetails tapDown) {
+    setState(() {
+      _isTapped = true;
+      _opacity = 1;
+    });
+    BLAudio.playBtn();
+  }
+
+  void onTapCancel() {
+    setState(() {
+      _isTapped = false;
+      _opacity = 0;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    bool isTapped = false;
-
-    void onTapUp(TapUpDetails tapUp) {
-      setState(() {
-        isTapped = false;
-        opacity = 0;
-      });
-      widget.onPressed?.call();
-    }
-
-    void onTapDown(TapDownDetails tapDown) {
-      setState(() {
-        isTapped = true;
-        opacity = 1;
-      });
-      BLAudio.playBtn();
-    }
-
-    void onTapCancel() {
-      setState(() {
-        isTapped = false;
-        opacity = 0;
-      });
-    }
+    User? user = Provider.of<User?>(context);
+    DBService db = Provider.of<DBService>(context);
 
     return GestureDetector(
       onTapDown: onTapDown,
@@ -60,14 +67,18 @@ class _BLProfilePicState extends State<BLProfilePic> {
                 width: 3.0,
               ),
             ),
-            child: const CircleAvatar(
-              child: Icon(FontAwesomeIcons.user),
+            child: Consumer<User?>(
+              builder: (context, user, child) {
+                return CircleAvatar(
+                  child: (user != null ? Icon(FontAwesomeIcons.placeOfWorship) : Icon(FontAwesomeIcons.user)),
+                );
+              },
             ),
           ),
           AnimatedOpacity(
               duration: Durations.short3,
               curve: Curves.easeInOut,
-              opacity: opacity,
+              opacity: _opacity,
               child: Container(
                 width: widget.size,
                 height: widget.size,

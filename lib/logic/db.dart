@@ -14,6 +14,9 @@ class DBService {
   /// the user's email
   String userEmail = FirebaseAuth.instance.currentUser?.email ?? '';
 
+  /// if logged in or not
+  bool isLoggedIn = FirebaseAuth.instance.currentUser == null;
+
   /// Stream a document
   Stream<Admin> streamAdmin(String id) {
     return _db.collection('admins').doc(id).snapshots().map((doc) => Admin.fromFirestore(doc));

@@ -47,7 +47,9 @@ Future<void> main() async {
   }
   // check if platform is web
   else if (kIsWeb) {}
-  // use getit later
+
+  // TODO: use get_it package for create global singletons
+
   // setupServiceLocator();
 
   // cache assets for faster loading
