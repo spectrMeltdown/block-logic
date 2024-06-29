@@ -1,13 +1,29 @@
 import "dart:math";
 
+import "package:block_logic/components/dialog.dart";
+import "package:firebase_auth/firebase_auth.dart";
+import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
+
+/// Extended on widgets where onPressed must be limited to once (e.g. btns with async functions)
+abstract class Debounce {
+  bool processing = false;
+}
 
 /// For placeholder widgets with zero size
 const Widget blankWidget = SizedBox.shrink();
 
 /// General redundant code throughout the app
 abstract class Utils {
+  /// a custom assert function for functions, for development only
+  static void assertFunc(VoidCallback func) {
+    assert(() {
+      func.call();
+      return true;
+    }());
+  }
+
   /// current screen width. Must be called inside a context.
   static double screenW(BuildContext context) {
     return MediaQuery.of(context).size.width;
@@ -59,5 +75,34 @@ abstract class Utils {
       oldRandNum = randNum;
     }
     return randNum;
+  }
+}
+
+String? fireErrors(BuildContext context, FirebaseException e) {
+  switch (e.code) {
+    case 'network-request-failed':
+      const String error = 'Network Problem!';
+      notifyDialog(context, title: error);
+      return error;
+    case 'invalid-credential':
+      const String error = 'Incorrect credentials';
+      notifyDialog(context, title: error);
+      return error;
+    case 'invalid-email':
+      const String error = 'Incorrect email.';
+      notifyDialog(context, title: error);
+      return error;
+    case 'email-already-in-use':
+      const String error = 'Account already exists';
+      notifyDialog(context, title: error);
+      return error;
+    case 'requires-recent-login':
+      // TODO: display reauth overlay
+      return null;
+    default:
+      if (kDebugMode) {
+        notifyDialog(context, title: e.code, label: e.message);
+      }
+      return null;
   }
 }

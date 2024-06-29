@@ -10,7 +10,7 @@ class BLCheckbox extends StatefulWidget {
 
 class _BLCheckboxState extends State<BLCheckbox> {
   bool _isChecked = false;
-  bool _isTapped = false;
+  //bool _isTapped = false;
   late Color btnPressedColor;
   late Color btnColor;
   double _scale = 0;
@@ -23,7 +23,7 @@ class _BLCheckboxState extends State<BLCheckbox> {
 
   void _onTapUp(TapUpDetails tapUp) {
     setState(() {
-      _isTapped = false;
+      // _isTapped = false;
       _isChecked = !_isChecked;
     });
     _startAnimation();
@@ -32,13 +32,13 @@ class _BLCheckboxState extends State<BLCheckbox> {
 
   void _onTapDown(TapDownDetails tapDown) {
     setState(() {
-      _isTapped = true;
+      // _isTapped = true;
     });
   }
 
   void _onTapCancel() {
     setState(() {
-      _isTapped = false;
+      // _isTapped = false;
     });
   }
 
@@ -51,8 +51,8 @@ class _BLCheckboxState extends State<BLCheckbox> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTapUp: _onTapUp,
-      onTapDown: _onTapDown,
-      onTapCancel: _onTapCancel,
+      //onTapDown: _onTapDown,
+      //onTapCancel: _onTapCancel,
       child: Container(
           width: 25,
           height: 25,
@@ -64,11 +64,11 @@ class _BLCheckboxState extends State<BLCheckbox> {
           ),
           child: AnimatedOpacity(
             duration: const Duration(milliseconds: 400),
-            opacity: _isChecked ? 0 : 1,
+            opacity: _isChecked ? 1 : 0,
             child: AnimatedContainer(
                 duration: const Duration(milliseconds: 100),
                 curve: Curves.easeInOut,
-                margin: _isChecked ? const EdgeInsets.all(20) : const EdgeInsets.all(4),
+                margin: _isChecked ? const EdgeInsets.all(4) : const EdgeInsets.all(20),
                 decoration: const ShapeDecoration(
                   color: Colors.white,
                   shape: BeveledRectangleBorder(

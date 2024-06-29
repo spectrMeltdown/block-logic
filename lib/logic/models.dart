@@ -257,22 +257,22 @@ class Challenge {
   }
 }
 
-class Feedback {
+class FeedbackModel {
   final String id;
   final String title;
   final String message;
   final DateTime createdAt;
-  Feedback({
+  FeedbackModel({
     required this.id,
     required this.title,
     required this.message,
     required this.createdAt,
   });
 
-  factory Feedback.fromFirestore(DocumentSnapshot doc) {
+  factory FeedbackModel.fromFirestore(DocumentSnapshot doc) {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
 
-    return Feedback(
+    return FeedbackModel(
       id: doc.id,
       title: data['title'] ?? '',
       message: data['message'] ?? '',

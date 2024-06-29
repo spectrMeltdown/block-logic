@@ -1,5 +1,4 @@
 import 'package:block_logic/logic/audio.dart';
-import 'package:block_logic/logic/db.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -43,60 +42,50 @@ class _BLProfilePicState extends State<BLProfilePic> {
 
   @override
   Widget build(BuildContext context) {
-    // User? user = Provider.of<User?>(context);
-    // final db = Provider.of<DBService>(context);
-
-    return StreamProvider<User?>(
-        create: (context) => FirebaseAuth.instance.authStateChanges(),
-        initialData: null,
-        builder: (context, child) {
-          User? user = Provider.of<User?>(context);
-          return GestureDetector(
-            onTapDown: onTapDown,
-            onTapUp: onTapUp,
-            onTapCancel: onTapCancel,
-            child: Stack(
-              children: [
-                Container(
-                  width: widget.size,
-                  height: widget.size,
-                  padding: const EdgeInsets.all(5),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.blueGrey[300],
-                    border: Border.all(
-                      color: Colors.white,
-                      width: 3.0,
+    return GestureDetector(
+      onTapDown: onTapDown,
+      onTapUp: onTapUp,
+      onTapCancel: onTapCancel,
+      child: Stack(
+        children: [
+          Container(
+            width: widget.size,
+            height: widget.size,
+            padding: const EdgeInsets.all(5),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.blueGrey[300],
+              border: Border.all(
+                color: Colors.white,
+                width: 3.0,
+              ),
+            ),
+            child: Consumer<User?>(
+              builder: (context, user, child) {
+                return CircleAvatar(
+                  child: Center(
+                    child: FractionallySizedBox(
+                      widthFactor: 0.8,
+                      heightFactor: 0.8,
+                      child: (user == null ? const Icon(FontAwesomeIcons.user) : const Icon(FontAwesomeIcons.placeOfWorship)),
                     ),
                   ),
-                  child: Consumer<User?>(
-                    builder: (context, user, child) {
-                      return CircleAvatar(
-                        child: Center(
-                          child: FractionallySizedBox(
-                            widthFactor: 0.8,
-                            heightFactor: 0.8,
-                            child: (user == null ? Icon(FontAwesomeIcons.placeOfWorship) : Icon(FontAwesomeIcons.user)),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                AnimatedOpacity(
-                    duration: Durations.short3,
-                    curve: Curves.easeInOut,
-                    opacity: _opacity,
-                    child: Container(
-                      width: widget.size,
-                      height: widget.size,
-                      decoration: BoxDecoration(
-                          color: Colors.black.withAlpha(100),
-                          borderRadius: const BorderRadius.all(Radius.circular(100))),
-                    )),
-              ],
+                );
+              },
             ),
-          );
-        });
+          ),
+          AnimatedOpacity(
+              duration: Durations.short3,
+              curve: Curves.easeInOut,
+              opacity: _opacity,
+              child: Container(
+                width: widget.size,
+                height: widget.size,
+                decoration: BoxDecoration(
+                    color: Colors.black.withAlpha(100), borderRadius: const BorderRadius.all(Radius.circular(100))),
+              )),
+        ],
+      ),
+    );
   }
 }

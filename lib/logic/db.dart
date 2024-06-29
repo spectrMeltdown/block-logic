@@ -1,24 +1,13 @@
 import 'package:block_logic/logic/models.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
-/// All database interactions are found here
-class DBService {
+abstract class DB {
   /// the database
   final FirebaseFirestore _db = FirebaseFirestore.instance;
+}
 
-  /// the user's current user
-  String userUID = FirebaseAuth.instance.currentUser?.uid ?? '';
-
-  /// the user's display name
-  String userDisplayName = FirebaseAuth.instance.currentUser?.displayName ?? 'Guest';
-
-  /// the user's email
-  String userEmail = FirebaseAuth.instance.currentUser?.email ?? '';
-
-  /// if logged in or not
-  bool isLoggedIn = FirebaseAuth.instance.currentUser == null;
-
+/// All database interactions are found here
+class DBService extends DB {
   /// Stream a document
   Stream<Admin> streamAdmin(String id) {
     return _db.collection('admins').doc(id).snapshots().map((doc) => Admin.fromFirestore(doc));
@@ -44,8 +33,8 @@ class DBService {
     return _db.collection('challenges').doc(id).snapshots().map((doc) => Challenge.fromFirestore(doc));
   }
 
-  Stream<Feedback> streamFeedback(String id) {
-    return _db.collection('feedback').doc(id).snapshots().map((doc) => Feedback.fromFirestore(doc));
+  Stream<FeedbackModel> streamFeedback(String id) {
+    return _db.collection('feedback').doc(id).snapshots().map((doc) => FeedbackModel.fromFirestore(doc));
   }
 
   /// Write data

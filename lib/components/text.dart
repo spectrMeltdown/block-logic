@@ -29,15 +29,35 @@ class BLText extends StatelessWidget {
   }
 }
 
+class BLTextSpan extends StatelessWidget {
+  const BLTextSpan(this.children, {super.key, this.size = 16, this.color});
+  final double size;
+  final Color? color;
+  final List<TextSpan> children;
+
+  @override
+  Widget build(BuildContext context) {
+    return RichText(
+      text: TextSpan(
+          style: TextStyle(
+            color: color ?? Colors.lightBlue[100],
+            fontSize: size,
+          ),
+          children: children),
+    );
+  }
+}
+
 class BLTitle extends StatelessWidget {
-  const BLTitle(this.text, {super.key, this.size = 35});
+  const BLTitle(this.text, {super.key, this.size = 35, this.bottomPadding = 20});
   final String text;
   final double size;
+  final double bottomPadding;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 20),
+      padding: EdgeInsets.only(bottom: bottomPadding),
       child: Text(
         text.toUpperCase(),
         textAlign: TextAlign.center,

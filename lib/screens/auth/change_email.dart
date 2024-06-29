@@ -1,9 +1,9 @@
-import 'package:block_logic/components/button.dart';
 import 'package:block_logic/components/dialog.dart';
 import 'package:block_logic/components/text.dart';
 import 'package:block_logic/components/textbox.dart';
-import 'package:flutter/foundation.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class ChangeEmail extends StatefulWidget {
   const ChangeEmail({super.key});
@@ -13,7 +13,15 @@ class ChangeEmail extends StatefulWidget {
 }
 
 class _ChangeEmailState extends State<ChangeEmail> {
-  final TextEditingController emailController = TextEditingController(text: 'your email');
+  late final String email;
+  late final TextEditingController emailController;
+
+  @override
+  void initState() {
+    final user = Provider.of<User?>(context);
+    emailController = TextEditingController(text: user?.displayName ?? '');
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,18 +29,18 @@ class _ChangeEmailState extends State<ChangeEmail> {
         child: Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        BLSmallTitle('Enter your new email'),
-        SizedBox(
+        const BLSmallTitle('Enter your new email'),
+        const SizedBox(
           height: 10,
         ),
         BLTextBox(
           controller: emailController,
-          prefixIcon: Icon(
+          prefixIcon: const Icon(
             Icons.mail,
             color: Colors.white,
           ),
         ),
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
         Row(
@@ -42,7 +50,7 @@ class _ChangeEmailState extends State<ChangeEmail> {
                 onPressed: () {
                   Navigator.pop(context);
                 },
-                child: BLText(
+                child: const BLText(
                   'Cancel',
                   color: Colors.red,
                 )),
@@ -50,11 +58,11 @@ class _ChangeEmailState extends State<ChangeEmail> {
                 onPressed: () {
                   Navigator.pop(context);
                 },
-                child: BLText(
+                child: const BLText(
                   'Save',
                   color: Colors.green,
                 )),
-            SizedBox(
+            const SizedBox(
               width: 10,
             )
           ],

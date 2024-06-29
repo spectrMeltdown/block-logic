@@ -1,4 +1,5 @@
 import 'package:block_logic/logic/audio.dart';
+import 'package:block_logic/logic/utils.dart';
 import 'package:flutter/material.dart';
 
 enum BtnType {
@@ -146,10 +147,7 @@ class _BtnState extends State<BLButton> {
       _isTapped = false;
     });
     widget.onPressed.call();
-    assert(() {
-      getBtnColor();
-      return true;
-    }());
+    Utils.assertFunc(getBtnColor);
   }
 
   void _onTapDown(TapDownDetails tapDown) {

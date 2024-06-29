@@ -1,11 +1,13 @@
 import 'dart:io';
 import 'package:block_logic/logic/assets.dart';
+import 'package:block_logic/screens/main_menu.dart';
 import 'package:block_logic/splash.dart';
 import 'package:flame/flame.dart';
 import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'firebase_options.dart';
 
@@ -51,7 +53,7 @@ Future<void> main() async {
 
   // cache assets for faster loading
   await FlameAudio.audioCache.loadAll([Assets.audioBG1]);
-  runApp(const BlockLogic());
+  runApp(ProviderScope(child: const BlockLogic()));
 }
 
 class BlockLogic extends StatelessWidget {
@@ -63,28 +65,16 @@ class BlockLogic extends StatelessWidget {
       title: 'Block-Logic',
       debugShowCheckedModeBanner: false,
       theme: ThemeData.dark(useMaterial3: true).copyWith(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo.shade400),
         textTheme: GoogleFonts.playTextTheme(
           ThemeData.dark().textTheme,
         ),
-        appBarTheme: AppBarTheme(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          scrolledUnderElevation: 0,
-          titleTextStyle: GoogleFonts.majorMonoDisplay(
-              textStyle: const TextStyle(
-            fontSize: 32,
-            fontWeight: FontWeight.bold,
-            letterSpacing: 8,
-          )),
-          iconTheme: const IconThemeData(
-            color: Colors.white,
-          ),
-        ),
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.blue,
+        scaffoldBackgroundColor: Colors.transparent,
+        iconTheme: const IconThemeData(
+          color: Colors.white,
         ),
       ),
-      home: const Splash(),
+      home: kDebugMode ? MainMenuScreen() : const Splash(),
     );
   }
 }

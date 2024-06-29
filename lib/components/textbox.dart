@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class BLTextBox extends StatefulWidget {
@@ -11,10 +10,12 @@ class BLTextBox extends StatefulWidget {
       this.enabled,
       this.prefixIcon,
       this.suffixIcon,
+      this.suffix,
       this.onTap,
       this.labelText,
       this.isObscure = false,
       this.validator,
+      // this.error,
       this.hintText,
       this.border,
       this.keyboardType,
@@ -31,6 +32,8 @@ class BLTextBox extends StatefulWidget {
   final String? labelText;
   final bool isObscure;
   final String? Function(String?)? validator;
+  //final Widget? error;
+  final Widget? suffix;
   final String? hintText;
   final InputBorder? border;
   final TextInputType? keyboardType;
@@ -70,14 +73,18 @@ class _BLInputState extends State<BLTextBox> {
       keyboardType: widget.keyboardType,
       decoration: InputDecoration(
           hintText: widget.hintText,
-          hintStyle: TextStyle(color: Colors.lightBlue[100]),
+          hintStyle: const TextStyle(color: Colors.white, fontStyle: FontStyle.italic),
           helperText: helperText,
           filled: true,
-          fillColor: Colors.teal.shade900,
+          fillColor: Colors.teal.shade900.withAlpha(200),
+          // error: widget.error,
+          errorStyle: const TextStyle(color: Colors.amber),
+          errorBorder: const OutlineInputBorder(borderSide: BorderSide(color: Colors.amber, width: 2)),
           border:
               widget.border ?? OutlineInputBorder(borderSide: BorderSide(color: Colors.lightBlue.shade200, width: 2)),
           focusedBorder:
               widget.border ?? OutlineInputBorder(borderSide: BorderSide(color: Colors.lightBlue.shade200, width: 2)),
+          suffix: widget.suffix,
           prefixIcon: widget.prefixIcon.runtimeType != Null
               ? Padding(
                   padding: const EdgeInsets.all(10),
@@ -87,7 +94,15 @@ class _BLInputState extends State<BLTextBox> {
           suffixIcon: widget.isObscure == false
               ? widget.suffixIcon
               : IconButton(
-                  icon: showPass ? const Icon(Icons.visibility) : const Icon(Icons.visibility_off),
+                  icon: showPass
+                      ? const Icon(
+                          Icons.visibility,
+                          color: Colors.white,
+                        )
+                      : const Icon(
+                          Icons.visibility_off,
+                          color: Colors.white,
+                        ),
                   onPressed: () {
                     setState(() {
                       showPass = !showPass;
