@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:block_logic/components/background.dart';
+import 'package:block_logic/components/text.dart';
 import 'package:block_logic/logic/assets.dart';
 import 'package:block_logic/screens/main_menu.dart';
 import 'package:block_logic/splash.dart';
@@ -53,7 +55,7 @@ Future<void> main() async {
 
   // cache assets for faster loading
   await FlameAudio.audioCache.loadAll([Assets.audioBG1]);
-  runApp(ProviderScope(child: const BlockLogic()));
+  runApp(const ProviderScope(child: BlockLogic()));
 }
 
 class BlockLogic extends StatelessWidget {

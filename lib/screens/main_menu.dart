@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:animate_do/animate_do.dart';
 import 'package:block_logic/components/background.dart';
 import 'package:block_logic/components/button.dart';
 import 'package:block_logic/components/profile_pic.dart';
@@ -8,6 +7,7 @@ import 'package:block_logic/components/text.dart';
 import 'package:block_logic/logic/assets.dart';
 import 'package:block_logic/logic/auth.dart';
 import 'package:block_logic/logic/db.dart';
+import 'package:block_logic/logic/stream.dart';
 import 'package:block_logic/logic/utils.dart';
 import 'package:block_logic/screens/rooms/rooms.dart';
 import 'package:block_logic/screens/settings.dart';
@@ -29,9 +29,6 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen>
     with WidgetsBindingObserver, SingleTickerProviderStateMixin {
   late AnimationController _titleAnimationController;
   late Animation<double> _blurRadiusAnimation;
-  final user = StreamProvider<User?>((ref) {
-    return FirebaseAuth.instance.authStateChanges();
-  });
 
   @override
   void initState() {
@@ -54,50 +51,84 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen>
 
   @override
   Widget build(BuildContext context) {
+    final user = ref.watch(StreamService().user);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Background(
-        child: FadeInUp(
-          from: 25,
+        child: Container(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Padding(
-                padding: const EdgeInsets.only(left: 20, top: 20),
-                child: Consumer<User?>(
-                  builder: (context, user, child) {
-                    if (user == null) {
-                      return Row(
-                        children: [
-                          BLProfilePic(
-                            onPressed: () {
-                              Utils.push(context, const Settings());
-                            },
-                          ),
-                        ],
-                      );
-                    } else {
-                      return Row(
-                        children: [
-                          BLProfilePic(
-                            onPressed: () {
-                              Utils.push(context, const Settings());
-                            },
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 10),
-                            child: BLText(
-                              user.displayName ?? '',
-                              size: 20,
+                  padding: const EdgeInsets.only(left: 20, top: 20),
+                  child: user.when(
+                    data: (user) {
+                      if (user == null) {
+                        return Row(
+                          children: [
+                            BLProfilePic(
+                              onPressed: () {
+                                Utils.push(context, const Settings());
+                              },
                             ),
-                          ),
-                        ],
-                      );
-                    }
-                  },
-                ),
-              ),
+                          ],
+                        );
+                      } else {
+                        return Row(
+                          children: [
+                            BLProfilePic(
+                              onPressed: () {
+                                Utils.push(context, const Settings());
+                              },
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 10),
+                              child: BLText(
+                                user.displayName ?? '',
+                                size: 20,
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    },
+                    error: (error, stackTrace) => null,
+                    loading: () => null,
+                  )
+                  // Consumer<User?>(
+                  //   builder: (context, user, child) {
+                  //     if (user == null) {
+                  //       return Row(
+                  //         children: [
+                  //           BLProfilePic(
+                  //             onPressed: () {
+                  //               Utils.push(context, const Settings());
+                  //             },
+                  //           ),
+                  //         ],
+                  //       );
+                  //     } else {
+                  //       return Row(
+                  //         children: [
+                  //           BLProfilePic(
+                  //             onPressed: () {
+                  //               Utils.push(context, const Settings());
+                  //             },
+                  //           ),
+                  //           Padding(
+                  //             padding: const EdgeInsets.only(left: 10),
+                  //             child: BLText(
+                  //               user.displayName ?? '',
+                  //               size: 20,
+                  //             ),
+                  //           ),
+                  //         ],
+                  //       );
+                  //     }
+                  //   },
+                  // ),
+                  ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 10),
                 child: AnimatedBuilder(
