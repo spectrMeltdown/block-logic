@@ -27,17 +27,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 // }
 
 class TimestampModel {
-  final DateTime createdAt;
-  final DateTime modifiedAt;
+  final DateTime? createdAt;
+  final DateTime? modifiedAt;
   TimestampModel({required this.createdAt, required this.modifiedAt});
 }
 
 class UserDetails extends TimestampModel {
-  final String id;
-  final String profilePic;
+  final String? id;
   UserDetails({
     required this.id,
-    required this.profilePic,
     required super.createdAt,
     required super.modifiedAt,
   });
@@ -47,28 +45,15 @@ class UserDetails extends TimestampModel {
 
     return UserDetails(
       id: doc.id,
-      profilePic: data['profilePic'] ?? '',
       createdAt: (data['createdAt'] as Timestamp).toDate(),
       modifiedAt: (data['modifiedAt'] as Timestamp).toDate(),
     );
   }
-
-  Map<String, dynamic> toFirestore() {
-    return {
-      'id': id,
-      'reportType': reportType,
-      'data': data,
-      'startDate': Timestamp.fromDate(startDate),
-      'endDate': Timestamp.fromDate(endDate),
-      'createdAt': Timestamp.fromDate(createdAt),
-      'modifiedAt': Timestamp.fromDate(modifiedAt),
-    };
-  }
 }
 
 class AdminDetails extends TimestampModel {
-  final String id;
-  final String profilePic;
+  final String? id;
+  final String? profilePic;
   final bool isApproved;
   AdminDetails({
     required this.id,
@@ -92,11 +77,11 @@ class AdminDetails extends TimestampModel {
 }
 
 class Report extends TimestampModel {
-  final String id;
-  final bool reportType;
-  final String data;
-  final DateTime startDate;
-  final DateTime endDate;
+  final String? id;
+  final bool? reportType;
+  final String? data;
+  final DateTime? startDate;
+  final DateTime? endDate;
   Report({
     required this.id,
     required this.reportType,
@@ -119,18 +104,6 @@ class Report extends TimestampModel {
       createdAt: (data['createdAt'] as Timestamp).toDate(),
       modifiedAt: (data['modifiedAt'] as Timestamp).toDate(),
     );
-  }
-
-  Map<String, dynamic> toFirestore() {
-    return {
-      'id': id,
-      'reportType': reportType,
-      'data': data,
-      'startDate': Timestamp.fromDate(startDate),
-      'endDate': Timestamp.fromDate(endDate),
-      'createdAt': Timestamp.fromDate(createdAt),
-      'modifiedAt': Timestamp.fromDate(modifiedAt),
-    };
   }
 }
 

@@ -1,4 +1,14 @@
+import 'package:block_logic/components/error.dart';
+import 'package:block_logic/components/loading.dart';
 import 'package:flutter/material.dart';
+
+Widget genericError(error, stackTrace) => const BLError();
+
+Widget genericLoading() => const BLLoading();
+
+Widget blankError(error, stackTrace) => blankWidget;
+
+Widget blankLoading() => blankWidget;
 
 /// For placeholder widgets with zero size
 const Widget blankWidget = SizedBox.shrink();

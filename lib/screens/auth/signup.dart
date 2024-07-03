@@ -132,7 +132,7 @@ class _SignupState extends State<Signup> {
                                 }
                               },
                               child: const BLText(
-                                'Submit',
+                                'Create account',
                                 color: Colors.white,
                               )),
                           Row(

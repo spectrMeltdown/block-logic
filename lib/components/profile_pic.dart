@@ -1,6 +1,5 @@
-import 'package:block_logic/components/loading.dart';
 import 'package:block_logic/logic/audio.dart';
-import 'package:block_logic/logic/custom_widgets.dart';
+import 'package:block_logic/components/custom_widgets.dart';
 import 'package:block_logic/logic/providers/providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -45,7 +44,7 @@ class _BLProfilePicState extends ConsumerState<BLProfilePic> {
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(accountProvider);
-    final userDetails = ref.watch(userDetailsProvider);
+
     return GestureDetector(
       onTapDown: onTapDown,
       onTapUp: onTapUp,
@@ -73,18 +72,9 @@ class _BLProfilePicState extends ConsumerState<BLProfilePic> {
                         data: (user) {
                           return user == null
                               ? const Icon(FontAwesomeIcons.user)
-                              : userDetails.when(data: (userDetails) {
-                                  if (userDetails == null) {
-                                    return const BLLoading();
-                                  }
-                                  return Image.network(userDetails.profilePic);
-                                }, error: (error, stackTrace) {
-                                  debugPrint('testing profile pic');
-                                  return const BLLoading();
-                                }, loading: () {
-                                  debugPrint('loading');
-                                  return const BLLoading();
-                                });
+                              : (user.photoURL == null)
+                                  ? const Icon(FontAwesomeIcons.user)
+                                  : Image.network(user.photoURL!);
                         },
                         error: (error, stackTrace) => blankWidget,
                         loading: () => blankWidget)),

@@ -2,16 +2,20 @@ import 'dart:io';
 
 import 'package:block_logic/logic/auth.dart';
 import 'package:block_logic/logic/models.dart';
+import 'package:block_logic/logic/toast.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:mime/mime.dart';
+import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
 
 abstract class DB {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
-  final Reference _userRef = FirebaseStorage.instance.ref('users/');
-  final Reference _adminRef = FirebaseStorage.instance.ref('admins/');
+  final Reference _userStorageRef = FirebaseStorage.instance.ref('users/');
+  final Reference _adminStorageRef = FirebaseStorage.instance.ref('admins/');
 }
 
 /// All database interactions are found here
@@ -63,12 +67,19 @@ class DBService extends DB {
   }
 
   /// WRITES
-  Future<void> updateUserDetails(UserDetails user) {
-    return _db.collection('users').doc(user.id).set(userDetails.toFirestore());
+  // TODO: when writing any leaderboards, also include:
+  /// - a copy of the user's name
+  /// - display the saved name, only if the user has already deleted their account
+  Future<void> updateUserDetails(Map<String, dynamic> userDetails) {
+    return _db.collection('users').doc(AuthService.getUID()).set(userDetails);
   }
 
-  Future<void> updateReport(Report report) {
-    return _db.collection('reports').doc(report.id).set(report.toFirestore());
+  Future<void> createReport(Map<String, dynamic> report) {
+    return _db.collection('reports').doc().set(report);
+  }
+
+  Future<void> updateReport(String id, Map<String, dynamic> report) {
+    return _db.collection('reports').doc(id).set(report);
   }
 
   Future<void> changeProfilePic(BuildContext context) async {
@@ -81,26 +92,46 @@ class DBService extends DB {
       'gif',
     ]);
 
+    /// check if an image was selected or not
     if (img != null) {
-      String? filePath = img.files.first.path;
-      if (filePath != null) {
-        final mimeType = lookupMimeType(filePath);
-        File profilePicFile = File(filePath);
-        final Reference profilePicRef = _userRef.child('${AuthService.getUID()}/images');
+      /// get the path of the image selected
+      String? imagePath = img.files.first.path;
+
+      /// check if path exists
+      if (imagePath != null) {
+        /// get the file type of the image
+        final mimeType = lookupMimeType(imagePath);
+
+        /// create a file object from image path
+        File selectedPhoto = File(imagePath);
+
+        /// create reference to the images of the user
+        final Reference profilePicRef = _userStorageRef.child('${AuthService.getUID()}/images');
+
+        // Get temp directory
+        Directory tempDir = await getTemporaryDirectory();
+        String tempPath = tempDir.path;
+
+        // Copy and rename file
+        String fileName = 'profile_pic${extension(imagePath)}';
+        File renamedSelectedPhoto = await selectedPhoto.copy('$tempPath/$fileName');
+
+        /// if user didn't press back, display the toast
+        if (context.mounted) showToast(context, 'Updating ...');
         try {
-          if (context.mounted) {
-            //Utils.showSnackBar(context, 'Updating ...', backgroundColor: Colors.green[700]);
-          }
+          /// upload the file, with metadata
           await profilePicRef.putFile(
-              profilePicFile,
+              renamedSelectedPhoto,
               SettableMetadata(
                 contentType: mimeType,
               ));
+
+          /// save link to new profile pic in firebase auth
+          await FirebaseAuth.instance.currentUser!.updatePhotoURL(profilePicRef.fullPath);
+
           if (context.mounted) {
             //Utils.showSnackBar(context, 'Updated profile picture', backgroundColor: Colors.green);
           }
-          String profilePicUrl = await profilePicRef.getDownloadURL();
-          // await _userRef. ;.update({'profile_pic': profilePicUrl});
         } on FirebaseException catch (e) {
           if (e.code.isEmpty) {
             if (!context.mounted) return;

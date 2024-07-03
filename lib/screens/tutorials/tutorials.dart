@@ -7,7 +7,7 @@ class Tutorials extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
       body: Background(child: Expanded(child: BLTitle('Tutorials'))),
     );
   }

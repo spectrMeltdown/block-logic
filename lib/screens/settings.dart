@@ -9,7 +9,7 @@ import 'package:block_logic/components/text.dart';
 import 'package:block_logic/components/text_button.dart';
 import 'package:block_logic/components/toggle.dart';
 import 'package:block_logic/logic/auth.dart';
-import 'package:block_logic/logic/custom_widgets.dart';
+import 'package:block_logic/components/custom_widgets.dart';
 import 'package:block_logic/logic/db.dart';
 import 'package:block_logic/logic/providers/providers.dart';
 import 'package:block_logic/logic/utils.dart';
@@ -136,7 +136,7 @@ class _SettingsState extends ConsumerState<Settings> {
                                                 widget.editIcon
                                               ],
                                             )),
-                                        SizedBox(
+                                        const SizedBox(
                                           height: 20,
                                         ),
                                         Row(
@@ -145,22 +145,41 @@ class _SettingsState extends ConsumerState<Settings> {
                                             BLButton(
                                                 type: BtnType.red,
                                                 onPressed: () async {
-                                                  AuthService.logout();
+                                                  AuthService.deleteAccount(context);
                                                   Utils.pop(context);
                                                 },
-                                                child: Row(
+                                                child: const Row(
                                                   mainAxisSize: MainAxisSize.min,
                                                   children: [
-                                                    Icon(Icons.logout, color: Colors.white),
+                                                    Icon(Icons.delete_forever, color: Colors.white),
                                                     SizedBox(
                                                       width: 15,
                                                     ),
                                                     BLText(
-                                                      'Logout',
+                                                      'Delete account',
                                                       color: Colors.white,
                                                     )
                                                   ],
                                                 ))
+                                            // BLButton(
+                                            //     type: BtnType.red,
+                                            //     onPressed: () async {
+                                            //       AuthService.logout();
+                                            //       Utils.pop(context);
+                                            //     },
+                                            //     child: Row(
+                                            //       mainAxisSize: MainAxisSize.min,
+                                            //       children: [
+                                            //         Icon(Icons.logout, color: Colors.white),
+                                            //         SizedBox(
+                                            //           width: 15,
+                                            //         ),
+                                            //         BLText(
+                                            //           'Logout',
+                                            //           color: Colors.white,
+                                            //         )
+                                            //       ],
+                                            //     ))
                                           ],
                                         )
                                       ],

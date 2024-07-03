@@ -1,4 +1,5 @@
 import 'package:block_logic/components/text.dart';
+import 'package:block_logic/logic/auth.dart';
 import 'package:flutter/material.dart';
 
 class BLDialog extends StatelessWidget {
@@ -41,6 +42,25 @@ class BLNotifyDialog extends StatelessWidget {
               Navigator.pop(context);
             },
             child: const Text('Ok'))
+      ],
+    );
+  }
+}
+
+class BLReauthDialog extends StatelessWidget {
+  const BLReauthDialog({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const BLSmallTitle('Verification'),
+      content: const Text('Enter your current password'),
+      actions: [
+        TextButton(
+            onPressed: () {
+              AuthService.reauth(context);
+            },
+            child: const Text('Submit'))
       ],
     );
   }

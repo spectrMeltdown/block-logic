@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:block_logic/logic/assets.dart';
-import 'package:block_logic/screens/main_menu.dart';
+import 'package:block_logic/screens/auth/check_acc.dart';
+
 import 'package:block_logic/splash.dart';
 import 'package:flame/flame.dart';
 import 'package:flame_audio/flame_audio.dart';
@@ -75,7 +76,7 @@ class BlockLogic extends StatelessWidget {
           color: Colors.white,
         ),
       ),
-      home: kDebugMode ? const MainMenuScreen() : const Splash(),
+      home: kDebugMode ? const CheckAcc() : const Splash(),
     );
   }
 }

@@ -1,4 +1,4 @@
-import 'package:block_logic/logic/custom_widgets.dart';
+import 'package:block_logic/components/custom_widgets.dart';
 import 'package:flutter/material.dart';
 
 enum LoadingType { full, normal }

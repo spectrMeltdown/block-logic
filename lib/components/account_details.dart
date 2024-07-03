@@ -1,5 +1,5 @@
 import 'package:block_logic/components/text.dart';
-import 'package:block_logic/logic/custom_widgets.dart';
+import 'package:block_logic/components/custom_widgets.dart';
 import 'package:block_logic/logic/providers/providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

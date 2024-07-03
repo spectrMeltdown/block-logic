@@ -7,9 +7,8 @@ import 'package:block_logic/components/error.dart';
 import 'package:block_logic/components/loading.dart';
 import 'package:block_logic/components/profile_pic.dart';
 import 'package:block_logic/components/text.dart';
-import 'package:block_logic/logic/assets.dart';
 import 'package:block_logic/logic/auth.dart';
-import 'package:block_logic/logic/custom_widgets.dart';
+import 'package:block_logic/components/custom_widgets.dart';
 import 'package:block_logic/logic/providers/providers.dart';
 import 'package:block_logic/logic/toast.dart';
 import 'package:block_logic/logic/utils.dart';
@@ -17,7 +16,6 @@ import 'package:block_logic/screens/auth/login.dart';
 import 'package:block_logic/screens/creator_mode/creator_mode.dart';
 import 'package:block_logic/screens/settings.dart';
 import 'package:block_logic/screens/tutorials/tutorials.dart';
-import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -51,13 +49,25 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen>
       parent: _titleAnimationController,
       curve: Curves.easeInOut,
     ));
-    FlameAudio.bgm.initialize();
-    FlameAudio.bgm.play(Assets.audioBG1);
     super.initState();
   }
 
   @override
+  void dispose() {
+    _titleAnimationController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    // /// check if logged in
+    // if (AuthService.isLoggedIn()) {
+    //   /// check if email is not verified
+    //   if (!AuthService.isEmailVerified()) {
+    //     /// go to email verification screen (after main menu finish building)
+    //     Future.microtask(() => Utils.pushReplace(context, VerifyEmail()));
+    //   }
+    // }
     final user = ref.watch(accountProvider);
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -86,7 +96,7 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen>
                                     // TODO: add a overlay color
                                   },
                                   onTapUp: (details) {
-                                    AuthService.logout();
+                                    AuthService.logout(context);
                                   },
                                   child: const Padding(
                                     padding: EdgeInsets.symmetric(horizontal: 10.0),

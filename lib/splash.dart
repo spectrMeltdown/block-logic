@@ -1,8 +1,7 @@
 import 'package:block_logic/components/text.dart';
 
 import 'package:block_logic/logic/assets.dart';
-import 'package:block_logic/logic/utils.dart';
-import 'package:block_logic/screens/main_menu.dart';
+import 'package:block_logic/screens/auth/check_acc.dart';
 import 'package:flame_splash_screen/flame_splash_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -28,18 +27,17 @@ class _Splash extends State<Splash> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       body: FlameSplashScreen(
-        showBefore: (BuildContext context) {
-          return const BLTitle("Uncaught Exception");
-        },
-        theme: FlameSplashTheme(
-            backgroundDecoration:
-                const BoxDecoration(image: DecorationImage(image: AssetImage(Assets.backgroundNoGrid))),
-            logoBuilder: (context) => Image.asset(
-                  Assets.logo,
-                  fit: BoxFit.cover,
-                )),
-        onFinish: (context) => Utils.pushReplace(context, const MainMenuScreen()),
-      ),
+          showBefore: (BuildContext context) {
+            return const BLTitle("Uncaught Exception");
+          },
+          theme: FlameSplashTheme(
+              backgroundDecoration:
+                  const BoxDecoration(image: DecorationImage(image: AssetImage(Assets.backgroundNoGrid))),
+              logoBuilder: (context) => Image.asset(
+                    Assets.logo,
+                    fit: BoxFit.cover,
+                  )),
+          onFinish: (context) => const CheckAcc()),
     );
   }
 }

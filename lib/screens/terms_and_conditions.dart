@@ -1,7 +1,7 @@
 import 'package:block_logic/components/background.dart';
 import 'package:block_logic/components/button.dart';
 import 'package:block_logic/components/text.dart';
-import 'package:block_logic/logic/custom_widgets.dart';
+import 'package:block_logic/components/custom_widgets.dart';
 import 'package:block_logic/logic/utils.dart';
 import 'package:flutter/material.dart';
 
@@ -17,7 +17,7 @@ class TermsAndConditions extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 40),
         child: Column(
           children: [
-            BLSmallTitle('Terms & Conditions'),
+            const BLSmallTitle('Terms & Conditions'),
             Expanded(
               child: SingleChildScrollView(
                 child: Center(
@@ -35,9 +35,9 @@ class TermsAndConditions extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             BLButton(
-                padding: EdgeInsets.symmetric(horizontal: 90, vertical: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 90, vertical: 10),
                 onPressed: () => Utils.pop(context),
                 child: const BLText(
                   'OK',

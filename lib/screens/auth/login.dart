@@ -107,7 +107,7 @@ class _LoginState extends State<Login> {
                                 }
                               },
                               child: const BLText(
-                                'Submit',
+                                'Login',
                                 color: Colors.white,
                               )),
                           Row(
