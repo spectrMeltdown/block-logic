@@ -1,19 +1,21 @@
+import 'package:block_logic/components/loading.dart';
 import 'package:block_logic/logic/audio.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:block_logic/logic/custom_widgets.dart';
+import 'package:block_logic/logic/providers/providers.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:provider/provider.dart';
 
-class BLProfilePic extends StatefulWidget {
+class BLProfilePic extends ConsumerStatefulWidget {
   const BLProfilePic({super.key, this.size = 50, this.onPressed});
   final double size;
   final VoidCallback? onPressed;
 
   @override
-  State<BLProfilePic> createState() => _BLProfilePicState();
+  ConsumerState<BLProfilePic> createState() => _BLProfilePicState();
 }
 
-class _BLProfilePicState extends State<BLProfilePic> {
+class _BLProfilePicState extends ConsumerState<BLProfilePic> {
   double _opacity = 0;
   bool _isTapped = false;
 
@@ -42,6 +44,8 @@ class _BLProfilePicState extends State<BLProfilePic> {
 
   @override
   Widget build(BuildContext context) {
+    final user = ref.watch(accountProvider);
+    final userDetails = ref.watch(userDetailsProvider);
     return GestureDetector(
       onTapDown: onTapDown,
       onTapUp: onTapUp,
@@ -60,18 +64,31 @@ class _BLProfilePicState extends State<BLProfilePic> {
                 width: 3.0,
               ),
             ),
-            child: Consumer<User?>(
-              builder: (context, user, child) {
-                return CircleAvatar(
-                  child: Center(
-                    child: FractionallySizedBox(
-                      widthFactor: 0.8,
-                      heightFactor: 0.8,
-                      child: (user == null ? const Icon(FontAwesomeIcons.user) : const Icon(FontAwesomeIcons.placeOfWorship)),
-                    ),
-                  ),
-                );
-              },
+            child: CircleAvatar(
+              child: Center(
+                child: FractionallySizedBox(
+                    widthFactor: 0.8,
+                    heightFactor: 0.8,
+                    child: user.when(
+                        data: (user) {
+                          return user == null
+                              ? const Icon(FontAwesomeIcons.user)
+                              : userDetails.when(data: (userDetails) {
+                                  if (userDetails == null) {
+                                    return const BLLoading();
+                                  }
+                                  return Image.network(userDetails.profilePic);
+                                }, error: (error, stackTrace) {
+                                  debugPrint('testing profile pic');
+                                  return const BLLoading();
+                                }, loading: () {
+                                  debugPrint('loading');
+                                  return const BLLoading();
+                                });
+                        },
+                        error: (error, stackTrace) => blankWidget,
+                        loading: () => blankWidget)),
+              ),
             ),
           ),
           AnimatedOpacity(

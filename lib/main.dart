@@ -8,6 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import 'package:google_fonts/google_fonts.dart';
 import 'firebase_options.dart';
 
@@ -53,7 +54,7 @@ Future<void> main() async {
 
   // cache assets for faster loading
   await FlameAudio.audioCache.loadAll([Assets.audioBG1]);
-  runApp(ProviderScope(child: const BlockLogic()));
+  runApp(const ProviderScope(child: BlockLogic()));
 }
 
 class BlockLogic extends StatelessWidget {
@@ -74,7 +75,7 @@ class BlockLogic extends StatelessWidget {
           color: Colors.white,
         ),
       ),
-      home: kDebugMode ? MainMenuScreen() : const Splash(),
+      home: kDebugMode ? const MainMenuScreen() : const Splash(),
     );
   }
 }

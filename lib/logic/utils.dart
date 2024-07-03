@@ -1,18 +1,11 @@
 import "dart:math";
 
 import "package:block_logic/components/dialog.dart";
+import "package:block_logic/logic/toast.dart";
 import "package:firebase_auth/firebase_auth.dart";
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
-
-/// Extended on widgets where onPressed must be limited to once (e.g. btns with async functions)
-abstract class Debounce {
-  bool processing = false;
-}
-
-/// For placeholder widgets with zero size
-const Widget blankWidget = SizedBox.shrink();
 
 /// General redundant code throughout the app
 abstract class Utils {
@@ -82,19 +75,23 @@ String? fireErrors(BuildContext context, FirebaseException e) {
   switch (e.code) {
     case 'network-request-failed':
       const String error = 'Network Problem!';
-      notifyDialog(context, title: error);
+      dismissAllToast();
+      notifyDialog(context, title: 'Error', label: error);
       return error;
     case 'invalid-credential':
       const String error = 'Incorrect credentials';
-      notifyDialog(context, title: error);
+      dismissAllToast();
+      notifyDialog(context, title: 'Error', label: error);
       return error;
     case 'invalid-email':
       const String error = 'Incorrect email.';
-      notifyDialog(context, title: error);
+      dismissAllToast();
+      notifyDialog(context, title: 'Error', label: error);
       return error;
     case 'email-already-in-use':
-      const String error = 'Account already exists';
-      notifyDialog(context, title: error);
+      const String error = 'Account already exists!';
+      dismissAllToast();
+      notifyDialog(context, title: 'Error', label: error);
       return error;
     case 'requires-recent-login':
       // TODO: display reauth overlay

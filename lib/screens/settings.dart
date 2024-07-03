@@ -1,22 +1,26 @@
 import 'package:block_logic/components/account_details.dart';
 import 'package:block_logic/components/back_button.dart';
 import 'package:block_logic/components/background.dart';
+import 'package:block_logic/components/button.dart';
 import 'package:block_logic/components/login_signup_btns.dart';
 import 'package:block_logic/components/panel.dart';
 import 'package:block_logic/components/profile_pic.dart';
 import 'package:block_logic/components/text.dart';
 import 'package:block_logic/components/text_button.dart';
 import 'package:block_logic/components/toggle.dart';
+import 'package:block_logic/logic/auth.dart';
+import 'package:block_logic/logic/custom_widgets.dart';
+import 'package:block_logic/logic/db.dart';
+import 'package:block_logic/logic/providers/providers.dart';
 import 'package:block_logic/logic/utils.dart';
 import 'package:block_logic/screens/about_us.dart';
 import 'package:block_logic/screens/auth/change_email.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:provider/provider.dart';
 
-class Settings extends StatelessWidget {
+class Settings extends ConsumerStatefulWidget {
   const Settings({super.key});
 
   final Widget editIcon = const Padding(
@@ -29,7 +33,15 @@ class Settings extends StatelessWidget {
   );
 
   @override
+  ConsumerState<Settings> createState() => _SettingsState();
+}
+
+class _SettingsState extends ConsumerState<Settings> {
+  bool processing = false;
+
+  @override
   Widget build(BuildContext context) {
+    final user = ref.watch(accountProvider);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Background(
@@ -62,65 +74,104 @@ class Settings extends StatelessWidget {
                           const SizedBox(
                             height: 10,
                           ),
-                          Consumer<User?>(builder: (context, user, child) {
-                            if (user == null) {
-                              return const BLLoginSignupBtns();
-                            } else {
-                              return Column(
-                                children: [
-                                  BLProfilePic(onPressed: () {}, size: 100),
-                                  const SizedBox(height: 10),
-                                  const BLText(
-                                    'Tap to edit',
-                                    fontStyle: FontStyle.italic,
-                                  ),
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      BLTextButton(
-                                          onPressed: () {},
-                                          child: Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              const Icon(FontAwesomeIcons.user, color: Colors.white),
-                                              const SizedBox(width: 15),
-                                              BLDisplayName(),
-                                              const SizedBox(width: 5),
-                                              editIcon
-                                            ],
-                                          )),
-                                      BLTextButton(
-                                          onPressed: () {
-                                            showDialog(context: context, builder: (context) => const ChangeEmail());
-                                          },
-                                          child: Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              const Icon(FontAwesomeIcons.envelope, color: Colors.white),
-                                              const SizedBox(width: 15),
-                                              BLEmail(),
-                                              const SizedBox(width: 5),
-                                              editIcon
-                                            ],
-                                          )),
-                                      BLTextButton(
-                                          onPressed: () {},
-                                          child: Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              const Icon(FontAwesomeIcons.lock, color: Colors.white),
-                                              const SizedBox(width: 15),
-                                              const BLText('Change password'),
-                                              const SizedBox(width: 5),
-                                              editIcon
-                                            ],
-                                          ))
-                                    ],
-                                  ),
-                                ],
-                              );
-                            }
-                          }),
+                          user.when(
+                            data: (user) {
+                              if (user == null) {
+                                return const BLLoginSignupBtns();
+                              } else {
+                                return Column(
+                                  children: [
+                                    BLProfilePic(
+                                        onPressed: () async {
+                                          if (processing == true) return;
+                                          processing = true;
+                                          await DBService().changeProfilePic(context);
+                                          processing = false;
+                                        },
+                                        size: 100),
+                                    const SizedBox(height: 10),
+                                    const BLText(
+                                      'Tap photo to edit',
+                                      fontStyle: FontStyle.italic,
+                                    ),
+                                    const SizedBox(height: 20),
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        BLTextButton(
+                                            onPressed: () {},
+                                            child: Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                const Icon(FontAwesomeIcons.user, color: Colors.white),
+                                                const SizedBox(width: 15),
+                                                const BLDisplayName(),
+                                                const SizedBox(width: 5),
+                                                widget.editIcon
+                                              ],
+                                            )),
+                                        BLTextButton(
+                                            onPressed: () {
+                                              showDialog(context: context, builder: (context) => const ChangeEmail());
+                                            },
+                                            child: Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                const Icon(FontAwesomeIcons.envelope, color: Colors.white),
+                                                const SizedBox(width: 15),
+                                                const BLEmail(),
+                                                const SizedBox(width: 5),
+                                                widget.editIcon
+                                              ],
+                                            )),
+                                        BLTextButton(
+                                            onPressed: () {},
+                                            child: Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                const Icon(FontAwesomeIcons.lock, color: Colors.white),
+                                                const SizedBox(width: 15),
+                                                const BLText('Change password'),
+                                                const SizedBox(width: 5),
+                                                widget.editIcon
+                                              ],
+                                            )),
+                                        SizedBox(
+                                          height: 20,
+                                        ),
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            BLButton(
+                                                type: BtnType.red,
+                                                onPressed: () async {
+                                                  AuthService.logout();
+                                                  Utils.pop(context);
+                                                },
+                                                child: Row(
+                                                  mainAxisSize: MainAxisSize.min,
+                                                  children: [
+                                                    Icon(Icons.logout, color: Colors.white),
+                                                    SizedBox(
+                                                      width: 15,
+                                                    ),
+                                                    BLText(
+                                                      'Logout',
+                                                      color: Colors.white,
+                                                    )
+                                                  ],
+                                                ))
+                                          ],
+                                        )
+                                      ],
+                                    ),
+                                  ],
+                                );
+                              }
+                            },
+                            error: (error, stackTrace) => blankWidget,
+                            loading: () => blankWidget,
+                          ),
                           const SizedBox(height: 15),
                         ],
                       ),

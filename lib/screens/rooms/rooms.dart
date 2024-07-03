@@ -1,26 +1,31 @@
 import 'package:block_logic/components/background.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:block_logic/logic/custom_widgets.dart';
+import 'package:block_logic/logic/providers/providers.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class Rooms extends StatefulWidget {
+class Rooms extends ConsumerStatefulWidget {
   const Rooms({super.key});
 
   @override
-  State<Rooms> createState() => _RoomsState();
+  ConsumerState<Rooms> createState() => _RoomsState();
 }
 
-class _RoomsState extends State<Rooms> {
+class _RoomsState extends ConsumerState<Rooms> {
   @override
   Widget build(BuildContext context) {
+    final user = ref.watch(accountProvider);
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Background(
           child: Column(
         children: [
-          Consumer<User?>(builder: (context, user, child) {
-            return Text(user?.uid ?? 'aa');
-          })
+          user.when(
+            data: (user) => Text(user?.uid ?? 'aa'),
+            error: (error, stackTrace) => blankWidget,
+            loading: () => blankWidget,
+          )
         ],
       )),
     );

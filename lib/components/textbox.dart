@@ -1,3 +1,4 @@
+import 'package:block_logic/logic/custom_widgets.dart';
 import 'package:flutter/material.dart';
 
 class BLTextBox extends StatefulWidget {
@@ -19,7 +20,11 @@ class BLTextBox extends StatefulWidget {
       this.hintText,
       this.border,
       this.keyboardType,
+      this.maxLength,
+      this.maxLines = 1,
       super.key});
+  final int? maxLength;
+  final int maxLines;
   final String? helperText;
   final String? validatorText;
   final bool isAutoFocus;
@@ -66,6 +71,8 @@ class _BLInputState extends State<BLTextBox> {
       onTap: widget.onTap,
       enabled: widget.enabled,
       focusNode: focusNode,
+      maxLength: widget.maxLength,
+      maxLines: widget.maxLines,
       autofocus: widget.isAutoFocus,
       autovalidateMode: widget.isAutoValidate,
       controller: widget.controller,
@@ -84,8 +91,9 @@ class _BLInputState extends State<BLTextBox> {
               widget.border ?? OutlineInputBorder(borderSide: BorderSide(color: Colors.lightBlue.shade200, width: 2)),
           focusedBorder:
               widget.border ?? OutlineInputBorder(borderSide: BorderSide(color: Colors.lightBlue.shade200, width: 2)),
+          counter: blankWidget,
           suffix: widget.suffix,
-          prefixIcon: widget.prefixIcon.runtimeType != Null
+          prefixIcon: widget.prefixIcon != null
               ? Padding(
                   padding: const EdgeInsets.all(10),
                   child: widget.prefixIcon,

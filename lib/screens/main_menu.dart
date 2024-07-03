@@ -3,19 +3,25 @@ import 'dart:io';
 import 'package:animate_do/animate_do.dart';
 import 'package:block_logic/components/background.dart';
 import 'package:block_logic/components/button.dart';
+import 'package:block_logic/components/error.dart';
+import 'package:block_logic/components/loading.dart';
 import 'package:block_logic/components/profile_pic.dart';
 import 'package:block_logic/components/text.dart';
 import 'package:block_logic/logic/assets.dart';
 import 'package:block_logic/logic/auth.dart';
-import 'package:block_logic/logic/db.dart';
+import 'package:block_logic/logic/custom_widgets.dart';
+import 'package:block_logic/logic/providers/providers.dart';
+import 'package:block_logic/logic/toast.dart';
 import 'package:block_logic/logic/utils.dart';
-import 'package:block_logic/screens/rooms/rooms.dart';
+import 'package:block_logic/screens/auth/login.dart';
+import 'package:block_logic/screens/creator_mode/creator_mode.dart';
 import 'package:block_logic/screens/settings.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:block_logic/screens/tutorials/tutorials.dart';
 import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import 'package:google_fonts/google_fonts.dart';
 
 class MainMenuScreen extends ConsumerStatefulWidget {
@@ -29,9 +35,7 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen>
     with WidgetsBindingObserver, SingleTickerProviderStateMixin {
   late AnimationController _titleAnimationController;
   late Animation<double> _blurRadiusAnimation;
-  final user = StreamProvider<User?>((ref) {
-    return FirebaseAuth.instance.authStateChanges();
-  });
+  final menuController = MenuController();
 
   @override
   void initState() {
@@ -54,128 +58,210 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen>
 
   @override
   Widget build(BuildContext context) {
+    final user = ref.watch(accountProvider);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Background(
         child: FadeInUp(
           from: 25,
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 20, top: 20),
-                child: Consumer<User?>(
-                  builder: (context, user, child) {
-                    if (user == null) {
-                      return Row(
-                        children: [
-                          BLProfilePic(
-                            onPressed: () {
-                              Utils.push(context, const Settings());
-                            },
-                          ),
-                        ],
-                      );
-                    } else {
-                      return Row(
-                        children: [
-                          BLProfilePic(
-                            onPressed: () {
-                              Utils.push(context, const Settings());
-                            },
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 10),
-                            child: BLText(
-                              user.displayName ?? '',
-                              size: 20,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 20, top: 20),
+                  child: Row(
+                    children: user.when(
+                      data: (user) {
+                        if (user == null) {
+                          return [blankWidget];
+                        } else {
+                          return [
+                            MenuAnchor(
+                              controller: menuController,
+                              style: const MenuStyle(alignment: Alignment(-1, 1.4)),
+                              menuChildren: [
+                                GestureDetector(
+                                  onTapDown: (TapDownDetails tap) => {
+                                    // TODO: add a overlay color
+                                  },
+                                  onTapUp: (details) {
+                                    AuthService.logout();
+                                  },
+                                  child: const Padding(
+                                    padding: EdgeInsets.symmetric(horizontal: 10.0),
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          Icons.logout,
+                                          color: Colors.red,
+                                        ),
+                                        BLText('Logout', color: Colors.red)
+                                      ],
+                                    ),
+                                  ),
+                                )
+                              ],
+                              child: BLProfilePic(
+                                onPressed: () {
+                                  if (menuController.isOpen) {
+                                    menuController.close();
+                                  } else {
+                                    menuController.open();
+                                  }
+                                },
+                              ),
                             ),
-                          ),
-                        ],
-                      );
-                    }
-                  },
+                            Padding(
+                              padding: const EdgeInsets.only(left: 10),
+                              child: BLText(
+                                user.displayName ?? '',
+                                size: 20,
+                              ),
+                            )
+                          ];
+                        }
+                      },
+                      error: (error, stackTrace) => const [BLError()],
+                      loading: () => const [BLLoading()],
+                    ),
+                  ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 10),
-                child: AnimatedBuilder(
-                  animation: _titleAnimationController,
-                  builder: (context, child) {
-                    return Text(
-                      'BLOCK\nLOGIC',
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.majorMonoDisplay(
-                        fontSize: 60,
-                        height: 1.05,
-                        shadows: <Shadow>[
-                          Shadow(blurRadius: _blurRadiusAnimation.value, color: Colors.white),
-                        ],
+                Expanded(
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                      const SizedBox(
+                        height: 10,
                       ),
-                    );
-                  },
-                ),
-              ),
-              Wrap(
-                direction: Axis.vertical,
-                crossAxisAlignment: WrapCrossAlignment.center,
-                spacing: 12,
-                children: [
-                  BLButton(
-                    onPressed: () => Utils.push(context, Rooms()),
-                    type: BtnType.green,
-                    child: const Text(
-                      'Start',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                  ),
-                  BLButton(
-                    onPressed: () {},
-                    child: const Text(
-                      'Tutorials',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                  ),
-                  BLButton(
-                    onPressed: () {},
-                    child: const Text(
-                      'Creator Mode',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                  ),
-                  BLButton(
-                    onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const Settings())),
-                    child: const Text(
-                      'Settings',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 30,
-                  ),
-                  BLButton(
-                    onPressed: () {
-                      SystemNavigator.pop();
-
-                      /// exit(0) works for development, but the above is preferred
-                      Utils.assertFunc(() => exit(0));
-                    },
-                    type: BtnType.red,
-                    child: const Text(
-                      'Exit',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 80,
-                  )
-                ],
-              )
-            ],
-          ),
+                      Center(
+                        child: AnimatedBuilder(
+                          animation: _titleAnimationController,
+                          builder: (context, child) {
+                            return Text(
+                              'BLOCK\nLOGIC',
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.majorMonoDisplay(
+                                fontSize: 60,
+                                height: 1.05,
+                                shadows: <Shadow>[
+                                  Shadow(blurRadius: _blurRadiusAnimation.value, color: Colors.white),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 100,
+                      ),
+                      SpacedColumn(
+                          spacing: 10,
+                          children: AuthService.isLoggedIn() ? loggedInMenu(context) : loggedOutMenu(context))
+                    ]))
+              ]),
         ),
       ),
     );
   }
+}
+
+List<Widget> loggedInMenu(BuildContext context) {
+  return [
+    BLButton(
+      onPressed: () => showToast(context, 'Testing'),
+      type: BtnType.green,
+      child: const Text(
+        'Start',
+        style: TextStyle(fontSize: 16),
+      ),
+    ),
+    BLButton(
+      onPressed: () => Utils.push(context, const Tutorials()),
+      child: const Text(
+        'Tutorials',
+        style: TextStyle(fontSize: 16),
+      ),
+    ),
+    BLButton(
+      onPressed: () => Utils.push(context, const CreatorMode()),
+      child: const Text(
+        'Creator Mode',
+        style: TextStyle(fontSize: 16),
+      ),
+    ),
+    BLButton(
+      onPressed: () => Utils.push(context, const Settings()),
+      child: const Text(
+        'Settings',
+        style: TextStyle(fontSize: 16),
+      ),
+    ),
+    const SizedBox(
+      height: 30,
+    ),
+    BLButton(
+      onPressed: () {
+        SystemNavigator.pop();
+
+        /// exit(0) works for development, but the above is preferred
+        Utils.assertFunc(() => exit(0));
+      },
+      type: BtnType.red,
+      child: const Text(
+        'Exit',
+        style: TextStyle(fontSize: 16),
+      ),
+    ),
+    const SizedBox(
+      height: 80,
+    )
+  ];
+}
+
+List<Widget> loggedOutMenu(BuildContext context) {
+  return [
+    BLButton(
+      onPressed: () => Utils.push(context, const Login()),
+      type: BtnType.green,
+      child: const Text(
+        'Login to Play',
+        style: TextStyle(fontSize: 16),
+      ),
+    ),
+    BLButton(
+      onPressed: () => Utils.push(context, const Tutorials()),
+      child: const Text(
+        'Tutorials',
+        style: TextStyle(fontSize: 16),
+      ),
+    ),
+    BLButton(
+      onPressed: () => Utils.push(context, const Settings()),
+      child: const Text(
+        'Settings',
+        style: TextStyle(fontSize: 16),
+      ),
+    ),
+    const SizedBox(
+      height: 30,
+    ),
+    BLButton(
+      onPressed: () {
+        SystemNavigator.pop();
+
+        /// exit(0) works for development, but the above is preferred
+        Utils.assertFunc(() => exit(0));
+      },
+      type: BtnType.red,
+      child: const Text(
+        'Exit',
+        style: TextStyle(fontSize: 16),
+      ),
+    ),
+    const SizedBox(
+      height: 80,
+    )
+  ];
 }

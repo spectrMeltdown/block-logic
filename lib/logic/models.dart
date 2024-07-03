@@ -32,33 +32,45 @@ class TimestampModel {
   TimestampModel({required this.createdAt, required this.modifiedAt});
 }
 
-class UserModel extends TimestampModel {
+class UserDetails extends TimestampModel {
   final String id;
   final String profilePic;
-  UserModel({
+  UserDetails({
     required this.id,
     required this.profilePic,
     required super.createdAt,
     required super.modifiedAt,
   });
 
-  factory UserModel.fromFirestore(DocumentSnapshot doc) {
+  factory UserDetails.fromFirestore(DocumentSnapshot doc) {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
 
-    return UserModel(
+    return UserDetails(
       id: doc.id,
       profilePic: data['profilePic'] ?? '',
       createdAt: (data['createdAt'] as Timestamp).toDate(),
       modifiedAt: (data['modifiedAt'] as Timestamp).toDate(),
     );
   }
+
+  Map<String, dynamic> toFirestore() {
+    return {
+      'id': id,
+      'reportType': reportType,
+      'data': data,
+      'startDate': Timestamp.fromDate(startDate),
+      'endDate': Timestamp.fromDate(endDate),
+      'createdAt': Timestamp.fromDate(createdAt),
+      'modifiedAt': Timestamp.fromDate(modifiedAt),
+    };
+  }
 }
 
-class Admin extends TimestampModel {
+class AdminDetails extends TimestampModel {
   final String id;
   final String profilePic;
   final bool isApproved;
-  Admin({
+  AdminDetails({
     required this.id,
     required this.isApproved,
     required this.profilePic,
@@ -66,10 +78,10 @@ class Admin extends TimestampModel {
     required super.modifiedAt,
   });
 
-  factory Admin.fromFirestore(DocumentSnapshot doc) {
+  factory AdminDetails.fromFirestore(DocumentSnapshot doc) {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
 
-    return Admin(
+    return AdminDetails(
       id: doc.id,
       isApproved: data['isApproved'] ?? false,
       profilePic: data['profilePic'] ?? '',

@@ -129,15 +129,15 @@ class _BtnState extends State<BLButton> {
     switch (widget.type) {
       case BtnType.normal:
         btnPressedColor = [Colors.teal.shade300, darkerShade];
-        btnColor = [Colors.teal.shade800, darkShade];
+        btnColor = [Colors.teal.shade800, darkerShade];
         break;
       case BtnType.red:
         btnPressedColor = [Colors.red, darkerShade];
-        btnColor = [Colors.redAccent.shade700, darkShade];
+        btnColor = [Colors.redAccent.shade700, darkerShade];
         break;
       case BtnType.green:
         btnPressedColor = [Colors.greenAccent[700]!, darkerShade];
-        btnColor = [Colors.green[800]!, darkShade];
+        btnColor = [Colors.green[800]!, darkerShade];
         break;
     }
   }
@@ -181,10 +181,23 @@ class _BtnState extends State<BLButton> {
             shape: BoxShape.rectangle,
             borderRadius: BorderRadius.circular(12.0),
             border: Border.all(color: Colors.white, width: 2.0),
-            gradient: RadialGradient(colors: _isTapped ? btnPressedColor : btnColor, radius: 2.0),
+            gradient: RadialGradient(
+                colors: _isTapped ? btnPressedColor : btnColor,
+                radius: (widget.padding != null) ? getRadius(widget.padding) : 3),
             boxShadow: (_isTapped ? btnShadow : null),
           ),
           child: widget.child),
     );
+  }
+}
+
+// get gradient radius based on padding provided
+double getRadius(EdgeInsets? padding) {
+  double defaultRadius = 2;
+  if (padding == null) return defaultRadius;
+  if (padding.left >= 40 || padding.right >= 40) {
+    return 3;
+  } else {
+    return defaultRadius;
   }
 }

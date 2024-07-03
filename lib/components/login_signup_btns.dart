@@ -14,11 +14,21 @@ class BLLoginSignupBtns extends StatelessWidget {
     return Row(
       mainAxisAlignment: mainAxisAlignment,
       children: [
-        BLButton(onPressed: () => Utils.push(context, const Login()), child: const BLText('Login')),
+        BLButton(
+            onPressed: () => Utils.push(context, const Login()),
+            child: const BLText(
+              'Login',
+              color: Colors.white,
+            )),
         const SizedBox(
           width: 15,
         ),
-        BLButton(onPressed: () => Utils.push(context, const Signup()), child: const BLText('Signup'))
+        BLButton(
+            onPressed: () => Utils.push(context, const Signup()),
+            child: const BLText(
+              'Signup',
+              color: Colors.white,
+            ))
       ],
     );
   }

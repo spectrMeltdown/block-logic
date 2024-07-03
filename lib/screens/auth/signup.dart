@@ -10,6 +10,7 @@ import 'package:block_logic/logic/auth.dart';
 import 'package:block_logic/logic/utils.dart';
 import 'package:block_logic/logic/validators.dart';
 import 'package:block_logic/screens/auth/login.dart';
+import 'package:block_logic/screens/terms_and_conditions.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -21,12 +22,11 @@ class Signup extends StatefulWidget {
   State<Signup> createState() => _SignupState();
 }
 
-class _SignupState extends State<Signup> implements Debounce {
+class _SignupState extends State<Signup> {
   final TextEditingController displayNameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final _signupFormKey = GlobalKey<FormState>();
-  @override
   bool processing = false;
 
   @override
@@ -61,6 +61,7 @@ class _SignupState extends State<Signup> implements Debounce {
                           BLTextBox(
                             controller: displayNameController,
                             hintText: 'Display Name',
+                            maxLength: 20,
                             prefixIcon: const Icon(
                               Icons.abc,
                               color: Colors.white,
@@ -100,14 +101,15 @@ class _SignupState extends State<Signup> implements Debounce {
                           const SizedBox(height: 40),
                           Row(
                             children: [
-                              BLCheckbox(),
-                              SizedBox(width: 10),
+                              const BLCheckbox(),
+                              const SizedBox(width: 10),
                               BLTextSpan([
-                                TextSpan(text: 'I agree to the '),
+                                const TextSpan(text: 'I agree to the '),
                                 TextSpan(
-                                    style: TextStyle(decoration: TextDecoration.underline),
+                                    style: const TextStyle(decoration: TextDecoration.underline),
                                     text: 'terms & conditions',
-                                    recognizer: TapGestureRecognizer()..onTap = () => {}),
+                                    recognizer: TapGestureRecognizer()
+                                      ..onTap = () => Utils.push(context, const TermsAndConditions())),
                               ])
                             ],
                           ),

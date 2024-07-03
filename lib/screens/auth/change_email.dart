@@ -1,25 +1,25 @@
 import 'package:block_logic/components/dialog.dart';
 import 'package:block_logic/components/text.dart';
 import 'package:block_logic/components/textbox.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:block_logic/logic/providers/providers.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ChangeEmail extends StatefulWidget {
+class ChangeEmail extends ConsumerStatefulWidget {
   const ChangeEmail({super.key});
 
   @override
-  State<ChangeEmail> createState() => _ChangeEmailState();
+  ConsumerState<ChangeEmail> createState() => _ChangeEmailState();
 }
 
-class _ChangeEmailState extends State<ChangeEmail> {
+class _ChangeEmailState extends ConsumerState<ChangeEmail> {
   late final String email;
   late final TextEditingController emailController;
 
   @override
   void initState() {
-    final user = Provider.of<User?>(context);
-    emailController = TextEditingController(text: user?.displayName ?? '');
+    final user = ref.read(accountProvider).value;
+    emailController = TextEditingController(text: user?.email ?? '');
     super.initState();
   }
 

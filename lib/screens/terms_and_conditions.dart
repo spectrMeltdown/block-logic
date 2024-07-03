@@ -1,3 +1,7 @@
+import 'package:block_logic/components/background.dart';
+import 'package:block_logic/components/button.dart';
+import 'package:block_logic/components/text.dart';
+import 'package:block_logic/logic/custom_widgets.dart';
 import 'package:block_logic/logic/utils.dart';
 import 'package:flutter/material.dart';
 
@@ -7,15 +11,38 @@ class TermsAndConditions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-          child: Center(
+      resizeToAvoidBottomInset: false,
+      body: Background(
+          child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 40),
         child: Column(
           children: [
-            Text('Terms & Conditions', style: Utils.textTheme(context).titleLarge),
-            SingleChildScrollView(
-              child: Text(getTC()),
+            BLSmallTitle('Terms & Conditions'),
+            Expanded(
+              child: SingleChildScrollView(
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+                    child: SpacedColumn(
+                      spacing: 20,
+                      children: [
+                        SingleChildScrollView(
+                          child: Text(getTC()),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
             ),
-            ElevatedButton(onPressed: () {}, child: const Text('ok'))
+            SizedBox(height: 20),
+            BLButton(
+                padding: EdgeInsets.symmetric(horizontal: 90, vertical: 10),
+                onPressed: () => Utils.pop(context),
+                child: const BLText(
+                  'OK',
+                  color: Colors.white,
+                ))
           ],
         ),
       )),
