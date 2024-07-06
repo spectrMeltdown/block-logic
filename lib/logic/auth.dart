@@ -1,10 +1,12 @@
 import 'package:block_logic/components/dialog.dart';
 import 'package:block_logic/logic/db.dart';
+import 'package:block_logic/logic/models.dart';
 import 'package:block_logic/logic/toast.dart';
 import 'package:block_logic/logic/utils.dart';
+import 'package:block_logic/screens/auth/check_acc.dart';
 import 'package:block_logic/screens/main_menu.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/material.dart';
 
 /// All auth interactions are found here
@@ -35,29 +37,33 @@ abstract class AuthService {
     return FirebaseAuth.instance.currentUser!.emailVerified != false;
   }
 
+  /// user's uid
+  static Future<void> reload() async {
+    return FirebaseAuth.instance.currentUser?.reload();
+  }
+
   /// logout
   static void logout(BuildContext context) async {
     await FirebaseAuth.instance.signOut();
-    if (context.mounted) {
-      Utils.pushReplace(context, const MainMenuScreen());
-    }
+    showToast('Logged out, bye!');
   }
 
   static Future<void> login(BuildContext context, {required String email, required String password}) async {
     try {
       /// show notification
-      showToast(context, 'Logging in');
+      showToast('Logging in');
 
       /// signin user
       await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
 
       /// return to main menu
       if (!context.mounted) return;
-      Utils.pushReplace(context, const MainMenuScreen());
+      Utils.pushReplace(context, const CheckAcc());
 
       /// show notification
       if (!context.mounted) return;
-      showToast(context, 'Welcome back, \n ${AuthService.getDisplayName()}');
+      dismissAllToast();
+      showToast('Welcome back, \n ${AuthService.getDisplayName()}');
     } on FirebaseAuthException catch (e) {
       fireErrors(context, e);
     }
@@ -67,54 +73,50 @@ abstract class AuthService {
       {required String email, required String password, required String displayName}) async {
     try {
       /// show notification of account creation
-      showToast(context, 'Creating account ...');
+      showToast('Creating account ...');
 
       /// create account
       await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
 
-      if (!context.mounted) return;
-
-      /// do some additional account initialization
-      _postAccountCreation(context, displayName: displayName);
-    } on FirebaseAuthException catch (e) {
-      fireErrors(context, e);
-    }
-  }
-
-  static Future<void> sendEmailVerification(BuildContext context) async {
-    try {
-      await FirebaseAuth.instance.currentUser!.sendEmailVerification();
-
-      /// notify user
-      if (!context.mounted) return;
-      showToast(context, 'Email verification sent!');
-    } on FirebaseAuthException catch (e) {
-      fireErrors(context, e);
-    }
-  }
-
-  static Future<void> _postAccountCreation(BuildContext context, {required String displayName}) async {
-    try {
       /// assign display name
       await FirebaseAuth.instance.currentUser!.updateDisplayName(displayName.trim());
 
       /// send email verification
       if (!context.mounted) return;
-      await sendEmailVerification(context);
+      sendEmailVerification(context);
 
-      /// initialize user details in firestore
-      await DBService().updateUserDetails({
-        'id': AuthService.getUID(),
-        'createdAt': Timestamp.fromDate(DateTime.now()),
-        'modifiedAt': Timestamp.fromDate(DateTime.now())
-      });
+      /// go to email verification
+      Utils.pushReplace(context, const CheckAcc());
+    } on FirebaseAuthException catch (e) {
+      fireErrors(context, e);
+    }
+  }
 
-      /// display notif
+  static Future<void> sendEmailVerification(BuildContext context, {bool showNotif = true}) async {
+    try {
+      await FirebaseAuth.instance.currentUser!.sendEmailVerification();
+
+      /// notify user
       if (!context.mounted) return;
-      showToast(context, 'Account created. Welcome new player!');
+      if (showNotif == true) showToast('Email verification sent!');
+    } on FirebaseAuthException catch (e) {
+      fireErrors(context, e);
+    }
+  }
 
-      /// go to main menu
-      Utils.pushReplace(context, const MainMenuScreen());
+  static Future<void> initAccountFirestore(BuildContext context) async {
+    try {
+      /// initialize user details
+      DBService().updateUserDetails(
+          UserDetails(id: AuthService.getUID(), createdAt: DateTime.now(), modifiedAt: DateTime.now()));
+
+      /// initialize user settings
+      DBService().updateUserSettings(AccountSettings(
+        backgroundMusic: FlameAudio.bgm.isPlaying,
+        soundEffects: false,
+        loginAlerts: true,
+        notifications: true,
+      ));
     } on FirebaseAuthException catch (e) {
       fireErrors(context, e);
     }
@@ -162,23 +164,19 @@ abstract class AuthService {
     }
   }
 
-  static void deleteAccount(BuildContext context) async {
+  static Future<void> deleteAccount(BuildContext context) async {
     try {
       /// delete account in firebase auth
       await FirebaseAuth.instance.currentUser!.delete();
 
-      if (context.mounted) {
-        /// display info about delayed deletion
-        showToast(context, 'Deleting account ...', description: 'This may take a while');
-
-        /// async delete data in firestore
-        _deleteFirestoreData(context);
-      }
-
       if (!context.mounted) return;
+      _deleteFirestoreData(context);
+
+      /// display info about delayed deletion
+      showToast('Account Deleted');
 
       /// go to main menu
-      Utils.pushReplace(context, const MainMenuScreen());
+      Utils.pushReplace(context, const CheckAcc());
     } on FirebaseAuthException catch (e) {
       fireErrors(context, e);
     }

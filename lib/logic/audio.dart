@@ -1,18 +1,15 @@
-import 'package:block_logic/logic/assets.dart';
-import 'package:flame_audio/flame_audio.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class BLAudio {
-  static void playBtn() {
-    // TODO: Get soundEffects pref
-    bool soundEffects = true;
-    if (soundEffects == true) FlameAudio.play(Assets.btn1);
-  }
+  SharedPreferences? pref;
+  bool soundEffects;
+  bool backgroundMusic;
 
-  static void toggleSoundEffects() {
-    // TODO: Get soundEffects pref
-  }
-  static void playBG() {
-    bool bgMusic = true;
-    if (bgMusic == true) FlameAudio.play(Assets.btn1);
-  }
+  BLAudio({this.pref, required this.soundEffects, required this.backgroundMusic});
+  // BLAudio copyWith({SharedPreferences? pref, bool? soundEffects, bool? backgroundMusic}) {
+  //   return BLAudio(
+  //       pref: pref,
+  //       soundEffects: soundEffects ?? this.soundEffects,
+  //       backgroundMusic: backgroundMusic ?? this.backgroundMusic);
+  // }
 }

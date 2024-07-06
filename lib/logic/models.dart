@@ -35,30 +35,35 @@ class TimestampModel {
 class UserDetails extends TimestampModel {
   final String? id;
   UserDetails({
-    required this.id,
-    required super.createdAt,
-    required super.modifiedAt,
+    this.id,
+    super.createdAt,
+    super.modifiedAt,
   });
 
   factory UserDetails.fromFirestore(DocumentSnapshot doc) {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-
     return UserDetails(
       id: doc.id,
       createdAt: (data['createdAt'] as Timestamp).toDate(),
       modifiedAt: (data['modifiedAt'] as Timestamp).toDate(),
     );
   }
+
+  Map<String, dynamic> toFirestore(UserDetails details) {
+    Map<String, dynamic> toFirestoreMap = {};
+    if (details.id != null) toFirestoreMap.addAll({'id': details.id});
+    if (details.createdAt != null) toFirestoreMap.addAll({'createdAt': Timestamp.fromDate(details.createdAt!)});
+    if (details.modifiedAt != null) toFirestoreMap.addAll({'modifiedAt': Timestamp.fromDate(details.modifiedAt!)});
+    return toFirestoreMap;
+  }
 }
 
 class AdminDetails extends TimestampModel {
   final String? id;
-  final String? profilePic;
   final bool isApproved;
   AdminDetails({
     required this.id,
     required this.isApproved,
-    required this.profilePic,
     required super.createdAt,
     required super.modifiedAt,
   });
@@ -69,7 +74,6 @@ class AdminDetails extends TimestampModel {
     return AdminDetails(
       id: doc.id,
       isApproved: data['isApproved'] ?? false,
-      profilePic: data['profilePic'] ?? '',
       createdAt: (data['createdAt'] as Timestamp).toDate(),
       modifiedAt: (data['modifiedAt'] as Timestamp).toDate(),
     );
@@ -107,29 +111,32 @@ class Report extends TimestampModel {
   }
 }
 
-class Settings {
-  final String id;
-  final bool loginAlerts;
-  final bool notifications;
-  final bool soundEffects;
-  final bool backgroundMusic;
-  Settings(
-      {required this.id,
-      required this.loginAlerts,
-      required this.notifications,
-      required this.soundEffects,
-      required this.backgroundMusic});
+class AccountSettings {
+  final bool? loginAlerts;
+  final bool? notifications;
+  final bool? soundEffects;
+  final bool? backgroundMusic;
+  AccountSettings({this.loginAlerts, this.notifications, this.soundEffects, this.backgroundMusic});
 
-  factory Settings.fromFirestore(DocumentSnapshot doc) {
+  factory AccountSettings.fromFirestore(DocumentSnapshot doc) {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
 
-    return Settings(
-      id: doc.id,
+    return AccountSettings(
       loginAlerts: data['loginAlerts'] ?? false,
       notifications: data['notifications'] ?? false,
       soundEffects: data['soundEffects'] ?? false,
       backgroundMusic: data['backgroundMusic'] ?? false,
     );
+  }
+
+  Map<String, dynamic> toFirestore(AccountSettings settings) {
+    Map<String, dynamic> userSettings = {};
+    if (settings.backgroundMusic != null) userSettings.addAll({'backgroundMusic': settings.backgroundMusic});
+    if (settings.loginAlerts != null) userSettings.addAll({'loginAlerts': settings.loginAlerts});
+    if (settings.soundEffects != null) userSettings.addAll({'soundEffects': settings.soundEffects});
+    if (settings.notifications != null) userSettings.addAll({'notifications': settings.notifications});
+    Map<String, dynamic> toFirestoreMap = {'settings': userSettings};
+    return toFirestoreMap;
   }
 }
 

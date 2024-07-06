@@ -1,23 +1,25 @@
-import 'package:block_logic/logic/audio.dart';
+import 'package:block_logic/logic/providers/providers.dart';
 import 'package:block_logic/logic/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class BLBackButton extends StatefulWidget {
+class BLBackButton extends ConsumerStatefulWidget {
   const BLBackButton({super.key});
 
   @override
-  State<BLBackButton> createState() => _BLBackButtonState();
+  ConsumerState<BLBackButton> createState() => _BLBackButtonState();
 }
 
-class _BLBackButtonState extends State<BLBackButton> {
+class _BLBackButtonState extends ConsumerState<BLBackButton> {
   @override
   Widget build(BuildContext context) {
+    final audio = ref.read(gameAudioProvider.notifier);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 10),
       child: IconButton(
           onPressed: () {
-            BLAudio.playBtn();
+            audio.playBtn();
             Utils.pop(context);
           },
           icon: const Icon(

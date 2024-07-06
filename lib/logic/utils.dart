@@ -1,5 +1,5 @@
 import "dart:math";
-
+import 'package:http/http.dart' as http;
 import "package:block_logic/components/dialog.dart";
 import "package:block_logic/logic/toast.dart";
 import "package:firebase_auth/firebase_auth.dart";
@@ -71,26 +71,36 @@ abstract class Utils {
   }
 }
 
+Future<bool> checkInternetConnection() async {
+  try {
+    /// try connecting to google
+    final response = await http.get(Uri.parse('http://google.com'));
+
+    /// check if connection was success. If failed, not internet
+    return response.statusCode == 200;
+  } catch (e) {
+    /// if failed, not internet
+    return false;
+  }
+}
+
 String? fireErrors(BuildContext context, FirebaseException e) {
+  dismissAllToast();
   switch (e.code) {
     case 'network-request-failed':
       const String error = 'Network Problem!';
-      dismissAllToast();
       notifyDialog(context, title: 'Error', label: error);
       return error;
     case 'invalid-credential':
       const String error = 'Incorrect credentials';
-      dismissAllToast();
       notifyDialog(context, title: 'Error', label: error);
       return error;
     case 'invalid-email':
       const String error = 'Incorrect email.';
-      dismissAllToast();
       notifyDialog(context, title: 'Error', label: error);
       return error;
     case 'email-already-in-use':
       const String error = 'Account already exists!';
-      dismissAllToast();
       notifyDialog(context, title: 'Error', label: error);
       return error;
     case 'requires-recent-login':

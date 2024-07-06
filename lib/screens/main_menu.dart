@@ -20,8 +20,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:google_fonts/google_fonts.dart';
-
 class MainMenuScreen extends ConsumerStatefulWidget {
   const MainMenuScreen({super.key});
 
@@ -60,14 +58,6 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen>
 
   @override
   Widget build(BuildContext context) {
-    // /// check if logged in
-    // if (AuthService.isLoggedIn()) {
-    //   /// check if email is not verified
-    //   if (!AuthService.isEmailVerified()) {
-    //     /// go to email verification screen (after main menu finish building)
-    //     Future.microtask(() => Utils.pushReplace(context, VerifyEmail()));
-    //   }
-    // }
     final user = ref.watch(accountProvider);
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -149,17 +139,16 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen>
                         child: AnimatedBuilder(
                           animation: _titleAnimationController,
                           builder: (context, child) {
-                            return Text(
-                              'BLOCK\nLOGIC',
-                              textAlign: TextAlign.center,
-                              style: GoogleFonts.majorMonoDisplay(
-                                fontSize: 60,
-                                height: 1.05,
-                                shadows: <Shadow>[
-                                  Shadow(blurRadius: _blurRadiusAnimation.value, color: Colors.white),
-                                ],
-                              ),
-                            );
+                            return Text('BLOCK\nLOGIC',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontFamily: 'MajorMonoDisplay',
+                                  fontSize: 60,
+                                  height: 1.05,
+                                  shadows: <Shadow>[
+                                    Shadow(blurRadius: _blurRadiusAnimation.value, color: Colors.white),
+                                  ],
+                                ));
                           },
                         ),
                       ),
@@ -180,7 +169,7 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen>
 List<Widget> loggedInMenu(BuildContext context) {
   return [
     BLButton(
-      onPressed: () => showToast(context, 'Testing'),
+      onPressed: () => showToast('Testing'),
       type: BtnType.green,
       child: const Text(
         'Start',

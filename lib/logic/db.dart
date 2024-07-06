@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:block_logic/logic/auth.dart';
+import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/models.dart';
 import 'package:block_logic/logic/toast.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -31,6 +32,12 @@ class DBService extends DB {
     debugPrint('The ID is $id');
     return _db.collection('users').doc(id).snapshots().map((doc) {
       return id.isEmpty ? null : UserDetails.fromFirestore(doc);
+    });
+  }
+
+  Stream<AccountSettings?> streamSettings(String id, FirestoreCollections accountCollection) {
+    return _db.collection(accountCollection.name).doc(id).snapshots().map((doc) {
+      return id.isEmpty ? null : AccountSettings.fromFirestore(doc);
     });
   }
 
@@ -70,8 +77,22 @@ class DBService extends DB {
   // TODO: when writing any leaderboards, also include:
   /// - a copy of the user's name
   /// - display the saved name, only if the user has already deleted their account
-  Future<void> updateUserDetails(Map<String, dynamic> userDetails) {
-    return _db.collection('users').doc(AuthService.getUID()).set(userDetails);
+  void updateUserDetails(UserDetails userDetails) async {
+    final toFirestore = UserDetails().toFirestore(userDetails);
+    try {
+      await _db.collection('users').doc(AuthService.getUID()).set(toFirestore);
+    } catch (e) {
+      // TODO: notification that the user has lost internet connection
+    }
+  }
+
+  void updateUserSettings(AccountSettings userSettings) async {
+    final toFirestore = AccountSettings().toFirestore(userSettings);
+    try {
+      await _db.collection('users').doc(AuthService.getUID()).set(toFirestore);
+    } catch (e) {
+      // TODO: notification that the user has lost internet connection
+    }
   }
 
   Future<void> createReport(Map<String, dynamic> report) {
@@ -117,7 +138,7 @@ class DBService extends DB {
         File renamedSelectedPhoto = await selectedPhoto.copy('$tempPath/$fileName');
 
         /// if user didn't press back, display the toast
-        if (context.mounted) showToast(context, 'Updating ...');
+        showToast('Updating ...');
         try {
           /// upload the file, with metadata
           await profilePicRef.putFile(

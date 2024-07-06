@@ -1,6 +1,7 @@
-import 'package:block_logic/logic/audio.dart';
+import 'package:block_logic/logic/providers/providers.dart';
 import 'package:block_logic/logic/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 enum BtnType {
   normal,
@@ -99,7 +100,7 @@ late final AnimationController _controller;
 
 */
 
-class BLButton extends StatefulWidget {
+class BLButton extends ConsumerStatefulWidget {
   const BLButton({required this.onPressed, required this.child, this.type = BtnType.normal, this.padding, super.key});
   final VoidCallback onPressed;
   final Widget child;
@@ -107,10 +108,10 @@ class BLButton extends StatefulWidget {
   final EdgeInsets? padding;
 
   @override
-  State<BLButton> createState() => _BtnState();
+  ConsumerState<BLButton> createState() => _BtnState();
 }
 
-class _BtnState extends State<BLButton> {
+class _BtnState extends ConsumerState<BLButton> {
   bool _isTapped = false;
   late List<Color> btnPressedColor;
   late List<Color> btnColor;
@@ -142,6 +143,17 @@ class _BtnState extends State<BLButton> {
     }
   }
 
+// get gradient radius based on padding provided
+  double getRadius(EdgeInsets? padding) {
+    double defaultRadius = 2;
+    if (padding == null) return defaultRadius;
+    if (padding.left >= 40 || padding.right >= 40) {
+      return 3;
+    } else {
+      return defaultRadius;
+    }
+  }
+
   void _onTapUp(TapUpDetails tapUp) {
     setState(() {
       _isTapped = false;
@@ -150,11 +162,10 @@ class _BtnState extends State<BLButton> {
     Utils.assertFunc(getBtnColor);
   }
 
-  void _onTapDown(TapDownDetails tapDown) {
+  void _onTapDown() {
     setState(() {
       _isTapped = true;
     });
-    BLAudio.playBtn();
   }
 
   void _onTapCancel() {
@@ -171,8 +182,12 @@ class _BtnState extends State<BLButton> {
 
   @override
   Widget build(BuildContext context) {
+    final audio = ref.read(gameAudioProvider.notifier);
     return GestureDetector(
-      onTapDown: _onTapDown,
+      onTapDown: (details) {
+        audio.playBtn();
+        _onTapDown();
+      },
       onTapUp: _onTapUp,
       onTapCancel: _onTapCancel,
       child: Container(
@@ -188,16 +203,5 @@ class _BtnState extends State<BLButton> {
           ),
           child: widget.child),
     );
-  }
-}
-
-// get gradient radius based on padding provided
-double getRadius(EdgeInsets? padding) {
-  double defaultRadius = 2;
-  if (padding == null) return defaultRadius;
-  if (padding.left >= 40 || padding.right >= 40) {
-    return 3;
-  } else {
-    return defaultRadius;
   }
 }

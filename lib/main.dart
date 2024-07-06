@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:block_logic/logic/assets.dart';
+import 'package:block_logic/logic/shared_pref.dart';
 import 'package:block_logic/screens/auth/check_acc.dart';
 
 import 'package:block_logic/splash.dart';
@@ -9,8 +10,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:toastification/toastification.dart';
 
-import 'package:google_fonts/google_fonts.dart';
 import 'firebase_options.dart';
 
 Future<void> main() async {
@@ -22,7 +23,7 @@ Future<void> main() async {
 
   /// Force device to default portrait mode only
   Flame.device.setPortraitUpOnly;
-
+  await SharedPreferencesHelper.instance.init();
   // Hide the status bar
   //SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: [SystemUiOverlay.bottom]);
 
@@ -55,6 +56,7 @@ Future<void> main() async {
 
   // cache assets for faster loading
   await FlameAudio.audioCache.loadAll([Assets.audioBG1]);
+
   runApp(const ProviderScope(child: BlockLogic()));
 }
 
@@ -63,20 +65,52 @@ class BlockLogic extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Block-Logic',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData.dark(useMaterial3: true).copyWith(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo.shade400),
-        textTheme: GoogleFonts.playTextTheme(
-          ThemeData.dark().textTheme,
-        ),
-        scaffoldBackgroundColor: Colors.transparent,
-        iconTheme: const IconThemeData(
-          color: Colors.white,
-        ),
+    const TextStyle appTextStyle = TextStyle(
+      color: Colors.white,
+    );
+
+    /// Make the same text theme for both system dark/light theme
+    const TextTheme appTextTheme = TextTheme(
+      displayLarge: appTextStyle,
+      displayMedium: appTextStyle,
+      displaySmall: appTextStyle,
+      headlineLarge: appTextStyle,
+      headlineMedium: appTextStyle,
+      headlineSmall: appTextStyle,
+      titleLarge: appTextStyle,
+      titleMedium: appTextStyle,
+      titleSmall: appTextStyle,
+      bodyLarge: appTextStyle,
+      bodyMedium: appTextStyle,
+      bodySmall: appTextStyle,
+      labelLarge: appTextStyle,
+      labelMedium: appTextStyle,
+      labelSmall: appTextStyle,
+    );
+
+    /// Make the same app theme for system dark or light theme
+    final appTheme = ThemeData(
+      fontFamily: 'Play',
+      textTheme: appTextTheme,
+      colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo.shade400),
+      scaffoldBackgroundColor: Colors.transparent,
+      dialogTheme: const DialogTheme(
+        backgroundColor: Colors.black,
       ),
-      home: kDebugMode ? const CheckAcc() : const Splash(),
+      iconTheme: const IconThemeData(
+        color: Colors.white,
+      ),
+    );
+
+    /// toastificationWrapper is for displaying toasts without using context
+    return ToastificationWrapper(
+      child: MaterialApp(
+        title: 'Block-Logic',
+        debugShowCheckedModeBanner: false,
+        theme: appTheme,
+        darkTheme: appTheme,
+        home: kDebugMode ? const CheckAcc() : const Splash(),
+      ),
     );
   }
 }

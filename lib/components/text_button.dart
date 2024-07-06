@@ -1,16 +1,17 @@
-import 'package:block_logic/logic/audio.dart';
+import 'package:block_logic/logic/providers/providers.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class BLTextButton extends StatefulWidget {
+class BLTextButton extends ConsumerStatefulWidget {
   const BLTextButton({required this.onPressed, required this.child, super.key});
   final VoidCallback onPressed;
   final Widget child;
 
   @override
-  State<BLTextButton> createState() => _BtnState();
+  ConsumerState<BLTextButton> createState() => _BtnState();
 }
 
-class _BtnState extends State<BLTextButton> {
+class _BtnState extends ConsumerState<BLTextButton> {
   @override
   void initState() {
     super.initState();
@@ -18,10 +19,11 @@ class _BtnState extends State<BLTextButton> {
 
   @override
   Widget build(BuildContext context) {
+    final audio = ref.read(gameAudioProvider.notifier);
     return TextButton(
         onPressed: () {
+          audio.playBtn();
           widget.onPressed.call();
-          BLAudio.playBtn();
         },
         child: widget.child);
   }

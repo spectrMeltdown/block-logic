@@ -11,11 +11,11 @@ import 'package:block_logic/components/toggle.dart';
 import 'package:block_logic/logic/auth.dart';
 import 'package:block_logic/components/custom_widgets.dart';
 import 'package:block_logic/logic/db.dart';
+import 'package:block_logic/logic/models.dart';
 import 'package:block_logic/logic/providers/providers.dart';
 import 'package:block_logic/logic/utils.dart';
 import 'package:block_logic/screens/about_us.dart';
 import 'package:block_logic/screens/auth/change_email.dart';
-import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -42,6 +42,7 @@ class _SettingsState extends ConsumerState<Settings> {
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(accountProvider);
+    final userSettings = ref.watch(userSettingsProvider);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Background(
@@ -146,7 +147,6 @@ class _SettingsState extends ConsumerState<Settings> {
                                                 type: BtnType.red,
                                                 onPressed: () async {
                                                   AuthService.deleteAccount(context);
-                                                  Utils.pop(context);
                                                 },
                                                 child: const Row(
                                                   mainAxisSize: MainAxisSize.min,
@@ -202,91 +202,12 @@ class _SettingsState extends ConsumerState<Settings> {
                         padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            const BLSmallTitle(
-                              'System',
-                            ),
-                            Column(
-                              children: [
-                                SizedBox(
-                                  width: Utils.screenW(context) / 1.4,
-                                  child: Row(
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        const Row(
-                                          children: [
-                                            Icon(FontAwesomeIcons.volumeHigh),
-                                            SizedBox(width: 20),
-                                            BLText('Sound Effects'),
-                                          ],
-                                        ),
-                                        BLSwitch(
-                                          state: false,
-                                          onPressed: () {},
-                                        )
-                                      ]),
-                                ),
-                                SizedBox(
-                                  width: Utils.screenW(context) / 1.4,
-                                  child: Row(
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        const Row(
-                                          children: [
-                                            Icon(FontAwesomeIcons.music),
-                                            SizedBox(width: 20),
-                                            BLText('Background Music'),
-                                          ],
-                                        ),
-                                        BLSwitch(
-                                          state: FlameAudio.bgm.isPlaying,
-                                          onPressed: () {
-                                            if (FlameAudio.bgm.isPlaying == false) {
-                                              FlameAudio.bgm.resume();
-                                            } else {
-                                              FlameAudio.bgm.pause();
-                                            }
-                                          },
-                                        )
-                                      ]),
-                                ),
-                                SizedBox(
-                                  width: Utils.screenW(context) / 1.4,
-                                  child: Row(
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        const Row(
-                                          children: [
-                                            Icon(FontAwesomeIcons.bell),
-                                            SizedBox(width: 20),
-                                            BLText('Notifications'),
-                                          ],
-                                        ),
-                                        BLSwitch(state: false, onPressed: () {})
-                                      ]),
-                                ),
-                                SizedBox(
-                                  width: Utils.screenW(context) / 1.4,
-                                  child: Row(
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        const Row(
-                                          children: [
-                                            Icon(FontAwesomeIcons.triangleExclamation),
-                                            SizedBox(width: 20),
-                                            BLText('Login Alerts'),
-                                          ],
-                                        ),
-                                        BLSwitch(state: false, onPressed: () {})
-                                      ]),
-                                )
-                              ],
-                            )
-                          ],
+                          children: user.when(
+                              data: (user) {
+                                return [const BLSmallTitle('System'), SystemSettings(isLoggedIn: user != null)];
+                              },
+                              error: (error, stackTrace) => [blankWidget],
+                              loading: () => [blankWidget]),
                         )),
                     SizedBox(
                       height: Utils.screenH(context) / 15,
@@ -304,6 +225,123 @@ class _SettingsState extends ConsumerState<Settings> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class SystemSettings extends ConsumerWidget {
+  const SystemSettings({super.key, required this.isLoggedIn});
+  final bool isLoggedIn;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final userSettings = ref.watch(userSettingsProvider);
+    final persistentData = ref.watch(persistentDataStateProvider);
+    final persistentDataNotifier = ref.read(persistentDataStateProvider.notifier);
+    final gameAudio = ref.watch(gameAudioProvider);
+    final gameAudioNotifier = ref.read(gameAudioProvider.notifier);
+
+    /// initialize the list to return
+    List<Widget> settings = [];
+
+    /// these settings apply to both logged out and logged in users
+    settings.addAll([
+      /// Sound effects
+      SystemSetting(children: [
+        const Row(
+          children: [
+            Icon(FontAwesomeIcons.volumeHigh),
+            SizedBox(width: 20),
+            BLText('Sound Effects'),
+          ],
+        ),
+        BLSwitch(
+          state: gameAudio.soundEffects,
+          onPressed: () {
+            gameAudioNotifier.toggleSoundEffects();
+          },
+        )
+      ]),
+
+      /// BG MUSIC
+      SystemSetting(children: [
+        const Row(
+          children: [
+            Icon(FontAwesomeIcons.music),
+            SizedBox(width: 20),
+            BLText('Background Music'),
+          ],
+        ),
+        BLSwitch(
+          state: gameAudio.backgroundMusic,
+          onPressed: () {
+            debugPrint('bg music switch');
+            gameAudioNotifier.toggleBG();
+            //bLAudioManager.playBG(false);
+          },
+        )
+      ]),
+
+      /// NOTIFICATIONS
+      SystemSetting(children: [
+        const Row(
+          children: [
+            Icon(FontAwesomeIcons.bell),
+            SizedBox(width: 20),
+            BLText('Notifications'),
+          ],
+        ),
+        BLSwitch(
+          state: persistentData.notifications,
+          onPressed: () {
+            persistentDataNotifier.toggleNotifications();
+          },
+        )
+      ]),
+    ]);
+
+    /// add login alerts only if the user is logged in
+    if (isLoggedIn) {
+      settings.addAll([
+        SystemSetting(children: [
+          const Row(
+            children: [
+              Icon(FontAwesomeIcons.triangleExclamation),
+              SizedBox(width: 20),
+              BLText('Login Alerts'),
+            ],
+          ),
+          userSettings.when(
+              data: (settings) {
+                bool loginAlerts = settings?.loginAlerts ?? false;
+                return BLSwitch(
+                  state: loginAlerts,
+                  onPressed: () async {
+                    DBService().updateUserSettings(AccountSettings(loginAlerts: !loginAlerts));
+                  },
+                );
+              },
+              error: blankError,
+              loading: blankLoading)
+        ])
+      ]);
+    }
+    return Column(children: settings);
+  }
+}
+
+class SystemSetting extends StatelessWidget {
+  const SystemSetting({super.key, required this.children});
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: Utils.screenW(context) / 1.4,
+      child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: children),
     );
   }
 }

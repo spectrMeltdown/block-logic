@@ -1,4 +1,3 @@
-import 'package:block_logic/logic/audio.dart';
 import 'package:block_logic/components/custom_widgets.dart';
 import 'package:block_logic/logic/providers/providers.dart';
 import 'package:flutter/material.dart';
@@ -26,12 +25,11 @@ class _BLProfilePicState extends ConsumerState<BLProfilePic> {
     widget.onPressed?.call();
   }
 
-  void onTapDown(TapDownDetails tapDown) {
+  void onTapDown() {
     setState(() {
       _isTapped = true;
       _opacity = 1;
     });
-    BLAudio.playBtn();
   }
 
   void onTapCancel() {
@@ -44,9 +42,12 @@ class _BLProfilePicState extends ConsumerState<BLProfilePic> {
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(accountProvider);
-
+    final audio = ref.read(gameAudioProvider.notifier);
     return GestureDetector(
-      onTapDown: onTapDown,
+      onTapDown: (TapDownDetails tapDown) {
+        onTapDown();
+        audio.playBtn();
+      },
       onTapUp: onTapUp,
       onTapCancel: onTapCancel,
       child: Stack(

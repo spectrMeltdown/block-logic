@@ -4,8 +4,8 @@ import 'package:toastification/toastification.dart';
 enum NotifType { success, error, warning, info }
 
 void showToast(
-  BuildContext context,
   String title, {
+  BuildContext? context,
   NotifType notifType = NotifType.info,
   ToastificationStyle toastStyle = ToastificationStyle.simple,
   String? description,

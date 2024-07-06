@@ -30,14 +30,16 @@ class BLText extends StatelessWidget {
 }
 
 class BLTextSpan extends StatelessWidget {
-  const BLTextSpan(this.children, {super.key, this.size = 16, this.color});
+  const BLTextSpan(this.children, {this.alignment, this.size = 16, this.color, super.key});
   final double size;
   final Color? color;
+  final TextAlign? alignment;
   final List<TextSpan> children;
 
   @override
   Widget build(BuildContext context) {
     return RichText(
+      textAlign: alignment ?? TextAlign.start,
       text: TextSpan(
           style: TextStyle(
             color: color ?? Colors.lightBlue[100],
