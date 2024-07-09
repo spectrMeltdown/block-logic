@@ -6,6 +6,7 @@ import "package:firebase_auth/firebase_auth.dart";
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
+import "package:page_transition/page_transition.dart";
 
 /// General redundant code throughout the app
 abstract class Utils {
@@ -42,8 +43,11 @@ abstract class Utils {
     Navigator.pop(context, result);
   }
 
-  static void push(BuildContext context, Widget route) {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => route));
+  static void push(BuildContext context, Widget route, {VoidCallback? onPop}) {
+    //Navigator.push(context, MaterialPageRoute(builder: (context) => route));
+    Navigator.push(context, PageTransition(child: route, type: PageTransitionType.fade)).then((value) {
+      if (onPop != null) onPop.call();
+    });
   }
 
   static void pushAndRemove(BuildContext context, Widget route) {
@@ -84,32 +88,35 @@ Future<bool> checkInternetConnection() async {
   }
 }
 
-String? fireErrors(BuildContext context, FirebaseException e) {
+String? fireErrors(BuildContext context, FirebaseException e, {bool handleOverlay = true}) {
   dismissAllToast();
+  if (kDebugMode) {
+    debugPrint(e.code);
+  }
   switch (e.code) {
     case 'network-request-failed':
       const String error = 'Network Problem!';
-      notifyDialog(context, title: 'Error', label: error);
+      if (handleOverlay) blShowNotifyDialog(context, title: 'Error', label: error);
       return error;
     case 'invalid-credential':
       const String error = 'Incorrect credentials';
-      notifyDialog(context, title: 'Error', label: error);
+      if (handleOverlay) blShowNotifyDialog(context, title: 'Error', label: error);
       return error;
     case 'invalid-email':
       const String error = 'Incorrect email.';
-      notifyDialog(context, title: 'Error', label: error);
+      if (handleOverlay) blShowNotifyDialog(context, title: 'Error', label: error);
       return error;
     case 'email-already-in-use':
       const String error = 'Account already exists!';
-      notifyDialog(context, title: 'Error', label: error);
+      if (handleOverlay) blShowNotifyDialog(context, title: 'Error', label: error);
       return error;
     case 'requires-recent-login':
-      // TODO: display reauth overlay
       return null;
+    case 'too-many-requests':
+      const String error = 'Sorry, too many attempts. Try again later';
+      if (handleOverlay) blShowNotifyDialog(context, title: 'Error', label: error);
+      return error;
     default:
-      if (kDebugMode) {
-        notifyDialog(context, title: e.code, label: e.message);
-      }
       return null;
   }
 }

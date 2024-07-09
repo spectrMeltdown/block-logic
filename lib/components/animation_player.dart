@@ -29,6 +29,7 @@ class _BLAnimationPlayerState extends State<BLAnimationPlayer> with TickerProvid
     return Lottie.asset(
       widget.animation,
       controller: widget.controller,
+      fit: BoxFit.cover,
       renderCache: RenderCache.drawingCommands,
       width: (widget.size != null) ? widget.size : widget.width,
       height: (widget.size != null) ? widget.size : widget.height,

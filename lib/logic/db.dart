@@ -4,6 +4,7 @@ import 'package:block_logic/logic/auth.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/models.dart';
 import 'package:block_logic/logic/toast.dart';
+import 'package:block_logic/logic/utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -127,7 +128,7 @@ class DBService extends DB {
         File selectedPhoto = File(imagePath);
 
         /// create reference to the images of the user
-        final Reference profilePicRef = _userStorageRef.child('${AuthService.getUID()}/images');
+        final Reference profilePicRef = _userStorageRef.child(AuthService.getUID()).child('profile_pic');
 
         // Get temp directory
         Directory tempDir = await getTemporaryDirectory();
@@ -147,21 +148,24 @@ class DBService extends DB {
                 contentType: mimeType,
               ));
 
-          /// save link to new profile pic in firebase auth
-          await FirebaseAuth.instance.currentUser!.updatePhotoURL(profilePicRef.fullPath);
+          /// get the url
+          final downloadURL = await profilePicRef.getDownloadURL();
 
+          //debugPrint(downloadURL);
+
+          /// save link to new profile pic in firebase auth
+          await FirebaseAuth.instance.currentUser!.updatePhotoURL(downloadURL);
           if (context.mounted) {
-            //Utils.showSnackBar(context, 'Updated profile picture', backgroundColor: Colors.green);
+            showToast('Profile pic updated');
           }
         } on FirebaseException catch (e) {
-          if (e.code.isEmpty) {
-            if (!context.mounted) return;
-            //Utils.showSnackBar(context, 'Sorry, error occurred. Try uploading again.');
-          }
+          if (!context.mounted) return;
+          fireErrors(context, e);
+          showToast('Sorry, error occurred. Try uploading again.');
         }
       } else {
         if (!context.mounted) return;
-        //Utils.showSnackBar(context, 'File selection failed');
+        showToast('Cancelled');
       }
     }
   }

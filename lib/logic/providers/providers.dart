@@ -10,7 +10,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 part 'providers.g.dart';
 
@@ -118,6 +117,23 @@ class GameAudio extends _$GameAudio {
 Stream<User?> account(AccountRef ref) {
   return FirebaseAuth.instance.authStateChanges();
 }
+
+@Riverpod(keepAlive: true)
+Stream<User?> accountChanges(AccountChangesRef ref) {
+  return FirebaseAuth.instance.userChanges();
+}
+
+@Riverpod(keepAlive: true)
+Stream<String?> accountPhotoURL(AccountPhotoURLRef ref) async* {
+  final accountChanges = ref.watch(accountChangesProvider);
+  final photoURL = accountChanges.value?.photoURL;
+  yield photoURL;
+}
+
+// @Riverpod()
+// String? accountPhotoURL(AccountPhotoURLRef ref) {
+//   return FirebaseAuth.instance.currentUser?.photoURL;
+// }
 
 @Riverpod(keepAlive: true)
 Stream<UserDetails?> userDetails(UserDetailsRef ref) {

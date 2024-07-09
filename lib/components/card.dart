@@ -35,13 +35,12 @@ class _BLCardState extends ConsumerState<BLCard> {
   late final List<Color> cardColor;
   final Color darkerShade = Colors.blueGrey.shade900;
   final Color darkShade = Colors.blueGrey.shade800;
-  final List<BoxShadow> btnShadow = [
+  final List<BoxShadow> cardShadow = [
     BoxShadow(
       color: Colors.white.withOpacity(0.5),
       spreadRadius: 2,
       blurRadius: 20,
-      offset: const Offset(0, 0),
-    )
+    ),
   ];
 
   void _onTapUp(TapUpDetails tapUp) {
@@ -77,7 +76,7 @@ class _BLCardState extends ConsumerState<BLCard> {
   @override
   void initState() {
     cardColor = [BLUI().getBlockColor(widget.blockType), darkShade];
-    cardColorPressed = [BLUI().getBlockColor(widget.blockType).brighten(0.5), darkShade];
+    cardColorPressed = [BLUI().getBlockColor(widget.blockType).brighten(0.2), darkShade];
     super.initState();
   }
 
@@ -103,28 +102,36 @@ class _BLCardState extends ConsumerState<BLCard> {
         child:
 
             /// the actual card
-            Container(
-          width: Utils.screenW(context),
-          height: widget.height,
-          child: Container(
-              padding: widget.padding ?? const EdgeInsets.symmetric(horizontal: 30.0, vertical: 10),
-              decoration: BoxDecoration(
-                shape: BoxShape.rectangle,
-                borderRadius: BorderRadius.circular(12.0),
-                border: Border.all(color: Colors.white, width: 2.0),
-                gradient: RadialGradient(
-                    colors: _isTapped ? cardColorPressed : cardColor,
-                    radius: (widget.padding != null) ? getRadius(widget.padding) : 3),
-                boxShadow: (_isTapped ? btnShadow : null),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(mainAxisAlignment: MainAxisAlignment.center, children: [widget.child]),
-                  Icon(Icons.arrow_forward_ios)
-                ],
-              )),
-        ),
+            SizedBox(
+                width: Utils.screenW(context),
+                height: widget.height,
+                child: Container(
+                  padding: widget.padding ?? const EdgeInsets.symmetric(horizontal: 30.0, vertical: 10),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.rectangle,
+                    borderRadius: BorderRadius.circular(12.0),
+                    border: Border.all(color: Colors.white, width: 3.0),
+                    gradient: RadialGradient(
+                        colors: _isTapped ? cardColorPressed : cardColor,
+                        radius: (widget.padding != null) ? getRadius(widget.padding) : 5),
+                    boxShadow: (_isTapped
+                        ? cardShadow
+                        : [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.8),
+                              spreadRadius: -20,
+                              blurRadius: 10,
+                            )
+                          ]),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(mainAxisAlignment: MainAxisAlignment.center, children: [widget.child]),
+                      const Icon(Icons.arrow_forward_ios)
+                    ],
+                  ),
+                )),
       ),
     );
   }

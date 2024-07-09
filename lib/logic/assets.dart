@@ -16,4 +16,16 @@ class Assets {
   /// animations
   static const loading = 'assets/animations/loading.json';
   static const emailVerification = 'assets/animations/email-verification.json';
+
+  /// backgrounds
+  // static const bg1 = 'assets/animations/backgrounds/bg-1.json';
+  // static const bg2 = 'assets/animations/backgrounds/bg-2.json';
+  // static const bg3 = 'assets/animations/backgrounds/bg-3.json';
+  // static const bg4 = 'assets/animations/backgrounds/bg-4.json';
+
+  /// background (video)
+  static const bg1 = 'assets/videos/bg-1.mp4';
+  static const bg2 = 'assets/videos/bg-2.mp4';
+  static const bg3 = 'assets/videos/bg-3.mp4';
+  static const bg4 = 'assets/videos/bg-4.mp4';
 }

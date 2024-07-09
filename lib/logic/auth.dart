@@ -4,7 +4,6 @@ import 'package:block_logic/logic/models.dart';
 import 'package:block_logic/logic/toast.dart';
 import 'package:block_logic/logic/utils.dart';
 import 'package:block_logic/screens/auth/check_acc.dart';
-import 'package:block_logic/screens/main_menu.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/material.dart';
@@ -124,7 +123,7 @@ abstract class AuthService {
 
   static Future<void> resetPass(BuildContext context, String email) async {
     try {
-      await FirebaseAuth.instance.sendPasswordResetEmail(email: email).then((value) => notifyDialog(context,
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email).then((value) => blShowNotifyDialog(context,
           title: 'Password reset link sent!', label: 'If this account exists, you should receive an email.'));
       if (!context.mounted) return;
       Utils.pop(context);
@@ -147,16 +146,16 @@ abstract class AuthService {
     try {
       await FirebaseAuth.instance.currentUser!.verifyBeforeUpdateEmail(email.trim());
       if (!context.mounted) return;
-      // TODO: A verification has been sent to your new email.
+      showToast('A verification has been sent to your new email.');
       Utils.pop(context);
     } on FirebaseAuthException catch (e) {
       fireErrors(context, e);
     }
   }
 
-  static void changeDisplayName(BuildContext context, String displayName) async {
+  static Future<void> changeDisplayName(BuildContext context, String displayName) async {
     try {
-      await FirebaseAuth.instance.currentUser!.updateDisplayName(displayName.trim());
+      await FirebaseAuth.instance.currentUser!.updateDisplayName(displayName);
       if (!context.mounted) return;
       Utils.pop(context);
     } on FirebaseAuthException catch (e) {
@@ -193,9 +192,17 @@ abstract class AuthService {
   }
 
   /// display when the user has to reauthenticate themselves
-  static void reauth(BuildContext context) async {
-    try {} on FirebaseAuthException catch (e) {
+  static Future<String> reauth(BuildContext context, String password) async {
+    AuthCredential userCred = EmailAuthProvider.credential(email: AuthService.getEmail(), password: password);
+    try {
+      await FirebaseAuth.instance.currentUser?.reauthenticateWithCredential(userCred);
+      return 'success';
+    } on FirebaseAuthException catch (e) {
+      debugPrint(e.code);
+      if (e.code == 'too-many-requests') return e.code;
+      if (!context.mounted) return 'failed';
       fireErrors(context, e);
     }
+    return 'failed';
   }
 }

@@ -81,6 +81,8 @@ class _BLInputState extends State<BLTextBox> {
       decoration: InputDecoration(
           hintText: widget.hintText,
           hintStyle: const TextStyle(color: Colors.white, fontStyle: FontStyle.italic),
+          labelStyle: const TextStyle(color: Colors.white38, fontStyle: FontStyle.italic),
+          floatingLabelBehavior: FloatingLabelBehavior.never,
           helperText: helperText,
           filled: true,
           fillColor: Colors.teal.shade900.withAlpha(200),

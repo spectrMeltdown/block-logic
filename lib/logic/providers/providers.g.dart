@@ -20,6 +20,36 @@ final accountProvider = StreamProvider<User?>.internal(
 );
 
 typedef AccountRef = StreamProviderRef<User?>;
+String _$accountChangesHash() => r'08ae8faae0d320b7c34f392bf754ae7e444f3eb1';
+
+/// See also [accountChanges].
+@ProviderFor(accountChanges)
+final accountChangesProvider = StreamProvider<User?>.internal(
+  accountChanges,
+  name: r'accountChangesProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$accountChangesHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef AccountChangesRef = StreamProviderRef<User?>;
+String _$accountPhotoURLHash() => r'de8f57eb63872fd1bb903a9b8826a24acda1c522';
+
+/// See also [accountPhotoURL].
+@ProviderFor(accountPhotoURL)
+final accountPhotoURLProvider = StreamProvider<String?>.internal(
+  accountPhotoURL,
+  name: r'accountPhotoURLProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$accountPhotoURLHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef AccountPhotoURLRef = StreamProviderRef<String?>;
 String _$userDetailsHash() => r'b26043f03545ca80d7d2243e23028f7fbcff8274';
 
 /// See also [userDetails].

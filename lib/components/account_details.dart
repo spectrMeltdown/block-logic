@@ -10,7 +10,7 @@ class BLDisplayName extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(accountProvider);
+    final user = ref.watch(accountChangesProvider);
     return user.when(
         data: (user) => BLText(user?.displayName ?? ''),
         error: (error, stackTrace) => blankWidget,
@@ -24,7 +24,7 @@ class BLEmail extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(accountProvider);
+    final user = ref.watch(accountChangesProvider);
     return user.when(
         data: (user) => BLText(user?.email ?? ''),
         error: (error, stackTrace) => blankWidget,

@@ -2,6 +2,7 @@ import 'package:block_logic/components/account_details.dart';
 import 'package:block_logic/components/back_button.dart';
 import 'package:block_logic/components/background.dart';
 import 'package:block_logic/components/button.dart';
+import 'package:block_logic/components/dialog.dart';
 import 'package:block_logic/components/login_signup_btns.dart';
 import 'package:block_logic/components/panel.dart';
 import 'package:block_logic/components/profile_pic.dart';
@@ -13,9 +14,12 @@ import 'package:block_logic/components/custom_widgets.dart';
 import 'package:block_logic/logic/db.dart';
 import 'package:block_logic/logic/models.dart';
 import 'package:block_logic/logic/providers/providers.dart';
+import 'package:block_logic/logic/toast.dart';
 import 'package:block_logic/logic/utils.dart';
 import 'package:block_logic/screens/about_us.dart';
+import 'package:block_logic/screens/auth/change_display_name.dart';
 import 'package:block_logic/screens/auth/change_email.dart';
+import 'package:block_logic/screens/auth/change_password.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -42,7 +46,6 @@ class _SettingsState extends ConsumerState<Settings> {
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(accountProvider);
-    final userSettings = ref.watch(userSettingsProvider);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Background(
@@ -92,7 +95,8 @@ class _SettingsState extends ConsumerState<Settings> {
                                         size: 100),
                                     const SizedBox(height: 10),
                                     const BLText(
-                                      'Tap photo to edit',
+                                      //'Tap photo to edit', //if spare time, apply a image cropper
+                                      'Tap photo to change',
                                       fontStyle: FontStyle.italic,
                                     ),
                                     const SizedBox(height: 20),
@@ -100,7 +104,9 @@ class _SettingsState extends ConsumerState<Settings> {
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         BLTextButton(
-                                            onPressed: () {},
+                                            onPressed: () {
+                                              showDialog(context: context, builder: (context) => const ChangeDisplayName());
+                                            },
                                             child: Row(
                                               mainAxisSize: MainAxisSize.min,
                                               children: [
@@ -112,8 +118,12 @@ class _SettingsState extends ConsumerState<Settings> {
                                               ],
                                             )),
                                         BLTextButton(
-                                            onPressed: () {
-                                              showDialog(context: context, builder: (context) => const ChangeEmail());
+                                            onPressed: () async {
+                                              String? reauth = await blShowReauthDialog(context);
+                                              if (reauth == 'success') {
+                                                if (!context.mounted) return;
+                                                showDialog(context: context, builder: (context) => const ChangeEmail());
+                                              }
                                             },
                                             child: Row(
                                               mainAxisSize: MainAxisSize.min,
@@ -126,7 +136,21 @@ class _SettingsState extends ConsumerState<Settings> {
                                               ],
                                             )),
                                         BLTextButton(
-                                            onPressed: () {},
+                                            onPressed: () async {
+                                              String? reauth = await blShowReauthDialog(context);
+                                              if (reauth == 'success') {
+                                                if (!context.mounted) return;
+                                                showDialog(
+                                                    context: context, builder: (context) => const ChangePassword());
+                                              } else if (reauth == 'failed') {
+                                                if (!context.mounted) return;
+                                                showToast('Wrong password');
+                                              } else if (reauth == 'cancelled') {
+                                                if (!context.mounted) return;
+                                              } else if (reauth == 'TOA') {
+                                                showToast('Sorry, try again later');
+                                              }
+                                            },
                                             child: Row(
                                               mainAxisSize: MainAxisSize.min,
                                               children: [
@@ -146,7 +170,11 @@ class _SettingsState extends ConsumerState<Settings> {
                                             BLButton(
                                                 type: BtnType.red,
                                                 onPressed: () async {
-                                                  AuthService.deleteAccount(context);
+                                                  String? reauth = await blShowReauthDialog(context);
+                                                  if (reauth == 'success') {
+                                                    if (!context.mounted) return;
+                                                    AuthService.deleteAccount(context);
+                                                  }
                                                 },
                                                 child: const Row(
                                                   mainAxisSize: MainAxisSize.min,

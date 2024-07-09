@@ -1,7 +1,9 @@
 import 'package:block_logic/components/dialog.dart';
 import 'package:block_logic/components/text.dart';
 import 'package:block_logic/components/textbox.dart';
+import 'package:block_logic/logic/auth.dart';
 import 'package:block_logic/logic/providers/providers.dart';
+import 'package:block_logic/logic/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -13,13 +15,14 @@ class ChangeEmail extends ConsumerStatefulWidget {
 }
 
 class _ChangeEmailState extends ConsumerState<ChangeEmail> {
-  late final String email;
+  late final String oldEmail;
   late final TextEditingController emailController;
 
   @override
   void initState() {
     final user = ref.read(accountProvider).value;
-    emailController = TextEditingController(text: user?.email ?? '');
+    oldEmail = user?.email ?? '';
+    emailController = TextEditingController(text: oldEmail);
     super.initState();
   }
 
@@ -56,7 +59,12 @@ class _ChangeEmailState extends ConsumerState<ChangeEmail> {
                 )),
             TextButton(
                 onPressed: () {
-                  Navigator.pop(context);
+                  final newEmail = emailController.text.trim();
+                  if (oldEmail != newEmail) {
+                    AuthService.changeEmail(context, newEmail);
+                  } else {
+                    Utils.pop(context);
+                  }
                 },
                 child: const BLText(
                   'Save',

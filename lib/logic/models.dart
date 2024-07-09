@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 // each represents a document in Firestore
 
 // TODO: Decide if notifications is saved in db or not
@@ -108,6 +109,12 @@ class Report extends TimestampModel {
       createdAt: (data['createdAt'] as Timestamp).toDate(),
       modifiedAt: (data['modifiedAt'] as Timestamp).toDate(),
     );
+  }
+}
+
+Stream<String?> accountPhotoURLStream() async* {
+  await for (User? user in FirebaseAuth.instance.userChanges()) {
+    yield user?.photoURL;
   }
 }
 

@@ -19,15 +19,16 @@ void showToast(
   const alignment = Alignment.topRight;
   const direction = TextDirection.ltr;
   const animationDuration = Duration(milliseconds: 300);
-  const bool applyBlurEffect = true, closeOnClick = false, pauseOnHover = true, dragToClose = true;
+  const bool applyBlurEffect = true, closeOnClick = false, pauseOnHover = true, dragToClose = false;
   final borderRadius = BorderRadius.circular(12);
   final descriptionText = description == null ? null : RichText(text: TextSpan(text: description));
-  final callbacks = ToastificationCallbacks(
-    onTap: (toastItem) => debugPrint('Toast ${toastItem.id} tapped'),
-    onCloseButtonTap: (toastItem) => debugPrint('Toast ${toastItem.id} close button tapped'),
-    onAutoCompleteCompleted: (toastItem) => debugPrint('Toast ${toastItem.id} auto complete completed'),
-    onDismissed: (toastItem) => debugPrint('Toast ${toastItem.id} dismissed'),
-  );
+  const callbacks = ToastificationCallbacks();
+  // final callbacks = ToastificationCallbacks(
+  //   onTap: (toastItem) => debugPrint('Toast ${toastItem.id} tapped'),
+  //   onCloseButtonTap: (toastItem) => debugPrint('Toast ${toastItem.id} close button tapped'),
+  //   onAutoCompleteCompleted: (toastItem) => debugPrint('Toast ${toastItem.id} auto complete completed'),
+  //   onDismissed: (toastItem) => debugPrint('Toast ${toastItem.id} dismissed'),
+  // );
   switch (notifType) {
     case NotifType.error:
       toastification.show(

@@ -1,7 +1,6 @@
 import 'package:block_logic/components/animation_player.dart';
 import 'package:block_logic/components/custom_widgets.dart';
 import 'package:block_logic/logic/assets.dart';
-import 'package:flame_lottie/flame_lottie.dart';
 import 'package:flutter/material.dart';
 
 enum LoadingType { full, normal }

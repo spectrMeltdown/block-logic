@@ -4,7 +4,6 @@ import 'package:block_logic/components/animation_player.dart';
 import 'package:block_logic/components/background.dart';
 import 'package:block_logic/components/button.dart';
 import 'package:block_logic/components/custom_widgets.dart';
-import 'package:block_logic/components/loading.dart';
 import 'package:block_logic/components/text.dart';
 import 'package:block_logic/components/text_button.dart';
 import 'package:block_logic/logic/assets.dart';
