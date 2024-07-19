@@ -1,9 +1,8 @@
-import 'package:block_logic/components/dialog.dart';
-import 'package:block_logic/components/text.dart';
+import 'package:block_logic/components/dialog/dialog.dart';
+import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/textbox.dart';
-import 'package:block_logic/logic/auth.dart';
-import 'package:block_logic/logic/providers/providers.dart';
-import 'package:block_logic/logic/utils.dart';
+import 'package:block_logic/logic/services/auth.dart';
+import 'package:block_logic/logic/services/navigation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -17,17 +16,19 @@ class ChangeEmail extends ConsumerStatefulWidget {
 class _ChangeEmailState extends ConsumerState<ChangeEmail> {
   late final String oldEmail;
   late final TextEditingController emailController;
+  late final AuthService auth;
 
   @override
   void initState() {
-    final user = ref.read(accountProvider).value;
-    oldEmail = user?.email ?? '';
+    final auth = ref.read(authServiceProvider);
+    oldEmail = auth.getEmail();
     emailController = TextEditingController(text: oldEmail);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    final nav = ref.watch(navProvider);
     return BLDialog(
         child: Column(
       mainAxisSize: MainAxisSize.min,
@@ -61,9 +62,9 @@ class _ChangeEmailState extends ConsumerState<ChangeEmail> {
                 onPressed: () {
                   final newEmail = emailController.text.trim();
                   if (oldEmail != newEmail) {
-                    AuthService.changeEmail(context, newEmail);
+                    auth.changeEmail(newEmail);
                   } else {
-                    Utils.pop(context);
+                    nav.pop(context);
                   }
                 },
                 child: const BLText(

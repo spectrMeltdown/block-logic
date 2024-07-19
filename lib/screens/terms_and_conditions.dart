@@ -1,15 +1,17 @@
 import 'package:block_logic/components/background.dart';
-import 'package:block_logic/components/button.dart';
-import 'package:block_logic/components/text.dart';
-import 'package:block_logic/components/custom_widgets.dart';
-import 'package:block_logic/logic/utils.dart';
+import 'package:block_logic/components/button/button.dart';
+import 'package:block_logic/components/text/text.dart';
+import 'package:block_logic/components/util/spaced_col.dart';
+import 'package:block_logic/logic/services/navigation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class TermsAndConditions extends StatelessWidget {
+class TermsAndConditions extends ConsumerWidget {
   const TermsAndConditions({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final nav = ref.read(navProvider);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Background(
@@ -22,7 +24,8 @@ class TermsAndConditions extends StatelessWidget {
               child: SingleChildScrollView(
                 child: Center(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 30),
                     child: SpacedColumn(
                       spacing: 20,
                       children: [
@@ -37,8 +40,9 @@ class TermsAndConditions extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             BLButton(
-                padding: const EdgeInsets.symmetric(horizontal: 90, vertical: 10),
-                onPressed: () => Utils.pop(context),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 90, vertical: 10),
+                onPressed: () => nav.pop(context),
                 child: const BLText(
                   'OK',
                   color: Colors.white,

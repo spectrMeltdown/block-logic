@@ -1,0 +1,25 @@
+targets:
+  $default:
+    sources:
+      - lib/logic/firebase_providers/**
+      - $package$
+      - lib/$lib$
+    builders:
+      source_gen:combining_builder:
+        generate_for:
+          - lib/logic/firebase_providers/*.dart
+        options:
+          build_extensions: 
+            '^lib/logic/firebase_providers/{{}}.dart': 'lib/logic/firebase_providers/generated/{{}}.g.dart'
+  servicesTarget:
+    sources:
+      - lib/logic/services/**
+      - $package$
+      - lib/$lib$
+    builders:
+      source_gen:combining_builder:
+        generate_for:
+          - lib/logic/services/*.dart
+        options: 
+          build_extensions:
+            '^lib/logic/services/{{}}.dart': 'lib/logic/services/generated/{{}}.g.dart'

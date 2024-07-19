@@ -1,9 +1,11 @@
-import 'package:block_logic/components/dialog.dart';
-import 'package:block_logic/components/text.dart';
+import 'package:block_logic/components/dialog/dialog.dart';
+import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/textbox.dart';
-import 'package:block_logic/logic/auth.dart';
-import 'package:block_logic/logic/providers/providers.dart';
-import 'package:block_logic/logic/utils.dart';
+import 'package:block_logic/logic/enums.dart';
+import 'package:block_logic/logic/firebase_providers/user.dart';
+import 'package:block_logic/logic/services/account.dart';
+import 'package:block_logic/logic/services/auth.dart';
+import 'package:block_logic/logic/services/navigation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -17,10 +19,12 @@ class ChangeDisplayName extends ConsumerStatefulWidget {
 class _ChangeDisplayNameState extends ConsumerState<ChangeDisplayName> {
   late final String oldDisplayName;
   late final TextEditingController displayNameController;
+  late final AuthService auth;
 
   @override
   void initState() {
-    final user = ref.read(accountChangesProvider).value;
+    auth = ref.read(authServiceProvider);
+    final user = ref.read(UserAccountProvider(auth.getUID())).value;
     oldDisplayName = user?.displayName ?? '';
     displayNameController = TextEditingController(text: oldDisplayName);
     super.initState();
@@ -28,6 +32,8 @@ class _ChangeDisplayNameState extends ConsumerState<ChangeDisplayName> {
 
   @override
   Widget build(BuildContext context) {
+    final nav = ref.read(navProvider);
+    final accountService = ref.read(accountServiceProvider);
     return BLDialog(
         child: Column(
       mainAxisSize: MainAxisSize.min,
@@ -61,9 +67,10 @@ class _ChangeDisplayNameState extends ConsumerState<ChangeDisplayName> {
                 onPressed: () {
                   final newDisplayName = displayNameController.text.trim();
                   if (oldDisplayName != newDisplayName) {
-                    AuthService.changeDisplayName(context, newDisplayName);
+                    accountService.changeDisplayName(
+                        newDisplayName, FirestoreCollections.users);
                   } else {
-                    Utils.pop(context);
+                    nav.pop(context);
                   }
                 },
                 child: const BLText(

@@ -1,18 +1,18 @@
-import 'package:block_logic/components/text.dart';
-
-import 'package:block_logic/logic/assets.dart';
+import 'package:block_logic/components/text/text.dart';
+import 'package:block_logic/logic/services/assets.dart';
 import 'package:block_logic/screens/auth/check_acc.dart';
 import 'package:flame_splash_screen/flame_splash_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class Splash extends StatefulWidget {
+class Splash extends ConsumerStatefulWidget {
   const Splash({super.key});
 
   @override
-  State<Splash> createState() => _Splash();
+  ConsumerState<Splash> createState() => _Splash();
 }
 
-class _Splash extends State<Splash> {
+class _Splash extends ConsumerState<Splash> {
   // Adding the controller breaks the splash screen for some reason (stuck on loading)
 
   // final FlameSplashController controller = FlameSplashController(
@@ -24,17 +24,19 @@ class _Splash extends State<Splash> {
 
   @override
   Widget build(BuildContext context) {
+    final assets = ref.read(assetsProvider);
     return Scaffold(
       resizeToAvoidBottomInset: true,
       body: FlameSplashScreen(
           showBefore: (BuildContext context) {
-            return const BLTitle("Uncaught Exception");
+            return const BLTitle('Uncaught Exception');
           },
           theme: FlameSplashTheme(
-              backgroundDecoration:
-                  const BoxDecoration(image: DecorationImage(image: AssetImage(Assets.backgroundNoGrid))),
+              backgroundDecoration: BoxDecoration(
+                  image: DecorationImage(
+                      image: AssetImage(assets.backgroundNoGrid))),
               logoBuilder: (context) => Image.asset(
-                    Assets.logo,
+                    assets.logo,
                     fit: BoxFit.cover,
                   )),
           onFinish: (context) => const CheckAcc()),

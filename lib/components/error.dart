@@ -1,5 +1,5 @@
-import 'package:block_logic/components/text.dart';
-import 'package:block_logic/components/custom_widgets.dart';
+import 'package:block_logic/components/text/text.dart';
+import 'package:block_logic/components/util/blank_widget.dart';
 import 'package:flutter/material.dart';
 
 enum ErrorType { withMessage, normal }
@@ -13,7 +13,7 @@ class BLError extends StatelessWidget {
   Widget build(BuildContext context) {
     switch (type) {
       case ErrorType.normal:
-        return const Icon(Icons.error, color: Colors.red);
+        return const Center(child: Icon(Icons.error, color: Colors.red));
       case ErrorType.withMessage:
         return Center(
             child: Column(
@@ -26,7 +26,7 @@ class BLError extends StatelessWidget {
           ],
         ));
       default:
-        return blankWidget;
+        return const BlankWidget();
     }
   }
 }

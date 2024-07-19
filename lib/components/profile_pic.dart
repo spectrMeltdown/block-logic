@@ -1,14 +1,18 @@
-import 'dart:typed_data';
+import 'package:block_logic/components/async/loading.dart';
+import 'package:block_logic/components/circular_image.dart';
+import 'package:block_logic/components/util/blank_widget.dart';
 
-import 'package:block_logic/components/custom_widgets.dart';
-import 'package:block_logic/logic/providers/providers.dart';
+import 'package:block_logic/logic/firebase_providers/user.dart';
+import 'package:block_logic/logic/services/audio.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:http/http.dart';
 
 class BLProfilePic extends ConsumerStatefulWidget {
-  const BLProfilePic({super.key, this.size = 50, this.onPressed});
+  const BLProfilePic(this.accountID,
+      {super.key, this.size = 50, this.onPressed});
+  final String accountID;
   final double size;
   final VoidCallback? onPressed;
 
@@ -41,8 +45,8 @@ class _BLProfilePicState extends ConsumerState<BLProfilePic> {
 
   @override
   Widget build(BuildContext context) {
-    final photoURL = ref.watch(accountPhotoURLProvider);
-    final audio = ref.read(gameAudioProvider.notifier);
+    final photoURL = ref.watch(UserProfilePicProvider(widget.accountID));
+    final audio = ref.read(bLAudioProvider.notifier);
     return GestureDetector(
       onTapDown: (TapDownDetails tapDown) {
         audio.playBtn();
@@ -52,10 +56,11 @@ class _BLProfilePicState extends ConsumerState<BLProfilePic> {
       onTapCancel: onTapCancel,
       child: Stack(
         children: [
+          /// profile pic border
           Container(
             width: widget.size,
             height: widget.size,
-            padding: const EdgeInsets.all(5),
+            padding: const EdgeInsets.all(3),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: Colors.blueGrey[300],
@@ -64,75 +69,31 @@ class _BLProfilePicState extends ConsumerState<BLProfilePic> {
                 width: 3.0,
               ),
             ),
+
+            /// profile pic
             child: CircleAvatar(
               child: Center(
                 child: FractionallySizedBox(
                     widthFactor: 1,
                     heightFactor: 1,
-                    child:
-                        // Image.network(
-                        //   photoURL.toString(),
-                        //   fit: BoxFit.cover,
-                        //   loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-                        //     if (loadingProgress == null) {
-                        //       return child;
-                        //     } else {
-                        //       return Center(
-                        //         child: CircularProgressIndicator(
-                        //           value: loadingProgress.expectedTotalBytes != null
-                        //               ? loadingProgress.cumulativeBytesLoaded / (loadingProgress.expectedTotalBytes ?? 1)
-                        //               : null,
-                        //         ),
-                        //       );
-                        //     }
-                        //   },
-                        //   errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
-                        //     return const Icon(FontAwesomeIcons.user);
-                        //   },
-                        // ),
-                        photoURL.when(
-                            data: (photoURL) {
-                              debugPrint('update profile pic widget');
-                              return photoURL == null
-                                  ? const Icon(FontAwesomeIcons.user)
-                                  : ClipRRect(
-                                      borderRadius: const BorderRadius.all(Radius.circular(100)),
-                                      child:
-                                          //NonCacheNetworkImage(photoURL)
-                                          Image.network(
-                                        photoURL,
-                                        fit: BoxFit.cover,
-                                        loadingBuilder:
-                                            (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-                                          if (loadingProgress == null) {
-                                            return child;
-                                          } else {
-                                            return Center(
-                                              child: CircularProgressIndicator(
-                                                value: loadingProgress.expectedTotalBytes != null
-                                                    ? loadingProgress.cumulativeBytesLoaded /
-                                                        (loadingProgress.expectedTotalBytes ?? 1)
-                                                    : null,
-                                              ),
-                                            );
-                                          }
-                                        },
-                                        errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
-                                          return const Center(
-                                            child: Icon(
-                                              Icons.error,
-                                              color: Colors.red,
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                    );
-                            },
-                            error: (error, stackTrace) => blankWidget,
-                            loading: () => blankWidget)),
+                    child: photoURL.when(
+                        data: (photoURL) {
+                          debugPrint('update profile pic widget');
+                          if (photoURL == null || photoURL.isEmpty) {
+                            return const BLLoading(color: Colors.black);
+                          } else if (photoURL == 'new_user') {
+                            return const Icon(FontAwesomeIcons.user);
+                          } else {
+                            return BLCircularImage(photoURL);
+                          }
+                        },
+                        error: (error, stackTrace) => const BlankWidget(),
+                        loading: () => const BlankWidget())),
               ),
             ),
           ),
+
+          /// blank overlay when tapDown
           AnimatedOpacity(
               duration: Durations.short3,
               curve: Curves.easeInOut,
@@ -141,35 +102,11 @@ class _BLProfilePicState extends ConsumerState<BLProfilePic> {
                 width: widget.size,
                 height: widget.size,
                 decoration: BoxDecoration(
-                    color: Colors.black.withAlpha(100), borderRadius: const BorderRadius.all(Radius.circular(100))),
+                    color: Colors.black.withAlpha(100),
+                    borderRadius: const BorderRadius.all(Radius.circular(100))),
               )),
         ],
       ),
-    );
-  }
-}
-
-class NonCacheNetworkImage extends StatelessWidget {
-  const NonCacheNetworkImage(this.imageUrl, {super.key});
-  final String imageUrl;
-  Future<Uint8List> getImageBytes() async {
-    Response response = await get(Uri.parse(imageUrl));
-    return response.bodyBytes;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder<Uint8List>(
-      future: getImageBytes(),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          return Image.memory(
-            snapshot.data!,
-            fit: BoxFit.cover,
-          );
-        }
-        return blankWidget;
-      },
     );
   }
 }

@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 
 class AnimatedTVScreenEffect extends StatefulWidget {
+  const AnimatedTVScreenEffect({required this.child, super.key});
   final Widget child;
 
-  AnimatedTVScreenEffect({required this.child});
-
   @override
-  _AnimatedTVScreenEffectState createState() => _AnimatedTVScreenEffectState();
+  State<AnimatedTVScreenEffect> createState() => _AnimatedTVScreenEffectState();
 }
 
-class _AnimatedTVScreenEffectState extends State<AnimatedTVScreenEffect> with SingleTickerProviderStateMixin {
+class _AnimatedTVScreenEffectState extends State<AnimatedTVScreenEffect>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
 
   @override
@@ -65,7 +65,8 @@ class AnimatedTVScreenPainter extends CustomPainter {
     paint.color = Colors.blue.withOpacity(0.05 + (0.05 * animationValue));
     canvas.drawRect(Rect.fromLTWH(0, 0, size.width / 2, size.height), paint);
     paint.color = Colors.red.withOpacity(0.05 + (0.05 * animationValue));
-    canvas.drawRect(Rect.fromLTWH(size.width / 2, 0, size.width / 2, size.height), paint);
+    canvas.drawRect(
+        Rect.fromLTWH(size.width / 2, 0, size.width / 2, size.height), paint);
   }
 
   @override

@@ -1,7 +1,11 @@
-import 'package:block_logic/logic/assets.dart';
-import 'package:block_logic/logic/auth.dart';
-import 'package:block_logic/logic/providers/providers.dart';
-import 'package:block_logic/logic/shared_pref.dart';
+import 'package:block_logic/components/util/provider_default.dart';
+import 'package:block_logic/logic/firebase_models/user_account.dart';
+import 'package:block_logic/logic/firebase_providers/auth.dart';
+import 'package:block_logic/logic/firebase_providers/user.dart';
+import 'package:block_logic/logic/services/assets.dart';
+import 'package:block_logic/logic/services/auth.dart';
+import 'package:block_logic/logic/services/db.dart';
+import 'package:block_logic/logic/services/shared_pref.dart';
 import 'package:block_logic/screens/auth/verify_email.dart';
 import 'package:block_logic/screens/main_menu.dart';
 import 'package:flame_audio/flame_audio.dart';
@@ -18,16 +22,18 @@ class CheckAcc extends ConsumerStatefulWidget {
 class _CheckAccState extends ConsumerState<CheckAcc> {
   @override
   void initState() {
+    final sharedPref = ref.read(sharedPrefProvider);
+    final assets = ref.read(assetsProvider);
     FlameAudio.bgm.initialize();
 
     /// check if a backgroundMusic setting exists
-    final backgroundMusic = SharedPreferencesHelper.instance.getBool('backgroundMusic');
+    final backgroundMusic = sharedPref.getBool('backgroundMusic');
     if (backgroundMusic == null || backgroundMusic == true) {
       /// initialize the audio
-      FlameAudio.bgm.play(Assets.audioBG1);
+      FlameAudio.bgm.play(assets.audioBG1);
     } else {
       /// play silently to load the track
-      FlameAudio.bgm.play(Assets.audioBG1, volume: 0);
+      FlameAudio.bgm.play(assets.audioBG1, volume: 0);
 
       /// pause after track loaded
       FlameAudio.bgm.pause();
@@ -35,16 +41,34 @@ class _CheckAccState extends ConsumerState<CheckAcc> {
     super.initState();
   }
 
-  Widget getWidget() {
+  Widget getWidget(
+      {required AuthService auth,
+      required AsyncValue<UserAccount?> userFirestore,
+      required DBService dbService}) {
     /// check if logged in
-    if (AuthService.isLoggedIn()) {
+    if (auth.isLoggedIn()) {
       /// check if email is not verified
-      if (!AuthService.isEmailVerified()) {
+      if (!auth.isEmailVerified()) {
         /// go to email verification screen (after main menu finish building)
         return const VerifyEmail();
-      } else {
-        /// initialize user details in firestore
-        AuthService.initAccountFirestore(context);
+      }
+
+      /// TODO: check if phone number was verified
+
+      else {
+        /// check if user is initialized in firestore
+        userFirestore.when(
+            data: (userAccount) {
+              /// if not initialized
+              if (userAccount == null) {
+                debugPrint('account not initialized');
+
+                /// initialize user details in firestore
+                dbService.initAccountFirestore();
+              }
+            },
+            error: genericError,
+            loading: genericLoading);
       }
     }
     return const MainMenuScreen();
@@ -52,12 +76,16 @@ class _CheckAccState extends ConsumerState<CheckAcc> {
 
   @override
   Widget build(BuildContext context) {
-    final user = ref.watch(accountProvider);
+    final auth = ref.watch(authServiceProvider);
+    final user = ref.watch(accountAuthProvider);
+    final dbService = ref.watch(dBServiceProvider);
+    final userFirestore = ref.watch(UserAccountProvider(auth.getUID()));
     return user.when(
-        data: (user) {
-          return getWidget();
-        },
-        error: (error, stackTrace) => getWidget(),
-        loading: () => getWidget());
+        data: (user) => getWidget(
+            auth: auth, userFirestore: userFirestore, dbService: dbService),
+        error: (error, stackTrace) => getWidget(
+            auth: auth, userFirestore: userFirestore, dbService: dbService),
+        loading: () => getWidget(
+            auth: auth, userFirestore: userFirestore, dbService: dbService));
   }
 }

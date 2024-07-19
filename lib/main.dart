@@ -1,15 +1,16 @@
 import 'dart:io';
-import 'package:block_logic/logic/assets.dart';
-import 'package:block_logic/logic/shared_pref.dart';
-import 'package:block_logic/screens/auth/check_acc.dart';
 
+import 'package:block_logic/logic/services/audio.dart';
+import 'package:block_logic/logic/services/shared_pref.dart';
+import 'package:block_logic/screens/auth/check_acc.dart';
 import 'package:block_logic/splash.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flame/flame.dart';
-import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toastification/toastification.dart';
 
 import 'firebase_options.dart';
@@ -19,11 +20,10 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   /// Set the device to fullScreen, hiding status bar & navigation buttons
-  await Flame.device.fullScreen();
+  await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
 
   /// Force device to default portrait mode only
   Flame.device.setPortraitUpOnly;
-  await SharedPreferencesHelper.instance.init();
   // Hide the status bar
   //SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: [SystemUiOverlay.bottom]);
 
@@ -49,22 +49,18 @@ Future<void> main() async {
   }
   // check if platform is web
   else if (kIsWeb) {}
-
-  // TODO: use get_it package for create global singletons
-
-  // setupServiceLocator();
-
-  // cache assets for faster loading
-  await FlameAudio.audioCache.loadAll([Assets.audioBG1]);
-
-  runApp(const ProviderScope(child: BlockLogic()));
+  final prefs = await SharedPreferences.getInstance();
+  runApp(ProviderScope(overrides: [
+    sharedPrefProvider.overrideWithValue(prefs),
+  ], child: const BlockLogic()));
 }
 
-class BlockLogic extends StatelessWidget {
+class BlockLogic extends ConsumerWidget {
   const BlockLogic({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    ref.read(audioInitProvider);
     const TextStyle appTextStyle = TextStyle(
       color: Colors.white,
     );

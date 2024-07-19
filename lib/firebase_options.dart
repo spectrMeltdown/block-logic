@@ -66,4 +66,5 @@ class DefaultFirebaseOptions {
     projectId: 'block-logic-1d051',
     storageBucket: 'block-logic-1d051.appspot.com',
   );
+
 }

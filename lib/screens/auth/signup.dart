@@ -1,36 +1,50 @@
-import 'package:block_logic/components/back_button.dart';
 import 'package:block_logic/components/background.dart';
-import 'package:block_logic/components/button.dart';
+import 'package:block_logic/components/button/back_button.dart';
+import 'package:block_logic/components/button/button.dart';
+import 'package:block_logic/components/button/text_button.dart';
 import 'package:block_logic/components/checkbox.dart';
 import 'package:block_logic/components/panel.dart';
-import 'package:block_logic/components/text.dart';
-import 'package:block_logic/components/text_button.dart';
+import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/textbox.dart';
-import 'package:block_logic/logic/auth.dart';
-import 'package:block_logic/logic/utils.dart';
-import 'package:block_logic/logic/validators.dart';
+import 'package:block_logic/components/util/blank_widget.dart';
+import 'package:block_logic/logic/services/auth.dart';
+import 'package:block_logic/logic/services/navigation.dart';
+import 'package:block_logic/logic/services/validator_text.dart';
 import 'package:block_logic/screens/auth/login.dart';
 import 'package:block_logic/screens/terms_and_conditions.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class Signup extends StatefulWidget {
+class Signup extends ConsumerStatefulWidget {
   const Signup({super.key});
 
   @override
-  State<Signup> createState() => _SignupState();
+  ConsumerState<Signup> createState() => _SignupState();
 }
 
-class _SignupState extends State<Signup> {
+class _SignupState extends ConsumerState<Signup> {
   final TextEditingController displayNameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final TextEditingController phoneNumController = TextEditingController();
   final _signupFormKey = GlobalKey<FormState>();
+  late Widget msg;
   bool processing = false;
+  bool checkedTerms = false;
+
+  @override
+  void initState() {
+    msg = const BlankWidget();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
+    final validator = ref.read(textValidatorProvider);
+    final nav = ref.read(navProvider);
+    final auth = ref.read(authServiceProvider);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Background(
@@ -67,9 +81,23 @@ class _SignupState extends State<Signup> {
                               color: Colors.white,
                             ),
                             keyboardType: TextInputType.name,
-                            validator: (displayName) {
-                              return validateDisplayName(displayName?.trim());
-                            },
+                            // no longer validating display name, as this doesn't
+                            // need to be the same as real name
+                          ),
+                          const SizedBox(height: 15),
+                          BLTextBox(
+                            prefixIcon: const Padding(
+                              padding: EdgeInsets.only(top: 3),
+                              child: BLText(
+                                '+63',
+                                bold: true,
+                                color: Colors.white,
+                              ),
+                            ),
+                            controller: phoneNumController,
+                            maxLength: 10,
+                            hintText: 'Phone number (optional)',
+                            keyboardType: TextInputType.phone,
                           ),
                           const SizedBox(height: 15),
                           BLTextBox(
@@ -81,7 +109,7 @@ class _SignupState extends State<Signup> {
                             ),
                             keyboardType: TextInputType.emailAddress,
                             validator: (email) {
-                              return validateEmail(email?.trim());
+                              return validator.validateEmail(email?.trim());
                             },
                           ),
                           const SizedBox(height: 15),
@@ -95,39 +123,60 @@ class _SignupState extends State<Signup> {
                             isObscure: true,
                             keyboardType: TextInputType.visiblePassword,
                             validator: (password) {
-                              return validatePassword(password?.trim());
+                              return validator
+                                  .validatePassword(password?.trim());
                             },
                           ),
                           const SizedBox(height: 40),
                           Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const BLCheckbox(),
+                              BLCheckbox(
+                                onPressed: () => checkedTerms = !checkedTerms,
+                              ),
                               const SizedBox(width: 10),
                               BLTextSpan([
                                 const TextSpan(text: 'I agree to the '),
                                 TextSpan(
-                                    style: const TextStyle(decoration: TextDecoration.underline),
+                                    style: const TextStyle(
+                                        decoration: TextDecoration.underline),
                                     text: 'terms & conditions',
                                     recognizer: TapGestureRecognizer()
-                                      ..onTap = () => Utils.push(context, const TermsAndConditions())),
+                                      ..onTap = () => nav.push(
+                                          context, const TermsAndConditions())),
                               ])
                             ],
                           ),
-                          const SizedBox(
-                            height: 25,
-                          ),
+                          const SizedBox(height: 30),
+                          msg,
+                          const SizedBox(height: 15),
                           BLButton(
-                              padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 10),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 50, vertical: 10),
                               onPressed: () async {
                                 if (_signupFormKey.currentState!.validate()) {
+                                  if (checkedTerms == false) {
+                                    msg = const BLText(
+                                      'You must agree to terms and conditions.',
+                                      color: Colors.red,
+                                    );
+                                    setState(() {});
+                                    return;
+                                  } else {
+                                    msg = const BlankWidget();
+                                    setState(() {});
+                                  }
                                   if (processing == true) {
                                     return;
                                   }
+
                                   processing = true;
-                                  await AuthService.createAccount(context,
+                                  await auth.createAccount(
                                       email: emailController.text.trim(),
                                       password: passwordController.text.trim(),
-                                      displayName: displayNameController.text.trim());
+                                      phoneNum: phoneNumController.text.trim(),
+                                      displayName:
+                                          displayNameController.text.trim());
                                   processing = false;
                                 }
                               },
@@ -139,7 +188,8 @@ class _SignupState extends State<Signup> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               BLTextButton(
-                                  onPressed: () => Utils.pushReplace(context, const Login()),
+                                  onPressed: () =>
+                                      nav.pushReplace(context, const Login()),
                                   child: const BLText(
                                     'Login to existing account',
                                     underlined: true,

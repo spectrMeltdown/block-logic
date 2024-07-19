@@ -1,4 +1,5 @@
-import 'package:block_logic/components/custom_widgets.dart';
+import 'package:block_logic/components/util/blank_widget.dart';
+import 'package:block_logic/logic/services/ui.dart';
 import 'package:flutter/material.dart';
 
 class BLTextBox extends StatefulWidget {
@@ -11,7 +12,6 @@ class BLTextBox extends StatefulWidget {
       this.enabled,
       this.prefixIcon,
       this.suffixIcon,
-      this.suffix,
       this.onTap,
       this.labelText,
       this.isObscure = false,
@@ -30,15 +30,14 @@ class BLTextBox extends StatefulWidget {
   final bool isAutoFocus;
   final AutovalidateMode? isAutoValidate;
   final bool? enabled;
-  final Icon? prefixIcon;
-  final Icon? suffixIcon;
+  final Widget? prefixIcon;
+  final Widget? suffixIcon;
   final TextEditingController? controller;
   final VoidCallback? onTap;
   final String? labelText;
   final bool isObscure;
   final String? Function(String?)? validator;
   //final Widget? error;
-  final Widget? suffix;
   final String? hintText;
   final InputBorder? border;
   final TextInputType? keyboardType;
@@ -80,21 +79,30 @@ class _BLInputState extends State<BLTextBox> {
       keyboardType: widget.keyboardType,
       decoration: InputDecoration(
           hintText: widget.hintText,
-          hintStyle: const TextStyle(color: Colors.white, fontStyle: FontStyle.italic),
-          labelStyle: const TextStyle(color: Colors.white38, fontStyle: FontStyle.italic),
-          floatingLabelBehavior: FloatingLabelBehavior.never,
+          hintStyle:
+              const TextStyle(color: Colors.white, fontStyle: FontStyle.italic),
+          labelStyle: const TextStyle(
+              color: Colors.white38, fontStyle: FontStyle.italic),
+          floatingLabelBehavior: FloatingLabelBehavior
+              .never, // when the placeholder animates to the top portion
           helperText: helperText,
           filled: true,
           fillColor: Colors.teal.shade900.withAlpha(200),
           // error: widget.error,
           errorStyle: const TextStyle(color: Colors.amber),
-          errorBorder: const OutlineInputBorder(borderSide: BorderSide(color: Colors.amber, width: 2)),
-          border:
-              widget.border ?? OutlineInputBorder(borderSide: BorderSide(color: Colors.lightBlue.shade200, width: 2)),
-          focusedBorder:
-              widget.border ?? OutlineInputBorder(borderSide: BorderSide(color: Colors.lightBlue.shade200, width: 2)),
-          counter: blankWidget,
-          suffix: widget.suffix,
+          errorBorder: const OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.amber, width: 2)),
+          border: widget.border ??
+              OutlineInputBorder(
+                  borderSide: BorderSide(
+                      color: BLUI().getAppColor('lightBlue'), width: 2)),
+          focusedBorder: widget.border ??
+              OutlineInputBorder(
+                  borderSide: BorderSide(
+                      color: BLUI().getAppColor('lightBlue'), width: 2)),
+          //Colors.lightBlue.shade200
+          counter:
+              const BlankWidget(), // blank counter to prevent it from displaying when provider maxLength
           prefixIcon: widget.prefixIcon != null
               ? Padding(
                   padding: const EdgeInsets.all(10),

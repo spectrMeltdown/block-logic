@@ -1,10 +1,10 @@
-import 'package:block_logic/components/animation_player.dart';
-import 'package:block_logic/components/custom_widgets.dart';
-import 'package:block_logic/logic/assets.dart';
+import 'package:block_logic/components/util/blank_widget.dart';
+import 'package:block_logic/logic/services/assets.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:video_player/video_player.dart';
 
-class Background extends StatelessWidget {
+class Background extends ConsumerStatefulWidget {
   const Background({
     required this.child,
     this.grid = true,
@@ -17,6 +17,21 @@ class Background extends StatelessWidget {
   final bool grid;
   final String? asset;
 
+  @override
+  ConsumerState<Background> createState() => _BackgroundState();
+}
+
+class _BackgroundState extends ConsumerState<Background> {
+  late final VideoPlayerController? controller;
+  late final Assets assets;
+
+  @override
+  void initState() {
+    assets = ref.read(assetsProvider);
+    controller = widget.controller ?? VideoPlayerController.asset(assets.bg1);
+    super.initState();
+  }
+
   // late final VideoPlayerController _controller;
   @override
   Widget build(BuildContext context) {
@@ -27,20 +42,23 @@ class Background extends StatelessWidget {
         //         asset!,
         //         size: double.maxFinite,
         //       )
-        (asset != null)
-            ? controller != null && controller!.value.isInitialized
+        (widget.asset != null)
+            ? widget.controller != null &&
+                    widget.controller!.value.isInitialized
                 ? VideoPlayer(controller!)
-                : blankWidget
+                : const BlankWidget()
             : Container(
                 decoration: BoxDecoration(
                   image: DecorationImage(
-                      image: (grid == true
-                          ? const AssetImage(Assets.backgroundGrid)
-                          : const AssetImage(Assets.backgroundNoGrid)),
+                      image: (widget.grid == true
+                          ? AssetImage(assets.backgroundGrid)
+                          : AssetImage(assets.backgroundNoGrid)),
                       fit: BoxFit.cover),
                 ),
               ),
-        Padding(padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 15), child: child)
+        Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 15),
+            child: widget.child)
       ],
     );
   }

@@ -1,21 +1,29 @@
-import 'package:block_logic/components/account_details.dart';
-import 'package:block_logic/components/back_button.dart';
+import 'package:block_logic/components/account/display_name.dart';
+import 'package:block_logic/components/account/email.dart';
 import 'package:block_logic/components/background.dart';
-import 'package:block_logic/components/button.dart';
-import 'package:block_logic/components/dialog.dart';
-import 'package:block_logic/components/login_signup_btns.dart';
+import 'package:block_logic/components/button/back_button.dart';
+import 'package:block_logic/components/button/button.dart';
+import 'package:block_logic/components/button/login_signup_btns.dart';
+import 'package:block_logic/components/button/text_button.dart';
+import 'package:block_logic/components/dialog/dialog.dart';
 import 'package:block_logic/components/panel.dart';
 import 'package:block_logic/components/profile_pic.dart';
-import 'package:block_logic/components/text.dart';
-import 'package:block_logic/components/text_button.dart';
+import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/toggle.dart';
-import 'package:block_logic/logic/auth.dart';
-import 'package:block_logic/components/custom_widgets.dart';
-import 'package:block_logic/logic/db.dart';
-import 'package:block_logic/logic/models.dart';
-import 'package:block_logic/logic/providers/providers.dart';
-import 'package:block_logic/logic/toast.dart';
-import 'package:block_logic/logic/utils.dart';
+import 'package:block_logic/components/util/blank_widget.dart';
+import 'package:block_logic/components/util/provider_default.dart';
+import 'package:block_logic/logic/enums.dart';
+import 'package:block_logic/logic/firebase_models/account_settings.dart';
+import 'package:block_logic/logic/firebase_providers/account_settings.dart';
+import 'package:block_logic/logic/firebase_providers/auth.dart';
+import 'package:block_logic/logic/services/account.dart';
+import 'package:block_logic/logic/services/audio.dart';
+import 'package:block_logic/logic/services/auth.dart';
+import 'package:block_logic/logic/services/db.dart';
+import 'package:block_logic/logic/services/media_query.dart';
+import 'package:block_logic/logic/services/navigation.dart';
+import 'package:block_logic/logic/services/persistent_data.dart';
+import 'package:block_logic/logic/services/toast.dart';
 import 'package:block_logic/screens/about_us.dart';
 import 'package:block_logic/screens/auth/change_display_name.dart';
 import 'package:block_logic/screens/auth/change_email.dart';
@@ -45,21 +53,20 @@ class _SettingsState extends ConsumerState<Settings> {
 
   @override
   Widget build(BuildContext context) {
-    final user = ref.watch(accountProvider);
+    final user = ref.watch(accountAuthProvider);
+    final nav = ref.watch(navProvider);
+    final mediaQuery = ref.read(bLMediaQueryProvider);
+    final auth = ref.read(authServiceProvider);
+    final accountService = ref.read(accountServiceProvider);
+    final toast = ref.read(blToastProvider);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Background(
         child: Column(
           children: [
-            const Row(
-              children: [BLBackButton()],
-            ),
-            Container(
-              color: Colors.transparent,
-            ),
-            const BLTitle(
-              'Settings',
-            ),
+            const Row(children: [BLBackButton()]),
+            Container(color: Colors.transparent),
+            const BLTitle('Settings'),
             Flexible(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(15, 0, 15, 30),
@@ -68,7 +75,7 @@ class _SettingsState extends ConsumerState<Settings> {
                   children: [
                     BLPanel(
                         child: SizedBox(
-                      width: Utils.screenW(context) / 1.4,
+                      width: mediaQuery.screenW(context) / 1.4,
                       child: Column(
                         children: [
                           const SizedBox(
@@ -85,14 +92,14 @@ class _SettingsState extends ConsumerState<Settings> {
                               } else {
                                 return Column(
                                   children: [
-                                    BLProfilePic(
+                                    BLProfilePic(auth.getUID(),
                                         onPressed: () async {
-                                          if (processing == true) return;
-                                          processing = true;
-                                          await DBService().changeProfilePic(context);
-                                          processing = false;
-                                        },
-                                        size: 100),
+                                      if (processing == true) return;
+                                      processing = true;
+                                      await accountService.changeProfilePic(
+                                          FirestoreCollections.users);
+                                      processing = false;
+                                    }, size: 100),
                                     const SizedBox(height: 10),
                                     const BLText(
                                       //'Tap photo to edit', //if spare time, apply a image cropper
@@ -101,34 +108,52 @@ class _SettingsState extends ConsumerState<Settings> {
                                     ),
                                     const SizedBox(height: 20),
                                     Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         BLTextButton(
                                             onPressed: () {
-                                              showDialog(context: context, builder: (context) => const ChangeDisplayName());
+                                              showDialog(
+                                                  context: context,
+                                                  builder: (context) =>
+                                                      const ChangeDisplayName());
                                             },
                                             child: Row(
                                               mainAxisSize: MainAxisSize.min,
                                               children: [
-                                                const Icon(FontAwesomeIcons.user, color: Colors.white),
+                                                const Icon(
+                                                    FontAwesomeIcons.user,
+                                                    color: Colors.white),
                                                 const SizedBox(width: 15),
-                                                const BLDisplayName(),
+                                                BLDisplayName(
+                                                  auth.getUID(),
+                                                ),
                                                 const SizedBox(width: 5),
                                                 widget.editIcon
                                               ],
                                             )),
                                         BLTextButton(
                                             onPressed: () async {
-                                              String? reauth = await blShowReauthDialog(context);
+                                              String? reauth = await showDialog(
+                                                context: context,
+                                                builder:
+                                                    (BuildContext context) =>
+                                                        const ReauthDialog(),
+                                              );
                                               if (reauth == 'success') {
                                                 if (!context.mounted) return;
-                                                showDialog(context: context, builder: (context) => const ChangeEmail());
+                                                showDialog(
+                                                    context: context,
+                                                    builder: (context) =>
+                                                        const ChangeEmail());
                                               }
                                             },
                                             child: Row(
                                               mainAxisSize: MainAxisSize.min,
                                               children: [
-                                                const Icon(FontAwesomeIcons.envelope, color: Colors.white),
+                                                const Icon(
+                                                    FontAwesomeIcons.envelope,
+                                                    color: Colors.white),
                                                 const SizedBox(width: 15),
                                                 const BLEmail(),
                                                 const SizedBox(width: 5),
@@ -137,24 +162,36 @@ class _SettingsState extends ConsumerState<Settings> {
                                             )),
                                         BLTextButton(
                                             onPressed: () async {
-                                              String? reauth = await blShowReauthDialog(context);
+                                              String? reauth = await showDialog(
+                                                context: context,
+                                                builder:
+                                                    (BuildContext context) =>
+                                                        const ReauthDialog(),
+                                              );
                                               if (reauth == 'success') {
                                                 if (!context.mounted) return;
                                                 showDialog(
-                                                    context: context, builder: (context) => const ChangePassword());
+                                                    context: context,
+                                                    builder: (context) =>
+                                                        const ChangePassword());
                                               } else if (reauth == 'failed') {
                                                 if (!context.mounted) return;
-                                                showToast('Wrong password');
-                                              } else if (reauth == 'cancelled') {
+                                                toast.showToast(
+                                                    'Wrong password');
+                                              } else if (reauth ==
+                                                  'cancelled') {
                                                 if (!context.mounted) return;
                                               } else if (reauth == 'TOA') {
-                                                showToast('Sorry, try again later');
+                                                toast.showToast(
+                                                    'Sorry, try again later');
                                               }
                                             },
                                             child: Row(
                                               mainAxisSize: MainAxisSize.min,
                                               children: [
-                                                const Icon(FontAwesomeIcons.lock, color: Colors.white),
+                                                const Icon(
+                                                    FontAwesomeIcons.lock,
+                                                    color: Colors.white),
                                                 const SizedBox(width: 15),
                                                 const BLText('Change password'),
                                                 const SizedBox(width: 5),
@@ -165,21 +202,32 @@ class _SettingsState extends ConsumerState<Settings> {
                                           height: 20,
                                         ),
                                         Row(
-                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
                                           children: [
                                             BLButton(
                                                 type: BtnType.red,
                                                 onPressed: () async {
-                                                  String? reauth = await blShowReauthDialog(context);
+                                                  String? reauth =
+                                                      await showDialog(
+                                                    context: context,
+                                                    builder: (BuildContext
+                                                            context) =>
+                                                        const ReauthDialog(),
+                                                  );
                                                   if (reauth == 'success') {
-                                                    if (!context.mounted) return;
-                                                    AuthService.deleteAccount(context);
+                                                    if (!context.mounted) {
+                                                      return;
+                                                    }
+                                                    auth.deleteAccount();
                                                   }
                                                 },
                                                 child: const Row(
-                                                  mainAxisSize: MainAxisSize.min,
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
                                                   children: [
-                                                    Icon(Icons.delete_forever, color: Colors.white),
+                                                    Icon(Icons.delete_forever,
+                                                        color: Colors.white),
                                                     SizedBox(
                                                       width: 15,
                                                     ),
@@ -193,7 +241,7 @@ class _SettingsState extends ConsumerState<Settings> {
                                             //     type: BtnType.red,
                                             //     onPressed: () async {
                                             //       AuthService.logout();
-                                            //       Utils.pop(context);
+                                            //       nav.pop(context);
                                             //     },
                                             //     child: Row(
                                             //       mainAxisSize: MainAxisSize.min,
@@ -216,8 +264,8 @@ class _SettingsState extends ConsumerState<Settings> {
                                 );
                               }
                             },
-                            error: (error, stackTrace) => blankWidget,
-                            loading: () => blankWidget,
+                            error: (error, stackTrace) => const BlankWidget(),
+                            loading: () => const BlankWidget(),
                           ),
                           const SizedBox(height: 15),
                         ],
@@ -227,21 +275,26 @@ class _SettingsState extends ConsumerState<Settings> {
                       height: 20,
                     ),
                     BLPanel(
-                        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 30, vertical: 15),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: user.when(
                               data: (user) {
-                                return [const BLSmallTitle('System'), SystemSettings(isLoggedIn: user != null)];
+                                return [
+                                  const BLSmallTitle('System'),
+                                  SystemSettings(isLoggedIn: user != null)
+                                ];
                               },
-                              error: (error, stackTrace) => [blankWidget],
-                              loading: () => [blankWidget]),
+                              error: (error, stackTrace) =>
+                                  [const BlankWidget()],
+                              loading: () => [const BlankWidget()]),
                         )),
                     SizedBox(
-                      height: Utils.screenH(context) / 15,
+                      height: mediaQuery.screenH(context) / 15,
                     ),
                     BLTextButton(
-                        onPressed: () => Utils.push(context, const AboutUs()),
+                        onPressed: () => nav.push(context, const AboutUs()),
                         child: const BLText(
                           'About Us',
                           underlined: true,
@@ -263,11 +316,13 @@ class SystemSettings extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final userSettings = ref.watch(userSettingsProvider);
-    final persistentData = ref.watch(persistentDataStateProvider);
-    final persistentDataNotifier = ref.read(persistentDataStateProvider.notifier);
-    final gameAudio = ref.watch(gameAudioProvider);
-    final gameAudioNotifier = ref.read(gameAudioProvider.notifier);
+    final userSettings =
+        ref.watch(SettingsProvider(FirestoreCollections.users));
+    final dbService = ref.read(dBServiceProvider);
+    final persistentData = ref.watch(persistentDataProvider);
+    final persistentDataNotifier = ref.read(persistentDataProvider.notifier);
+    final gameAudio = ref.watch(bLAudioProvider);
+    final gameAudioNotifier = ref.read(bLAudioProvider.notifier);
 
     /// initialize the list to return
     List<Widget> settings = [];
@@ -284,7 +339,7 @@ class SystemSettings extends ConsumerWidget {
           ],
         ),
         BLSwitch(
-          state: gameAudio.soundEffects,
+          state: gameAudio.shouldPlaySoundEffects(),
           onPressed: () {
             gameAudioNotifier.toggleSoundEffects();
           },
@@ -301,7 +356,7 @@ class SystemSettings extends ConsumerWidget {
           ],
         ),
         BLSwitch(
-          state: gameAudio.backgroundMusic,
+          state: gameAudio.shouldPlayBackgroundMusic(),
           onPressed: () {
             debugPrint('bg music switch');
             gameAudioNotifier.toggleBG();
@@ -320,7 +375,7 @@ class SystemSettings extends ConsumerWidget {
           ],
         ),
         BLSwitch(
-          state: persistentData.notifications,
+          state: persistentData.shouldDisplayNotifications(),
           onPressed: () {
             persistentDataNotifier.toggleNotifications();
           },
@@ -341,11 +396,25 @@ class SystemSettings extends ConsumerWidget {
           ),
           userSettings.when(
               data: (settings) {
-                bool loginAlerts = settings?.loginAlerts ?? false;
+                bool processing = false;
+                bool loginAlerts = settings?.loginAlerts ?? true;
                 return BLSwitch(
                   state: loginAlerts,
                   onPressed: () async {
-                    DBService().updateUserSettings(AccountSettings(loginAlerts: !loginAlerts));
+                    if (processing) return;
+                    processing = true;
+
+                    try {
+                      debugPrint('current value loginAlerts = $loginAlerts');
+                      await dbService.updateUserSettings(
+                          AccountSettings(loginAlerts: !loginAlerts));
+                    } catch (e) {
+                      if (!context.mounted) {
+                        debugPrint('Problem in settings.dart');
+                        return;
+                      }
+                    }
+                    processing = false;
                   },
                 );
               },
@@ -358,14 +427,15 @@ class SystemSettings extends ConsumerWidget {
   }
 }
 
-class SystemSetting extends StatelessWidget {
+class SystemSetting extends ConsumerWidget {
   const SystemSetting({super.key, required this.children});
   final List<Widget> children;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final mediaQuery = ref.watch(bLMediaQueryProvider);
     return SizedBox(
-      width: Utils.screenW(context) / 1.4,
+      width: mediaQuery.screenW(context) / 1.4,
       child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,

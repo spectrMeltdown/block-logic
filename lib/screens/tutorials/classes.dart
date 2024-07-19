@@ -1,6 +1,6 @@
-import 'package:block_logic/components/back_button.dart';
+import 'package:block_logic/components/button/back_button.dart';
 import 'package:block_logic/components/background.dart';
-import 'package:block_logic/components/text.dart';
+import 'package:block_logic/components/text/text.dart';
 import 'package:flutter/material.dart';
 
 class Classes extends StatelessWidget {
@@ -28,7 +28,7 @@ class Classes extends StatelessWidget {
 Classes provide a way to create custom data types by bundling data and methods (functions) that operate on that data. A class defines the structure and behavior of the objects created from it. For instance, you might define a Dog class to represent dogs in a program:\n\n
 ''', style: TextStyle(color: Colors.white)),
                       TextSpan(text: '''
-class Dog:     def __init__(self, name, age):         self.name = name         self.age = age      def bark(self):         print("Woof!")
+class Dog:    def __init__(self, name, age):        self.name = name        self.age = age    def bark(self):        print("Woof!")
 ''')
                     ])
                   ],

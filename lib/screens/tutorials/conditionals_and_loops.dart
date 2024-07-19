@@ -1,6 +1,6 @@
-import 'package:block_logic/components/back_button.dart';
+import 'package:block_logic/components/button/back_button.dart';
 import 'package:block_logic/components/background.dart';
-import 'package:block_logic/components/text.dart';
+import 'package:block_logic/components/text/text.dart';
 import 'package:flutter/material.dart';
 
 class ConditionalsAndLoops extends StatelessWidget {

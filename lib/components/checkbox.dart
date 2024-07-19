@@ -1,3 +1,4 @@
+import 'package:block_logic/logic/services/ui.dart';
 import 'package:flutter/material.dart';
 
 class BLCheckbox extends StatefulWidget {
@@ -30,17 +31,17 @@ class _BLCheckboxState extends State<BLCheckbox> {
     widget.onPressed?.call();
   }
 
-  void _onTapDown(TapDownDetails tapDown) {
-    setState(() {
-      // _isTapped = true;
-    });
-  }
+  // void _onTapDown(TapDownDetails tapDown) {
+  //   setState(() {
+  //     // _isTapped = true;
+  //   });
+  // }
 
-  void _onTapCancel() {
-    setState(() {
-      // _isTapped = false;
-    });
-  }
+  // void _onTapCancel() {
+  //   setState(() {
+  //     // _isTapped = false;
+  //   });
+  // }
 
   @override
   void initState() {
@@ -57,10 +58,12 @@ class _BLCheckboxState extends State<BLCheckbox> {
           width: 25,
           height: 25,
           decoration: ShapeDecoration(
-            gradient: RadialGradient(colors: [Colors.blueGrey[900]!, Colors.black87], radius: 1.5),
+            gradient: RadialGradient(
+                colors: [Colors.blueGrey[900]!, Colors.black87], radius: 1.5),
             shape: BeveledRectangleBorder(
-                borderRadius: const BorderRadius.only(bottomRight: Radius.circular(7)),
-                side: BorderSide(color: Colors.lightBlue[100]!)),
+                borderRadius:
+                    const BorderRadius.only(bottomRight: Radius.circular(7)),
+                side: BorderSide(color: BLUI().getAppColor('lightblue'))),
           ),
           child: AnimatedOpacity(
             duration: const Duration(milliseconds: 400),
@@ -68,11 +71,14 @@ class _BLCheckboxState extends State<BLCheckbox> {
             child: AnimatedContainer(
                 duration: const Duration(milliseconds: 100),
                 curve: Curves.easeInOut,
-                margin: _isChecked ? const EdgeInsets.all(4) : const EdgeInsets.all(20),
+                margin: _isChecked
+                    ? const EdgeInsets.all(4)
+                    : const EdgeInsets.all(20),
                 decoration: const ShapeDecoration(
                   color: Colors.white,
                   shape: BeveledRectangleBorder(
-                    borderRadius: BorderRadius.only(bottomRight: Radius.circular(5)),
+                    borderRadius:
+                        BorderRadius.only(bottomRight: Radius.circular(5)),
                   ),
                 )),
           )),
