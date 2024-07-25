@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class Room {
   final String? id;
   final String? hostID;
@@ -15,21 +17,9 @@ class Room {
       required this.password,
       required this.capacity});
 
-  factory Room.fromFirestore(dynamic doc) {
-    // Map<String, dynamic> data = {};
-    // if (doc.data() != null) {
-    //   data = doc.data() as Map<String, dynamic>;
-    // }
-
-    // return Room(
-    //   id: doc.id,
-    //   icon: data['icon'] ?? '',
-    //   hostID: data['hostID'] ?? '',
-    //   challengeIDs: data['challengeIDs'] ?? [],
-    //   name: data['name'] ?? '',
-    //   password: data['password'] ?? '',
-    //   capacity: data['capacity'] ?? -1,
-    // );
+  // TODO: follow to other providers
+  /// When calling this with [QueryDocumentSnapshot], cast it to [DocumentSnapshot]
+  factory Room.fromFirestore(DocumentSnapshot doc) {
     return Room(
       id: doc.id,
       icon: doc.get('icon') ?? '',

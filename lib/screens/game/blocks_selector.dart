@@ -6,7 +6,7 @@ import 'package:block_logic/logic/game/block_data.dart';
 import 'package:block_logic/logic/services/game_manager.dart';
 import 'package:block_logic/logic/services/media_query.dart';
 import 'package:block_logic/logic/services/ui.dart';
-import 'package:block_logic/screens/game/blocks.dart';
+import 'package:block_logic/screens/game/block.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -70,48 +70,54 @@ class _GameBlocksState extends ConsumerState<GameBlocks>
   Widget build(BuildContext context) {
     final mediaQuery = ref.watch(bLMediaQueryProvider);
     ref.watch(gameManagerStateProvider);
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 15),
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: [
-                TabBar(
-                    indicator: const BoxDecoration(color: Colors.transparent),
-                    isScrollable: true,
-                    tabAlignment: TabAlignment.start,
-                    labelColor: Colors.white,
-                    labelPadding: const EdgeInsets.symmetric(horizontal: 3),
-                    indicatorColor: BLUI().getAppColor(''),
-                    controller: blocksTabController,
-                    tabs: [
-                      ...List.generate(
-                          blocksTabList.length,
-                          (index) => buildBlockTabs(blocksTabList[index], index,
-                              blocksTabController.index))
-                    ]),
-              ],
+    return Flexible(
+      flex: 0,
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15),
+            child: SizedBox(
+              width: double.maxFinite,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    TabBar(
+                        indicator:
+                            const BoxDecoration(color: Colors.transparent),
+                        isScrollable: true,
+                        tabAlignment: TabAlignment.start,
+                        labelColor: Colors.white,
+                        labelPadding: const EdgeInsets.symmetric(horizontal: 3),
+                        indicatorColor: BLUI().getAppColor(''),
+                        controller: blocksTabController,
+                        tabs: [
+                          ...List.generate(
+                              blocksTabList.length,
+                              (index) => buildBlockTabs(blocksTabList[index],
+                                  index, blocksTabController.index))
+                        ]),
+                  ],
+                ),
+              ),
             ),
           ),
-        ),
-        SizedBox(
-          width: double.maxFinite,
-          height: mediaQuery.screenH(context) / 10,
-          child: BLBorderedPanel(
-            TabBarView(
-                clipBehavior: Clip.antiAlias,
-                physics: const NeverScrollableScrollPhysics(),
-                controller: blocksTabController,
-                children: [
-                  ...List.generate(
-                      blocksTabList.length, (index) => buildBlockView())
-                ]),
-          ),
-        )
-      ],
+          SizedBox(
+            width: double.maxFinite,
+            height: mediaQuery.screenH(context) / 10,
+            child: BLBorderedPanel(
+              TabBarView(
+                  clipBehavior: Clip.antiAlias,
+                  physics: const NeverScrollableScrollPhysics(),
+                  controller: blocksTabController,
+                  children: [
+                    ...List.generate(
+                        blocksTabList.length, (index) => buildBlockView())
+                  ]),
+            ),
+          )
+        ],
+      ),
     );
   }
 }

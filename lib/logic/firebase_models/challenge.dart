@@ -2,10 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Challenge {
   final String id;
-  final String name;
-  final String description;
-  final String difficulty;
-  final bool isShared;
+  final String? name;
+  final String? description;
+  final String? difficulty;
+  final bool? isShared;
   final List<String> tags;
   final DateTime dateCreated;
   Challenge({

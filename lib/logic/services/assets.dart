@@ -14,6 +14,11 @@ class Assets {
   final String logo = 'assets/images/logo.png';
 
   /// audio
+  /// TODO: find the following audio
+  /// - in-game music
+  /// - back-button sound effect
+  /// - leaderboard music (1st-3rd placer)
+  /// - leaderboard music (finished game)
   final String audioBG1 = 'bg1.mp3';
   final String btn1 = 'btn.mp3';
 

@@ -2,20 +2,19 @@ import 'package:block_logic/components/async/loading.dart';
 import 'package:block_logic/components/background.dart';
 import 'package:block_logic/components/panel.dart';
 import 'package:block_logic/components/text/text.dart';
+import 'package:block_logic/logic/firebase_models/room.dart';
 import 'package:block_logic/logic/firebase_providers/room_in_game.dart';
-import 'package:block_logic/logic/services/audio.dart';
 import 'package:block_logic/logic/services/media_query.dart';
 import 'package:block_logic/logic/services/ui.dart';
-import 'package:block_logic/screens/game/block_selector.dart';
+import 'package:block_logic/screens/game/blocks_selector.dart';
 import 'package:block_logic/screens/game/editor.dart';
-import 'package:block_logic/screens/game/pause_dialog.dart';
+import 'package:block_logic/screens/game/game_appbar.dart';
 import 'package:block_logic/screens/game/run_btn.dart';
 import 'package:block_logic/screens/game/submit_btn.dart';
-import 'package:block_logic/screens/game/time_box.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+/// The entire game screen
 class Game extends ConsumerStatefulWidget {
   const Game(this.roomID, {super.key});
   final String roomID;
@@ -25,83 +24,29 @@ class Game extends ConsumerStatefulWidget {
 }
 
 class _GameState extends ConsumerState<Game> {
-  bool pauseTimer = false;
-
   @override
   Widget build(BuildContext context) {
     //TODO: have a gamehost controller that will react to host actions, like when game start
     //TODO: when game starts, display challenge and limitation overlay
     //final gameHost = ref.watch(gameHostProvider);
     final room = ref.watch(GameRoomProvider(widget.roomID));
-    final audio = ref.read(bLAudioStateProvider.notifier);
-    void pauseMenu(TapUpDetails tap) async {
-      audio.playBtn();
-      pauseTimer = true;
-      setState(() {});
-      await showGeneralDialog(
-          context: context,
-          barrierDismissible: false,
-          transitionDuration: const Duration(milliseconds: 500),
-          transitionBuilder: (context, animation, secondaryAnimation, child) {
-            final primaryCurve = CurvedAnimation(
-              parent: animation,
-              //     begin: const Offset(0, 1),
-              //     end: const Offset(0, 0),
-              //   ).animate(animation),
-              //   child: child,
-              // );
-              curve: Curves.easeInOut,
-              reverseCurve: Curves.easeInOut,
-            );
-            return SlideTransition(
-              position: Tween<Offset>(
-                begin: const Offset(0, 1),
-                end: const Offset(0, 0),
-              ).animate(primaryCurve),
-              child: child,
-            );
-            // return SlideTransition(
-            //   position: Tween<Offset>(
-          },
-          pageBuilder: (context, animation1, animation2) {
-            return const PauseDialog();
-          });
-      pauseTimer = false;
-      setState(() {});
-    }
 
     Widget testing() {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           const SizedBox(height: 25),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              GestureDetector(
-                onTapUp: pauseMenu,
-                child: const BLBorderedPanel(
-                  Icon(
-                    FontAwesomeIcons.pause,
-                    size: 20,
-                  ),
-                ),
-              ),
-              const Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  BLText('Challenge Name', bold: true, size: 20),
-                  BLText(
-                    'Room Name',
-                    bold: true,
-                    size: 13,
-                    color: Colors.grey,
-                  ),
-                ],
-              ),
-              TimeBox(pauseTimer),
-            ],
-          ),
+          // TODO: change to intercept challenges & room from firestore
+          GameAppbar(
+              room: Room(
+                  id: 'id',
+                  icon: 'icon',
+                  hostID: 'hostID',
+                  challengeIDs: [],
+                  name: 'name',
+                  password: 'password',
+                  capacity: 5),
+              challenges: const []),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
             child: Container(
@@ -160,8 +105,8 @@ class _GameState extends ConsumerState<Game> {
           ),
           const SizedBox(height: 10),
           const BlockDropOff(),
-          const SizedBox(height: 10),
-          const GameBlocks()
+          const Padding(
+              padding: EdgeInsets.symmetric(vertical: 20), child: GameBlocks()),
         ],
       );
     }
