@@ -14,15 +14,14 @@ class CustomTabView extends ConsumerStatefulWidget {
   ConsumerState<CustomTabView> createState() => _CustomTabViewState();
 }
 
-class _CustomTabViewState extends ConsumerState<CustomTabView> {
+class _CustomTabViewState extends ConsumerState<CustomTabView>
+    with AutomaticKeepAliveClientMixin {
   GameCodeBlockData? obtainedBlock;
   List<Widget> codeBlocks = [];
   bool addedPlaceholder = false;
 
   @override
-  void initState() {
-    super.initState();
-  }
+  bool get wantKeepAlive => true;
 
   void addBlock(GameCodeBlockData data) {
     final dataSelected = data.copyWith(state: CodeBlockState.selected);
@@ -56,6 +55,7 @@ class _CustomTabViewState extends ConsumerState<CustomTabView> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     final gameManager = ref.watch(gameManagerStateProvider);
     final gameManagerState = ref.read(gameManagerStateProvider.notifier);
     if (gameManager.isDropCancelled) {
