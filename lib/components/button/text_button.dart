@@ -19,7 +19,7 @@ class _BtnState extends ConsumerState<BLTextButton> {
 
   @override
   Widget build(BuildContext context) {
-    final audio = ref.read(bLAudioProvider.notifier);
+    final audio = ref.read(bLAudioStateProvider.notifier);
     return TextButton(
         onPressed: () {
           audio.playBtn();

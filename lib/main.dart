@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:block_logic/logic/services/audio.dart';
 import 'package:block_logic/logic/services/shared_pref.dart';
-import 'package:block_logic/screens/auth/check_acc.dart';
+import 'package:block_logic/screens/game/game.dart';
 import 'package:block_logic/splash.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flame/flame.dart';
@@ -90,8 +90,9 @@ class BlockLogic extends ConsumerWidget {
       textTheme: appTextTheme,
       colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo.shade400),
       scaffoldBackgroundColor: Colors.transparent,
-      dialogTheme: const DialogTheme(
-        backgroundColor: Colors.black,
+      tabBarTheme: const TabBarTheme(dividerColor: Colors.transparent),
+      dialogTheme: DialogTheme(
+        backgroundColor: Colors.blueGrey.shade800,
       ),
       iconTheme: const IconThemeData(
         color: Colors.white,
@@ -105,7 +106,7 @@ class BlockLogic extends ConsumerWidget {
         debugShowCheckedModeBanner: false,
         theme: appTheme,
         darkTheme: appTheme,
-        home: kDebugMode ? const CheckAcc() : const Splash(),
+        home: kDebugMode ? const Game('offline-testing') : const Splash(),
       ),
     );
   }

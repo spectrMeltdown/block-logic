@@ -4,7 +4,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'generated/admin.g.dart';
 
-@Riverpod()
+@Riverpod(dependencies: [])
 Stream<AdminAccount?> adminAccount(AdminAccountRef ref, String id) async* {
   final db = ref.watch(dbProvider).i;
   final stream = db.collection('admins').doc(id).snapshots();
@@ -13,14 +13,14 @@ Stream<AdminAccount?> adminAccount(AdminAccountRef ref, String id) async* {
   }
 }
 
-@Riverpod(dependencies: [])
-Stream<String?> adminProfilePic(AdminProfilePicRef ref, String id) async* {
+final adminProfilePicProvider =
+    StreamProvider.autoDispose.family<String?, String>((ref, id) async* {
   final adminAccount = await ref.watch(AdminAccountProvider(id).future);
   yield adminAccount?.profilePicLink;
-}
+});
 
 @Riverpod(dependencies: [])
-Stream<String?> adminDisplayName(AdminDisplayNameRef ref, String id) async* {
-  final adminAccount = await ref.watch(AdminAccountProvider(id).future);
+Stream<String?> adminDisplayName(
+    AdminDisplayNameRef ref, String id, AdminAccount? adminAccount) async* {
   yield adminAccount?.displayName;
 }

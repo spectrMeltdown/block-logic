@@ -6,7 +6,7 @@ part of '../admin.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$adminAccountHash() => r'2373ac97a2f7b0a12105495d68873b3ad9f27f4b';
+String _$adminAccountHash() => r'181ac521688adfa9bc70d6920218c6a8721a9856';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -56,12 +56,14 @@ class AdminAccountFamily extends Family<AsyncValue<AdminAccount?>> {
     );
   }
 
-  static const Iterable<ProviderOrFamily>? _dependencies = null;
+  static final Iterable<ProviderOrFamily> _dependencies =
+      const <ProviderOrFamily>[];
 
   @override
   Iterable<ProviderOrFamily>? get dependencies => _dependencies;
 
-  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+  static final Iterable<ProviderOrFamily> _allTransitiveDependencies =
+      const <ProviderOrFamily>{};
 
   @override
   Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
@@ -156,137 +158,7 @@ class _AdminAccountProviderElement
   String get id => (origin as AdminAccountProvider).id;
 }
 
-String _$adminProfilePicHash() => r'5b398964ffb9b82e2fd71b890a6124a993e567f7';
-
-/// See also [adminProfilePic].
-@ProviderFor(adminProfilePic)
-const adminProfilePicProvider = AdminProfilePicFamily();
-
-/// See also [adminProfilePic].
-class AdminProfilePicFamily extends Family<AsyncValue<String?>> {
-  /// See also [adminProfilePic].
-  const AdminProfilePicFamily();
-
-  /// See also [adminProfilePic].
-  AdminProfilePicProvider call(
-    String id,
-  ) {
-    return AdminProfilePicProvider(
-      id,
-    );
-  }
-
-  @override
-  AdminProfilePicProvider getProviderOverride(
-    covariant AdminProfilePicProvider provider,
-  ) {
-    return call(
-      provider.id,
-    );
-  }
-
-  static final Iterable<ProviderOrFamily> _dependencies =
-      const <ProviderOrFamily>[];
-
-  @override
-  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
-
-  static final Iterable<ProviderOrFamily> _allTransitiveDependencies =
-      const <ProviderOrFamily>{};
-
-  @override
-  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
-      _allTransitiveDependencies;
-
-  @override
-  String? get name => r'adminProfilePicProvider';
-}
-
-/// See also [adminProfilePic].
-class AdminProfilePicProvider extends AutoDisposeStreamProvider<String?> {
-  /// See also [adminProfilePic].
-  AdminProfilePicProvider(
-    String id,
-  ) : this._internal(
-          (ref) => adminProfilePic(
-            ref as AdminProfilePicRef,
-            id,
-          ),
-          from: adminProfilePicProvider,
-          name: r'adminProfilePicProvider',
-          debugGetCreateSourceHash:
-              const bool.fromEnvironment('dart.vm.product')
-                  ? null
-                  : _$adminProfilePicHash,
-          dependencies: AdminProfilePicFamily._dependencies,
-          allTransitiveDependencies:
-              AdminProfilePicFamily._allTransitiveDependencies,
-          id: id,
-        );
-
-  AdminProfilePicProvider._internal(
-    super._createNotifier, {
-    required super.name,
-    required super.dependencies,
-    required super.allTransitiveDependencies,
-    required super.debugGetCreateSourceHash,
-    required super.from,
-    required this.id,
-  }) : super.internal();
-
-  final String id;
-
-  @override
-  Override overrideWith(
-    Stream<String?> Function(AdminProfilePicRef provider) create,
-  ) {
-    return ProviderOverride(
-      origin: this,
-      override: AdminProfilePicProvider._internal(
-        (ref) => create(ref as AdminProfilePicRef),
-        from: from,
-        name: null,
-        dependencies: null,
-        allTransitiveDependencies: null,
-        debugGetCreateSourceHash: null,
-        id: id,
-      ),
-    );
-  }
-
-  @override
-  AutoDisposeStreamProviderElement<String?> createElement() {
-    return _AdminProfilePicProviderElement(this);
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return other is AdminProfilePicProvider && other.id == id;
-  }
-
-  @override
-  int get hashCode {
-    var hash = _SystemHash.combine(0, runtimeType.hashCode);
-    hash = _SystemHash.combine(hash, id.hashCode);
-
-    return _SystemHash.finish(hash);
-  }
-}
-
-mixin AdminProfilePicRef on AutoDisposeStreamProviderRef<String?> {
-  /// The parameter `id` of this provider.
-  String get id;
-}
-
-class _AdminProfilePicProviderElement
-    extends AutoDisposeStreamProviderElement<String?> with AdminProfilePicRef {
-  _AdminProfilePicProviderElement(super.provider);
-
-  @override
-  String get id => (origin as AdminProfilePicProvider).id;
-}
-
-String _$adminDisplayNameHash() => r'475b8199301a0454792c8e9fe01438a80fe836d8';
+String _$adminDisplayNameHash() => r'0eeacaec459102cddafadfd579176f74f922d157';
 
 /// See also [adminDisplayName].
 @ProviderFor(adminDisplayName)
@@ -300,9 +172,11 @@ class AdminDisplayNameFamily extends Family<AsyncValue<String?>> {
   /// See also [adminDisplayName].
   AdminDisplayNameProvider call(
     String id,
+    AdminAccount? adminAccount,
   ) {
     return AdminDisplayNameProvider(
       id,
+      adminAccount,
     );
   }
 
@@ -312,6 +186,7 @@ class AdminDisplayNameFamily extends Family<AsyncValue<String?>> {
   ) {
     return call(
       provider.id,
+      provider.adminAccount,
     );
   }
 
@@ -337,10 +212,12 @@ class AdminDisplayNameProvider extends AutoDisposeStreamProvider<String?> {
   /// See also [adminDisplayName].
   AdminDisplayNameProvider(
     String id,
+    AdminAccount? adminAccount,
   ) : this._internal(
           (ref) => adminDisplayName(
             ref as AdminDisplayNameRef,
             id,
+            adminAccount,
           ),
           from: adminDisplayNameProvider,
           name: r'adminDisplayNameProvider',
@@ -352,6 +229,7 @@ class AdminDisplayNameProvider extends AutoDisposeStreamProvider<String?> {
           allTransitiveDependencies:
               AdminDisplayNameFamily._allTransitiveDependencies,
           id: id,
+          adminAccount: adminAccount,
         );
 
   AdminDisplayNameProvider._internal(
@@ -362,9 +240,11 @@ class AdminDisplayNameProvider extends AutoDisposeStreamProvider<String?> {
     required super.debugGetCreateSourceHash,
     required super.from,
     required this.id,
+    required this.adminAccount,
   }) : super.internal();
 
   final String id;
+  final AdminAccount? adminAccount;
 
   @override
   Override overrideWith(
@@ -380,6 +260,7 @@ class AdminDisplayNameProvider extends AutoDisposeStreamProvider<String?> {
         allTransitiveDependencies: null,
         debugGetCreateSourceHash: null,
         id: id,
+        adminAccount: adminAccount,
       ),
     );
   }
@@ -391,13 +272,16 @@ class AdminDisplayNameProvider extends AutoDisposeStreamProvider<String?> {
 
   @override
   bool operator ==(Object other) {
-    return other is AdminDisplayNameProvider && other.id == id;
+    return other is AdminDisplayNameProvider &&
+        other.id == id &&
+        other.adminAccount == adminAccount;
   }
 
   @override
   int get hashCode {
     var hash = _SystemHash.combine(0, runtimeType.hashCode);
     hash = _SystemHash.combine(hash, id.hashCode);
+    hash = _SystemHash.combine(hash, adminAccount.hashCode);
 
     return _SystemHash.finish(hash);
   }
@@ -406,6 +290,9 @@ class AdminDisplayNameProvider extends AutoDisposeStreamProvider<String?> {
 mixin AdminDisplayNameRef on AutoDisposeStreamProviderRef<String?> {
   /// The parameter `id` of this provider.
   String get id;
+
+  /// The parameter `adminAccount` of this provider.
+  AdminAccount? get adminAccount;
 }
 
 class _AdminDisplayNameProviderElement
@@ -414,6 +301,9 @@ class _AdminDisplayNameProviderElement
 
   @override
   String get id => (origin as AdminDisplayNameProvider).id;
+  @override
+  AdminAccount? get adminAccount =>
+      (origin as AdminDisplayNameProvider).adminAccount;
 }
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

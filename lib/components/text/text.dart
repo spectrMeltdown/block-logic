@@ -10,8 +10,10 @@ class BLText extends StatefulWidget {
       this.bold = false,
       this.color,
       this.alignCenter = false,
+      this.animated = false,
       this.duration = const Duration(milliseconds: 500)});
   final String text;
+  final bool animated;
   final double size;
   final bool bold;
   final FontStyle fontStyle;
@@ -53,7 +55,9 @@ class _BLTextState extends State<BLText> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Text(
-      widget.text.substring(0, _characterCount.value),
+      widget.animated
+          ? widget.text.substring(0, _characterCount.value)
+          : widget.text,
       textAlign: widget.alignCenter == true ? TextAlign.center : null,
       style: TextStyle(
         color: widget.color ?? BLUI().getAppColor('lightBlue'),

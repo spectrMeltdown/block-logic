@@ -13,14 +13,14 @@ part 'generated/db.g.dart';
 @riverpod
 class DBService extends _$DBService {
   late final DB _instance;
-  late final AuthService _auth;
+  late final AuthServiceState _auth;
   late final BLErrorHandler _errorHandler;
 
   @override
   DBService build() {
     _instance = ref.watch(dbProvider);
-    _auth = ref.watch(authServiceProvider);
-    _errorHandler = ref.watch(bLErrorHandlerProvider);
+    _auth = ref.read(authServiceStateProvider.notifier);
+    _errorHandler = ref.read(bLErrorHandlerProvider.notifier);
     return DBService();
   }
 

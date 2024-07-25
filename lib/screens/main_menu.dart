@@ -93,7 +93,7 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen>
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(accountAuthProvider);
-    final auth = ref.watch(authServiceProvider);
+    final auth = ref.read(authServiceStateProvider.notifier);
     final nav = ref.watch(navProvider);
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -245,7 +245,7 @@ List<Widget> loggedInMenu(BuildContext context, BLNavigation nav) {
 
           /// TODO: change back to creator mode later
           const Game(
-            roomID: 'testing',
+            'testing',
           )),
       child: const Text(
         'Creator Mode',

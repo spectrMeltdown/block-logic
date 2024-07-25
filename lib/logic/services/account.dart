@@ -20,7 +20,7 @@ part 'generated/account.g.dart';
 class AccountService extends _$AccountService {
   late final DB _instance;
   late final DBService _dbService;
-  late final AuthService _auth;
+  late final AuthServiceState _auth;
   late final BLErrorHandler _errorHandler;
   late final BLToast _toast;
 
@@ -28,8 +28,8 @@ class AccountService extends _$AccountService {
   AccountService build() {
     _instance = ref.watch(dbProvider);
     _dbService = ref.watch(dBServiceProvider);
-    _auth = ref.watch(authServiceProvider);
-    _errorHandler = ref.watch(bLErrorHandlerProvider);
+    _auth = ref.read(authServiceStateProvider.notifier);
+    _errorHandler = ref.read(bLErrorHandlerProvider.notifier);
     _toast = ref.watch(blToastProvider);
     return AccountService();
   }

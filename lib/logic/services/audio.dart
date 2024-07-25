@@ -6,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 part 'generated/audio.g.dart';
 
-@riverpod
+@Riverpod(dependencies: [])
 Future<void> audioInit(AudioInitRef ref) async {
   final assets = ref.read(assetsProvider);
 // cache assets for faster loading
@@ -14,53 +14,40 @@ Future<void> audioInit(AudioInitRef ref) async {
 }
 
 @Riverpod(dependencies: [])
-class BLAudio extends _$BLAudio {
-  late bool _soundEffects;
-  late bool _backgroundMusic;
-  late SharedPreferences _sharedPref;
-  late Assets _assets;
-
-  // BLAudio({required bool _soundEffects, required bool _backgroundMusic})
-  //     : _soundEffects = _soundEffects,
-  //       _backgroundMusic = _backgroundMusic;
-
+class BLAudioState extends _$BLAudioState {
   @override
   BLAudio build() {
-    _assets = ref.watch(assetsProvider);
-    _sharedPref = ref.watch(sharedPrefProvider);
-    _soundEffects = _sharedPref.getBool('_soundEffects') ?? true;
-    _backgroundMusic = _sharedPref.getBool('_backgroundMusic') ?? true;
-    return BLAudio();
+    final assets = ref.watch(assetsProvider);
+    final sharedPref = ref.watch(sharedPrefProvider);
+    final soundEffects = sharedPref.getBool('soundEffects') ?? true;
+    final backgroundMusic = sharedPref.getBool('backgroundMusic') ?? true;
+    return BLAudio(
+        soundEffects: soundEffects,
+        backgroundMusic: backgroundMusic,
+        sharedPref: sharedPref,
+        assets: assets);
     // return BLAudio(
-    //     _soundEffects: _soundEffects, _backgroundMusic: _backgroundMusic);
+    //     soundEffects: soundEffects, backgroundMusic: backgroundMusic);
   }
 
   void playBtn() {
-    if (state._soundEffects == true) FlameAudio.play(_assets.btn1);
-  }
-
-  bool shouldPlaySoundEffects() {
-    return state._soundEffects;
-  }
-
-  bool shouldPlayBackgroundMusic() {
-    return state._backgroundMusic;
+    if (state.soundEffects == true) FlameAudio.play(state._assets.btn1);
   }
 
   void toggleSoundEffects() {
     /// toggle the sound effects
-    state._soundEffects = !state._soundEffects;
+    state.soundEffects = !state.soundEffects;
 
     /// save the user preference
-    _sharedPref.setBool('_soundEffects', state._soundEffects);
+    state._sharedPref.setBool('soundEffects', state.soundEffects);
   }
 
   void toggleBG() {
     /// reverse current value
-    state._backgroundMusic = !state._backgroundMusic;
+    state.backgroundMusic = !state.backgroundMusic;
 
     /// check if should play
-    if (state._backgroundMusic == true) {
+    if (state.backgroundMusic == true) {
       /// check if bgm is already playing
       if (!FlameAudio.bgm.isPlaying) {
         /// adjust the volume
@@ -72,7 +59,7 @@ class BLAudio extends _$BLAudio {
         FlameAudio.bgm.resume();
       } else {
         /// play from start
-        FlameAudio.bgm.play(_assets.audioBG1);
+        FlameAudio.bgm.play(state._assets.audioBG1);
       }
     } else {
       /// pause the audio
@@ -80,6 +67,21 @@ class BLAudio extends _$BLAudio {
     }
 
     /// save the new value
-    _sharedPref.setBool('_backgroundMusic', state._backgroundMusic);
+    state._sharedPref.setBool('backgroundMusic', state.backgroundMusic);
   }
+}
+
+class BLAudio {
+  bool soundEffects;
+  bool backgroundMusic;
+  final SharedPreferences _sharedPref;
+  final Assets _assets;
+
+  BLAudio({
+    required this.soundEffects,
+    required this.backgroundMusic,
+    required SharedPreferences sharedPref,
+    required Assets assets,
+  })  : _sharedPref = sharedPref,
+        _assets = assets;
 }

@@ -1,10 +1,8 @@
 import 'package:block_logic/components/async/loading.dart';
 import 'package:block_logic/components/circular_image.dart';
 import 'package:block_logic/components/util/blank_widget.dart';
-
 import 'package:block_logic/logic/firebase_providers/user.dart';
 import 'package:block_logic/logic/services/audio.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -45,8 +43,8 @@ class _BLProfilePicState extends ConsumerState<BLProfilePic> {
 
   @override
   Widget build(BuildContext context) {
-    final photoURL = ref.watch(UserProfilePicProvider(widget.accountID));
-    final audio = ref.read(bLAudioProvider.notifier);
+    final photoURL = ref.watch(userProfilePicProvider(widget.accountID));
+    final audio = ref.read(bLAudioStateProvider.notifier);
     return GestureDetector(
       onTapDown: (TapDownDetails tapDown) {
         audio.playBtn();

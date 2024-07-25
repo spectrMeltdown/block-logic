@@ -56,7 +56,7 @@ class _SettingsState extends ConsumerState<Settings> {
     final user = ref.watch(accountAuthProvider);
     final nav = ref.watch(navProvider);
     final mediaQuery = ref.read(bLMediaQueryProvider);
-    final auth = ref.read(authServiceProvider);
+    final auth = ref.read(authServiceStateProvider.notifier);
     final accountService = ref.read(accountServiceProvider);
     final toast = ref.read(blToastProvider);
     return Scaffold(
@@ -321,8 +321,8 @@ class SystemSettings extends ConsumerWidget {
     final dbService = ref.read(dBServiceProvider);
     final persistentData = ref.watch(persistentDataProvider);
     final persistentDataNotifier = ref.read(persistentDataProvider.notifier);
-    final gameAudio = ref.watch(bLAudioProvider);
-    final gameAudioNotifier = ref.read(bLAudioProvider.notifier);
+    final gameAudio = ref.watch(bLAudioStateProvider);
+    final gameAudioNotifier = ref.read(bLAudioStateProvider.notifier);
 
     /// initialize the list to return
     List<Widget> settings = [];
@@ -339,7 +339,7 @@ class SystemSettings extends ConsumerWidget {
           ],
         ),
         BLSwitch(
-          state: gameAudio.shouldPlaySoundEffects(),
+          state: gameAudio.soundEffects,
           onPressed: () {
             gameAudioNotifier.toggleSoundEffects();
           },
@@ -356,7 +356,7 @@ class SystemSettings extends ConsumerWidget {
           ],
         ),
         BLSwitch(
-          state: gameAudio.shouldPlayBackgroundMusic(),
+          state: gameAudio.backgroundMusic,
           onPressed: () {
             debugPrint('bg music switch');
             gameAudioNotifier.toggleBG();

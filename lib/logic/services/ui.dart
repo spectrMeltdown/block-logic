@@ -20,15 +20,22 @@ class BlockColors {
 
 /// all colors used in app. Allows ease of adjusting UI later on.
 class BLUI {
+  BLUI();
   final blockColors = BlockColors();
   Color getAppColor(String color) {
     switch (color.toLowerCase()) {
+      case 'grey':
+        return Colors.grey;
+      case 'blue':
+        return Colors.blue;
       case 'darkblue':
         return const Color(0xFF0B1B33);
       case 'lightblue':
         return Colors.lightBlue[100]!;
       case 'amber':
         return Colors.amber;
+      case 'orange':
+        return Colors.orange.shade700;
       case 'lightgreen':
         return const Color(0xFF00FF29);
       default:
@@ -36,19 +43,19 @@ class BLUI {
     }
   }
 
-  Color getBlockColor(BlockType? blockType) {
-    switch (blockType) {
-      case BlockType.literals:
+  Color getBlockColor(CodeBlockType? type) {
+    switch (type) {
+      case CodeBlockType.literals:
         return blockColors.literals;
-      case BlockType.condLoops:
+      case CodeBlockType.conditionals || CodeBlockType.loops:
         return blockColors.condLoops;
-      case BlockType.functions:
+      case CodeBlockType.functions:
         return blockColors.functions;
-      case BlockType.classes:
+      case CodeBlockType.classes:
         return blockColors.classes;
-      case BlockType.variables:
+      case CodeBlockType.variables:
         return blockColors.variables;
-      case BlockType.operators:
+      case CodeBlockType.operators:
         return blockColors.operators;
       default:
         return Colors.white;

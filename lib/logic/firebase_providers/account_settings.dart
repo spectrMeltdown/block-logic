@@ -10,7 +10,7 @@ part 'generated/account_settings.g.dart';
 Stream<AccountSettings?> settings(
     SettingsRef ref, FirestoreCollections accountCollection) async* {
   final db = ref.watch(dbProvider);
-  final id = ref.watch(authServiceProvider).getUID();
+  final id = ref.read(authServiceStateProvider.notifier).getUID();
   if (id.isEmpty) yield null;
   final stream = db.i.collection(accountCollection.name).doc(id).snapshots();
   await for (final doc in stream) {

@@ -6,7 +6,7 @@ part of '../account_settings.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$settingsHash() => r'5c47108f750c024cbf353155c40d6e43a112797d';
+String _$settingsHash() => r'b01451a121d15fe69b5ce0b854ed64f96384d8a4';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -40,7 +40,7 @@ class SettingsFamily extends Family<AsyncValue<AccountSettings?>> {
 
   /// See also [settings].
   SettingsProvider call(
-    InvalidType accountCollection,
+    FirestoreCollections accountCollection,
   ) {
     return SettingsProvider(
       accountCollection,
@@ -75,7 +75,7 @@ class SettingsFamily extends Family<AsyncValue<AccountSettings?>> {
 class SettingsProvider extends AutoDisposeStreamProvider<AccountSettings?> {
   /// See also [settings].
   SettingsProvider(
-    InvalidType accountCollection,
+    FirestoreCollections accountCollection,
   ) : this._internal(
           (ref) => settings(
             ref as SettingsRef,
@@ -102,7 +102,7 @@ class SettingsProvider extends AutoDisposeStreamProvider<AccountSettings?> {
     required this.accountCollection,
   }) : super.internal();
 
-  final InvalidType accountCollection;
+  final FirestoreCollections accountCollection;
 
   @override
   Override overrideWith(
@@ -144,7 +144,7 @@ class SettingsProvider extends AutoDisposeStreamProvider<AccountSettings?> {
 
 mixin SettingsRef on AutoDisposeStreamProviderRef<AccountSettings?> {
   /// The parameter `accountCollection` of this provider.
-  InvalidType get accountCollection;
+  FirestoreCollections get accountCollection;
 }
 
 class _SettingsProviderElement
@@ -153,7 +153,7 @@ class _SettingsProviderElement
   _SettingsProviderElement(super.provider);
 
   @override
-  InvalidType get accountCollection =>
+  FirestoreCollections get accountCollection =>
       (origin as SettingsProvider).accountCollection;
 }
 // ignore_for_file: type=lint

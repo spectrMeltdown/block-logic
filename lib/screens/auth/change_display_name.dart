@@ -19,11 +19,11 @@ class ChangeDisplayName extends ConsumerStatefulWidget {
 class _ChangeDisplayNameState extends ConsumerState<ChangeDisplayName> {
   late final String oldDisplayName;
   late final TextEditingController displayNameController;
-  late final AuthService auth;
+  late final AuthServiceState auth;
 
   @override
   void initState() {
-    auth = ref.read(authServiceProvider);
+    auth = ref.read(authServiceStateProvider.notifier);
     final user = ref.read(UserAccountProvider(auth.getUID())).value;
     oldDisplayName = user?.displayName ?? '';
     displayNameController = TextEditingController(text: oldDisplayName);

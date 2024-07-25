@@ -9,14 +9,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class BLCard extends ConsumerStatefulWidget {
   const BLCard({
     super.key,
-    this.blockType,
+    this.type,
     required this.onPressed,
     required this.child,
     this.height = 80,
     this.padding,
     this.color,
   });
-  final BlockType? blockType;
+  final CodeBlockType? type;
   final VoidCallback onPressed;
   final Widget child;
   final EdgeInsets? padding;
@@ -72,9 +72,9 @@ class _BLCardState extends ConsumerState<BLCard> {
 
   @override
   void initState() {
-    cardColor = [BLUI().getBlockColor(widget.blockType), darkShade];
+    cardColor = [BLUI().getBlockColor(widget.type), darkShade];
     cardColorPressed = [
-      BLUI().getBlockColor(widget.blockType).brighten(0.2),
+      BLUI().getBlockColor(widget.type).brighten(0.2),
       darkShade
     ];
     super.initState();
@@ -82,7 +82,7 @@ class _BLCardState extends ConsumerState<BLCard> {
 
   @override
   Widget build(BuildContext context) {
-    final audio = ref.read(bLAudioProvider.notifier);
+    final audio = ref.read(bLAudioStateProvider.notifier);
     final mediaQuery = ref.watch(bLMediaQueryProvider);
 
     /// space around the card

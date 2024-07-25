@@ -13,14 +13,14 @@ Stream<UserAccount?> userAccount(UserAccountRef ref, String id) async* {
   }
 }
 
-@Riverpod(dependencies: [])
-Stream<String?> userProfilePic(UserProfilePicRef ref, String id) async* {
-  final userAccount = await ref.watch(UserAccountProvider(id).future);
-  yield userAccount?.profilePicLink;
-}
+final userProfilePicProvider =
+    StreamProvider.autoDispose.family<String?, String>((ref, id) async* {
+  final userAcc = await ref.watch(UserAccountProvider(id).future);
+  yield userAcc?.profilePicLink;
+});
 
-@Riverpod(dependencies: [])
-Stream<String?> userDisplayName(UserDisplayNameRef ref, String id) async* {
+final userDisplayNameProvider =
+    StreamProvider.autoDispose.family<String?, String>((ref, id) async* {
   final userAccount = await ref.watch(UserAccountProvider(id).future);
   yield userAccount?.displayName;
-}
+});

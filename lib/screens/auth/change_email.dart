@@ -16,11 +16,11 @@ class ChangeEmail extends ConsumerStatefulWidget {
 class _ChangeEmailState extends ConsumerState<ChangeEmail> {
   late final String oldEmail;
   late final TextEditingController emailController;
-  late final AuthService auth;
+  late final AuthServiceState auth;
 
   @override
   void initState() {
-    final auth = ref.read(authServiceProvider);
+    final auth = ref.read(authServiceStateProvider.notifier);
     oldEmail = auth.getEmail();
     emailController = TextEditingController(text: oldEmail);
     super.initState();

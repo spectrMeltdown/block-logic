@@ -13,7 +13,6 @@ class BLErrorHandler extends _$BLErrorHandler {
   late BLToast _toast;
   @override
   BLErrorHandler build() {
-    _toast = ref.watch(blToastProvider);
     return BLErrorHandler();
   }
 

@@ -31,7 +31,7 @@ class _LoginState extends ConsumerState<Login> {
   Widget build(BuildContext context) {
     final validator = ref.read(textValidatorProvider);
     final nav = ref.read(navProvider);
-    final auth = ref.read(authServiceProvider);
+    final auth = ref.read(authServiceStateProvider.notifier);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Background(

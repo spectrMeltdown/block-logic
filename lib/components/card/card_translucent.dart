@@ -87,7 +87,7 @@ class _BLCardState extends ConsumerState<BLTranslucentCard> {
 
   @override
   Widget build(BuildContext context) {
-    final audio = ref.read(bLAudioProvider.notifier);
+    final audio = ref.read(bLAudioStateProvider.notifier);
     final mediaQuery = ref.watch(bLMediaQueryProvider);
 
     /// space around the card

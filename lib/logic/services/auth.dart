@@ -9,60 +9,62 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 part 'generated/auth.g.dart';
 
-@riverpod
-class AuthService extends _$AuthService {
-  late final DBService _dbService;
-  late final BLErrorHandler _errorHandler;
-  late final BLToast _toast;
-  late final SharedPreferences _sharedPref;
+class AuthService {
+  final _dbService = DBService();
+  final _errorHandler = BLErrorHandler();
+  final _toast = BLToast();
   final _auth = FirebaseAuth.instance;
+  late final SharedPreferences _sharedPref;
+  AuthService({required SharedPreferences sharePref}) : _sharedPref = sharePref;
+}
+
+@riverpod
+class AuthServiceState extends _$AuthServiceState {
   @override
   AuthService build() {
-    _dbService = ref.watch(dBServiceProvider);
-    _toast = ref.watch(blToastProvider);
-    _sharedPref = ref.watch(sharedPrefProvider);
-    return AuthService();
+    final sharedPref = ref.watch(sharedPrefProvider);
+    return AuthService(sharePref: sharedPref);
   }
 
   // user's uid
-  String getUID() => _auth.currentUser?.uid ?? '';
+  String getUID() => state._auth.currentUser?.uid ?? '';
 
   /// user's display name
-  String getDisplayName() => _auth.currentUser?.displayName ?? '';
+  String getDisplayName() => state._auth.currentUser?.displayName ?? '';
 
   /// user's email
-  String getEmail() => _auth.currentUser?.email ?? '';
+  String getEmail() => state._auth.currentUser?.email ?? '';
 
   /// logged in or not
-  bool isLoggedIn() => _auth.currentUser != null;
+  bool isLoggedIn() => state._auth.currentUser != null;
 
   /// email verified or not
-  bool isEmailVerified() => _auth.currentUser!.emailVerified != false;
+  bool isEmailVerified() => state._auth.currentUser!.emailVerified != false;
 
   /// refresh
-  Future<void> reload() async => _auth.currentUser?.reload();
+  Future<void> reload() async => state._auth.currentUser?.reload();
 
   /// logout
   Future<void> logout() async {
-    await _sharedPref.setBool('loginAlertSent', false);
+    await state._sharedPref.setBool('loginAlertSent', false);
     await FirebaseAuth.instance.signOut();
-    _toast.showToast('Logged out, bye!');
+    state._toast.showToast('Logged out, bye!');
   }
 
   Future<void> login({required String email, required String password}) async {
     try {
       /// show notification
-      _toast.showToast('Logging in');
+      state._toast.showToast('Logging in');
 
       /// signin user
       await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
 
       /// show notification
-      _toast.dismissAllToast();
-      _toast.showToast('Welcome back, \n ${getDisplayName()}');
+      state._toast.dismissAllToast();
+      state._toast.showToast('Welcome back, \n ${getDisplayName()}');
     } catch (e) {
-      _errorHandler.handleErrors(e);
+      state._errorHandler.handleErrors(e);
     }
   }
 
@@ -73,7 +75,7 @@ class AuthService extends _$AuthService {
       required String phoneNum}) async {
     try {
       /// show notification of account creation
-      _toast.showToast('Creating account ...');
+      state._toast.showToast('Creating account ...');
 
       /// create account
       await FirebaseAuth.instance
@@ -84,12 +86,12 @@ class AuthService extends _$AuthService {
           .updateDisplayName(displayName.trim());
 
       /// save phoneNum temporarily, if app data is cleared and signup was not completed
-      await _dbService.updateUserAccount(UserAccount(phoneNum: phoneNum));
+      await state._dbService.updateUserAccount(UserAccount(phoneNum: phoneNum));
 
       /// send email verification
       sendEmailVerification();
     } catch (e) {
-      _errorHandler.handleErrors(e);
+      state._errorHandler.handleErrors(e);
     }
   }
 
@@ -98,9 +100,9 @@ class AuthService extends _$AuthService {
       await FirebaseAuth.instance.currentUser!.sendEmailVerification();
 
       /// notify user
-      if (showNotif == true) _toast.showToast('Email verification sent!');
+      if (showNotif == true) state._toast.showToast('Email verification sent!');
     } catch (e) {
-      _errorHandler.handleErrors(e);
+      state._errorHandler.handleErrors(e);
     }
   }
 
@@ -108,7 +110,7 @@ class AuthService extends _$AuthService {
     try {
       await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
     } catch (e) {
-      _errorHandler.handleErrors(e);
+      state._errorHandler.handleErrors(e);
     }
   }
 
@@ -116,7 +118,7 @@ class AuthService extends _$AuthService {
     try {
       await FirebaseAuth.instance.currentUser!.updatePassword(password.trim());
     } catch (e) {
-      _errorHandler.handleErrors(e);
+      state._errorHandler.handleErrors(e);
     }
   }
 
@@ -124,9 +126,9 @@ class AuthService extends _$AuthService {
     try {
       await FirebaseAuth.instance.currentUser!
           .verifyBeforeUpdateEmail(email.trim());
-      _toast.showToast('A verification has been sent to your new email.');
+      state._toast.showToast('A verification has been sent to your new email.');
     } catch (e) {
-      _errorHandler.handleErrors(e);
+      state._errorHandler.handleErrors(e);
     }
   }
 
@@ -136,9 +138,9 @@ class AuthService extends _$AuthService {
       await FirebaseAuth.instance.currentUser!.delete();
 
       /// display info about delayed deletion
-      _toast.showToast('Account Deleted');
+      state._toast.showToast('Account Deleted');
     } catch (e) {
-      _errorHandler.handleErrors(e);
+      state._errorHandler.handleErrors(e);
     }
   }
 
@@ -151,7 +153,7 @@ class AuthService extends _$AuthService {
           ?.reauthenticateWithCredential(userCred);
       return 'success';
     } catch (e) {
-      _errorHandler.handleErrors(e);
+      state._errorHandler.handleErrors(e);
     }
     return 'failed';
   }

@@ -89,7 +89,7 @@ class _BtnState extends ConsumerState<BLButton> {
 
   @override
   Widget build(BuildContext context) {
-    final audio = ref.read(bLAudioProvider.notifier);
+    final audio = ref.read(bLAudioStateProvider.notifier);
     return GestureDetector(
       onTapDown: (details) {
         audio.playBtn();

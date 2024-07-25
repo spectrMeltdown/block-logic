@@ -21,6 +21,16 @@ enum FirestoreCollections {
   feedback
 }
 
-enum BlockType { literals, condLoops, functions, classes, variables, operators }
+enum CodeBlockType {
+  literals,
+  conditionals,
+  loops,
+  functions,
+  classes,
+  variables,
+  operators
+}
+
+enum CodeBlockState { selected, unselected, faded }
 
 enum NotifType { success, error, warning, info }

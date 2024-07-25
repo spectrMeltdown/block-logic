@@ -34,7 +34,7 @@ class Tutorials extends ConsumerWidget {
               const BLTitle('Tutorials'),
               BLCard(
                   onPressed: () => nav.push(context, const Variables()),
-                  blockType: BlockType.variables,
+                  type: CodeBlockType.variables,
                   child: const BLText(
                     'Variables',
                     size: 23,
@@ -43,7 +43,7 @@ class Tutorials extends ConsumerWidget {
               BLCard(
                   onPressed: () =>
                       nav.push(context, const DataTypesAndLiterals()),
-                  blockType: BlockType.literals,
+                  type: CodeBlockType.literals,
                   height: 100,
                   child: const BLText(
                     'Data Types & \nLiterals',
@@ -52,7 +52,7 @@ class Tutorials extends ConsumerWidget {
                   )),
               BLCard(
                   onPressed: () => nav.push(context, const Functions()),
-                  blockType: BlockType.functions,
+                  type: CodeBlockType.functions,
                   child: const BLText(
                     'Functions',
                     size: 23,
@@ -60,7 +60,7 @@ class Tutorials extends ConsumerWidget {
                   )),
               BLCard(
                   onPressed: () => nav.push(context, const Classes()),
-                  blockType: BlockType.classes,
+                  type: CodeBlockType.classes,
                   child: const BLText(
                     'Classes',
                     size: 23,
@@ -68,7 +68,7 @@ class Tutorials extends ConsumerWidget {
                   )),
               BLCard(
                   onPressed: () => nav.push(context, const Operators()),
-                  blockType: BlockType.operators,
+                  type: CodeBlockType.operators,
                   child: const BLText(
                     'Operators',
                     size: 23,
@@ -77,7 +77,7 @@ class Tutorials extends ConsumerWidget {
               BLCard(
                   onPressed: () =>
                       nav.push(context, const ConditionalsAndLoops()),
-                  blockType: BlockType.condLoops,
+                  type: CodeBlockType.loops,
                   height: 100,
                   child: const BLText(
                     'Conditionals &\nLoops',

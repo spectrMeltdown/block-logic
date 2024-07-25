@@ -6,7 +6,7 @@ part of '../error_handler.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$bLErrorHandlerHash() => r'726001536dcd14db689b489bbfd85454ba70b302';
+String _$bLErrorHandlerHash() => r'028a7693890a3cad929a7e81f46f4b88e1a01ff2';
 
 /// See also [BLErrorHandler].
 @ProviderFor(BLErrorHandler)

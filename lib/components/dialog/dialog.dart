@@ -3,6 +3,7 @@ import 'package:block_logic/components/textbox.dart';
 import 'package:block_logic/components/util/blank_widget.dart';
 import 'package:block_logic/logic/services/auth.dart';
 import 'package:block_logic/logic/services/navigation.dart';
+import 'package:block_logic/logic/services/ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -30,12 +31,32 @@ class BLDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Dialog(
+      backgroundColor: Colors.transparent,
       insetPadding: insetPadding ??
           const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
-      child: Padding(
-          padding: padding ??
-              const EdgeInsets.symmetric(horizontal: 15, vertical: 30),
-          child: child),
+      child: Container(
+          decoration: BoxDecoration(
+            borderRadius: const BorderRadius.all(Radius.circular(30)),
+            border: Border.all(color: BLUI().getAppColor('grey'), width: 3),
+            color: Colors.black12,
+          ),
+          margin: const EdgeInsets.symmetric(horizontal: 10),
+          child: Container(
+              padding: const EdgeInsets.all(5),
+              decoration: BoxDecoration(
+                  borderRadius: const BorderRadius.all(Radius.circular(20)),
+                  boxShadow: [
+                    const BoxShadow(color: Colors.black12),
+                    BoxShadow(
+                        color: Colors.blueGrey.shade800,
+                        spreadRadius: -5,
+                        blurRadius: 20)
+                  ]),
+              child: Padding(
+                padding: padding ??
+                    const EdgeInsets.symmetric(horizontal: 15, vertical: 30),
+                child: child,
+              ))),
     );
   }
 }
@@ -82,7 +103,7 @@ class _ReauthDialogState extends ConsumerState<ReauthDialog> {
   @override
   Widget build(BuildContext context) {
     final nav = ref.read(navProvider);
-    final auth = ref.read(authServiceProvider);
+    final auth = ref.read(authServiceStateProvider.notifier);
     return AlertDialog(
       title: const BLSmallTitle('Verification'),
       content: Column(

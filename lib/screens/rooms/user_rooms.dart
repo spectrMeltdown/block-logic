@@ -19,7 +19,7 @@ class UserRooms extends ConsumerStatefulWidget {
 class _UserRoomsState extends ConsumerState<UserRooms> {
   @override
   Widget build(BuildContext context) {
-    final auth = ref.read(authServiceProvider);
+    final auth = ref.read(authServiceStateProvider.notifier);
     final ownRooms = ref.watch(OwnRoomsProvider(auth.getUID()));
 
     return RefreshIndicator(

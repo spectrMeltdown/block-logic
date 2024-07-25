@@ -24,7 +24,7 @@ class _VerifyEmailState extends ConsumerState<VerifyEmail>
     with TickerProviderStateMixin {
   late final AnimationController _controller;
   late final Timer timer;
-  late final AuthService auth;
+  late final AuthServiceState auth;
   late final BLToast toast;
   late final BLNavigation nav;
   late final Assets assets;
@@ -32,7 +32,7 @@ class _VerifyEmailState extends ConsumerState<VerifyEmail>
   bool isEmailVerified = false;
   @override
   void initState() {
-    auth = ref.read(authServiceProvider);
+    auth = ref.read(authServiceStateProvider.notifier);
     toast = ref.read(blToastProvider);
     nav = ref.read(navProvider);
     assets = ref.read(assetsProvider);
@@ -42,15 +42,15 @@ class _VerifyEmailState extends ConsumerState<VerifyEmail>
       try {
         await auth.reload();
         isEmailVerified = auth.isEmailVerified();
-        if (isEmailVerified) {
-          timer.cancel();
-          toast.showToast('Email verified successfully');
-          if (context.mounted) {
-            nav.pushReplace(context, const MainMenuScreen());
-          }
-        }
       } catch (e) {
         return;
+      }
+      if (isEmailVerified) {
+        timer.cancel();
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          toast.showToast('Email verified successfully');
+          nav.pushReplace(context, const MainMenuScreen());
+        });
       }
     });
     super.initState();

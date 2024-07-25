@@ -50,7 +50,7 @@ class IsAccountFirestoreInitFamily extends Family<AsyncValue<bool>> {
   /// Copied from [isAccountFirestoreInit].
   IsAccountFirestoreInitProvider call(
     String uid,
-    InvalidType accountCollection,
+    FirestoreCollections accountCollection,
   ) {
     return IsAccountFirestoreInitProvider(
       uid,
@@ -92,7 +92,7 @@ class IsAccountFirestoreInitProvider extends AutoDisposeStreamProvider<bool> {
   /// Copied from [isAccountFirestoreInit].
   IsAccountFirestoreInitProvider(
     String uid,
-    InvalidType accountCollection,
+    FirestoreCollections accountCollection,
   ) : this._internal(
           (ref) => isAccountFirestoreInit(
             ref as IsAccountFirestoreInitRef,
@@ -124,7 +124,7 @@ class IsAccountFirestoreInitProvider extends AutoDisposeStreamProvider<bool> {
   }) : super.internal();
 
   final String uid;
-  final InvalidType accountCollection;
+  final FirestoreCollections accountCollection;
 
   @override
   Override overrideWith(
@@ -172,7 +172,7 @@ mixin IsAccountFirestoreInitRef on AutoDisposeStreamProviderRef<bool> {
   String get uid;
 
   /// The parameter `accountCollection` of this provider.
-  InvalidType get accountCollection;
+  FirestoreCollections get accountCollection;
 }
 
 class _IsAccountFirestoreInitProviderElement
@@ -183,7 +183,7 @@ class _IsAccountFirestoreInitProviderElement
   @override
   String get uid => (origin as IsAccountFirestoreInitProvider).uid;
   @override
-  InvalidType get accountCollection =>
+  FirestoreCollections get accountCollection =>
       (origin as IsAccountFirestoreInitProvider).accountCollection;
 }
 // ignore_for_file: type=lint

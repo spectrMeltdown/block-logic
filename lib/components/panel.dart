@@ -63,8 +63,9 @@ class BLSolidPanel extends StatelessWidget {
 }
 
 class BLBorderedPanel extends StatelessWidget {
-  const BLBorderedPanel(this.child, {super.key, this.color});
+  const BLBorderedPanel(this.child, {super.key, this.color, this.overlayColor});
   final Widget child;
+  final Color? overlayColor;
   final Color? color;
 
   @override
@@ -73,7 +74,7 @@ class BLBorderedPanel extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: const BorderRadius.all(Radius.circular(10)),
           border: Border.all(color: BLUI().getAppColor('grey'), width: 3),
-          color: color ?? BLUI().getAppColor('darkblue'),
+          color: overlayColor ?? BLUI().getAppColor('darkblue'),
         ),
         margin: const EdgeInsets.symmetric(horizontal: 10),
         child: Container(
@@ -83,7 +84,7 @@ class BLBorderedPanel extends StatelessWidget {
                 boxShadow: [
                   const BoxShadow(color: Colors.black45),
                   BoxShadow(
-                      color: BLUI().getAppColor('darkblue'),
+                      color: color ?? BLUI().getAppColor('darkblue'),
                       spreadRadius: -5,
                       blurRadius: 20)
                 ]),

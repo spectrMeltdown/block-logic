@@ -18,7 +18,7 @@ class _ForgotPasswordDialogState extends ConsumerState<ForgotPasswordDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final auth = ref.watch(authServiceProvider);
+    final auth = ref.read(authServiceStateProvider.notifier);
     return BLDialog(
         child: Column(
       mainAxisSize: MainAxisSize.min,

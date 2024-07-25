@@ -8,7 +8,7 @@ part 'generated/room_in_game.g.dart';
 Future<Room?> gameRoom(GameRoomRef ref, String roomID) async {
   final db = ref.watch(dbProvider).i;
   // TODO: update this later
-  final gameRoom = await db.collection('rooms').doc('testing').get();
+  final gameRoom = await db.collection('rooms').doc(roomID).get();
   if (gameRoom.exists) {
     return Room.fromFirestore(gameRoom);
   }
