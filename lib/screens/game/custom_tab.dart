@@ -3,14 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class CustomTab extends ConsumerWidget {
-  const CustomTab(this.text,
-      {this.isSelected = false,
-      this.textColor,
-      this.isBold = false,
-      super.key});
-  final String text;
+  const CustomTab({
+    required this.title,
+    required this.isSelected,
+    this.textColor,
+    this.paddingX = 20,
+    super.key,
+  });
+  final String title;
+  final double paddingX;
   final Color? textColor;
-  final bool isBold;
   final bool isSelected;
 
   @override
@@ -20,9 +22,9 @@ class CustomTab extends ConsumerWidget {
           color: isSelected ? Colors.white : Colors.grey,
           borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(10), topRight: Radius.circular(10))),
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: EdgeInsets.symmetric(horizontal: paddingX),
       child: BLText(
-        text,
+        title,
         color: textColor ?? Colors.black,
         bold: isSelected,
       ),

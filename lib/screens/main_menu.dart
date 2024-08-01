@@ -16,7 +16,7 @@ import 'package:block_logic/logic/services/assets.dart';
 import 'package:block_logic/logic/services/auth.dart';
 import 'package:block_logic/logic/services/navigation.dart';
 import 'package:block_logic/screens/auth/login.dart';
-import 'package:block_logic/screens/game/game.dart';
+import 'package:block_logic/screens/game/game_room.dart';
 import 'package:block_logic/screens/rooms/rooms.dart';
 import 'package:block_logic/screens/settings.dart';
 import 'package:block_logic/screens/tutorials/tutorials.dart';
@@ -244,8 +244,8 @@ List<Widget> loggedInMenu(BuildContext context, BLNavigation nav) {
           context,
 
           /// TODO: change back to creator mode later
-          const Game(
-            'testing',
+          const GameRoom(
+            roomID: 'testing',
           )),
       child: const Text(
         'Creator Mode',

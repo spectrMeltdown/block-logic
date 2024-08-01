@@ -6,22 +6,22 @@ import 'package:block_logic/screens/game/editor_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class BlockDropOff extends ConsumerStatefulWidget {
-  const BlockDropOff({super.key});
+class Editor extends ConsumerStatefulWidget {
+  const Editor({super.key});
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _BlockDropOffState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _EditorState();
 }
 
-class _BlockDropOffState extends ConsumerState<BlockDropOff>
-    with TickerProviderStateMixin {
+class _EditorState extends ConsumerState<Editor> with TickerProviderStateMixin {
   late TabController mainTabController;
   List<String> mainTabList = [];
   List<Widget> mainTabViewList = [];
+  final editorWidgetKey = GlobalKey();
   @override
   void initState() {
     mainTabList = ['Main'];
-    mainTabViewList = [const CustomTabView()];
+    mainTabViewList = [EditorView(editorWidgetKey: editorWidgetKey)];
     mainTabController =
         TabController(length: mainTabList.length + 1, vsync: this);
 
@@ -33,19 +33,21 @@ class _BlockDropOffState extends ConsumerState<BlockDropOff>
 
   Widget buildTab(String tabName, int tabNum, int selectedIndex) {
     return CustomTab(
-      tabNum == 0 ? 'Main' : tabName,
+      title: tabNum == 0 ? 'Main' : tabName,
       isSelected: selectedIndex == tabNum,
     );
   }
 
   Widget buildTabView() {
-    return const CustomTabView();
+    return EditorView(
+      editorWidgetKey: editorWidgetKey,
+    );
   }
 
   void addNew() {
     /// add the new tab
     mainTabList.add('New ${mainTabList.length + 1}');
-    mainTabViewList.add(const CustomTabView());
+    mainTabViewList.add(EditorView(editorWidgetKey: editorWidgetKey));
 
     mainTabController = TabController(
         length: mainTabList.length + 1,
@@ -105,8 +107,9 @@ class _BlockDropOffState extends ConsumerState<BlockDropOff>
             ),
           ),
           SizedBox(
+            key: editorWidgetKey,
             width: double.maxFinite,
-            height: mediaQuery.screenH(context) / 2,
+            height: mediaQuery.screenH(context) / 1.95,
             child: BLBorderedPanel(
               TabBarView(
                   clipBehavior: Clip.antiAlias,

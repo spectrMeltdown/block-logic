@@ -10,6 +10,11 @@ class AddTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(onTapUp: onTapUp, child: const CustomTab('+'));
+    return GestureDetector(
+        onTapUp: onTapUp,
+        child: const CustomTab(
+          title: '+',
+          isSelected: false,
+        ));
   }
 }

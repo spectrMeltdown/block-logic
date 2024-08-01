@@ -38,7 +38,7 @@ class BLDialog extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: const BorderRadius.all(Radius.circular(30)),
             border: Border.all(color: BLUI().getAppColor('grey'), width: 3),
-            color: Colors.black12,
+            color: Colors.black,
           ),
           margin: const EdgeInsets.symmetric(horizontal: 10),
           child: Container(

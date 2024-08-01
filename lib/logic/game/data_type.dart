@@ -1,6 +1,1 @@
-enum PyDataType {
-  string_,
-  boolean_,
-  int_,
-  float_,
-}
+enum PyDataType { string_, boolean_, number_, none_ }

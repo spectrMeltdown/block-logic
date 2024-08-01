@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:block_logic/logic/services/audio.dart';
 import 'package:block_logic/logic/services/shared_pref.dart';
-import 'package:block_logic/screens/game/game.dart';
+import 'package:block_logic/screens/game/game_room.dart';
 import 'package:block_logic/splash.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flame/flame.dart';
@@ -106,7 +106,11 @@ class BlockLogic extends ConsumerWidget {
         debugShowCheckedModeBanner: false,
         theme: appTheme,
         darkTheme: appTheme,
-        home: kDebugMode ? const Game('offline-testing') : const Splash(),
+        home: kDebugMode
+            ? const GameRoom(
+                roomID: 'offline-testing',
+              )
+            : const Splash(),
       ),
     );
   }

@@ -50,6 +50,7 @@ dependencies:
   uuid: ^4.4.2
   pinput: ^5.0.0
   widget_and_text_animator: ^1.1.5
+  marquee: ^2.2.3
 
 dev_dependencies:
   flutter_test:
@@ -60,6 +61,8 @@ dev_dependencies:
   riverpod_lint: any
   riverpod_generator: ^2.4.0
   build_runner: ^2.4.11
+dependency_overrides:
+  fading_edge_scrollview: ^4.1.1
 flutter:
   uses-material-design: true
   assets:

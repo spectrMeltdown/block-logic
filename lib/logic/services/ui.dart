@@ -49,15 +49,15 @@ class BLUI {
         return blockColors.literals;
       case CodeBlockType.conditionals || CodeBlockType.loops:
         return blockColors.condLoops;
-      case CodeBlockType.functions:
+      case CodeBlockType.functions || CodeBlockType.functionDefinition:
         return blockColors.functions;
-      case CodeBlockType.classes:
+      case CodeBlockType.classes || CodeBlockType.objects:
         return blockColors.classes;
-      case CodeBlockType.variables:
+      case CodeBlockType.variables || CodeBlockType.keyword:
         return blockColors.variables;
       case CodeBlockType.operators:
         return blockColors.operators;
-      default:
+      case null:
         return Colors.white;
     }
   }

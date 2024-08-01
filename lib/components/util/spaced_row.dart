@@ -2,8 +2,13 @@ import 'package:flutter/material.dart';
 
 /// For a row with spacing
 class SpacedRow extends StatelessWidget {
-  const SpacedRow({super.key, required this.spacing, required this.children});
+  const SpacedRow(
+      {super.key,
+      this.mainAxisSize = MainAxisSize.max,
+      required this.spacing,
+      required this.children});
   final double spacing;
+  final MainAxisSize mainAxisSize;
   final List<Widget> children;
 
   @override
@@ -16,6 +21,6 @@ class SpacedRow extends StatelessWidget {
         spacedChildren.add(SizedBox(width: spacing));
       }
     }
-    return Row(children: spacedChildren);
+    return Row(mainAxisSize: mainAxisSize, children: spacedChildren);
   }
 }

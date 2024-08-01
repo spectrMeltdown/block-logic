@@ -26,7 +26,10 @@ enum CodeBlockType {
   conditionals,
   loops,
   functions,
+  functionDefinition,
   classes,
+  objects,
+  keyword,
   variables,
   operators
 }

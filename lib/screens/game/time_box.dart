@@ -2,14 +2,15 @@ import 'dart:async';
 
 import 'package:block_logic/components/panel.dart';
 import 'package:block_logic/components/text/text.dart';
+import 'package:block_logic/logic/services/game_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:widget_and_text_animator/widget_and_text_animator.dart';
 
 class TimeBox extends ConsumerStatefulWidget {
-  const TimeBox(this.pauseTime, {super.key});
-  final bool pauseTime;
+  const TimeBox(this.pauseTimer, {super.key});
+  final bool pauseTimer;
 
   @override
   ConsumerState<TimeBox> createState() => _TimeBoxState();
@@ -19,10 +20,12 @@ class _TimeBoxState extends ConsumerState<TimeBox> {
   int seconds = 0;
   late String timeString;
   late Timer timer;
+  late GameManagerState gameManagerState;
 
   @override
   void initState() {
     timer = createTimer();
+    gameManagerState = ref.read(gameManagerStateProvider.notifier);
     super.initState();
   }
 
@@ -61,7 +64,7 @@ class _TimeBoxState extends ConsumerState<TimeBox> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.pauseTime) {
+    if (widget.pauseTimer) {
       pauseTimer();
     } else {
       resumeTimer();

@@ -5,7 +5,6 @@ import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/services/navigation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:widget_and_text_animator/widget_and_text_animator.dart';
 
 class PauseDialog extends ConsumerWidget {
   const PauseDialog({super.key});
