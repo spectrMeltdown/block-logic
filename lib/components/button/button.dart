@@ -9,11 +9,15 @@ class BLButton extends ConsumerStatefulWidget {
       required this.child,
       this.type = BtnType.normal,
       this.padding,
+      this.paddingX,
+      this.paddingY,
       super.key});
   final VoidCallback onPressed;
   final Widget child;
   final BtnType type;
   final EdgeInsets? padding;
+  final double? paddingX;
+  final double? paddingY;
 
   @override
   ConsumerState<BLButton> createState() => _BtnState();
@@ -99,7 +103,9 @@ class _BtnState extends ConsumerState<BLButton> {
       onTapCancel: _onTapCancel,
       child: Container(
           padding: widget.padding ??
-              const EdgeInsets.symmetric(horizontal: 30.0, vertical: 10),
+              EdgeInsets.symmetric(
+                  horizontal: widget.paddingX ?? 30,
+                  vertical: widget.paddingY ?? 10),
           decoration: BoxDecoration(
             shape: BoxShape.rectangle,
             borderRadius: BorderRadius.circular(12.0),

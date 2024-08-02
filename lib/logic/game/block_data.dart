@@ -4,27 +4,26 @@ import 'package:block_logic/logic/game/py_conditional.dart';
 import 'package:block_logic/logic/game/py_literal.dart';
 import 'package:block_logic/logic/game/py_loops.dart';
 import 'package:block_logic/logic/game/py_operators.dart';
-import 'package:block_logic/logic/game/py_variable.dart';
 
 class GameBlockData {
+  //String id;
   CodeBlockType type;
   CodeBlockState state;
   String name;
   PyInitFunction? init;
   PyLiteral? return_;
-  List<PyVariable>? parameters;
-  List<PyLiteral>? arguments;
+  List<GameBlockData>? parameters;
+  List<GameBlockData>? arguments;
   List<GameBlockData>? condition;
   List<GameBlockData>? body;
   GameBlockData? functionDefinition;
   GameBlockData? classDefinition;
   PyLiteral? value;
-  List<int>? indexPath;
 
   GameBlockData({
     required this.type,
     required this.name,
-    this.indexPath,
+    //required this.id,
     this.state = CodeBlockState.unselected,
     this.init,
     this.body,
@@ -38,22 +37,23 @@ class GameBlockData {
   });
 
   ///overwrite any fields provided, copies any old existing data from the object
-  GameBlockData copyWith(
-      {CodeBlockType? type,
-      String? name,
-      CodeBlockState? state,
-      PyInitFunction? init,
-      List<GameBlockData>? body,
-      PyLiteral? return_,
-      List<PyVariable>? parameters,
-      List<PyLiteral>? arguments,
-      List<GameBlockData>? condition,
-      GameBlockData? functionDefinition,
-      GameBlockData? classDefinition,
-      PyLiteral? value,
-      List<int>? indexPath}) {
+  GameBlockData copyWith({
+    CodeBlockType? type,
+    String? name,
+    CodeBlockState? state,
+    PyInitFunction? init,
+    List<GameBlockData>? body,
+    PyLiteral? return_,
+    List<GameBlockData>? parameters,
+    List<GameBlockData>? arguments,
+    List<GameBlockData>? condition,
+    GameBlockData? functionDefinition,
+    GameBlockData? classDefinition,
+    PyLiteral? value,
+    String? id,
+  }) {
     return GameBlockData(
-      indexPath: indexPath ?? this.indexPath,
+      //id: id ?? this.id,
       type: type ?? this.type,
       name: name ?? this.name,
       state: state ?? this.state,
@@ -69,15 +69,15 @@ class GameBlockData {
     );
   }
 
-  factory GameBlockData.pyConditional({
+  factory GameBlockData.createConditional({
     required PyConditional conditional,
-    List<int>? indexPath,
+    // required String id,
   }) {
     const type = CodeBlockType.conditionals;
     switch (conditional) {
       case PyConditional.elif_:
         return GameBlockData(
-          indexPath: indexPath,
+          // id: id,
           type: type,
           name: 'elif',
           condition: [],
@@ -85,7 +85,7 @@ class GameBlockData {
         );
       case PyConditional.if_:
         return GameBlockData(
-          indexPath: indexPath,
+          // id: id,
           type: type,
           name: 'if',
           condition: [],
@@ -93,7 +93,7 @@ class GameBlockData {
         );
       case PyConditional.else_:
         return GameBlockData(
-          indexPath: indexPath,
+          // id: id,
           type: type,
           name: 'else',
           body: [],
@@ -101,14 +101,14 @@ class GameBlockData {
     }
   }
 
-  factory GameBlockData.pyFunctionDefinition({
-    List<int>? indexPath,
+  factory GameBlockData.createFunctionDefinition({
+    // required String id,
     required String name,
     required PyLiteral return_,
   }) {
     const type = CodeBlockType.functionDefinition;
     return GameBlockData(
-      indexPath: indexPath,
+      // id: id,
       type: type,
       name: name,
       return_: return_,
@@ -117,14 +117,14 @@ class GameBlockData {
     );
   }
 
-  factory GameBlockData.pyFunction({
-    List<int>? indexPath,
+  factory GameBlockData.createFunction({
+    // required String id,
     required String name,
     GameBlockData? functionDefinition,
   }) {
     const type = CodeBlockType.functions;
     return GameBlockData(
-      indexPath: indexPath,
+      // id: id,
       type: type,
       name: name,
       arguments: [],
@@ -132,28 +132,28 @@ class GameBlockData {
     );
   }
 
-  factory GameBlockData.pyClass({
-    List<int>? indexPath,
+  factory GameBlockData.createClass({
+    // required String id,
     required String name,
     PyInitFunction? init,
   }) {
     const type = CodeBlockType.classes;
     return GameBlockData(
-      indexPath: indexPath,
+      // id: id,
       type: type,
       name: name,
       init: init,
     );
   }
 
-  factory GameBlockData.pyObject({
-    List<int>? indexPath,
+  factory GameBlockData.createObject({
+    // required String id,
     required String name,
     GameBlockData? classDefinition,
   }) {
     const type = CodeBlockType.objects;
     return GameBlockData(
-      indexPath: indexPath,
+      // id: id,
       type: type,
       name: name,
       arguments: [],
@@ -161,29 +161,29 @@ class GameBlockData {
     );
   }
 
-  factory GameBlockData.pyVariable({
-    List<int>? indexPath,
+  factory GameBlockData.createVariable({
+    // required String id,
     required String name,
     required PyLiteral value,
   }) {
     const type = CodeBlockType.variables;
     return GameBlockData(
-      indexPath: indexPath,
+      // id: id,
       type: type,
       name: name,
       value: value,
     );
   }
 
-  factory GameBlockData.pyLoop({
-    List<int>? indexPath,
+  factory GameBlockData.createLoop({
+    // required String id,
     required PyLoop loop,
   }) {
     const type = CodeBlockType.loops;
     switch (loop) {
       case PyLoop.while_:
         return GameBlockData(
-          indexPath: indexPath,
+          // id: id,
           type: type,
           name: 'while',
           condition: [],
@@ -191,7 +191,7 @@ class GameBlockData {
         );
       case PyLoop.for_:
         return GameBlockData(
-          indexPath: indexPath,
+          // id: id,
           type: type,
           name: 'for',
           condition: [],
@@ -200,13 +200,13 @@ class GameBlockData {
     }
   }
 
-  factory GameBlockData.pyLiteral({
-    List<int>? indexPath,
+  factory GameBlockData.createLiteral({
+    // required String id,
     required PyLiteral literal,
   }) {
     const type = CodeBlockType.literals;
     return GameBlockData(
-      indexPath: indexPath,
+      // id: id,
       type: type,
       name: literal.value,
     );
@@ -220,8 +220,8 @@ class GameBlockData {
   /// - [PyOperatorsMembership]
   /// - [PyOperatorsAssignment]
   /// - [PyOperatorsIdentity]
-  factory GameBlockData.pyOperator({
-    List<int>? indexPath,
+  factory GameBlockData.createOperator({
+    // required String id,
     required PyOperatorTypes operatorType,
     required Object operator,
   }) {
@@ -231,7 +231,7 @@ class GameBlockData {
         if (PyOperatorsArithmetic.values.contains(operator)) {
           final dataValue = operator as PyOperatorsArithmetic;
           return GameBlockData(
-            indexPath: indexPath,
+            // id: id,
             type: type,
             name: PyOperator.arithmetic(dataValue).operator,
           );
@@ -240,7 +240,7 @@ class GameBlockData {
         if (PyOperatorsComparison.values.contains(operator)) {
           final dataValue = operator as PyOperatorsComparison;
           return GameBlockData(
-            indexPath: indexPath,
+            // id: id,
             type: type,
             name: PyOperator.comparison(dataValue).operator,
           );
@@ -249,7 +249,7 @@ class GameBlockData {
         if (PyOperatorsAssignment.values.contains(operator)) {
           final dataValue = operator as PyOperatorsAssignment;
           return GameBlockData(
-            indexPath: indexPath,
+            // id: id,
             type: type,
             name: PyOperator.assignment(dataValue).operator,
           );
@@ -258,7 +258,7 @@ class GameBlockData {
         if (PyOperatorsIdentity.values.contains(operator)) {
           final dataValue = operator as PyOperatorsIdentity;
           return GameBlockData(
-            indexPath: indexPath,
+            // id: id,
             type: type,
             name: PyOperator.identity(dataValue).operator,
           );
@@ -267,7 +267,7 @@ class GameBlockData {
         if (PyOperatorsLogical.values.contains(operator)) {
           final dataValue = operator as PyOperatorsLogical;
           return GameBlockData(
-            indexPath: indexPath,
+            // id: id,
             type: type,
             name: PyOperator.logical(dataValue).operator,
           );
@@ -276,14 +276,14 @@ class GameBlockData {
         if (PyOperatorsMembership.values.contains(operator)) {
           final dataValue = operator as PyOperatorsMembership;
           return GameBlockData(
-            indexPath: indexPath,
+            // id: id,
             type: type,
             name: PyOperator.membership(dataValue).operator,
           );
         }
     }
     return GameBlockData(
-      indexPath: indexPath,
+      // id: id,
       type: type,
       name: '',
     );

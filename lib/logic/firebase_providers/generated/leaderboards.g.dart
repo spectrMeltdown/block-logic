@@ -6,7 +6,7 @@ part of '../leaderboards.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$leaderboardsHash() => r'4e18d8eb3a5a89a9668c9239152d2decd4eb1d7b';
+String _$leaderboardsHash() => r'816ca39db45e55cd27a139408c7d8055fbdd669c';
 
 /// Copied from Dart SDK
 class _SystemHash {

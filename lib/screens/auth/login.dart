@@ -10,6 +10,7 @@ import 'package:block_logic/logic/services/navigation.dart';
 import 'package:block_logic/logic/services/validator_text.dart';
 import 'package:block_logic/screens/auth/forgot_password.dart';
 import 'package:block_logic/screens/auth/signup.dart';
+import 'package:block_logic/screens/main_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -30,8 +31,8 @@ class _LoginState extends ConsumerState<Login> {
   @override
   Widget build(BuildContext context) {
     final validator = ref.read(textValidatorProvider);
-    final nav = ref.read(navProvider);
-    final auth = ref.read(authServiceStateProvider.notifier);
+    final nav = ref.read(customNavigationProvider);
+    final auth = ref.read(authServiceProvider.notifier);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Background(
@@ -116,9 +117,14 @@ class _LoginState extends ConsumerState<Login> {
                                     return;
                                   }
                                   processing = true;
-                                  await auth.login(
+                                  final loginSuccess = await auth.login(
                                       email: emailController.text.trim(),
                                       password: passwordController.text.trim());
+                                  if (loginSuccess) {
+                                    if (!context.mounted) return;
+                                    nav.pushReplace(
+                                        context, const MainMenuScreen());
+                                  }
                                   processing = false;
                                 }
                               },

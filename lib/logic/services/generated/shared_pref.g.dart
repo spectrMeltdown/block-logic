@@ -6,7 +6,7 @@ part of '../shared_pref.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$sharedPrefHash() => r'c942eb3d551a4929f7f2d66fca58cb324d07afc9';
+String _$sharedPrefHash() => r'df28a9dbb0d13271e33a34a0e860622954043739';
 
 /// See also [sharedPref].
 @ProviderFor(sharedPref)

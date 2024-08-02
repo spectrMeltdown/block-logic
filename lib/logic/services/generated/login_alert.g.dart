@@ -6,7 +6,7 @@ part of '../login_alert.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$loginAlertStateHash() => r'fa8ab68084e995cc8eabfb179255f54d46cca9d9';
+String _$loginAlertHash() => r'12157b4434777a156d8b497edb6cabafafdde7f5';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -29,149 +29,146 @@ class _SystemHash {
   }
 }
 
-abstract class _$LoginAlertState
-    extends BuildlessAutoDisposeNotifier<LoginAlert?> {
-  late final FirestoreCollections collection;
+abstract class _$LoginAlert
+    extends BuildlessAutoDisposeNotifier<LoginAlertState> {
+  late final AccountSettings settings;
 
-  LoginAlert? build(
-    FirestoreCollections collection,
+  LoginAlertState build(
+    AccountSettings settings,
   );
 }
 
-/// See also [LoginAlertState].
-@ProviderFor(LoginAlertState)
-const loginAlertStateProvider = LoginAlertStateFamily();
+/// See also [LoginAlert].
+@ProviderFor(LoginAlert)
+const loginAlertProvider = LoginAlertFamily();
 
-/// See also [LoginAlertState].
-class LoginAlertStateFamily extends Family<LoginAlert?> {
-  /// See also [LoginAlertState].
-  const LoginAlertStateFamily();
+/// See also [LoginAlert].
+class LoginAlertFamily extends Family<LoginAlertState> {
+  /// See also [LoginAlert].
+  const LoginAlertFamily();
 
-  /// See also [LoginAlertState].
-  LoginAlertStateProvider call(
-    FirestoreCollections collection,
+  /// See also [LoginAlert].
+  LoginAlertProvider call(
+    AccountSettings settings,
   ) {
-    return LoginAlertStateProvider(
-      collection,
+    return LoginAlertProvider(
+      settings,
     );
   }
 
   @override
-  LoginAlertStateProvider getProviderOverride(
-    covariant LoginAlertStateProvider provider,
+  LoginAlertProvider getProviderOverride(
+    covariant LoginAlertProvider provider,
   ) {
     return call(
-      provider.collection,
+      provider.settings,
     );
   }
 
-  static final Iterable<ProviderOrFamily> _dependencies =
-      const <ProviderOrFamily>[];
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
 
   @override
   Iterable<ProviderOrFamily>? get dependencies => _dependencies;
 
-  static final Iterable<ProviderOrFamily> _allTransitiveDependencies =
-      const <ProviderOrFamily>{};
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
 
   @override
   Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
       _allTransitiveDependencies;
 
   @override
-  String? get name => r'loginAlertStateProvider';
+  String? get name => r'loginAlertProvider';
 }
 
-/// See also [LoginAlertState].
-class LoginAlertStateProvider
-    extends AutoDisposeNotifierProviderImpl<LoginAlertState, LoginAlert?> {
-  /// See also [LoginAlertState].
-  LoginAlertStateProvider(
-    FirestoreCollections collection,
+/// See also [LoginAlert].
+class LoginAlertProvider
+    extends AutoDisposeNotifierProviderImpl<LoginAlert, LoginAlertState> {
+  /// See also [LoginAlert].
+  LoginAlertProvider(
+    AccountSettings settings,
   ) : this._internal(
-          () => LoginAlertState()..collection = collection,
-          from: loginAlertStateProvider,
-          name: r'loginAlertStateProvider',
+          () => LoginAlert()..settings = settings,
+          from: loginAlertProvider,
+          name: r'loginAlertProvider',
           debugGetCreateSourceHash:
               const bool.fromEnvironment('dart.vm.product')
                   ? null
-                  : _$loginAlertStateHash,
-          dependencies: LoginAlertStateFamily._dependencies,
+                  : _$loginAlertHash,
+          dependencies: LoginAlertFamily._dependencies,
           allTransitiveDependencies:
-              LoginAlertStateFamily._allTransitiveDependencies,
-          collection: collection,
+              LoginAlertFamily._allTransitiveDependencies,
+          settings: settings,
         );
 
-  LoginAlertStateProvider._internal(
+  LoginAlertProvider._internal(
     super._createNotifier, {
     required super.name,
     required super.dependencies,
     required super.allTransitiveDependencies,
     required super.debugGetCreateSourceHash,
     required super.from,
-    required this.collection,
+    required this.settings,
   }) : super.internal();
 
-  final FirestoreCollections collection;
+  final AccountSettings settings;
 
   @override
-  LoginAlert? runNotifierBuild(
-    covariant LoginAlertState notifier,
+  LoginAlertState runNotifierBuild(
+    covariant LoginAlert notifier,
   ) {
     return notifier.build(
-      collection,
+      settings,
     );
   }
 
   @override
-  Override overrideWith(LoginAlertState Function() create) {
+  Override overrideWith(LoginAlert Function() create) {
     return ProviderOverride(
       origin: this,
-      override: LoginAlertStateProvider._internal(
-        () => create()..collection = collection,
+      override: LoginAlertProvider._internal(
+        () => create()..settings = settings,
         from: from,
         name: null,
         dependencies: null,
         allTransitiveDependencies: null,
         debugGetCreateSourceHash: null,
-        collection: collection,
+        settings: settings,
       ),
     );
   }
 
   @override
-  AutoDisposeNotifierProviderElement<LoginAlertState, LoginAlert?>
+  AutoDisposeNotifierProviderElement<LoginAlert, LoginAlertState>
       createElement() {
-    return _LoginAlertStateProviderElement(this);
+    return _LoginAlertProviderElement(this);
   }
 
   @override
   bool operator ==(Object other) {
-    return other is LoginAlertStateProvider && other.collection == collection;
+    return other is LoginAlertProvider && other.settings == settings;
   }
 
   @override
   int get hashCode {
     var hash = _SystemHash.combine(0, runtimeType.hashCode);
-    hash = _SystemHash.combine(hash, collection.hashCode);
+    hash = _SystemHash.combine(hash, settings.hashCode);
 
     return _SystemHash.finish(hash);
   }
 }
 
-mixin LoginAlertStateRef on AutoDisposeNotifierProviderRef<LoginAlert?> {
-  /// The parameter `collection` of this provider.
-  FirestoreCollections get collection;
+mixin LoginAlertRef on AutoDisposeNotifierProviderRef<LoginAlertState> {
+  /// The parameter `settings` of this provider.
+  AccountSettings get settings;
 }
 
-class _LoginAlertStateProviderElement
-    extends AutoDisposeNotifierProviderElement<LoginAlertState, LoginAlert?>
-    with LoginAlertStateRef {
-  _LoginAlertStateProviderElement(super.provider);
+class _LoginAlertProviderElement
+    extends AutoDisposeNotifierProviderElement<LoginAlert, LoginAlertState>
+    with LoginAlertRef {
+  _LoginAlertProviderElement(super.provider);
 
   @override
-  FirestoreCollections get collection =>
-      (origin as LoginAlertStateProvider).collection;
+  AccountSettings get settings => (origin as LoginAlertProvider).settings;
 }
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

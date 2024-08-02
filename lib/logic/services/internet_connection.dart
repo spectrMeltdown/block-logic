@@ -8,7 +8,7 @@ part 'generated/internet_connection.g.dart';
 @riverpod
 Future<bool> checkInternetConnection(CheckInternetConnectionRef ref,
     {bool showNotif = true}) async {
-  final toast = ref.watch(blToastProvider);
+  final toast = ref.watch(toastProvider);
   bool result = await InternetConnectionChecker().hasConnection;
   if (result == true) {
     if (showNotif == true) toast.showToast('Internet connection restored');

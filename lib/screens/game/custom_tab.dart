@@ -8,10 +8,12 @@ class CustomTab extends ConsumerWidget {
     required this.isSelected,
     this.textColor,
     this.paddingX = 20,
+    this.paddingY = 1,
     super.key,
   });
   final String title;
   final double paddingX;
+  final double paddingY;
   final Color? textColor;
   final bool isSelected;
 
@@ -22,11 +24,12 @@ class CustomTab extends ConsumerWidget {
           color: isSelected ? Colors.white : Colors.grey,
           borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(10), topRight: Radius.circular(10))),
-      padding: EdgeInsets.symmetric(horizontal: paddingX),
+      padding: EdgeInsets.symmetric(horizontal: paddingX, vertical: paddingY),
       child: BLText(
         title,
         color: textColor ?? Colors.black,
         bold: isSelected,
+        size: 16,
       ),
     );
   }

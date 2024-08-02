@@ -24,17 +24,17 @@ class _VerifyEmailState extends ConsumerState<VerifyEmail>
     with TickerProviderStateMixin {
   late final AnimationController _controller;
   late final Timer timer;
-  late final AuthServiceState auth;
-  late final BLToast toast;
-  late final BLNavigation nav;
+  late final AuthService auth;
+  late final Toast toast;
+  late final CustomNavigation nav;
   late final Assets assets;
   bool processing = false;
   bool isEmailVerified = false;
   @override
   void initState() {
-    auth = ref.read(authServiceStateProvider.notifier);
-    toast = ref.read(blToastProvider);
-    nav = ref.read(navProvider);
+    auth = ref.read(authServiceProvider.notifier);
+    toast = ref.read(toastProvider);
+    nav = ref.read(customNavigationProvider);
     assets = ref.read(assetsProvider);
     _controller = AnimationController(vsync: this);
     timer = Timer.periodic(const Duration(seconds: 5), (_) async {

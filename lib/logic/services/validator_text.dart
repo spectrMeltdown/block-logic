@@ -2,12 +2,10 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'generated/validator_text.g.dart';
 
-@riverpod
+@Riverpod()
 class TextValidator extends _$TextValidator {
   @override
-  TextValidator build() {
-    return TextValidator();
-  }
+  TextValidator build() => TextValidator();
 
   // must have three words,
   // 1st & 2nd connected by '@',

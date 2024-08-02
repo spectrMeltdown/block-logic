@@ -6,21 +6,20 @@ part of '../error_handler.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$bLErrorHandlerHash() => r'028a7693890a3cad929a7e81f46f4b88e1a01ff2';
+String _$errorHandlerHash() => r'8bbb9bfc92b27ec9dcb04d1859de14031ff431e0';
 
-/// See also [BLErrorHandler].
-@ProviderFor(BLErrorHandler)
-final bLErrorHandlerProvider =
-    AutoDisposeNotifierProvider<BLErrorHandler, BLErrorHandler>.internal(
-  BLErrorHandler.new,
-  name: r'bLErrorHandlerProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$bLErrorHandlerHash,
+/// See also [ErrorHandler].
+@ProviderFor(ErrorHandler)
+final errorHandlerProvider =
+    AutoDisposeNotifierProvider<ErrorHandler, ErrorHandlerState>.internal(
+  ErrorHandler.new,
+  name: r'errorHandlerProvider',
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product') ? null : _$errorHandlerHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef _$BLErrorHandler = AutoDisposeNotifier<BLErrorHandler>;
+typedef _$ErrorHandler = AutoDisposeNotifier<ErrorHandlerState>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

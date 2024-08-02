@@ -1,12 +1,12 @@
 import 'package:block_logic/logic/firebase_models/leaderboard.dart';
-import 'package:block_logic/logic/services/db_instance.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'generated/leaderboards.g.dart';
 
 @Riverpod(dependencies: [])
 Stream<List<Leaderboard>?> leaderboards(LeaderboardsRef ref, String id) async* {
-  final db = ref.watch(dbProvider).i;
+  final db = FirebaseFirestore.instance;
   final stream =
       db.collection('leaderboards').where('id', isEqualTo: id).snapshots();
   await for (final leaderboards in stream) {

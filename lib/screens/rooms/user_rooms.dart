@@ -19,33 +19,32 @@ class UserRooms extends ConsumerStatefulWidget {
 class _UserRoomsState extends ConsumerState<UserRooms> {
   @override
   Widget build(BuildContext context) {
-    final auth = ref.read(authServiceStateProvider.notifier);
+    final auth = ref.read(authServiceProvider.notifier);
     final ownRooms = ref.watch(OwnRoomsProvider(auth.getUID()));
 
-    return RefreshIndicator(
-      onRefresh: () {
-        return Future.value(null);
-      },
-      child: Column(
-        children: [
-          ownRooms.when(
-            data: (rooms) {
-              if (rooms.isEmpty) {
-                return const Expanded(
-                    child: Center(
-                  child: BLText(
-                    'You have no rooms yet.\nCreate one in "Creator Mode".',
-                    alignCenter: true,
-                  ),
-                ));
-              }
-              return ListView.builder(
+    return Column(
+      children: [
+        ownRooms.when(
+          data: (rooms) {
+            if (rooms.isEmpty) {
+              return const Expanded(
+                  child: Center(
+                child: BLText(
+                  'You have no rooms yet.\nCreate one in "Creator Mode".',
+                  alignCenter: true,
+                ),
+              ));
+            }
+            return Expanded(
+              child: ListView.builder(
                   itemCount: rooms.length,
                   itemBuilder: (context, i) {
+                    debugPrint(rooms[i].name.toString());
                     final leaderboards =
                         ref.watch(OwnRoomLeaderboardsProvider(rooms[i].id!));
                     leaderboards.when(
                         data: (leaderboard) {
+                          debugPrint('leadboard called');
                           return BLTranslucentCard(
                             onPressed: () {
                               // TODO: Implement game config for host
@@ -65,13 +64,13 @@ class _UserRoomsState extends ConsumerState<UserRooms> {
                         loading: genericLoading);
 
                     return null;
-                  });
-            },
-            error: (error, stackTrace) => const BlankWidget(),
-            loading: () => const BlankWidget(),
-          )
-        ],
-      ),
+                  }),
+            );
+          },
+          error: (error, stackTrace) => const BlankWidget(),
+          loading: () => const BlankWidget(),
+        )
+      ],
     );
   }
 }

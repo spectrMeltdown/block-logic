@@ -1,15 +1,15 @@
+// ignore_for_file: avoid_build_context_in_providers
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'generated/navigation.g.dart';
 
-@riverpod
-BLNavigation nav(NavRef ref) {
-  return BLNavigation();
-}
+@Riverpod()
+class CustomNavigation extends _$CustomNavigation {
+  @override
+  CustomNavigation build() => CustomNavigation();
 
-class BLNavigation {
   void pop(BuildContext context, [String? result]) {
     Navigator.pop(context, result);
   }

@@ -11,60 +11,60 @@ class AllBlocks {
   static Map<CodeBlockType, List<GameBlockData>> getAllBlocks() {
     return {
       CodeBlockType.classes: [
-        GameBlockData.pyClass(name: 'MyClass'),
+        GameBlockData.createClass(name: 'MyClass'),
       ],
       CodeBlockType.objects: [],
       CodeBlockType.functions: [
         /// when calling functions, they must exist in the body before doing so
-        GameBlockData.pyFunction(name: 'myFunction'),
+        GameBlockData.createFunction(name: 'myFunction'),
       ],
       CodeBlockType.functionDefinition: [
-        GameBlockData.pyFunctionDefinition(
+        GameBlockData.createFunctionDefinition(
             name: 'myFunction', return_: PyLiteral.string('testing'))
       ],
       CodeBlockType.keyword: [],
       CodeBlockType.loops: [
-        GameBlockData.pyLoop(loop: PyLoop.for_),
-        GameBlockData.pyLoop(loop: PyLoop.while_),
+        GameBlockData.createLoop(loop: PyLoop.for_),
+        GameBlockData.createLoop(loop: PyLoop.while_),
       ],
       CodeBlockType.conditionals: [
-        GameBlockData.pyConditional(conditional: PyConditional.if_),
-        GameBlockData.pyConditional(conditional: PyConditional.elif_),
-        GameBlockData.pyConditional(conditional: PyConditional.else_),
+        GameBlockData.createConditional(conditional: PyConditional.if_),
+        GameBlockData.createConditional(conditional: PyConditional.elif_),
+        GameBlockData.createConditional(conditional: PyConditional.else_),
       ],
       CodeBlockType.operators: [
-        GameBlockData.pyOperator(
+        GameBlockData.createOperator(
             operatorType: PyOperatorTypes.arithmetic,
             operator: PyOperatorsArithmetic.add),
-        GameBlockData.pyOperator(
+        GameBlockData.createOperator(
             operatorType: PyOperatorTypes.assignment,
             operator: PyOperatorsAssignment.assignment),
-        GameBlockData.pyOperator(
+        GameBlockData.createOperator(
             operatorType: PyOperatorTypes.comparison,
             operator: PyOperatorsComparison.equalTo),
-        GameBlockData.pyOperator(
+        GameBlockData.createOperator(
             operatorType: PyOperatorTypes.identity,
             operator: PyOperatorsIdentity.is_),
-        GameBlockData.pyOperator(
+        GameBlockData.createOperator(
             operatorType: PyOperatorTypes.logical,
             operator: PyOperatorsLogical.and),
-        GameBlockData.pyOperator(
+        GameBlockData.createOperator(
             operatorType: PyOperatorTypes.membership,
             operator: PyOperatorsMembership.in_),
       ],
       CodeBlockType.literals: [
-        GameBlockData.pyLiteral(literal: PyLiteral.boolean(true)),
-        GameBlockData.pyLiteral(literal: PyLiteral.boolean(false)),
-        GameBlockData.pyLiteral(literal: PyLiteral.number(intNum: 10)),
-        GameBlockData.pyLiteral(literal: PyLiteral.string('testing')),
+        GameBlockData.createLiteral(literal: PyLiteral.boolean(true)),
+        GameBlockData.createLiteral(literal: PyLiteral.boolean(false)),
+        GameBlockData.createLiteral(literal: PyLiteral.number(intNum: 10)),
+        GameBlockData.createLiteral(literal: PyLiteral.string('testing')),
       ],
       CodeBlockType.variables: [
-        GameBlockData.pyVariable(
+        GameBlockData.createVariable(
             name: 'bool_var', value: PyLiteral.boolean(true)),
-        GameBlockData.pyVariable(
+        GameBlockData.createVariable(
             name: 'num_var', value: PyLiteral.number(intNum: 50)),
-        GameBlockData.pyVariable(name: 'none_var', value: PyLiteral.none()),
-        GameBlockData.pyVariable(
+        GameBlockData.createVariable(name: 'none_var', value: PyLiteral.none()),
+        GameBlockData.createVariable(
             name: 'string_var', value: PyLiteral.string('testing')),
       ]
     };

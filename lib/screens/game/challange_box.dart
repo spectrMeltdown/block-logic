@@ -3,7 +3,6 @@ import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/logic/firebase_models/challenge.dart';
 import 'package:block_logic/logic/services/dialog.dart';
 import 'package:block_logic/logic/services/game_manager.dart';
-import 'package:block_logic/logic/services/media_query.dart';
 import 'package:block_logic/logic/services/ui.dart';
 import 'package:block_logic/screens/game/dialog_challenge_info.dart';
 import 'package:flutter/material.dart';
@@ -29,7 +28,7 @@ class ChallengeBox extends ConsumerWidget {
       },
       child: Container(
         constraints:
-            BoxConstraints(maxWidth: BLMediaQuery().screenW(context) / 1.9),
+            BoxConstraints(maxWidth: MediaQuery.of(context).size.width / 1.9),
         child: BLPanel(
           child: SingleChildScrollView(
             child: Padding(

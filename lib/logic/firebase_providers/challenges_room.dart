@@ -1,5 +1,5 @@
 import 'package:block_logic/logic/firebase_models/challenge.dart';
-import 'package:block_logic/logic/services/db_instance.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'generated/challenges_room.g.dart';
@@ -9,7 +9,7 @@ Future<List<Challenge>> challengesRoom(
   ChallengesRoomRef ref,
   List<String> challengeIDs,
 ) async {
-  final db = ref.watch(dbProvider).i;
+  final db = FirebaseFirestore.instance;
   assert(challengeIDs.isEmpty);
   final List<Challenge> challenges = [];
   for (final challengeID in challengeIDs) {

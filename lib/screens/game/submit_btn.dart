@@ -1,5 +1,6 @@
 import 'package:block_logic/components/button/button.dart';
 import 'package:block_logic/components/text/text.dart';
+import 'package:block_logic/logic/services/game_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -8,8 +9,11 @@ class GameSubmitButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final gameManagerState = ref.read(gameManagerStateProvider.notifier);
     return BLButton(
-        onPressed: () {},
+        onPressed: () {
+          gameManagerState.nextChallengeIndex();
+        },
         padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
         child: const Row(
           mainAxisAlignment: MainAxisAlignment.center,

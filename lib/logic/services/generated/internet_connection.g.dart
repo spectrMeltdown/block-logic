@@ -7,7 +7,7 @@ part of '../internet_connection.dart';
 // **************************************************************************
 
 String _$checkInternetConnectionHash() =>
-    r'3efd4d86444c5aa2f96cee219c61f3414f801bf3';
+    r'c0b44dd8b1809d3d0002f0b835d206f55294163f';
 
 /// Copied from Dart SDK
 class _SystemHash {

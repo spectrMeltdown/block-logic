@@ -6,13 +6,13 @@ import 'package:toastification/toastification.dart';
 part 'generated/toast.g.dart';
 
 @riverpod
-BLToast blToast(BlToastRef ref) {
-  return BLToast();
-}
+class Toast extends _$Toast {
+  @override
+  Toast build() => Toast();
 
-class BLToast {
   void showToast(
     String title, {
+    // ignore: avoid_build_context_in_providers
     BuildContext? context,
     NotifType notifType = NotifType.info,
     ToastificationStyle toastStyle = ToastificationStyle.simple,
@@ -210,7 +210,5 @@ class BLToast {
     }
   }
 
-  void dismissAllToast() {
-    toastification.dismissAll();
-  }
+  void dismissAllToast() => toastification.dismissAll();
 }

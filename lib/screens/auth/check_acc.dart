@@ -42,7 +42,7 @@ class _CheckAccState extends ConsumerState<CheckAcc> {
   }
 
   Widget getWidget(
-      {required AuthServiceState auth,
+      {required AuthService auth,
       required AsyncValue<UserAccount?> userFirestore,
       required DBService dbService}) {
     /// check if logged in
@@ -76,9 +76,9 @@ class _CheckAccState extends ConsumerState<CheckAcc> {
 
   @override
   Widget build(BuildContext context) {
-    final auth = ref.read(authServiceStateProvider.notifier);
+    final auth = ref.read(authServiceProvider.notifier);
     final user = ref.watch(accountAuthProvider);
-    final dbService = ref.watch(dBServiceProvider);
+    final dbService = ref.watch(dBServiceProvider.notifier);
     final userFirestore = ref.watch(UserAccountProvider(auth.getUID()));
     return user.when(
         data: (user) => getWidget(

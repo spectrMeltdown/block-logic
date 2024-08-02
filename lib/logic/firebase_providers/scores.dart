@@ -1,5 +1,5 @@
 import 'package:block_logic/logic/firebase_models/score.dart';
-import 'package:block_logic/logic/services/db_instance.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'generated/scores.g.dart';
@@ -7,7 +7,7 @@ part 'generated/scores.g.dart';
 /// stream all scores under a specific leaderboardID
 @Riverpod(dependencies: [])
 Stream<List<Score>> scores(ScoresRef ref, String leaderboardID) async* {
-  final db = ref.watch(dbProvider).i;
+  final db = FirebaseFirestore.instance;
   final stream = db
       .collection('leaderboards')
       .doc(leaderboardID)

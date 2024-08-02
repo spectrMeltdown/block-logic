@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/services/auth.dart';
 import 'package:block_logic/logic/services/db.dart';
-import 'package:block_logic/logic/services/db_instance.dart';
 import 'package:block_logic/logic/services/error_handler.dart';
 import 'package:block_logic/logic/services/toast.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -18,31 +17,28 @@ part 'generated/account.g.dart';
 
 @riverpod
 class AccountService extends _$AccountService {
-  late final DB _instance;
-  late final DBService _dbService;
-  late final AuthServiceState _auth;
-  late final BLErrorHandler _errorHandler;
-  late final BLToast _toast;
-
   @override
-  AccountService build() {
-    _instance = ref.watch(dbProvider);
-    _dbService = ref.watch(dBServiceProvider);
-    _auth = ref.read(authServiceStateProvider.notifier);
-    _errorHandler = ref.read(bLErrorHandlerProvider.notifier);
-    _toast = ref.watch(blToastProvider);
-    return AccountService();
+  AccountServiceState build() {
+    final dbService = ref.read(dBServiceProvider.notifier);
+    final auth = ref.read(authServiceProvider.notifier);
+    final errorHandler = ref.read(errorHandlerProvider.notifier);
+    final toast = ref.watch(toastProvider);
+    return AccountServiceState(
+        dbService: dbService,
+        auth: auth,
+        errorHandler: errorHandler,
+        toast: toast);
   }
 
   Future<void> changeDisplayName(
       String displayName, FirestoreCollections collection) async {
     try {
-      await _instance.i
+      await state._instance
           .collection(collection.name)
-          .doc(_auth.getUID())
+          .doc(state._auth.getUID())
           .set({'displayName': displayName}, SetOptions(merge: true));
     } catch (e) {
-      _errorHandler.handleErrors(e);
+      state._errorHandler(e);
     }
   }
 
@@ -70,8 +66,9 @@ class AccountService extends _$AccountService {
         File selectedPhoto = File(imagePath);
 
         /// create reference to the images of the user
-        final Reference profilePicRef =
-            _instance.userStorageRef.child(_auth.getUID()).child('profile_pic');
+        final Reference profilePicRef = state._userStorageRef
+            .child(state._auth.getUID())
+            .child('profile_pic');
 
         // Get temp directory
         Directory tempDir = await getTemporaryDirectory();
@@ -83,7 +80,7 @@ class AccountService extends _$AccountService {
             await selectedPhoto.copy('$tempPath/$fileName');
 
         /// if user didn't press back, display the toast
-        _toast.showToast('Updating ...');
+        state._toast.showToast('Updating ...');
         try {
           /// upload the file, with metadata
           await profilePicRef.putFile(
@@ -98,15 +95,34 @@ class AccountService extends _$AccountService {
           //debugPrint(downloadURL);
 
           /// save link to new profile pic
-          _dbService.updateProfilePicLink(downloadURL, collection);
-          _toast.showToast('Profile pic updated');
+          state._dbService.updateProfilePicLink(downloadURL, collection);
+          state._toast.showToast('Profile pic updated');
         } catch (e) {
-          _errorHandler.handleErrors(e);
-          _toast.showToast('Sorry, error occurred. Try uploading again.');
+          state._errorHandler(e);
+          state._toast.showToast('Sorry, error occurred. Try uploading again.');
         }
       } else {
-        _toast.showToast('Cancelled');
+        state._toast.showToast('Cancelled');
       }
     }
   }
+}
+
+class AccountServiceState {
+  final _instance = FirebaseFirestore.instance;
+  final _userStorageRef = FirebaseStorage.instance.ref('users/');
+  final DBService _dbService;
+  final AuthService _auth;
+  final ErrorHandler _errorHandler;
+  final Toast _toast;
+
+  AccountServiceState(
+      {required DBService dbService,
+      required AuthService auth,
+      required ErrorHandler errorHandler,
+      required Toast toast})
+      : _dbService = dbService,
+        _auth = auth,
+        _errorHandler = errorHandler,
+        _toast = toast;
 }

@@ -51,7 +51,7 @@ class _GameBlockWithChildState extends ConsumerState<GameBlockWithChild> {
   Widget build(BuildContext context) {
     ref.watch(gameManagerStateProvider);
     final gameManagerState = ref.watch(gameManagerStateProvider.notifier);
-    final blui = ref.read(bluiProvider);
+    final blui = ref.read(bLUIProvider);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

@@ -9,21 +9,19 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 part 'generated/auth.g.dart';
 
-class AuthService {
-  final _dbService = DBService();
-  final _errorHandler = BLErrorHandler();
-  final _toast = BLToast();
-  final _auth = FirebaseAuth.instance;
-  late final SharedPreferences _sharedPref;
-  AuthService({required SharedPreferences sharePref}) : _sharedPref = sharePref;
-}
-
 @riverpod
-class AuthServiceState extends _$AuthServiceState {
+class AuthService extends _$AuthService {
   @override
-  AuthService build() {
-    final sharedPref = ref.watch(sharedPrefProvider);
-    return AuthService(sharePref: sharedPref);
+  AuthServiceState build() {
+    final dbService = ref.read(dBServiceProvider.notifier);
+    final errorHandler = ref.read(errorHandlerProvider.notifier);
+    final sharedPref = ref.read(sharedPrefProvider);
+    final toast = ref.read(toastProvider);
+    return AuthServiceState(
+        dbService: dbService,
+        errorHandler: errorHandler,
+        sharedPref: sharedPref,
+        toast: toast);
   }
 
   // user's uid
@@ -51,7 +49,7 @@ class AuthServiceState extends _$AuthServiceState {
     state._toast.showToast('Logged out, bye!');
   }
 
-  Future<void> login({required String email, required String password}) async {
+  Future<bool> login({required String email, required String password}) async {
     try {
       /// show notification
       state._toast.showToast('Logging in');
@@ -63,12 +61,16 @@ class AuthServiceState extends _$AuthServiceState {
       /// show notification
       state._toast.dismissAllToast();
       state._toast.showToast('Welcome back, \n ${getDisplayName()}');
+
+      /// return
+      return true;
     } catch (e) {
-      state._errorHandler.handleErrors(e);
+      state._errorHandler(e);
+      return false;
     }
   }
 
-  Future<void> createAccount(
+  Future<bool> createAccount(
       {required String email,
       required String password,
       required String displayName,
@@ -90,8 +92,10 @@ class AuthServiceState extends _$AuthServiceState {
 
       /// send email verification
       sendEmailVerification();
+      return true;
     } catch (e) {
-      state._errorHandler.handleErrors(e);
+      state._errorHandler(e);
+      return false;
     }
   }
 
@@ -102,7 +106,7 @@ class AuthServiceState extends _$AuthServiceState {
       /// notify user
       if (showNotif == true) state._toast.showToast('Email verification sent!');
     } catch (e) {
-      state._errorHandler.handleErrors(e);
+      state._errorHandler(e);
     }
   }
 
@@ -110,7 +114,7 @@ class AuthServiceState extends _$AuthServiceState {
     try {
       await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
     } catch (e) {
-      state._errorHandler.handleErrors(e);
+      state._errorHandler(e);
     }
   }
 
@@ -118,7 +122,7 @@ class AuthServiceState extends _$AuthServiceState {
     try {
       await FirebaseAuth.instance.currentUser!.updatePassword(password.trim());
     } catch (e) {
-      state._errorHandler.handleErrors(e);
+      state._errorHandler(e);
     }
   }
 
@@ -128,7 +132,7 @@ class AuthServiceState extends _$AuthServiceState {
           .verifyBeforeUpdateEmail(email.trim());
       state._toast.showToast('A verification has been sent to your new email.');
     } catch (e) {
-      state._errorHandler.handleErrors(e);
+      state._errorHandler(e);
     }
   }
 
@@ -140,7 +144,7 @@ class AuthServiceState extends _$AuthServiceState {
       /// display info about delayed deletion
       state._toast.showToast('Account Deleted');
     } catch (e) {
-      state._errorHandler.handleErrors(e);
+      state._errorHandler(e);
     }
   }
 
@@ -153,8 +157,25 @@ class AuthServiceState extends _$AuthServiceState {
           ?.reauthenticateWithCredential(userCred);
       return 'success';
     } catch (e) {
-      state._errorHandler.handleErrors(e);
+      state._errorHandler(e);
     }
     return 'failed';
   }
+}
+
+class AuthServiceState {
+  final DBService _dbService;
+  final ErrorHandler _errorHandler;
+  final SharedPreferences _sharedPref;
+  final Toast _toast;
+  final _auth = FirebaseAuth.instance;
+  AuthServiceState(
+      {required DBService dbService,
+      required ErrorHandler errorHandler,
+      required SharedPreferences sharedPref,
+      required Toast toast})
+      : _dbService = dbService,
+        _errorHandler = errorHandler,
+        _sharedPref = sharedPref,
+        _toast = toast;
 }

@@ -1,8 +1,6 @@
 import 'dart:convert';
 
-import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_models/account_settings.dart';
-import 'package:block_logic/logic/firebase_providers/account_settings.dart';
 import 'package:block_logic/logic/services/auth.dart';
 import 'package:block_logic/logic/services/error_handler.dart';
 import 'package:block_logic/logic/services/shared_pref.dart';
@@ -15,15 +13,15 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 part 'generated/login_alert.g.dart';
 
-class LoginAlert {
-  final AuthServiceState _auth;
+class LoginAlertState {
+  final AuthService _auth;
   final AccountSettings _settings;
-  final BLErrorHandler _errorHandler;
+  final ErrorHandler _errorHandler;
   final SharedPreferences _sharedPref;
-  LoginAlert({
-    required AuthServiceState auth,
+  LoginAlertState({
+    required AuthService auth,
     required AccountSettings settings,
-    required BLErrorHandler errorHandler,
+    required ErrorHandler errorHandler,
     required SharedPreferences sharedPref,
   })  : _auth = auth,
         _settings = settings,
@@ -31,53 +29,45 @@ class LoginAlert {
         _sharedPref = sharedPref;
 }
 
-@Riverpod(dependencies: [])
-class LoginAlertState extends _$LoginAlertState {
+@riverpod
+class LoginAlert extends _$LoginAlert {
   @override
-  LoginAlert? build(FirestoreCollections collection) {
-    final auth = ref.watch(authServiceStateProvider.notifier);
-    final settings = ref.watch(SettingsProvider(collection));
-    final errorHandler = ref.watch(bLErrorHandlerProvider);
+  LoginAlertState build(AccountSettings settings) {
+    final auth = ref.read(authServiceProvider.notifier);
+    final errorHandler = ref.watch(errorHandlerProvider.notifier);
     final sharedPref = ref.watch(sharedPrefProvider);
-    settings.whenData((settings) {
-      if (settings == null) {
-        return null;
-      }
-      return LoginAlert(
-          auth: auth,
-          settings: settings,
-          errorHandler: errorHandler,
-          sharedPref: sharedPref);
-    });
-    return null;
+    return LoginAlertState(
+        auth: auth,
+        settings: settings,
+        errorHandler: errorHandler,
+        sharedPref: sharedPref);
   }
 
   Future<void> send() async {
-    if (state == null) return;
     late Position location;
 
     try {
       location = await _determinePosition();
     } catch (e) {
-      state?._errorHandler.handleErrors(e);
+      state._errorHandler(e);
       return;
     }
     List<Placemark> placemark =
         await placemarkFromCoordinates(location.latitude, location.longitude);
     Placemark place = placemark[0];
-    String user = state?._auth.getDisplayName() ?? '';
-    String receiverEmail = state?._auth.getEmail() ?? '';
+    String user = state._auth.getDisplayName();
+    String receiverEmail = state._auth.getEmail();
     String locationAddress =
         '${place.street} ${place.locality} ${place.subAdministrativeArea} ${place.postalCode} ${place.administrativeArea} ${place.country}';
 
     debugPrint(place.toString());
-    final settings = state?._settings;
+    final settings = state._settings;
 
     /// check if login alerts are enabled, or if login alert was already sent
-    if (settings?.loginAlerts == null ||
-        settings?.loginAlerts == false ||
-        state?._sharedPref.getBool('loginAlertSent') != null &&
-            state?._sharedPref.getBool('loginAlertSent') == true) {
+    if (settings.loginAlerts == null ||
+        settings.loginAlerts == false ||
+        state._sharedPref.getBool('loginAlertSent') != null &&
+            state._sharedPref.getBool('loginAlertSent') == true) {
       debugPrint('login alert not sent');
       return;
     }
@@ -97,7 +87,7 @@ class LoginAlertState extends _$LoginAlertState {
         }));
     debugPrint('Login Alert response code: ${response.statusCode}');
     if (response.statusCode == 200) {
-      state?._sharedPref.setBool('loginAlertSent', true);
+      state._sharedPref.setBool('loginAlertSent', true);
     }
     // debugPrint(response.body);
   }
@@ -164,7 +154,7 @@ class LoginAlertState extends _$LoginAlertState {
 
 // final loginAlertProvider = StateNotifierProvider.family<LoginAlertState,
 //     LoginAlert, FirestoreCollections>((ref, FirestoreCollections collection) {
-//   final auth = ref.read(authServiceStateProvider.notifier);
+//   final auth = ref.read(authServiceProvider.notifier);
 
 //   ref.watch(SettingsProvider(FirestoreCollections.users));
 //   return LoginAlertState();
@@ -173,7 +163,7 @@ class LoginAlertState extends _$LoginAlertState {
 // class LoginAlert {
 //   final AuthServiceState? _auth = null;
 //   final AccountSettings? _settings = null;
-//   final BLErrorHandler? _errorHandler = null;
+//   final ErrorHandler? _errorHandler = null;
 //   final SharedPreferences? _preferences = null;
 //   LoginAlert();
 // }
@@ -182,7 +172,7 @@ class LoginAlertState extends _$LoginAlertState {
 //   LoginAlertState({
 //     required AuthServiceState auth,
 //     required Future<AccountSettings?> settings,
-//     required BLErrorHandler errorHandler,
+//     required ErrorHandler errorHandler,
 //     required SharedPreferences preferences,
 //   }) : super(LoginAlert());
 

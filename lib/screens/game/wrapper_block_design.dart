@@ -12,7 +12,7 @@ class BlockDesignWrapper extends ConsumerWidget {
   final Widget child;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final blui = ref.read(bluiProvider);
+    final blui = ref.read(bLUIProvider);
     return Material(
       color: Colors.transparent,
       child: Container(

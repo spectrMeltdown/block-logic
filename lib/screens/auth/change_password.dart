@@ -18,8 +18,8 @@ class _ChangePasswordState extends ConsumerState<ChangePassword> {
 
   @override
   Widget build(BuildContext context) {
-    final nav = ref.read(navProvider);
-    final auth = ref.read(authServiceStateProvider.notifier);
+    final nav = ref.read(customNavigationProvider);
+    final auth = ref.read(authServiceProvider.notifier);
     return BLDialog(
         child: Column(
       mainAxisSize: MainAxisSize.min,

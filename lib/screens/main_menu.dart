@@ -93,8 +93,8 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen>
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(accountAuthProvider);
-    final auth = ref.read(authServiceStateProvider.notifier);
-    final nav = ref.watch(navProvider);
+    final auth = ref.read(authServiceProvider.notifier);
+    final nav = ref.watch(customNavigationProvider);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Background(
@@ -222,7 +222,7 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen>
   }
 }
 
-List<Widget> loggedInMenu(BuildContext context, BLNavigation nav) {
+List<Widget> loggedInMenu(BuildContext context, CustomNavigation nav) {
   return [
     BLButton(
       onPressed: () => nav.push(context, const RoomSelector()),
@@ -281,7 +281,7 @@ List<Widget> loggedInMenu(BuildContext context, BLNavigation nav) {
   ];
 }
 
-List<Widget> loggedOutMenu(BuildContext context, BLNavigation nav) {
+List<Widget> loggedOutMenu(BuildContext context, CustomNavigation nav) {
   return [
     BLButton(
       onPressed: () => nav.push(context, const Login()),

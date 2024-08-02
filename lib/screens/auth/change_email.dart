@@ -16,11 +16,11 @@ class ChangeEmail extends ConsumerStatefulWidget {
 class _ChangeEmailState extends ConsumerState<ChangeEmail> {
   late final String oldEmail;
   late final TextEditingController emailController;
-  late final AuthServiceState auth;
+  late final AuthService auth;
 
   @override
   void initState() {
-    final auth = ref.read(authServiceStateProvider.notifier);
+    final auth = ref.read(authServiceProvider.notifier);
     oldEmail = auth.getEmail();
     emailController = TextEditingController(text: oldEmail);
     super.initState();
@@ -28,7 +28,7 @@ class _ChangeEmailState extends ConsumerState<ChangeEmail> {
 
   @override
   Widget build(BuildContext context) {
-    final nav = ref.watch(navProvider);
+    final nav = ref.watch(customNavigationProvider);
     return BLDialog(
         child: Column(
       mainAxisSize: MainAxisSize.min,

@@ -6,19 +6,19 @@ part of '../ui.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$bluiHash() => r'e42bddfac098ee539a2cebe1547af6a809817fd4';
+String _$bLUIHash() => r'd4a32f79151f2f207c3a48fa7ecb9aa65b6b29f4';
 
-/// See also [blui].
-@ProviderFor(blui)
-final bluiProvider = AutoDisposeProvider<BLUI>.internal(
-  blui,
-  name: r'bluiProvider',
+/// See also [BLUI].
+@ProviderFor(BLUI)
+final bLUIProvider = AutoDisposeNotifierProvider<BLUI, BLUI>.internal(
+  BLUI.new,
+  name: r'bLUIProvider',
   debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product') ? null : _$bluiHash,
+      const bool.fromEnvironment('dart.vm.product') ? null : _$bLUIHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef BluiRef = AutoDisposeProviderRef<BLUI>;
+typedef _$BLUI = AutoDisposeNotifier<BLUI>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

@@ -66,7 +66,7 @@ class _GameRoomState extends ConsumerState<GameRoom> {
     //TODO: have a gamehost controller that will react to host actions, like when game start
     //TODO: when game starts, display challenge and limitation overlay
     //final gameHost = ref.watch(gameHostProvider);
-    final gameManager = ref.watch(gameManagerStateProvider);
+    ref.watch(gameManagerStateProvider);
     final room = ref.read(GameRoomProvider(widget.roomID));
 
     currentChallenge = gameManagerState.getCurrentChallenge();
@@ -74,9 +74,10 @@ class _GameRoomState extends ConsumerState<GameRoom> {
       resizeToAvoidBottomInset: false,
       body: Background(
         child: GameChallenge(
-            roomName: testingRoom.name ?? '',
-            challenge: testingChallenges[currentChallenge],
-            challengeCount: testingChallenges.length),
+          roomName: testingRoom.name ?? '',
+          challenge: testingChallenges[currentChallenge],
+          challengeCount: testingChallenges.length,
+        ),
       ),
     );
 

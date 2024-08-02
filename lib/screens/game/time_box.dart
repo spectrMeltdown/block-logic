@@ -2,30 +2,28 @@ import 'dart:async';
 
 import 'package:block_logic/components/panel.dart';
 import 'package:block_logic/components/text/text.dart';
-import 'package:block_logic/logic/services/game_manager.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:widget_and_text_animator/widget_and_text_animator.dart';
 
-class TimeBox extends ConsumerStatefulWidget {
+class TimeBox extends StatefulWidget {
   const TimeBox(this.pauseTimer, {super.key});
   final bool pauseTimer;
 
   @override
-  ConsumerState<TimeBox> createState() => _TimeBoxState();
+  State<TimeBox> createState() => _TimeBoxState();
 }
 
-class _TimeBoxState extends ConsumerState<TimeBox> {
+class _TimeBoxState extends State<TimeBox> {
   int seconds = 0;
+  late bool shouldPauseTimer;
   late String timeString;
   late Timer timer;
-  late GameManagerState gameManagerState;
 
   @override
   void initState() {
+    shouldPauseTimer = widget.pauseTimer;
     timer = createTimer();
-    gameManagerState = ref.read(gameManagerStateProvider.notifier);
     super.initState();
   }
 
@@ -38,6 +36,7 @@ class _TimeBoxState extends ConsumerState<TimeBox> {
 
   void pauseTimer() {
     timer.cancel();
+    setState(() {});
   }
 
   void resumeTimer() {
@@ -64,7 +63,8 @@ class _TimeBoxState extends ConsumerState<TimeBox> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.pauseTimer) {
+    debugPrint('pause timer in widget: $shouldPauseTimer');
+    if (shouldPauseTimer) {
       pauseTimer();
     } else {
       resumeTimer();
@@ -72,6 +72,7 @@ class _TimeBoxState extends ConsumerState<TimeBox> {
     return BLBorderedPanel(Padding(
       padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           WidgetAnimator(
             atRestEffect: WidgetRestingEffects.size(
@@ -85,7 +86,6 @@ class _TimeBoxState extends ConsumerState<TimeBox> {
           BLText(
             formatTime(seconds),
             animated: false,
-            size: 16,
             bold: true,
           )
         ],

@@ -1,12 +1,12 @@
 import 'package:block_logic/logic/firebase_models/report.dart';
-import 'package:block_logic/logic/services/db_instance.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'generated/reports.g.dart';
 
 @Riverpod(dependencies: [])
 Stream<List<Report?>> reports(ReportsRef ref, String id) async* {
-  final db = ref.watch(dbProvider).i;
+  final db = FirebaseFirestore.instance;
   final stream = db.collection('reports').snapshots();
   await for (final reports in stream) {
     final List<Report> result = [];

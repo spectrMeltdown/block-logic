@@ -6,12 +6,12 @@ part of '../db.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$dBServiceHash() => r'b1f61954cbdc95a1cc7c1e2745ec26fbb6662922';
+String _$dBServiceHash() => r'c6667047aa5b388f1bf5f067b6ca8f8f294fc960';
 
 /// See also [DBService].
 @ProviderFor(DBService)
 final dBServiceProvider =
-    AutoDisposeNotifierProvider<DBService, DBService>.internal(
+    AutoDisposeNotifierProvider<DBService, DBServiceState>.internal(
   DBService.new,
   name: r'dBServiceProvider',
   debugGetCreateSourceHash:
@@ -20,6 +20,6 @@ final dBServiceProvider =
   allTransitiveDependencies: null,
 );
 
-typedef _$DBService = AutoDisposeNotifier<DBService>;
+typedef _$DBService = AutoDisposeNotifier<DBServiceState>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class BLText extends StatefulWidget {
   const BLText(this.text,
       {super.key,
-      this.size = 16,
+      this.size = 14,
       this.fontStyle = FontStyle.normal,
       this.underlined = false,
       this.bold = false,

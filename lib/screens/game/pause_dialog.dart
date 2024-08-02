@@ -11,7 +11,7 @@ class PauseDialog extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final nav = ref.watch(navProvider);
+    final nav = ref.watch(customNavigationProvider);
     return BLDialog(
         child: Column(
       mainAxisSize: MainAxisSize.min,

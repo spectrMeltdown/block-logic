@@ -2,13 +2,11 @@ import 'dart:io';
 
 import 'package:block_logic/logic/services/audio.dart';
 import 'package:block_logic/logic/services/shared_pref.dart';
-import 'package:block_logic/screens/game/game_room.dart';
-import 'package:block_logic/splash.dart';
+import 'package:block_logic/screens/auth/check_acc.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flame/flame.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toastification/toastification.dart';
@@ -20,9 +18,8 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   /// Set the device to fullScreen, hiding status bar & navigation buttons
-  await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
-
-  /// Force device to default portrait mode only
+  //await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+  Flame.device.fullScreen();
   Flame.device.setPortraitUpOnly;
   // Hide the status bar
   //SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: [SystemUiOverlay.bottom]);
@@ -102,16 +99,17 @@ class BlockLogic extends ConsumerWidget {
     /// toastificationWrapper is for displaying toasts without using context
     return ToastificationWrapper(
       child: MaterialApp(
-        title: 'Block-Logic',
-        debugShowCheckedModeBanner: false,
-        theme: appTheme,
-        darkTheme: appTheme,
-        home: kDebugMode
-            ? const GameRoom(
-                roomID: 'offline-testing',
-              )
-            : const Splash(),
-      ),
+          title: 'Block-Logic',
+          debugShowCheckedModeBanner: false,
+          theme: appTheme,
+          darkTheme: appTheme,
+          home:
+              // const GameRoom(
+              //     roomID: 'offline-testing',
+              //   )
+              const CheckAcc()
+          //const Splash(),
+          ),
     );
   }
 }

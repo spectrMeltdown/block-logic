@@ -5,7 +5,7 @@ import 'package:block_logic/components/button/back_button.dart';
 import 'package:block_logic/components/button/button.dart';
 import 'package:block_logic/components/button/login_signup_btns.dart';
 import 'package:block_logic/components/button/text_button.dart';
-import 'package:block_logic/components/dialog/dialog.dart';
+import 'package:block_logic/components/dialog/reauth.dart';
 import 'package:block_logic/components/panel.dart';
 import 'package:block_logic/components/profile_pic.dart';
 import 'package:block_logic/components/text/text.dart';
@@ -20,7 +20,6 @@ import 'package:block_logic/logic/services/account.dart';
 import 'package:block_logic/logic/services/audio.dart';
 import 'package:block_logic/logic/services/auth.dart';
 import 'package:block_logic/logic/services/db.dart';
-import 'package:block_logic/logic/services/media_query.dart';
 import 'package:block_logic/logic/services/navigation.dart';
 import 'package:block_logic/logic/services/persistent_data.dart';
 import 'package:block_logic/logic/services/toast.dart';
@@ -54,11 +53,11 @@ class _SettingsState extends ConsumerState<Settings> {
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(accountAuthProvider);
-    final nav = ref.watch(navProvider);
-    final mediaQuery = ref.read(bLMediaQueryProvider);
-    final auth = ref.read(authServiceStateProvider.notifier);
-    final accountService = ref.read(accountServiceProvider);
-    final toast = ref.read(blToastProvider);
+    final nav = ref.watch(customNavigationProvider);
+    final mediaQuery = MediaQuery.of(context);
+    final auth = ref.read(authServiceProvider.notifier);
+    final accountService = ref.read(accountServiceProvider.notifier);
+    final toast = ref.read(toastProvider);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Background(
@@ -75,7 +74,7 @@ class _SettingsState extends ConsumerState<Settings> {
                   children: [
                     BLPanel(
                         child: SizedBox(
-                      width: mediaQuery.screenW(context) / 1.4,
+                      width: mediaQuery.size.width / 1.4,
                       child: Column(
                         children: [
                           const SizedBox(
@@ -291,7 +290,7 @@ class _SettingsState extends ConsumerState<Settings> {
                               loading: () => [const BlankWidget()]),
                         )),
                     SizedBox(
-                      height: mediaQuery.screenH(context) / 15,
+                      height: mediaQuery.size.height / 15,
                     ),
                     BLTextButton(
                         onPressed: () => nav.push(context, const AboutUs()),
@@ -318,9 +317,9 @@ class SystemSettings extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final userSettings =
         ref.watch(SettingsProvider(FirestoreCollections.users));
-    final dbService = ref.read(dBServiceProvider);
-    final persistentData = ref.watch(persistentDataProvider);
-    final persistentDataNotifier = ref.read(persistentDataProvider.notifier);
+    final dbService = ref.read(dBServiceProvider.notifier);
+    final persistentDataNotifier =
+        ref.read(persistentDataStateProvider.notifier);
     final gameAudio = ref.watch(bLAudioStateProvider);
     final gameAudioNotifier = ref.read(bLAudioStateProvider.notifier);
 
@@ -375,7 +374,7 @@ class SystemSettings extends ConsumerWidget {
           ],
         ),
         BLSwitch(
-          state: persistentData.shouldDisplayNotifications(),
+          state: persistentDataNotifier.shouldDisplayNotifications(),
           onPressed: () {
             persistentDataNotifier.toggleNotifications();
           },
@@ -433,9 +432,9 @@ class SystemSetting extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final mediaQuery = ref.watch(bLMediaQueryProvider);
+    final mediaQuery = MediaQuery.of(context);
     return SizedBox(
-      width: mediaQuery.screenW(context) / 1.4,
+      width: mediaQuery.size.width / 1.4,
       child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,

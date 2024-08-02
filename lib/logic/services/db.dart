@@ -1,37 +1,31 @@
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_models/account_settings.dart';
 import 'package:block_logic/logic/firebase_models/user_account.dart';
-import 'package:block_logic/logic/services/auth.dart';
-import 'package:block_logic/logic/services/db_instance.dart';
 import 'package:block_logic/logic/services/error_handler.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'generated/db.g.dart';
 
-@riverpod
+@Riverpod()
 class DBService extends _$DBService {
-  late final DB _instance;
-  late final AuthServiceState _auth;
-  late final BLErrorHandler _errorHandler;
-
   @override
-  DBService build() {
-    _instance = ref.watch(dbProvider);
-    _auth = ref.read(authServiceStateProvider.notifier);
-    _errorHandler = ref.read(bLErrorHandlerProvider.notifier);
-    return DBService();
+  DBServiceState build() {
+    final auth = FirebaseAuth.instance.currentUser;
+    final errorHandler = ref.read(errorHandlerProvider.notifier);
+    return DBServiceState(auth: auth, errorHandler: errorHandler);
   }
 
   Future<void> initAccountFirestore() async {
     try {
       /// initialize user details
       updateUserAccount(UserAccount(
-          id: _auth.getUID(),
+          id: state._auth?.uid,
           createdAt: DateTime.now(),
           modifiedAt: DateTime.now(),
-          displayName: _auth.getDisplayName(),
+          displayName: state._auth?.displayName,
           profilePicLink: 'new_user'));
 
       /// initialize user settings
@@ -42,7 +36,7 @@ class DBService extends _$DBService {
         //notifications: true,
       ));
     } catch (e) {
-      _errorHandler.handleErrors(e);
+      state._errorHandler(e);
     }
   }
 
@@ -58,9 +52,9 @@ class DBService extends _$DBService {
   Future<void> updateUserAccount(UserAccount userAcc) async {
     final toFirestore = UserAccount().toFirestore(userAcc);
     try {
-      await _instance.i
+      await state._instance
           .collection('users')
-          .doc(_auth.getUID())
+          .doc(state._auth?.uid)
           .set(toFirestore, SetOptions(merge: true));
     } catch (e) {
       debugPrint(e.toString());
@@ -70,7 +64,7 @@ class DBService extends _$DBService {
 
   Future<void> deleteUserAccountFirestore(String id) async {
     try {
-      await _instance.i.collection('users').doc(_auth.getUID()).delete();
+      await state._instance.collection('users').doc(state._auth?.uid).delete();
     } catch (e) {
       debugPrint(e.toString());
       debugPrint(toString());
@@ -80,9 +74,9 @@ class DBService extends _$DBService {
   Future<void> updateUserSettings(AccountSettings userSettings) async {
     final toFirestore = AccountSettings().toFirestore(userSettings);
     try {
-      _instance.i
+      state._instance
           .collection('users')
-          .doc(_auth.getUID())
+          .doc(state._auth?.uid)
           .set(toFirestore, SetOptions(merge: true));
     } catch (e) {
       debugPrint(e.toString());
@@ -91,26 +85,38 @@ class DBService extends _$DBService {
   }
 
   Future<void> createLeaderboard(Map<String, dynamic> leaderboard) {
-    return _instance.i.collection('reports').doc().set(leaderboard);
+    return state._instance.collection('reports').doc().set(leaderboard);
   }
 
   Future<void> createReport(Map<String, dynamic> report) {
-    return _instance.i.collection('reports').doc().set(report);
+    return state._instance.collection('reports').doc().set(report);
   }
 
   Future<void> updateReport(String id, Map<String, dynamic> report) {
-    return _instance.i.collection('reports').doc(id).update(report);
+    return state._instance.collection('reports').doc(id).update(report);
   }
 
   Future<void> updateProfilePicLink(
       String link, FirestoreCollections collection) async {
     try {
-      await _instance.i
+      await state._instance
           .collection(collection.name)
-          .doc(_auth.getUID())
+          .doc(state._auth?.uid)
           .set({'profilePicLink': link}, SetOptions(merge: true));
     } catch (e) {
-      _errorHandler.handleErrors(e);
+      state._errorHandler(e);
     }
   }
+}
+
+class DBServiceState {
+  final _instance = FirebaseFirestore.instance;
+  final User? _auth;
+  final ErrorHandler _errorHandler;
+
+  DBServiceState({
+    required User? auth,
+    required ErrorHandler errorHandler,
+  })  : _auth = auth,
+        _errorHandler = errorHandler;
 }

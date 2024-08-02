@@ -35,9 +35,12 @@ class _Splash extends ConsumerState<Splash> {
               backgroundDecoration: BoxDecoration(
                   image: DecorationImage(
                       image: AssetImage(assets.backgroundNoGrid))),
-              logoBuilder: (context) => Image.asset(
-                    assets.logo,
-                    fit: BoxFit.cover,
+              logoBuilder: (context) => Padding(
+                    padding: const EdgeInsets.all(80),
+                    child: Image.asset(
+                      assets.logo,
+                      fit: BoxFit.cover,
+                    ),
                   )),
           onFinish: (context) => const CheckAcc()),
     );

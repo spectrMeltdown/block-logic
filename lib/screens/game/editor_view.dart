@@ -1,7 +1,6 @@
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/logic/game/block_data.dart';
 import 'package:block_logic/logic/services/game_manager.dart';
-import 'package:block_logic/logic/services/media_query.dart';
 import 'package:block_logic/screens/game/validator.dart';
 import 'package:block_logic/screens/game/wrapper_drag_target.dart';
 import 'package:flutter/material.dart';
@@ -21,7 +20,6 @@ class _CustomTabViewState extends ConsumerState<EditorView>
   bool editorOutline = false;
   bool addedPlaceholder = false;
   // late final GameManagerState gameManagerState;
-  late final BLMediaQuery mediaQuery;
   final validator = BlockValidator();
 
   @override
@@ -69,7 +67,7 @@ class _CustomTabViewState extends ConsumerState<EditorView>
       },
       onAcceptWithDetails: (block, gameManagerState) {
         if (block == null) return;
-        gameManagerState.addData(currentIndexPath: [], data: block);
+        //gameManagerState.addData(currentIndexPath: [], data: block);
       },
     );
     // return Container(
@@ -121,10 +119,10 @@ class _CustomTabViewState extends ConsumerState<EditorView>
     final gameManager = ref.watch(gameManagerStateProvider);
 
     /// get the block
-    blocksData =
-        gameManagerState.getBlockData([], isTopLevel: true).map((item) {
-      return item as GameBlockData;
-    }).toList();
+    blocksData = [];
+    //     gameManagerState.getBlockData([], isTopLevel: true).map((item) {
+    //   return item as GameBlockData;
+    // }).toList();
     // blocks = blocksData.map((data){
     //   if () {
     //       blocks.add(StatementBox(

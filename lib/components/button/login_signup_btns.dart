@@ -13,7 +13,7 @@ class BLLoginSignupBtns extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final nav = ref.watch(navProvider);
+    final nav = ref.watch(customNavigationProvider);
     return Row(
       mainAxisAlignment: mainAxisAlignment,
       children: [

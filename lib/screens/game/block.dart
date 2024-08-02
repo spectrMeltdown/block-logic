@@ -27,7 +27,7 @@ class GameCodeBlockState extends ConsumerState<GameBlock>
   @override
   void initState() {
     gameManagerState = ref.read(gameManagerStateProvider.notifier);
-    blui = ref.read(bluiProvider);
+    blui = ref.read(bLUIProvider);
 
     // _controller = AnimationController(
     //   duration: const Duration(milliseconds: 300),

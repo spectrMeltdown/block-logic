@@ -10,6 +10,7 @@ import 'package:block_logic/components/util/blank_widget.dart';
 import 'package:block_logic/logic/services/auth.dart';
 import 'package:block_logic/logic/services/navigation.dart';
 import 'package:block_logic/logic/services/validator_text.dart';
+import 'package:block_logic/screens/auth/check_acc.dart';
 import 'package:block_logic/screens/auth/login.dart';
 import 'package:block_logic/screens/terms_and_conditions.dart';
 import 'package:flutter/gestures.dart';
@@ -43,8 +44,8 @@ class _SignupState extends ConsumerState<Signup> {
   @override
   Widget build(BuildContext context) {
     final validator = ref.read(textValidatorProvider);
-    final nav = ref.read(navProvider);
-    final auth = ref.read(authServiceStateProvider.notifier);
+    final nav = ref.read(customNavigationProvider);
+    final auth = ref.read(authServiceProvider.notifier);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Background(
@@ -171,13 +172,21 @@ class _SignupState extends ConsumerState<Signup> {
                                   }
 
                                   processing = true;
-                                  await auth.createAccount(
-                                      email: emailController.text.trim(),
-                                      password: passwordController.text.trim(),
-                                      phoneNum: phoneNumController.text.trim(),
-                                      displayName:
-                                          displayNameController.text.trim());
+                                  final signupSuccess =
+                                      await auth.createAccount(
+                                          email: emailController.text.trim(),
+                                          password:
+                                              passwordController.text.trim(),
+                                          phoneNum:
+                                              phoneNumController.text.trim(),
+                                          displayName: displayNameController
+                                              .text
+                                              .trim());
                                   processing = false;
+                                  if (signupSuccess) {
+                                    if (!context.mounted) return;
+                                    nav.pushReplace(context, const CheckAcc());
+                                  }
                                 }
                               },
                               child: const BLText(

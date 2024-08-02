@@ -4,7 +4,6 @@ import 'package:block_logic/components/dialog/help_dialog.dart';
 import 'package:block_logic/components/panel.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/textbox.dart';
-import 'package:block_logic/logic/services/media_query.dart';
 import 'package:block_logic/logic/services/ui.dart';
 import 'package:block_logic/screens/rooms/public_rooms.dart';
 import 'package:block_logic/screens/rooms/user_rooms.dart';
@@ -32,7 +31,7 @@ class _RoomSelectorState extends ConsumerState<RoomSelector>
 
   @override
   Widget build(BuildContext context) {
-    final mediaQuery = ref.read(bLMediaQueryProvider);
+    final mediaQuery = MediaQuery.of(context);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Background(
@@ -91,7 +90,7 @@ class _RoomSelectorState extends ConsumerState<RoomSelector>
                         ]),
                     SizedBox(
                       width: double.maxFinite,
-                      height: mediaQuery.screenH(context) / 1.6,
+                      height: mediaQuery.size.height / 1.6,
                       child: TabBarView(
                           clipBehavior: Clip.antiAlias,
                           physics: const NeverScrollableScrollPhysics(),

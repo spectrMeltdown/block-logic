@@ -19,11 +19,11 @@ class ChangeDisplayName extends ConsumerStatefulWidget {
 class _ChangeDisplayNameState extends ConsumerState<ChangeDisplayName> {
   late final String oldDisplayName;
   late final TextEditingController displayNameController;
-  late final AuthServiceState auth;
+  late final AuthService auth;
 
   @override
   void initState() {
-    auth = ref.read(authServiceStateProvider.notifier);
+    auth = ref.read(authServiceProvider.notifier);
     final user = ref.read(UserAccountProvider(auth.getUID())).value;
     oldDisplayName = user?.displayName ?? '';
     displayNameController = TextEditingController(text: oldDisplayName);
@@ -32,57 +32,58 @@ class _ChangeDisplayNameState extends ConsumerState<ChangeDisplayName> {
 
   @override
   Widget build(BuildContext context) {
-    final nav = ref.read(navProvider);
-    final accountService = ref.read(accountServiceProvider);
+    final nav = ref.read(customNavigationProvider);
+    final accountService = ref.read(accountServiceProvider.notifier);
     return BLDialog(
+        color: Colors.grey.shade800,
         child: Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        const BLSmallTitle('Enter your new display name'),
-        const SizedBox(
-          height: 10,
-        ),
-        BLTextBox(
-          controller: displayNameController,
-          prefixIcon: const Icon(
-            Icons.mail,
-            color: Colors.white,
-          ),
-        ),
-        const SizedBox(
-          height: 10,
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: const BLText(
-                  'Cancel',
-                  color: Colors.red,
-                )),
-            TextButton(
-                onPressed: () {
-                  final newDisplayName = displayNameController.text.trim();
-                  if (oldDisplayName != newDisplayName) {
-                    accountService.changeDisplayName(
-                        newDisplayName, FirestoreCollections.users);
-                  } else {
-                    nav.pop(context);
-                  }
-                },
-                child: const BLText(
-                  'Save',
-                  color: Colors.green,
-                )),
+            const BLSmallTitle('Enter your new display name'),
             const SizedBox(
-              width: 10,
+              height: 10,
+            ),
+            BLTextBox(
+              controller: displayNameController,
+              prefixIcon: const Icon(
+                Icons.mail,
+                color: Colors.white,
+              ),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: const BLText(
+                      'Cancel',
+                      color: Colors.red,
+                    )),
+                TextButton(
+                    onPressed: () {
+                      final newDisplayName = displayNameController.text.trim();
+                      if (oldDisplayName != newDisplayName) {
+                        accountService.changeDisplayName(
+                            newDisplayName, FirestoreCollections.users);
+                      } else {
+                        nav.pop(context);
+                      }
+                    },
+                    child: const BLText(
+                      'Save',
+                      color: Colors.green,
+                    )),
+                const SizedBox(
+                  width: 10,
+                )
+              ],
             )
           ],
-        )
-      ],
-    ));
+        ));
   }
 }

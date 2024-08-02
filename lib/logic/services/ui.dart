@@ -4,24 +4,10 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'generated/ui.g.dart';
 
-@riverpod
-BLUI blui(BluiRef ref) {
-  return BLUI();
-}
-
-class BlockColors {
-  Color variables = const Color(0xFFA77D00);
-  Color literals = const Color(0xFFEB3223);
-  Color condLoops = const Color(0xFF37225C);
-  Color functions = const Color(0xFFAC6363);
-  Color classes = const Color(0xFF347E77);
-  Color operators = const Color(0xFF2C612E);
-}
-
-/// all colors used in app. Allows ease of adjusting UI later on.
-class BLUI {
-  BLUI();
-  final blockColors = BlockColors();
+@Riverpod()
+class BLUI extends _$BLUI {
+  @override
+  BLUI build() => BLUI();
   Color getAppColor(String color) {
     switch (color.toLowerCase()) {
       case 'grey':
@@ -44,6 +30,7 @@ class BLUI {
   }
 
   Color getBlockColor(CodeBlockType? type) {
+    final blockColors = BlockColors();
     switch (type) {
       case CodeBlockType.literals:
         return blockColors.literals;
@@ -61,4 +48,13 @@ class BLUI {
         return Colors.white;
     }
   }
+}
+
+class BlockColors {
+  Color variables = const Color(0xFFA77D00);
+  Color literals = const Color(0xFFEB3223);
+  Color condLoops = const Color(0xFF37225C);
+  Color functions = const Color(0xFFAC6363);
+  Color classes = const Color(0xFF347E77);
+  Color operators = const Color(0xFF2C612E);
 }

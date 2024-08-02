@@ -1,12 +1,11 @@
-import 'package:block_logic/components/button/back_button.dart';
 import 'package:block_logic/components/background.dart';
+import 'package:block_logic/components/button/back_button.dart';
 import 'package:block_logic/components/button/button.dart';
 import 'package:block_logic/components/panel.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/services/assets.dart';
 import 'package:block_logic/logic/services/navigation.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -21,7 +20,7 @@ class _AboutUsState extends ConsumerState<AboutUs> {
   @override
   Widget build(BuildContext context) {
     final assets = ref.watch(assetsProvider);
-    final nav = ref.watch(navProvider);
+    final nav = ref.watch(customNavigationProvider);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Background(

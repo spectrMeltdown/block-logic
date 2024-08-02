@@ -1,5 +1,4 @@
 import 'package:block_logic/components/panel.dart';
-import 'package:block_logic/logic/services/media_query.dart';
 import 'package:block_logic/screens/game/custom_add_tab.dart';
 import 'package:block_logic/screens/game/custom_tab.dart';
 import 'package:block_logic/screens/game/editor_view.dart';
@@ -72,7 +71,7 @@ class _EditorState extends ConsumerState<Editor> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    final mediaQuery = ref.watch(bLMediaQueryProvider);
+    final mediaQuery = MediaQuery.of(context);
     return Flexible(
       child: Column(
         children: [
@@ -109,7 +108,7 @@ class _EditorState extends ConsumerState<Editor> with TickerProviderStateMixin {
           SizedBox(
             key: editorWidgetKey,
             width: double.maxFinite,
-            height: mediaQuery.screenH(context) / 1.95,
+            height: mediaQuery.size.height / 1.95,
             child: BLBorderedPanel(
               TabBarView(
                   clipBehavior: Clip.antiAlias,

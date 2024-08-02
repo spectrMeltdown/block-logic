@@ -1,6 +1,5 @@
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/services/audio.dart';
-import 'package:block_logic/logic/services/media_query.dart';
 import 'package:block_logic/logic/services/ui.dart';
 import 'package:flame/extensions.dart';
 import 'package:flutter/material.dart';
@@ -83,7 +82,7 @@ class _BLCardState extends ConsumerState<BLCard> {
   @override
   Widget build(BuildContext context) {
     final audio = ref.read(bLAudioStateProvider.notifier);
-    final mediaQuery = ref.watch(bLMediaQueryProvider);
+    final mediaQuery = MediaQuery.of(context);
 
     /// space around the card
     return Padding(
@@ -104,7 +103,7 @@ class _BLCardState extends ConsumerState<BLCard> {
 
             /// the actual card
             SizedBox(
-                width: mediaQuery.screenW(context),
+                width: mediaQuery.size.width,
                 height: widget.height,
                 child: Container(
                   padding: widget.padding ??

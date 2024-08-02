@@ -9,15 +9,14 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'generated/error_handler.g.dart';
 
 @riverpod
-class BLErrorHandler extends _$BLErrorHandler {
-  late BLToast _toast;
+class ErrorHandler extends _$ErrorHandler {
   @override
-  BLErrorHandler build() {
-    return BLErrorHandler();
+  ErrorHandlerState build() {
+    final toast = ref.read(toastProvider);
+    return ErrorHandlerState(toast: toast);
   }
 
-  String? handleErrors(Object e,
-      {BuildContext? context, bool handleOverlay = true}) {
+  String? call(Object e, {BuildContext? context, bool handleOverlay = true}) {
     if (e is! FirebaseException) {
       debugPrint('Was not a FirebaseException!');
       debugPrint(e.toString());
@@ -26,7 +25,7 @@ class BLErrorHandler extends _$BLErrorHandler {
       return null;
     }
     if (context == null) handleOverlay = false;
-    _toast.dismissAllToast();
+    state.toast.dismissAllToast();
     debugPrint('FirebaseException Code: ${e.code}');
     switch (e.code) {
       case 'network-request-failed':
@@ -65,4 +64,10 @@ class BLErrorHandler extends _$BLErrorHandler {
         return null;
     }
   }
+}
+
+class ErrorHandlerState {
+  final Toast toast;
+
+  ErrorHandlerState({required this.toast});
 }

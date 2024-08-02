@@ -2,7 +2,6 @@ import 'package:block_logic/components/panel.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/game/block_data.dart';
 import 'package:block_logic/logic/services/game_manager.dart';
-import 'package:block_logic/logic/services/media_query.dart';
 import 'package:block_logic/logic/services/ui.dart';
 import 'package:block_logic/logic/testing.dart';
 import 'package:block_logic/screens/game/block.dart';
@@ -52,7 +51,7 @@ class _GameBlocksState extends ConsumerState<GameBlocks>
 
   @override
   Widget build(BuildContext context) {
-    final mediaQuery = ref.watch(bLMediaQueryProvider);
+    final mediaQuery = MediaQuery.of(context);
     ref.watch(gameManagerStateProvider);
     return Column(
       children: [
@@ -86,7 +85,7 @@ class _GameBlocksState extends ConsumerState<GameBlocks>
         ),
         SizedBox(
           width: double.maxFinite,
-          height: mediaQuery.screenH(context) / 11,
+          height: mediaQuery.size.height / 11,
           child: BLBorderedPanel(
             TabBarView(
                 clipBehavior: Clip.antiAlias,
