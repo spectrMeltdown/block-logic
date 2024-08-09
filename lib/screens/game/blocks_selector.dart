@@ -87,7 +87,7 @@ class _GameBlocksState extends ConsumerState<GameBlocks>
           width: double.maxFinite,
           height: mediaQuery.size.height / 11,
           child: BLBorderedPanel(
-            TabBarView(
+            child: TabBarView(
                 clipBehavior: Clip.antiAlias,
                 physics: const NeverScrollableScrollPhysics(),
                 controller: blocksTabController,

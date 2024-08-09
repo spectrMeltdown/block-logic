@@ -47,6 +47,14 @@ class _BLCardState extends ConsumerState<BLTranslucentCard> {
       blurRadius: 20,
     ),
   ];
+
+  @override
+  void initState() {
+    cardColor = [Colors.grey.withOpacity(0.5), darkShade];
+    cardColorPressed = [Colors.grey.brighten(0.2), darkShade];
+    super.initState();
+  }
+
   void _onTapUp(TapUpDetails tapUp) {
     setState(() {
       _isTapped = false;
@@ -78,20 +86,13 @@ class _BLCardState extends ConsumerState<BLTranslucentCard> {
   }
 
   @override
-  void initState() {
-    cardColor = [Colors.white.withOpacity(0.5), darkShade];
-    cardColorPressed = [Colors.white.brighten(0.2), darkShade];
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final audio = ref.read(bLAudioStateProvider.notifier);
     final mediaQuery = MediaQuery.of(context);
 
     /// space around the card
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 5),
       child:
 
           /// detect user touches
@@ -112,8 +113,7 @@ class _BLCardState extends ConsumerState<BLTranslucentCard> {
                 height: widget.height,
                 child: Container(
                   padding: widget.padding ??
-                      const EdgeInsets.symmetric(
-                          horizontal: 30.0, vertical: 10),
+                      const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
                   decoration: BoxDecoration(
                     shape: BoxShape.rectangle,
                     borderRadius: BorderRadius.circular(12.0),
@@ -134,41 +134,40 @@ class _BLCardState extends ConsumerState<BLTranslucentCard> {
                           ]),
                   ),
                   child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      BLCircularImage(
-                        widget.icon,
-                        background: Colors.black45,
+                      Expanded(
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  BLText(
+                                    widget.title,
+                                    color: BLUI().getAppColor('amber'),
+                                    bold: true,
+                                  )
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  BLText(
+                                    widget.subTitle,
+                                    color: BLUI().getAppColor(''),
+                                    size: 17,
+                                  )
+                                ],
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  widget.bottomRowStart ?? const BlankWidget(),
+                                  widget.bottomRowEnd ?? const BlankWidget()
+                                ],
+                              )
+                            ]),
                       ),
-                      const SizedBox(width: 30),
-                      Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                BLText(
-                                  widget.title,
-                                  color: BLUI().getAppColor('darkblue'),
-                                  bold: true,
-                                )
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                BLText(
-                                  widget.subTitle,
-                                  color: BLUI().getAppColor('amber'),
-                                  size: 17,
-                                )
-                              ],
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                widget.bottomRowStart ?? const BlankWidget(),
-                                widget.bottomRowEnd ?? const BlankWidget()
-                              ],
-                            )
-                          ]),
                     ],
                   ),
                 )),

@@ -18,13 +18,12 @@ class DBService extends _$DBService {
     return DBServiceState(auth: auth, errorHandler: errorHandler);
   }
 
-  Future<void> initAccountFirestore() async {
+  Future<String?> initAccountFirestore() async {
     try {
       /// initialize user details
       updateUserAccount(UserAccount(
           id: state._auth?.uid,
           createdAt: DateTime.now(),
-          modifiedAt: DateTime.now(),
           displayName: state._auth?.displayName,
           profilePicLink: 'new_user'));
 
@@ -35,8 +34,9 @@ class DBService extends _$DBService {
         loginAlerts: true,
         //notifications: true,
       ));
+      return null;
     } catch (e) {
-      state._errorHandler(e);
+      return state._errorHandler.call(e);
     }
   }
 
@@ -96,15 +96,16 @@ class DBService extends _$DBService {
     return state._instance.collection('reports').doc(id).update(report);
   }
 
-  Future<void> updateProfilePicLink(
+  Future<String?> updateProfilePicLink(
       String link, FirestoreCollections collection) async {
     try {
       await state._instance
           .collection(collection.name)
           .doc(state._auth?.uid)
           .set({'profilePicLink': link}, SetOptions(merge: true));
+      return null;
     } catch (e) {
-      state._errorHandler(e);
+      return state._errorHandler.call(e);
     }
   }
 }

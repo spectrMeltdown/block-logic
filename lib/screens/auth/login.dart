@@ -5,8 +5,13 @@ import 'package:block_logic/components/button/text_button.dart';
 import 'package:block_logic/components/panel.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/textbox.dart';
+import 'package:block_logic/components/util/provider_default.dart';
+import 'package:block_logic/logic/enums.dart';
+import 'package:block_logic/logic/firebase_providers/account_settings.dart';
 import 'package:block_logic/logic/services/auth.dart';
+import 'package:block_logic/logic/services/login_alert.dart';
 import 'package:block_logic/logic/services/navigation.dart';
+import 'package:block_logic/logic/services/toast.dart';
 import 'package:block_logic/logic/services/validator_text.dart';
 import 'package:block_logic/screens/auth/forgot_password.dart';
 import 'package:block_logic/screens/auth/signup.dart';
@@ -14,6 +19,7 @@ import 'package:block_logic/screens/main_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:toastification/toastification.dart';
 
 class Login extends ConsumerStatefulWidget {
   const Login({super.key});
@@ -33,19 +39,22 @@ class _LoginState extends ConsumerState<Login> {
     final validator = ref.read(textValidatorProvider);
     final nav = ref.read(customNavigationProvider);
     final auth = ref.read(authServiceProvider.notifier);
+    final toast = ref.read(toastProvider.notifier);
+    final settings = ref.read(SettingsProvider(FirestoreCollections.users));
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Background(
-          child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            const Row(children: [BLBackButton()]),
-            Column(
+          child: Column(
+        children: [
+          const Row(children: [BLBackButton()]),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 BLPanel(
-                    padding: const EdgeInsets.all(10),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 30),
                     child: Form(
                       key: _loginFormKey,
                       child: Column(
@@ -93,10 +102,11 @@ class _LoginState extends ConsumerState<Login> {
                                   onPressed: () async {
                                     if (processing == true) return;
                                     processing = true;
-                                    await showDialog(
+                                    String? result = await showDialog(
                                         context: context,
                                         builder: (context) =>
                                             const ForgotPasswordDialog());
+                                    if (result == '') {}
                                     processing = false;
                                   },
                                   child: const BLText(
@@ -106,27 +116,52 @@ class _LoginState extends ConsumerState<Login> {
                             ],
                           ),
                           const SizedBox(
-                            height: 25,
+                            height: 30,
                           ),
                           BLButton(
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 50, vertical: 10),
                               onPressed: () async {
+                                if (processing == true) return;
+                                processing = true;
                                 if (_loginFormKey.currentState!.validate()) {
-                                  if (processing == true) {
-                                    return;
-                                  }
-                                  processing = true;
-                                  final loginSuccess = await auth.login(
+                                  //toast.dismissAllToast();
+                                  toast.showToast(
+                                    context,
+                                    'Logging in',
+                                  );
+                                  final error = await auth.login(
                                       email: emailController.text.trim(),
                                       password: passwordController.text.trim());
-                                  if (loginSuccess) {
+                                  if (error == null) {
+                                    settings.when(
+                                        data: (settings) async {
+                                          final loginAlert = ref.read(
+                                              LoginAlertProvider(settings)
+                                                  .notifier);
+                                          final result =
+                                              await loginAlert.send();
+                                          if (result != null) {
+                                            if (!context.mounted) return;
+                                            toast.showToast(context, result);
+                                          }
+                                          if (!context.mounted) return;
+                                          toast.ref.invalidateSelf();
+                                          nav.pushReplace(
+                                              context, const MainMenuScreen());
+                                        },
+                                        error: blankError,
+                                        loading: blankLoading);
+                                  } else {
                                     if (!context.mounted) return;
-                                    nav.pushReplace(
-                                        context, const MainMenuScreen());
+                                    toast.showToast(
+                                      context,
+                                      error,
+                                      type: NotifType.error,
+                                    );
                                   }
-                                  processing = false;
                                 }
+                                processing = false;
                               },
                               child: const BLText(
                                 'Login',
@@ -150,8 +185,8 @@ class _LoginState extends ConsumerState<Login> {
                     )),
               ],
             ),
-          ],
-        ),
+          ),
+        ],
       )),
     );
   }

@@ -2,7 +2,7 @@ import 'package:block_logic/components/dialog/dialog.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/textbox.dart';
 import 'package:block_logic/logic/enums.dart';
-import 'package:block_logic/logic/firebase_providers/user.dart';
+import 'package:block_logic/logic/firebase_providers/selected_user.dart';
 import 'package:block_logic/logic/services/account.dart';
 import 'package:block_logic/logic/services/auth.dart';
 import 'package:block_logic/logic/services/navigation.dart';
@@ -24,7 +24,7 @@ class _ChangeDisplayNameState extends ConsumerState<ChangeDisplayName> {
   @override
   void initState() {
     auth = ref.read(authServiceProvider.notifier);
-    final user = ref.read(UserAccountProvider(auth.getUID())).value;
+    final user = ref.read(SelectedUserProvider(auth.getUID())).value;
     oldDisplayName = user?.displayName ?? '';
     displayNameController = TextEditingController(text: oldDisplayName);
     super.initState();

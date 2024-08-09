@@ -16,6 +16,19 @@ class TextValidator extends _$TextValidator {
   //disallow special chars except for dashes and periods
   final _nameRegex = RegExp(r'^([a-zA-Z\.]+([.-]?[a-zA-Z]+)?(\s|$)){1,10}\.?$');
 
+  final _maxPlayers = RegExp(r'^(?:[1-9]|1[0-9]|20)$');
+
+  String? validateMaxPlayers(String? maxPlayers) {
+    /// if blank input
+    if (maxPlayers == null || maxPlayers.isEmpty) return 'Cannot be empty';
+
+    /// if matches requirements
+    if (_maxPlayers.hasMatch(maxPlayers)) return null;
+
+    /// if doesn't match requirements
+    return 'Not a valid number';
+  }
+
 /*
   r'^
   (?=.*[A-Z])       // should contain at least one upper case

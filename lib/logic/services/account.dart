@@ -4,7 +4,6 @@ import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/services/auth.dart';
 import 'package:block_logic/logic/services/db.dart';
 import 'package:block_logic/logic/services/error_handler.dart';
-import 'package:block_logic/logic/services/toast.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -22,27 +21,27 @@ class AccountService extends _$AccountService {
     final dbService = ref.read(dBServiceProvider.notifier);
     final auth = ref.read(authServiceProvider.notifier);
     final errorHandler = ref.read(errorHandlerProvider.notifier);
-    final toast = ref.watch(toastProvider);
     return AccountServiceState(
-        dbService: dbService,
-        auth: auth,
-        errorHandler: errorHandler,
-        toast: toast);
+      dbService: dbService,
+      auth: auth,
+      errorHandler: errorHandler,
+    );
   }
 
-  Future<void> changeDisplayName(
+  Future<String?> changeDisplayName(
       String displayName, FirestoreCollections collection) async {
     try {
       await state._instance
           .collection(collection.name)
           .doc(state._auth.getUID())
           .set({'displayName': displayName}, SetOptions(merge: true));
+      return null;
     } catch (e) {
-      state._errorHandler(e);
+      return state._errorHandler.call(e);
     }
   }
 
-  Future<void> changeProfilePic(FirestoreCollections collection) async {
+  Future<String?> changeProfilePic(FirestoreCollections collection) async {
     FilePickerResult? img = await FilePicker.platform
         .pickFiles(withData: true, type: FileType.custom, allowedExtensions: [
       'png',
@@ -79,8 +78,6 @@ class AccountService extends _$AccountService {
         File renamedSelectedPhoto =
             await selectedPhoto.copy('$tempPath/$fileName');
 
-        /// if user didn't press back, display the toast
-        state._toast.showToast('Updating ...');
         try {
           /// upload the file, with metadata
           await profilePicRef.putFile(
@@ -96,15 +93,15 @@ class AccountService extends _$AccountService {
 
           /// save link to new profile pic
           state._dbService.updateProfilePicLink(downloadURL, collection);
-          state._toast.showToast('Profile pic updated');
+          return null;
         } catch (e) {
-          state._errorHandler(e);
-          state._toast.showToast('Sorry, error occurred. Try uploading again.');
+          return state._errorHandler.call(e);
         }
       } else {
-        state._toast.showToast('Cancelled');
+        return 'Sorry, try that again.';
       }
     }
+    return null;
   }
 }
 
@@ -114,15 +111,12 @@ class AccountServiceState {
   final DBService _dbService;
   final AuthService _auth;
   final ErrorHandler _errorHandler;
-  final Toast _toast;
 
-  AccountServiceState(
-      {required DBService dbService,
-      required AuthService auth,
-      required ErrorHandler errorHandler,
-      required Toast toast})
-      : _dbService = dbService,
+  AccountServiceState({
+    required DBService dbService,
+    required AuthService auth,
+    required ErrorHandler errorHandler,
+  })  : _dbService = dbService,
         _auth = auth,
-        _errorHandler = errorHandler,
-        _toast = toast;
+        _errorHandler = errorHandler;
 }

@@ -1,7 +1,11 @@
 import 'package:block_logic/components/dialog/dialog.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/textbox.dart';
+import 'package:block_logic/components/util/blank_widget.dart';
 import 'package:block_logic/logic/services/auth.dart';
+import 'package:block_logic/logic/services/navigation.dart';
+import 'package:block_logic/logic/services/toast.dart';
+import 'package:block_logic/logic/services/validator_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -15,48 +19,80 @@ class ForgotPasswordDialog extends ConsumerStatefulWidget {
 
 class _ForgotPasswordDialogState extends ConsumerState<ForgotPasswordDialog> {
   final TextEditingController emailController = TextEditingController();
+  final formKey = GlobalKey<FormState>();
+  Widget errorMsg = BlankWidget();
+  bool processing = false;
 
   @override
   Widget build(BuildContext context) {
     final auth = ref.read(authServiceProvider.notifier);
+    final nav = ref.read(customNavigationProvider);
+    final toast = ref.read(toastProvider.notifier);
+    final validator = ref.read(textValidatorProvider);
     return BLDialog(
-        child: Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        const BLSmallTitle('Enter your email:'),
-        const SizedBox(height: 10),
-        BLTextBox(
-          controller: emailController,
-          prefixIcon: const Icon(
-            Icons.mail,
-            color: Colors.white,
+        child: Form(
+      key: formKey,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const BLSmallTitle('Enter your email:'),
+          const SizedBox(height: 10),
+          BLTextBox(
+            controller: emailController,
+            prefixIcon: const Icon(
+              Icons.mail,
+            ),
+            validator: (email) => validator.validateEmail(email),
           ),
-        ),
-        const SizedBox(height: 10),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: const BLText(
-                  'Cancel',
-                  color: Colors.red,
-                )),
-            TextButton(
-                onPressed: () {
-                  final email = emailController.text.trim();
-                  auth.forgotPass(email);
-                },
-                child: const BLText(
-                  'Submit',
-                  color: Colors.green,
-                )),
-            const SizedBox(width: 10)
-          ],
-        )
-      ],
+          const SizedBox(height: 10),
+          errorMsg,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const BLText(
+                    'Cancel',
+                    color: Colors.red,
+                  )),
+              TextButton(
+                  onPressed: () async {
+                    if (processing) return;
+                    processing = true;
+                    if (!formKey.currentState!.validate()) {
+                      processing = false;
+                      return;
+                    }
+                    String? result =
+                        await auth.forgotPass(emailController.text.trim());
+                    if (result != null) {
+                      setState(() {
+                        errorMsg = BLText(
+                          result,
+                          color: Colors.red,
+                        );
+                      });
+                    } else {
+                      setState(() {
+                        errorMsg = const BlankWidget();
+                      });
+                      if (context.mounted) nav.pop(context);
+                      // toast.showToast(
+                      // 'A password reset link was sent to your email.');
+                    }
+                    processing = false;
+                  },
+                  child: const BLText(
+                    'Submit',
+                    color: Colors.green,
+                  )),
+              const SizedBox(width: 10)
+            ],
+          )
+        ],
+      ),
     ));
   }
 }

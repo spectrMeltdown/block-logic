@@ -14,8 +14,11 @@ class DialogServiceState extends _$DialogServiceState {
 }
 
 class DialogService {
-  Future<Object> showDialog(BuildContext context,
-      {required Widget dialog, bool barrierDismissable = false}) async {
+  Future<Object> show(
+    BuildContext context,
+    Widget dialog, {
+    bool barrierDismissable = false,
+  }) async {
     return showGeneralDialog(
         context: context,
         barrierDismissible: barrierDismissable,

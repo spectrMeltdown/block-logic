@@ -63,7 +63,8 @@ class BLSolidPanel extends StatelessWidget {
 }
 
 class BLBorderedPanel extends StatelessWidget {
-  const BLBorderedPanel(this.child, {super.key, this.color, this.overlayColor});
+  const BLBorderedPanel(
+      {required this.child, super.key, this.color, this.overlayColor});
   final Widget child;
   final Color? overlayColor;
   final Color? color;

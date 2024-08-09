@@ -33,7 +33,7 @@ class _VerifyEmailState extends ConsumerState<VerifyEmail>
   @override
   void initState() {
     auth = ref.read(authServiceProvider.notifier);
-    toast = ref.read(toastProvider);
+    toast = ref.read(toastProvider.notifier);
     nav = ref.read(customNavigationProvider);
     assets = ref.read(assetsProvider);
     _controller = AnimationController(vsync: this);
@@ -48,7 +48,7 @@ class _VerifyEmailState extends ConsumerState<VerifyEmail>
       if (isEmailVerified) {
         timer.cancel();
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          toast.showToast('Email verified successfully');
+          // toast.showToast('Email verified successfully');
           nav.pushReplace(context, const MainMenuScreen());
         });
       }

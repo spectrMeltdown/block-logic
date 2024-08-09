@@ -6,156 +6,20 @@ part of '../internet_connection.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$checkInternetConnectionHash() =>
-    r'c0b44dd8b1809d3d0002f0b835d206f55294163f';
+String _$internetStatusHash() => r'159bffb50f213873b13323dd2c099001cf9b0778';
 
-/// Copied from Dart SDK
-class _SystemHash {
-  _SystemHash._();
+/// See also [InternetStatus].
+@ProviderFor(InternetStatus)
+final internetStatusProvider = NotifierProvider<InternetStatus, void>.internal(
+  InternetStatus.new,
+  name: r'internetStatusProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$internetStatusHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
 
-  static int combine(int hash, int value) {
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + value);
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + ((0x0007ffff & hash) << 10));
-    return hash ^ (hash >> 6);
-  }
-
-  static int finish(int hash) {
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + ((0x03ffffff & hash) << 3));
-    // ignore: parameter_assignments
-    hash = hash ^ (hash >> 11);
-    return 0x1fffffff & (hash + ((0x00003fff & hash) << 15));
-  }
-}
-
-/// See also [checkInternetConnection].
-@ProviderFor(checkInternetConnection)
-const checkInternetConnectionProvider = CheckInternetConnectionFamily();
-
-/// See also [checkInternetConnection].
-class CheckInternetConnectionFamily extends Family<AsyncValue<bool>> {
-  /// See also [checkInternetConnection].
-  const CheckInternetConnectionFamily();
-
-  /// See also [checkInternetConnection].
-  CheckInternetConnectionProvider call({
-    bool showNotif = true,
-  }) {
-    return CheckInternetConnectionProvider(
-      showNotif: showNotif,
-    );
-  }
-
-  @override
-  CheckInternetConnectionProvider getProviderOverride(
-    covariant CheckInternetConnectionProvider provider,
-  ) {
-    return call(
-      showNotif: provider.showNotif,
-    );
-  }
-
-  static const Iterable<ProviderOrFamily>? _dependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
-
-  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
-      _allTransitiveDependencies;
-
-  @override
-  String? get name => r'checkInternetConnectionProvider';
-}
-
-/// See also [checkInternetConnection].
-class CheckInternetConnectionProvider extends AutoDisposeFutureProvider<bool> {
-  /// See also [checkInternetConnection].
-  CheckInternetConnectionProvider({
-    bool showNotif = true,
-  }) : this._internal(
-          (ref) => checkInternetConnection(
-            ref as CheckInternetConnectionRef,
-            showNotif: showNotif,
-          ),
-          from: checkInternetConnectionProvider,
-          name: r'checkInternetConnectionProvider',
-          debugGetCreateSourceHash:
-              const bool.fromEnvironment('dart.vm.product')
-                  ? null
-                  : _$checkInternetConnectionHash,
-          dependencies: CheckInternetConnectionFamily._dependencies,
-          allTransitiveDependencies:
-              CheckInternetConnectionFamily._allTransitiveDependencies,
-          showNotif: showNotif,
-        );
-
-  CheckInternetConnectionProvider._internal(
-    super._createNotifier, {
-    required super.name,
-    required super.dependencies,
-    required super.allTransitiveDependencies,
-    required super.debugGetCreateSourceHash,
-    required super.from,
-    required this.showNotif,
-  }) : super.internal();
-
-  final bool showNotif;
-
-  @override
-  Override overrideWith(
-    FutureOr<bool> Function(CheckInternetConnectionRef provider) create,
-  ) {
-    return ProviderOverride(
-      origin: this,
-      override: CheckInternetConnectionProvider._internal(
-        (ref) => create(ref as CheckInternetConnectionRef),
-        from: from,
-        name: null,
-        dependencies: null,
-        allTransitiveDependencies: null,
-        debugGetCreateSourceHash: null,
-        showNotif: showNotif,
-      ),
-    );
-  }
-
-  @override
-  AutoDisposeFutureProviderElement<bool> createElement() {
-    return _CheckInternetConnectionProviderElement(this);
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return other is CheckInternetConnectionProvider &&
-        other.showNotif == showNotif;
-  }
-
-  @override
-  int get hashCode {
-    var hash = _SystemHash.combine(0, runtimeType.hashCode);
-    hash = _SystemHash.combine(hash, showNotif.hashCode);
-
-    return _SystemHash.finish(hash);
-  }
-}
-
-mixin CheckInternetConnectionRef on AutoDisposeFutureProviderRef<bool> {
-  /// The parameter `showNotif` of this provider.
-  bool get showNotif;
-}
-
-class _CheckInternetConnectionProviderElement
-    extends AutoDisposeFutureProviderElement<bool>
-    with CheckInternetConnectionRef {
-  _CheckInternetConnectionProviderElement(super.provider);
-
-  @override
-  bool get showNotif => (origin as CheckInternetConnectionProvider).showNotif;
-}
+typedef _$InternetStatus = Notifier<void>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

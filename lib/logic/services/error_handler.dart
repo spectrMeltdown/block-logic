@@ -12,8 +12,8 @@ part 'generated/error_handler.g.dart';
 class ErrorHandler extends _$ErrorHandler {
   @override
   ErrorHandlerState build() {
-    final toast = ref.read(toastProvider);
-    return ErrorHandlerState(toast: toast);
+    final toast = ref.read(toastProvider.notifier);
+    return ErrorHandlerState._(toast: toast);
   }
 
   String? call(Object e, {BuildContext? context, bool handleOverlay = true}) {
@@ -25,7 +25,7 @@ class ErrorHandler extends _$ErrorHandler {
       return null;
     }
     if (context == null) handleOverlay = false;
-    state.toast.dismissAllToast();
+    //state.toast.dismissAllToast();
     debugPrint('FirebaseException Code: ${e.code}');
     switch (e.code) {
       case 'network-request-failed':
@@ -69,5 +69,5 @@ class ErrorHandler extends _$ErrorHandler {
 class ErrorHandlerState {
   final Toast toast;
 
-  ErrorHandlerState({required this.toast});
+  ErrorHandlerState._({required this.toast});
 }

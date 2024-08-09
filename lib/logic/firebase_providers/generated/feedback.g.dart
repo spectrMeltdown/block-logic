@@ -6,7 +6,7 @@ part of '../feedback.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$feedbackHash() => r'bac99271bae400fa71edc8b7eaa836c786e83023';
+String _$feedbackHash() => r'aaa75acf0f2e3d8a82ad45a0504b37543d7e4c86';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -34,7 +34,7 @@ class _SystemHash {
 const feedbackProvider = FeedbackFamily();
 
 /// See also [feedback].
-class FeedbackFamily extends Family<AsyncValue<List<FeedbackModel?>>> {
+class FeedbackFamily extends Family<AsyncValue<List<FeedbackData?>>> {
   /// See also [feedback].
   const FeedbackFamily();
 
@@ -74,7 +74,7 @@ class FeedbackFamily extends Family<AsyncValue<List<FeedbackModel?>>> {
 }
 
 /// See also [feedback].
-class FeedbackProvider extends AutoDisposeStreamProvider<List<FeedbackModel?>> {
+class FeedbackProvider extends AutoDisposeStreamProvider<List<FeedbackData?>> {
   /// See also [feedback].
   FeedbackProvider(
     String id,
@@ -108,7 +108,7 @@ class FeedbackProvider extends AutoDisposeStreamProvider<List<FeedbackModel?>> {
 
   @override
   Override overrideWith(
-    Stream<List<FeedbackModel?>> Function(FeedbackRef provider) create,
+    Stream<List<FeedbackData?>> Function(FeedbackRef provider) create,
   ) {
     return ProviderOverride(
       origin: this,
@@ -125,7 +125,7 @@ class FeedbackProvider extends AutoDisposeStreamProvider<List<FeedbackModel?>> {
   }
 
   @override
-  AutoDisposeStreamProviderElement<List<FeedbackModel?>> createElement() {
+  AutoDisposeStreamProviderElement<List<FeedbackData?>> createElement() {
     return _FeedbackProviderElement(this);
   }
 
@@ -143,13 +143,13 @@ class FeedbackProvider extends AutoDisposeStreamProvider<List<FeedbackModel?>> {
   }
 }
 
-mixin FeedbackRef on AutoDisposeStreamProviderRef<List<FeedbackModel?>> {
+mixin FeedbackRef on AutoDisposeStreamProviderRef<List<FeedbackData?>> {
   /// The parameter `id` of this provider.
   String get id;
 }
 
 class _FeedbackProviderElement
-    extends AutoDisposeStreamProviderElement<List<FeedbackModel?>>
+    extends AutoDisposeStreamProviderElement<List<FeedbackData?>>
     with FeedbackRef {
   _FeedbackProviderElement(super.provider);
 

@@ -110,7 +110,7 @@ class _EditorState extends ConsumerState<Editor> with TickerProviderStateMixin {
             width: double.maxFinite,
             height: mediaQuery.size.height / 1.95,
             child: BLBorderedPanel(
-              TabBarView(
+              child: TabBarView(
                   clipBehavior: Clip.antiAlias,
                   physics: const NeverScrollableScrollPhysics(),
                   controller: mainTabController,

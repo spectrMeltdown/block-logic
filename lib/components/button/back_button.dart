@@ -15,7 +15,7 @@ class _BLBackButtonState extends ConsumerState<BLBackButton> {
   @override
   Widget build(BuildContext context) {
     final audio = ref.read(bLAudioStateProvider.notifier);
-    final nav = ref.watch(customNavigationProvider);
+    final nav = ref.read(customNavigationProvider);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 10),
       child: IconButton(

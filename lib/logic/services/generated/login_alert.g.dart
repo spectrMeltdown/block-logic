@@ -6,7 +6,7 @@ part of '../login_alert.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$loginAlertHash() => r'12157b4434777a156d8b497edb6cabafafdde7f5';
+String _$loginAlertHash() => r'87a360a9fa52b8453d586caa78eb1b8844537584';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -31,10 +31,10 @@ class _SystemHash {
 
 abstract class _$LoginAlert
     extends BuildlessAutoDisposeNotifier<LoginAlertState> {
-  late final AccountSettings settings;
+  late final AccountSettings? settings;
 
   LoginAlertState build(
-    AccountSettings settings,
+    AccountSettings? settings,
   );
 }
 
@@ -49,7 +49,7 @@ class LoginAlertFamily extends Family<LoginAlertState> {
 
   /// See also [LoginAlert].
   LoginAlertProvider call(
-    AccountSettings settings,
+    AccountSettings? settings,
   ) {
     return LoginAlertProvider(
       settings,
@@ -85,7 +85,7 @@ class LoginAlertProvider
     extends AutoDisposeNotifierProviderImpl<LoginAlert, LoginAlertState> {
   /// See also [LoginAlert].
   LoginAlertProvider(
-    AccountSettings settings,
+    AccountSettings? settings,
   ) : this._internal(
           () => LoginAlert()..settings = settings,
           from: loginAlertProvider,
@@ -110,7 +110,7 @@ class LoginAlertProvider
     required this.settings,
   }) : super.internal();
 
-  final AccountSettings settings;
+  final AccountSettings? settings;
 
   @override
   LoginAlertState runNotifierBuild(
@@ -159,7 +159,7 @@ class LoginAlertProvider
 
 mixin LoginAlertRef on AutoDisposeNotifierProviderRef<LoginAlertState> {
   /// The parameter `settings` of this provider.
-  AccountSettings get settings;
+  AccountSettings? get settings;
 }
 
 class _LoginAlertProviderElement
@@ -168,7 +168,7 @@ class _LoginAlertProviderElement
   _LoginAlertProviderElement(super.provider);
 
   @override
-  AccountSettings get settings => (origin as LoginAlertProvider).settings;
+  AccountSettings? get settings => (origin as LoginAlertProvider).settings;
 }
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

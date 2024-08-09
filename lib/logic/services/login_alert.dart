@@ -15,12 +15,12 @@ part 'generated/login_alert.g.dart';
 
 class LoginAlertState {
   final AuthService _auth;
-  final AccountSettings _settings;
+  final AccountSettings? _settings;
   final ErrorHandler _errorHandler;
   final SharedPreferences _sharedPref;
   LoginAlertState({
     required AuthService auth,
-    required AccountSettings settings,
+    required AccountSettings? settings,
     required ErrorHandler errorHandler,
     required SharedPreferences sharedPref,
   })  : _auth = auth,
@@ -32,10 +32,10 @@ class LoginAlertState {
 @riverpod
 class LoginAlert extends _$LoginAlert {
   @override
-  LoginAlertState build(AccountSettings settings) {
+  LoginAlertState build(AccountSettings? settings) {
     final auth = ref.read(authServiceProvider.notifier);
-    final errorHandler = ref.watch(errorHandlerProvider.notifier);
-    final sharedPref = ref.watch(sharedPrefProvider);
+    final errorHandler = ref.read(errorHandlerProvider.notifier);
+    final sharedPref = ref.read(sharedPrefProvider);
     return LoginAlertState(
         auth: auth,
         settings: settings,
@@ -43,14 +43,13 @@ class LoginAlert extends _$LoginAlert {
         sharedPref: sharedPref);
   }
 
-  Future<void> send() async {
+  Future<String?> send() async {
     late Position location;
 
     try {
       location = await _determinePosition();
     } catch (e) {
-      state._errorHandler(e);
-      return;
+      return state._errorHandler.call(e);
     }
     List<Placemark> placemark =
         await placemarkFromCoordinates(location.latitude, location.longitude);
@@ -64,13 +63,15 @@ class LoginAlert extends _$LoginAlert {
     final settings = state._settings;
 
     /// check if login alerts are enabled, or if login alert was already sent
-    if (settings.loginAlerts == null ||
-        settings.loginAlerts == false ||
-        state._sharedPref.getBool('loginAlertSent') != null &&
-            state._sharedPref.getBool('loginAlertSent') == true) {
-      debugPrint('login alert not sent');
-      return;
+    if (settings != null) {
+      if (settings.loginAlerts != null ||
+          settings.loginAlerts == false ||
+          state._sharedPref.getBool('loginAlertSent') != null &&
+              state._sharedPref.getBool('loginAlertSent') == true) {
+        return 'noalerts';
+      }
     }
+
     final url = Uri.parse('https://api.emailjs.com/api/v1.0/email/send');
     final response = await http.post(url,
         headers: {'Content-Type': 'application/json'},
@@ -88,8 +89,9 @@ class LoginAlert extends _$LoginAlert {
     debugPrint('Login Alert response code: ${response.statusCode}');
     if (response.statusCode == 200) {
       state._sharedPref.setBool('loginAlertSent', true);
+      return null;
     }
-    // debugPrint(response.body);
+    return 'Problem sending login alert..';
   }
 
   Future<Position> _determinePosition() async {

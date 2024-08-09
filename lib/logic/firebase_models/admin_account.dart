@@ -10,7 +10,6 @@ class AdminAccount extends AccountModel {
     super.phoneNum,
     super.profilePicLink,
     super.createdAt,
-    super.modifiedAt,
   });
 
   factory AdminAccount.fromFirestore(dynamic doc) {
@@ -23,9 +22,28 @@ class AdminAccount extends AccountModel {
       id: doc.id,
       isApproved: data['isApproved'] ?? false,
       createdAt: (data['createdAt'] as Timestamp).toDate(),
-      modifiedAt: (data['modifiedAt'] as Timestamp).toDate(),
       displayName: data['displayName'] ?? '',
       profilePicLink: data['profilePicLink'] ?? '',
     );
+  }
+
+  Map<String, dynamic> toFirestore(AdminAccount admin) {
+    Map<String, dynamic> toFirestoreMap = {};
+    if (admin.createdAt != null) {
+      toFirestoreMap.addAll({'createdAt': admin.createdAt});
+    }
+    if (admin.displayName != null) {
+      toFirestoreMap.addAll({'displayName': admin.displayName});
+    }
+    if (admin.phoneNum != null) {
+      toFirestoreMap.addAll({'phoneNum': admin.phoneNum});
+    }
+    if (admin.profilePicLink != null) {
+      toFirestoreMap.addAll({'profilePicLink': admin.profilePicLink});
+    }
+    if (admin.isApproved != null) {
+      toFirestoreMap.addAll({'isApproved': admin.isApproved});
+    }
+    return toFirestoreMap;
   }
 }

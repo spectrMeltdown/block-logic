@@ -69,7 +69,8 @@ class _TimeBoxState extends State<TimeBox> {
     } else {
       resumeTimer();
     }
-    return BLBorderedPanel(Padding(
+    return BLBorderedPanel(
+        child: Padding(
       padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,

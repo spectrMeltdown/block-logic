@@ -50,9 +50,10 @@ class _ReauthDialogState extends ConsumerState<ReauthDialog> {
             child: const BLText('Cancel', color: Colors.red)),
         TextButton(
             onPressed: () async {
-              String result = await auth.reauth(passwordController.text.trim());
+              String? result =
+                  await auth.reauth(passwordController.text.trim());
               if (!context.mounted) return;
-              if (result == 'success') {
+              if (result == null) {
                 nav.pop(context, 'success');
               } else if (result == 'too-many-attempts') {
                 nav.pop(context, 'TOA');

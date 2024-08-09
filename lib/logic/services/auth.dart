@@ -16,7 +16,7 @@ class AuthService extends _$AuthService {
     final dbService = ref.read(dBServiceProvider.notifier);
     final errorHandler = ref.read(errorHandlerProvider.notifier);
     final sharedPref = ref.read(sharedPrefProvider);
-    final toast = ref.read(toastProvider);
+    final toast = ref.read(toastProvider.notifier);
     return AuthServiceState(
         dbService: dbService,
         errorHandler: errorHandler,
@@ -46,39 +46,33 @@ class AuthService extends _$AuthService {
   Future<void> logout() async {
     await state._sharedPref.setBool('loginAlertSent', false);
     await FirebaseAuth.instance.signOut();
-    state._toast.showToast('Logged out, bye!');
+    //state._toast.showToast('Logged out, bye!');
   }
 
-  Future<bool> login({required String email, required String password}) async {
+  Future<String?> login(
+      {required String email, required String password}) async {
     try {
-      /// show notification
-      state._toast.showToast('Logging in');
-
       /// signin user
       await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
 
       /// show notification
-      state._toast.dismissAllToast();
-      state._toast.showToast('Welcome back, \n ${getDisplayName()}');
+      //state._toast.dismissAllToast();
 
-      /// return
-      return true;
+      //state._toast.showToast('Welcome back, \n ${getDisplayName()}');
+
+      return null;
     } catch (e) {
-      state._errorHandler(e);
-      return false;
+      return state._errorHandler.call(e);
     }
   }
 
-  Future<bool> createAccount(
+  Future<String?> createAccount(
       {required String email,
       required String password,
       required String displayName,
       required String phoneNum}) async {
     try {
-      /// show notification of account creation
-      state._toast.showToast('Creating account ...');
-
       /// create account
       await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
@@ -89,67 +83,65 @@ class AuthService extends _$AuthService {
 
       /// save phoneNum temporarily, if app data is cleared and signup was not completed
       await state._dbService.updateUserAccount(UserAccount(phoneNum: phoneNum));
-
-      /// send email verification
-      sendEmailVerification();
-      return true;
+      return null;
     } catch (e) {
-      state._errorHandler(e);
-      return false;
+      return state._errorHandler.call(e);
     }
   }
 
-  Future<void> sendEmailVerification({bool showNotif = true}) async {
+  Future<String?> sendEmailVerification({bool showNotif = true}) async {
     try {
       await FirebaseAuth.instance.currentUser!.sendEmailVerification();
-
-      /// notify user
-      if (showNotif == true) state._toast.showToast('Email verification sent!');
+      return null;
     } catch (e) {
-      state._errorHandler(e);
+      return state._errorHandler.call(e);
     }
   }
 
-  Future<void> forgotPass(String email) async {
+  Future<String?> forgotPass(String email) async {
     try {
       await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+      return null;
     } catch (e) {
-      state._errorHandler(e);
+      return state._errorHandler.call(e);
     }
   }
 
-  void changePass(String password) async {
+  Future<String?> changePass(String password) async {
     try {
       await FirebaseAuth.instance.currentUser!.updatePassword(password.trim());
+      return null;
     } catch (e) {
-      state._errorHandler(e);
+      return state._errorHandler.call(e);
     }
   }
 
-  void changeEmail(String email) async {
+  Future<String?> changeEmail(String email) async {
     try {
       await FirebaseAuth.instance.currentUser!
           .verifyBeforeUpdateEmail(email.trim());
-      state._toast.showToast('A verification has been sent to your new email.');
+      // state._toast.showToast('A verification has been sent to your new email.');
+      return null;
     } catch (e) {
-      state._errorHandler(e);
+      return state._errorHandler.call(e);
     }
   }
 
-  Future<void> deleteAccount() async {
+  Future<String?> deleteAccount() async {
     try {
       /// delete account in firebase _auth
       await FirebaseAuth.instance.currentUser!.delete();
 
       /// display info about delayed deletion
-      state._toast.showToast('Account Deleted');
+      // state._toast.showToast('Account Deleted');
+      return null;
     } catch (e) {
-      state._errorHandler(e);
+      return state._errorHandler.call(e);
     }
   }
 
   /// display when the user has to reauthenticate themselves
-  Future<String> reauth(String password) async {
+  Future<String?> reauth(String password) async {
     AuthCredential userCred =
         EmailAuthProvider.credential(email: getEmail(), password: password);
     try {
@@ -157,9 +149,8 @@ class AuthService extends _$AuthService {
           ?.reauthenticateWithCredential(userCred);
       return 'success';
     } catch (e) {
-      state._errorHandler(e);
+      return 'failed';
     }
-    return 'failed';
   }
 }
 

@@ -11,7 +11,9 @@ class BLText extends StatefulWidget {
       this.color,
       this.alignCenter = false,
       this.animated = false,
+      this.softWrap = false,
       this.duration = const Duration(milliseconds: 500)});
+  final bool softWrap;
   final String text;
   final bool animated;
   final double size;
@@ -59,6 +61,7 @@ class _BLTextState extends State<BLText> with SingleTickerProviderStateMixin {
           ? widget.text.substring(0, _characterCount.value)
           : widget.text,
       textAlign: widget.alignCenter == true ? TextAlign.center : null,
+      softWrap: widget.softWrap,
       style: TextStyle(
         color: widget.color ?? BLUI().getAppColor('lightBlue'),
         fontSize: widget.size,
@@ -113,7 +116,9 @@ class BLTitle extends StatelessWidget {
         style: TextStyle(
             color: Colors.white,
             fontSize: size,
-            fontWeight: FontWeight.bold,
+            shadows: <Shadow>[
+              Shadow(blurRadius: 40, color: Colors.white.withOpacity(0.8)),
+            ],
             height: 1),
       ),
     );

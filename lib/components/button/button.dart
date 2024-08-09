@@ -1,5 +1,6 @@
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/services/audio.dart';
+import 'package:block_logic/logic/services/toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -37,6 +38,12 @@ class _BtnState extends ConsumerState<BLButton> {
       offset: const Offset(0, 0),
     )
   ];
+
+  @override
+  void initState() {
+    getBtnColor();
+    super.initState();
+  }
 
   void getBtnColor() {
     switch (widget.type) {
@@ -83,12 +90,6 @@ class _BtnState extends ConsumerState<BLButton> {
     setState(() {
       _isTapped = false;
     });
-  }
-
-  @override
-  void initState() {
-    getBtnColor();
-    super.initState();
   }
 
   @override

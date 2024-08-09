@@ -149,7 +149,7 @@ class _GameAppbarState extends ConsumerState<GameAppbar> {
             debugPrint('pause timer: ${gameManagerState.getTimer()}');
           },
           child: const BLBorderedPanel(
-            Icon(
+            child: Icon(
               FontAwesomeIcons.pause,
               size: 20,
             ),

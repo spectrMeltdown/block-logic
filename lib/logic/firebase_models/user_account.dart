@@ -8,7 +8,6 @@ class UserAccount extends AccountModel {
     super.displayName,
     super.profilePicLink,
     super.createdAt,
-    super.modifiedAt,
   });
 
   factory UserAccount.fromFirestore(DocumentSnapshot doc) {
@@ -19,21 +18,17 @@ class UserAccount extends AccountModel {
     return UserAccount(
       id: doc.id,
       createdAt: (data['createdAt'] as Timestamp).toDate(),
-      modifiedAt: (data['modifiedAt'] as Timestamp).toDate(),
       displayName: data['displayName'] ?? '',
       profilePicLink: data['profilePicLink'] ?? '',
     );
   }
-  Map<String, dynamic> toFirestore(UserAccount details) {
+  Map<String, dynamic> toFirestore(UserAccount user) {
     Map<String, dynamic> toFirestoreMap = {};
-    if (details.id != null) toFirestoreMap.addAll({'id': details.id});
-    if (details.createdAt != null) {
-      toFirestoreMap
-          .addAll({'createdAt': Timestamp.fromDate(details.createdAt!)});
+    if (user.id != null) {
+      toFirestoreMap.addAll({'id': user.id});
     }
-    if (details.modifiedAt != null) {
-      toFirestoreMap
-          .addAll({'modifiedAt': Timestamp.fromDate(details.modifiedAt!)});
+    if (user.createdAt != null) {
+      toFirestoreMap.addAll({'createdAt': Timestamp.fromDate(user.createdAt!)});
     }
     return toFirestoreMap;
   }

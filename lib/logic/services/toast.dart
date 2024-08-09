@@ -1,5 +1,8 @@
+// ignore_for_file: avoid_build_context_in_providers
+import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:toastification/toastification.dart';
 
@@ -8,207 +11,137 @@ part 'generated/toast.g.dart';
 @riverpod
 class Toast extends _$Toast {
   @override
-  Toast build() => Toast();
+  void build() {}
 
   void showToast(
+    BuildContext context,
     String title, {
-    // ignore: avoid_build_context_in_providers
-    BuildContext? context,
-    NotifType notifType = NotifType.info,
-    ToastificationStyle toastStyle = ToastificationStyle.simple,
+    NotifType type = NotifType.info,
     String? description,
-    bool showProgressbar = false,
-    int duration = 5,
+    Duration duration = const Duration(seconds: 5),
+    double paddingX = 20,
   }) {
-    const backgroundColor = Colors.black54;
-    const foregroundColor = Colors.white;
-    const padding = EdgeInsets.symmetric(horizontal: 12, vertical: 16);
-    const margin = EdgeInsets.symmetric(horizontal: 12, vertical: 8);
-    const alignment = Alignment.topRight;
-    const direction = TextDirection.ltr;
-    const animationDuration = Duration(milliseconds: 300);
-    const bool applyBlurEffect = true,
-        closeOnClick = false,
-        pauseOnHover = true,
-        dragToClose = false;
-    final borderRadius = BorderRadius.circular(12);
-    final descriptionText = description == null
-        ? null
-        : RichText(text: TextSpan(text: description));
-    const callbacks = ToastificationCallbacks();
-    // final callbacks = ToastificationCallbacks(
-    //   onTap: (toastItem) => debugPrint('Toast ${toastItem.id} tapped'),
-    //   onCloseButtonTap: (toastItem) => debugPrint('Toast ${toastItem.id} close button tapped'),
-    //   onAutoCompleteCompleted: (toastItem) => debugPrint('Toast ${toastItem.id} auto complete completed'),
-    //   onDismissed: (toastItem) => debugPrint('Toast ${toastItem.id} dismissed'),
+    toastification.dismissAll();
+    toastification.showCustom(
+        context: context,
+        autoCloseDuration: duration,
+        alignment: Alignment.topCenter,
+        animationBuilder: (context, animation, alignment, child) {
+          return FadeTransition(
+            opacity: animation,
+            child: child,
+          );
+        },
+        builder: (context, item) {
+          return Container(
+            alignment: Alignment.topCenter,
+            margin: EdgeInsets.only(top: 30),
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: paddingX, vertical: 10),
+              decoration: BoxDecoration(
+                  borderRadius: const BorderRadius.all(Radius.circular(10)),
+                  border: Border.all(color: _getColor(type)),
+                  color: _getColor(type, true)),
+              child: LayoutBuilder(builder: (context, constraints) {
+                final icon = Icon(
+                  _getIcon(type),
+                  color: _getColor(type),
+                  size: 16,
+                );
+                final space = SizedBox(width: 10);
+                final textPainter = TextPainter(
+                  text: TextSpan(
+                      text: title,
+                      style: TextStyle(
+                        fontSize: 18,
+                      )),
+                  maxLines: 1,
+                  textDirection: TextDirection.ltr,
+                );
+                textPainter.layout(minWidth: 0, maxWidth: constraints.maxWidth);
+                if (textPainter.didExceedMaxLines) {
+                  return Row(
+                    children: [
+                      icon,
+                      space,
+                      Expanded(
+                          child: BLText(
+                        title,
+                        color: Colors.white,
+                        softWrap: true,
+                      ))
+                    ],
+                  );
+                }
+                return Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    icon,
+                    space,
+                    BLText(
+                      title,
+                      color: Colors.white,
+                    )
+                  ],
+                );
+              }),
+            ),
+          );
+        });
+    // context.showToast(
+    //   padding: const EdgeInsets.all(16),
+    //   margin: const EdgeInsets.only(top: 40),
+    //   shape: const StadiumBorder(),
+    //   duration: duration,
+    //   backgroundColor: _getColor(type),
+    //   queue: false,
+    //   alignment: Alignment.topCenter,
+    //   Row(
+    //     mainAxisSize: MainAxisSize.min,
+    //     crossAxisAlignment: CrossAxisAlignment.center,
+    //     mainAxisAlignment: MainAxisAlignment.center,
+    //     children: [
+    //       Icon(_getIcon(type), size: 16),
+    //       const SizedBox(width: 10),
+    //       Text(title,
+    //           style: const TextStyle(
+    //               color: Colors.white, fontWeight: FontWeight.bold)),
+    //     ],
+    //   ),
     // );
-    switch (notifType) {
-      case NotifType.error:
-        toastification.show(
-            context: context, // optional if you use ToastificationWrapper
-            type: ToastificationType.error,
-            style: toastStyle,
-            autoCloseDuration: Duration(seconds: duration),
-            title: Text(title),
-            // you can also use RichText widget for title and description parameters
-            description: descriptionText,
-            alignment: alignment,
-            direction: direction,
-            animationDuration: animationDuration,
-            animationBuilder: (context, animation, alignment, child) {
-              return FadeTransition(
-                opacity: animation,
-                child: child,
-              );
-            },
-            icon: const Icon(Icons.info),
-            primaryColor: Colors.green,
-            backgroundColor: backgroundColor,
-            foregroundColor: foregroundColor,
-            padding: padding,
-            margin: margin,
-            borderRadius: borderRadius,
-            boxShadow: const [
-              BoxShadow(
-                color: Color(0x07000000),
-                blurRadius: 16,
-                offset: Offset(0, 16),
-                spreadRadius: 0,
-              )
-            ],
-            showProgressBar: showProgressbar,
-            closeButtonShowType: CloseButtonShowType.onHover,
-            closeOnClick: closeOnClick,
-            pauseOnHover: pauseOnHover,
-            dragToClose: dragToClose,
-            applyBlurEffect: applyBlurEffect,
-            callbacks: callbacks);
-        break;
-      case NotifType.warning:
-        toastification.show(
-            context: context, // optional if you use ToastificationWrapper
-            type: ToastificationType.warning,
-            style: toastStyle,
-            autoCloseDuration: Duration(seconds: duration),
-            title: Text(title),
-            // you can also use RichText widget for title and description parameters
-            description: descriptionText,
-            alignment: alignment,
-            direction: direction,
-            animationDuration: animationDuration,
-            animationBuilder: (context, animation, alignment, child) {
-              return FadeTransition(
-                opacity: animation,
-                child: child,
-              );
-            },
-            icon: const Icon(Icons.warning),
-            primaryColor: Colors.amber,
-            backgroundColor: backgroundColor,
-            foregroundColor: foregroundColor,
-            padding: padding,
-            margin: margin,
-            borderRadius: borderRadius,
-            boxShadow: const [
-              BoxShadow(
-                color: Color(0x07000000),
-                blurRadius: 16,
-                offset: Offset(0, 16),
-                spreadRadius: 0,
-              )
-            ],
-            showProgressBar: showProgressbar,
-            closeButtonShowType: CloseButtonShowType.onHover,
-            closeOnClick: closeOnClick,
-            pauseOnHover: pauseOnHover,
-            dragToClose: dragToClose,
-            applyBlurEffect: applyBlurEffect,
-            callbacks: callbacks);
-        break;
-      case NotifType.success:
-        toastification.show(
-            context: context, // optional if you use ToastificationWrapper
-            type: ToastificationType.success,
-            style: toastStyle,
-            autoCloseDuration: Duration(seconds: duration),
-            title: Text(title),
-            // you can also use RichText widget for title and description parameters
-            description: descriptionText,
-            alignment: alignment,
-            direction: direction,
-            animationDuration: animationDuration,
-            animationBuilder: (context, animation, alignment, child) {
-              return FadeTransition(
-                opacity: animation,
-                child: child,
-              );
-            },
-            icon: const Icon(Icons.check),
-            primaryColor: Colors.green,
-            backgroundColor: backgroundColor,
-            foregroundColor: foregroundColor,
-            padding: padding,
-            margin: margin,
-            borderRadius: borderRadius,
-            boxShadow: const [
-              BoxShadow(
-                color: Color(0x07000000),
-                blurRadius: 16,
-                offset: Offset(0, 16),
-                spreadRadius: 0,
-              )
-            ],
-            showProgressBar: showProgressbar,
-            closeButtonShowType: CloseButtonShowType.onHover,
-            closeOnClick: closeOnClick,
-            pauseOnHover: pauseOnHover,
-            dragToClose: dragToClose,
-            applyBlurEffect: applyBlurEffect,
-            callbacks: callbacks);
-        break;
-      case NotifType.info:
-        toastification.show(
-            context: context, // optional if you use ToastificationWrapper
-            type: ToastificationType.info,
-            style: toastStyle,
-            autoCloseDuration: Duration(seconds: duration),
-            title: Text(title),
-            // you can also use RichText widget for title and description parameters
-            description: descriptionText,
-            alignment: alignment,
-            direction: direction,
-            animationDuration: animationDuration,
-            animationBuilder: (context, animation, alignment, child) {
-              return FadeTransition(
-                opacity: animation,
-                child: child,
-              );
-            },
-            icon: const Icon(Icons.info),
-            primaryColor: Colors.blue,
-            backgroundColor: backgroundColor,
-            foregroundColor: foregroundColor,
-            padding: padding,
-            margin: margin,
-            borderRadius: borderRadius,
-            boxShadow: const [
-              BoxShadow(
-                color: Color(0x07000000),
-                blurRadius: 16,
-                offset: Offset(0, 16),
-                spreadRadius: 0,
-              )
-            ],
-            showProgressBar: showProgressbar,
-            closeButtonShowType: CloseButtonShowType.onHover,
-            closeOnClick: closeOnClick,
-            pauseOnHover: pauseOnHover,
-            dragToClose: dragToClose,
-            applyBlurEffect: applyBlurEffect,
-            callbacks: callbacks);
-        break;
-    }
   }
 
-  void dismissAllToast() => toastification.dismissAll();
+  Color _getColor(NotifType type, [bool withOpacity = false]) {
+    late Color color;
+    switch (type) {
+      case NotifType.info:
+        color = Colors.blue.shade800;
+        break;
+      case NotifType.warning:
+        color = Colors.amber.shade800;
+        break;
+      case NotifType.success:
+        color = Colors.green.shade800;
+        break;
+      case NotifType.error:
+        color = Colors.red.shade800;
+        break;
+    }
+    return withOpacity ? color.withOpacity(0.3) : color;
+  }
+
+  void dismissAllToast() => toastification.dismissAll(delayForAnimation: false);
+
+  IconData? _getIcon(NotifType type) {
+    switch (type) {
+      case NotifType.info:
+        return FontAwesomeIcons.circleInfo;
+      case NotifType.warning:
+        return FontAwesomeIcons.circleExclamation;
+      case NotifType.error:
+        return FontAwesomeIcons.circleExclamation;
+      case NotifType.success:
+        return FontAwesomeIcons.circleCheck;
+    }
+  }
 }

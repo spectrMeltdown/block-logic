@@ -1,18 +1,23 @@
 import 'package:block_logic/components/async/loading.dart';
 import 'package:block_logic/components/circular_image.dart';
 import 'package:block_logic/components/util/blank_widget.dart';
-import 'package:block_logic/logic/firebase_providers/user.dart';
+import 'package:block_logic/logic/firebase_providers/selected_user.dart';
 import 'package:block_logic/logic/services/audio.dart';
+import 'package:block_logic/logic/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class BLProfilePic extends ConsumerStatefulWidget {
-  const BLProfilePic(this.accountID,
-      {super.key, this.size = 50, this.onPressed});
   final String accountID;
   final double size;
   final VoidCallback? onPressed;
+  const BLProfilePic(
+    this.accountID, {
+    super.key,
+    this.size = 50,
+    this.onPressed,
+  });
 
   @override
   ConsumerState<BLProfilePic> createState() => _BLProfilePicState();
@@ -22,28 +27,10 @@ class _BLProfilePicState extends ConsumerState<BLProfilePic> {
   double _opacity = 0;
   String? oldPhotoURL;
 
-  void onTapUp(TapUpDetails tapUp) {
-    setState(() {
-      _opacity = 0;
-    });
-    widget.onPressed?.call();
-  }
-
-  void onTapDown() {
-    setState(() {
-      _opacity = 1;
-    });
-  }
-
-  void onTapCancel() {
-    setState(() {
-      _opacity = 0;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    final photoURL = ref.watch(userProfilePicProvider(widget.accountID));
+    final auth = ref.watch(authServiceProvider.notifier);
+    final user = ref.watch(SelectedUserProvider(auth.getUID()));
     final audio = ref.read(bLAudioStateProvider.notifier);
     return GestureDetector(
       onTapDown: (TapDownDetails tapDown) {
@@ -74,15 +61,15 @@ class _BLProfilePicState extends ConsumerState<BLProfilePic> {
                 child: FractionallySizedBox(
                     widthFactor: 1,
                     heightFactor: 1,
-                    child: photoURL.when(
-                        data: (photoURL) {
-                          debugPrint('update profile pic widget');
-                          if (photoURL == null || photoURL.isEmpty) {
+                    child: user.when(
+                        data: (user) {
+                          if (user?.profilePicLink == null ||
+                              user!.profilePicLink!.isEmpty) {
                             return const BLLoading(color: Colors.black);
-                          } else if (photoURL == 'new_user') {
+                          } else if (user.profilePicLink == 'new_user') {
                             return const Icon(FontAwesomeIcons.user);
                           } else {
-                            return BLCircularImage(photoURL);
+                            return BLCircular(url: user.profilePicLink);
                           }
                         },
                         error: (error, stackTrace) => const BlankWidget(),
@@ -106,5 +93,24 @@ class _BLProfilePicState extends ConsumerState<BLProfilePic> {
         ],
       ),
     );
+  }
+
+  void onTapCancel() {
+    setState(() {
+      _opacity = 0;
+    });
+  }
+
+  void onTapDown() {
+    setState(() {
+      _opacity = 1;
+    });
+  }
+
+  void onTapUp(TapUpDetails tapUp) {
+    setState(() {
+      _opacity = 0;
+    });
+    widget.onPressed?.call();
   }
 }

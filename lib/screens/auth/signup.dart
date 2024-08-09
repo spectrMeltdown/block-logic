@@ -7,8 +7,10 @@ import 'package:block_logic/components/panel.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/textbox.dart';
 import 'package:block_logic/components/util/blank_widget.dart';
+import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/services/auth.dart';
 import 'package:block_logic/logic/services/navigation.dart';
+import 'package:block_logic/logic/services/toast.dart';
 import 'package:block_logic/logic/services/validator_text.dart';
 import 'package:block_logic/screens/auth/check_acc.dart';
 import 'package:block_logic/screens/auth/login.dart';
@@ -46,19 +48,21 @@ class _SignupState extends ConsumerState<Signup> {
     final validator = ref.read(textValidatorProvider);
     final nav = ref.read(customNavigationProvider);
     final auth = ref.read(authServiceProvider.notifier);
+    final toast = ref.read(toastProvider.notifier);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Background(
-          child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            const Row(children: [BLBackButton()]),
-            Column(
+          child: Column(
+        children: [
+          const Row(children: [BLBackButton()]),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 BLPanel(
-                    padding: const EdgeInsets.all(10),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 20, horizontal: 10),
                     child: Form(
                       key: _signupFormKey,
                       child: Column(
@@ -155,39 +159,66 @@ class _SignupState extends ConsumerState<Signup> {
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 50, vertical: 10),
                               onPressed: () async {
+                                if (processing == true) return;
+                                processing = true;
                                 if (_signupFormKey.currentState!.validate()) {
                                   if (checkedTerms == false) {
-                                    msg = const BLText(
-                                      'You must agree to terms and conditions.',
-                                      color: Colors.red,
-                                    );
-                                    setState(() {});
+                                    setState(() {
+                                      msg = const BLText(
+                                        'You must agree to terms and conditions.',
+                                        color: Colors.red,
+                                      );
+                                    });
+                                    processing = false;
                                     return;
                                   } else {
-                                    msg = const BlankWidget();
-                                    setState(() {});
+                                    setState(() {
+                                      msg = const BlankWidget();
+                                    });
                                   }
-                                  if (processing == true) {
-                                    return;
-                                  }
-
-                                  processing = true;
-                                  final signupSuccess =
-                                      await auth.createAccount(
-                                          email: emailController.text.trim(),
-                                          password:
-                                              passwordController.text.trim(),
-                                          phoneNum:
-                                              phoneNumController.text.trim(),
-                                          displayName: displayNameController
-                                              .text
-                                              .trim());
-                                  processing = false;
-                                  if (signupSuccess) {
+                                  if (!context.mounted) return;
+                                  toast.showToast(
+                                    context,
+                                    'Creating Account ...',
+                                    type: NotifType.error,
+                                  );
+                                  final error = await auth.createAccount(
+                                      email: emailController.text.trim(),
+                                      password: passwordController.text.trim(),
+                                      phoneNum: phoneNumController.text.trim(),
+                                      displayName:
+                                          displayNameController.text.trim());
+                                  if (error == null) {
+                                    /// send email verification
+                                    final emailVerification =
+                                        await auth.sendEmailVerification();
+                                    if (emailVerification != null) {
+                                      if (!context.mounted) return;
+                                      toast.showToast(
+                                        context,
+                                        emailVerification,
+                                        type: NotifType.error,
+                                      );
+                                    } else {
+                                      if (!context.mounted) return;
+                                      toast.showToast(
+                                        context,
+                                        'Verification email sent.',
+                                        type: NotifType.success,
+                                      );
+                                    }
                                     if (!context.mounted) return;
                                     nav.pushReplace(context, const CheckAcc());
+                                  } else {
+                                    if (!context.mounted) return;
+                                    toast.showToast(
+                                      context,
+                                      error,
+                                      type: NotifType.error,
+                                    );
                                   }
                                 }
+                                processing = false;
                               },
                               child: const BLText(
                                 'Create account',
@@ -211,8 +242,8 @@ class _SignupState extends ConsumerState<Signup> {
                     )),
               ],
             ),
-          ],
-        ),
+          ),
+        ],
       )),
     );
   }

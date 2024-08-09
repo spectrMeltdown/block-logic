@@ -3,13 +3,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class Leaderboard {
   final String? id;
   final String? roomID;
-  final List<String>? accountIDs;
   final DateTime? dateCreated;
+  final int? totalScore;
   Leaderboard({
     required this.id,
-    required this.roomID,
-    required this.accountIDs,
-    required this.dateCreated,
+    this.roomID,
+    this.dateCreated,
+    this.totalScore,
   });
 
   factory Leaderboard.fromFirestore(dynamic doc) {
@@ -21,8 +21,21 @@ class Leaderboard {
     return Leaderboard(
       id: doc.id,
       roomID: data['roomID'] ?? '',
-      accountIDs: data['accountIDs'] ?? [],
+      totalScore: data['totalScore'] ?? '',
       dateCreated: (data['dateCreated'] as Timestamp).toDate(),
     );
+  }
+  Map<String, dynamic> toFirestore(Leaderboard leaderboard) {
+    Map<String, dynamic> toFirestoreMap = {};
+    if (leaderboard.dateCreated != null) {
+      toFirestoreMap.addAll({'dateCreated': leaderboard.dateCreated});
+    }
+    if (leaderboard.roomID != null) {
+      toFirestoreMap.addAll({'roomID': leaderboard.roomID});
+    }
+    if (leaderboard.totalScore != null) {
+      toFirestoreMap.addAll({'totalScore': leaderboard.totalScore});
+    }
+    return toFirestoreMap;
   }
 }

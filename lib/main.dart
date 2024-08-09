@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:block_logic/logic/services/audio.dart';
+import 'package:block_logic/logic/services/internet_connection.dart';
 import 'package:block_logic/logic/services/shared_pref.dart';
 import 'package:block_logic/screens/auth/check_acc.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -9,7 +10,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:toastification/toastification.dart';
 
 import 'firebase_options.dart';
 
@@ -47,9 +47,12 @@ Future<void> main() async {
   // check if platform is web
   else if (kIsWeb) {}
   final prefs = await SharedPreferences.getInstance();
-  runApp(ProviderScope(overrides: [
-    sharedPrefProvider.overrideWithValue(prefs),
-  ], child: const BlockLogic()));
+  runApp(ProviderScope(
+    overrides: [
+      sharedPrefProvider.overrideWithValue(prefs),
+    ],
+    child: const BlockLogic(),
+  ));
 }
 
 class BlockLogic extends ConsumerWidget {
@@ -58,6 +61,7 @@ class BlockLogic extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     ref.read(audioInitProvider);
+    ref.watch(internetStatusProvider);
     const TextStyle appTextStyle = TextStyle(
       color: Colors.white,
     );
@@ -88,28 +92,35 @@ class BlockLogic extends ConsumerWidget {
       colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo.shade400),
       scaffoldBackgroundColor: Colors.transparent,
       tabBarTheme: const TabBarTheme(dividerColor: Colors.transparent),
+      inputDecorationTheme: const InputDecorationTheme(
+          prefixIconColor: Colors.white, suffixIconColor: Colors.white),
       dialogTheme: DialogTheme(
-        backgroundColor: Colors.blueGrey.shade800,
+        backgroundColor: Colors.blueGrey.shade900,
+      ),
+      bottomSheetTheme: BottomSheetThemeData(
+        backgroundColor: Colors.blueGrey.shade900,
       ),
       iconTheme: const IconThemeData(
         color: Colors.white,
       ),
     );
-
-    /// toastificationWrapper is for displaying toasts without using context
-    return ToastificationWrapper(
-      child: MaterialApp(
-          title: 'Block-Logic',
-          debugShowCheckedModeBanner: false,
-          theme: appTheme,
-          darkTheme: appTheme,
-          home:
-              // const GameRoom(
-              //     roomID: 'offline-testing',
-              //   )
-              const CheckAcc()
-          //const Splash(),
-          ),
-    );
+    //final navigatorKey = GlobalKey<NavigatorState>();
+    return MaterialApp(
+        title: 'Block-Logic',
+        debugShowCheckedModeBanner: false,
+        //navigatorKey: navigatorKey,
+        // builder: (context, child) {
+        //   // Wrap with toast.
+        //   child = Toast(navigatorKey: navigatorKey, child: child!);
+        //   return child;
+        // },
+        theme: appTheme
+        // .copyWith(
+        //   materialTapTargetSize: MaterialTapTargetSize.padded,
+        //   extensions: [const FlashToastTheme(), const FlashBarTheme()],
+        // )
+        ,
+        darkTheme: appTheme,
+        home: const CheckAcc());
   }
 }

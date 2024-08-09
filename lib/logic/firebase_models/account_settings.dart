@@ -1,18 +1,18 @@
-import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AccountSettings {
   final bool? loginAlerts;
   final bool? notifications;
   final bool? soundEffects;
   final bool? backgroundMusic;
-  AccountSettings(
-      {this.loginAlerts,
-      this.notifications,
-      this.soundEffects,
-      this.backgroundMusic});
+  AccountSettings({
+    this.loginAlerts,
+    this.notifications,
+    this.soundEffects,
+    this.backgroundMusic,
+  });
 
-  factory AccountSettings.fromFirestore(dynamic doc) {
-    debugPrint('from firestore login alerts:');
+  factory AccountSettings.fromFirestore(DocumentSnapshot doc) {
     Map<String, dynamic> data = {};
     if (doc.data() != null) {
       data = doc.data() as Map<String, dynamic>;

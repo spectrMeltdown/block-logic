@@ -2,7 +2,6 @@ import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/game/block_data.dart';
 import 'package:block_logic/logic/services/game_manager.dart';
-import 'package:block_logic/logic/services/ui.dart';
 import 'package:block_logic/screens/game/add_new_block_box.dart';
 import 'package:block_logic/screens/game/block.dart';
 import 'package:block_logic/screens/game/parameter_condition_box.dart';
@@ -51,7 +50,6 @@ class _GameBlockWithChildState extends ConsumerState<GameBlockWithChild> {
   Widget build(BuildContext context) {
     ref.watch(gameManagerStateProvider);
     final gameManagerState = ref.watch(gameManagerStateProvider.notifier);
-    final blui = ref.read(bLUIProvider);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

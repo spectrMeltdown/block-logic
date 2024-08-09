@@ -1,0 +1,124 @@
+import 'package:block_logic/components/circular_image.dart';
+import 'package:block_logic/components/text/text.dart';
+import 'package:block_logic/components/util/blank_widget.dart';
+import 'package:block_logic/logic/services/assets.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:widget_and_text_animator/widget_and_text_animator.dart';
+
+class TopThreePlayers extends ConsumerStatefulWidget {
+  const TopThreePlayers(this.playerPhotoURL, {super.key});
+  final List<String> playerPhotoURL;
+
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() =>
+      _TopThreePlayersState();
+}
+
+class _TopThreePlayersState extends ConsumerState<TopThreePlayers> {
+  final Duration picStartDelay = Duration(milliseconds: 500);
+  final Duration picDelay = Duration(milliseconds: 300);
+  late final Duration iconStartDelay;
+  late final Duration iconDelay;
+
+  @override
+  void initState() {
+    iconStartDelay = picStartDelay + picDelay + picDelay;
+    iconDelay = picDelay;
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final assets = ref.read(assetsProvider);
+    if (widget.playerPhotoURL.isEmpty) {
+      return Center(
+        child: BLText('No players..'),
+      );
+    }
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: List.generate(widget.playerPhotoURL.length, (i) {
+        if (i == 1) {
+          return Padding(
+            padding: EdgeInsets.only(bottom: 10),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 5),
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  WidgetAnimator(
+                    incomingEffect:
+                        WidgetTransitionEffects.incomingSlideInFromBottom(
+                            delay: picStartDelay),
+                    child: BLCircular(
+                      url: widget.playerPhotoURL[i],
+                      iconSize: 100,
+                    ),
+                  ),
+                  Positioned(
+                      left: 20,
+                      bottom: -40,
+                      child: WidgetAnimator(
+                        incomingEffect:
+                            WidgetTransitionEffects.incomingOffsetThenScale(
+                                delay: picStartDelay),
+                        child: BLCircular(
+                          width: 60,
+                          height: 60,
+                          fit: BoxFit.scaleDown,
+                          asset: assets.leadeboardFirst,
+                          backgroundColor: Colors.transparent,
+                        ),
+                      ))
+                ],
+              ),
+            ),
+          );
+        } else if (i == 0 || i == 2) {
+          return Padding(
+            padding: EdgeInsets.only(top: 60),
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                WidgetAnimator(
+                  incomingEffect:
+                      WidgetTransitionEffects.incomingSlideInFromBottom(
+                          delay: i == 0
+                              ? picStartDelay + picDelay
+                              : picStartDelay + picDelay + picDelay),
+                  child: BLCircular(
+                    url: widget.playerPhotoURL[i],
+                    iconSize: 60,
+                  ),
+                ),
+                Positioned(
+                    bottom: -30,
+                    left: i == 0 ? -20 : 30,
+                    child: WidgetAnimator(
+                      incomingEffect:
+                          WidgetTransitionEffects.incomingOffsetThenScale(
+                              delay: i == 0
+                                  ? iconStartDelay + iconDelay
+                                  : iconStartDelay + iconDelay + iconDelay),
+                      child: BLCircular(
+                        width: 50,
+                        height: 50,
+                        fit: BoxFit.scaleDown,
+                        asset: i == 0
+                            ? assets.leadeboardSecond
+                            : assets.leadeboardThird,
+                        backgroundColor: Colors.transparent,
+                      ),
+                    ))
+              ],
+            ),
+          );
+        }
+        debugPrint('Received an extra $i top player.');
+        return BlankWidget();
+      }),
+    );
+  }
+}

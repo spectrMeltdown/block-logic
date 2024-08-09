@@ -76,7 +76,7 @@ class _RoomSelectorState extends ConsumerState<RoomSelector>
                 ),
               ),
               BLBorderedPanel(
-                Column(
+                child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     TabBar(

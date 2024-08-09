@@ -12,6 +12,9 @@ class Assets {
   final String backgroundGrid = 'assets/images/background_grid.png';
   final String backgroundNoGrid = 'assets/images/background_no_grid.png';
   final String logo = 'assets/images/logo.png';
+  final String leadeboardFirst = 'assets/images/leaderboard-first.png';
+  final String leadeboardSecond = 'assets/images/leaderboard-second.png';
+  final String leadeboardThird = 'assets/images/leaderboard-third.png';
 
   /// audio
   /// TODO: find the following audio

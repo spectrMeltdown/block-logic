@@ -1,7 +1,7 @@
 import 'package:block_logic/components/util/provider_default.dart';
 import 'package:block_logic/logic/firebase_models/user_account.dart';
 import 'package:block_logic/logic/firebase_providers/auth.dart';
-import 'package:block_logic/logic/firebase_providers/user.dart';
+import 'package:block_logic/logic/firebase_providers/selected_user.dart';
 import 'package:block_logic/logic/services/assets.dart';
 import 'package:block_logic/logic/services/auth.dart';
 import 'package:block_logic/logic/services/db.dart';
@@ -79,7 +79,7 @@ class _CheckAccState extends ConsumerState<CheckAcc> {
     final auth = ref.read(authServiceProvider.notifier);
     final user = ref.watch(accountAuthProvider);
     final dbService = ref.watch(dBServiceProvider.notifier);
-    final userFirestore = ref.watch(UserAccountProvider(auth.getUID()));
+    final userFirestore = ref.watch(SelectedUserProvider(auth.getUID()));
     return user.when(
         data: (user) => getWidget(
             auth: auth, userFirestore: userFirestore, dbService: dbService),

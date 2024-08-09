@@ -55,9 +55,9 @@ class GameManagerState extends _$GameManagerState {
   }
 
   List<int>? getPath(String targetID) {
-    final List<int> path = [];
-    List<GameBlockData> currentBlocks = state.blockDataTree;
-    for (final block in currentBlocks) {}
+    //final List<int> path = [];
+    //List<GameBlockData> currentBlocks = state.blockDataTree;
+    //for (final block in currentBlocks) {}
     // not found
     return null;
   }

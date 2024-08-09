@@ -15,11 +15,13 @@ import 'package:block_logic/logic/firebase_providers/auth.dart';
 import 'package:block_logic/logic/services/assets.dart';
 import 'package:block_logic/logic/services/auth.dart';
 import 'package:block_logic/logic/services/navigation.dart';
+import 'package:block_logic/logic/services/toast.dart';
 import 'package:block_logic/screens/auth/login.dart';
-import 'package:block_logic/screens/game/game_room.dart';
+import 'package:block_logic/screens/creator_mode/creator_mode.dart';
 import 'package:block_logic/screens/rooms/rooms.dart';
-import 'package:block_logic/screens/settings.dart';
+import 'package:block_logic/screens/settings/settings.dart';
 import 'package:block_logic/screens/tutorials/tutorials.dart';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -92,80 +94,24 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen>
 
   @override
   Widget build(BuildContext context) {
-    final user = ref.watch(accountAuthProvider);
     final auth = ref.read(authServiceProvider.notifier);
-    final nav = ref.watch(customNavigationProvider);
+    final nav = ref.read(customNavigationProvider);
+    final toast = ref.read(toastProvider.notifier);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Background(
-        child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 20, top: 20),
-            child: Row(
-              children: user.when(
-                data: (user) {
-                  if (user == null) {
-                    return [const BlankWidget()];
-                  } else {
-                    return [
-                      MenuAnchor(
-                        controller: menuController,
-                        style: const MenuStyle(alignment: Alignment(-1, 1.4)),
-                        menuChildren: [
-                          GestureDetector(
-                            onTapDown: (TapDownDetails tap) => {
-                              // TODO: add a overlay color
-                            },
-                            onTapUp: (details) {
-                              auth.logout();
-                            },
-                            child: const Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 10.0),
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    Icons.logout,
-                                    color: Colors.red,
-                                  ),
-                                  BLText('Logout', color: Colors.red)
-                                ],
-                              ),
-                            ),
-                          )
-                        ],
-                        child: BLProfilePic(
-                          auth.getUID(),
-                          onPressed: () {
-                            if (menuController.isOpen) {
-                              menuController.close();
-                            } else {
-                              menuController.open();
-                            }
-                          },
-                        ),
-                      ),
-                      Padding(
-                          padding: const EdgeInsets.only(left: 10),
-                          child: BLDisplayName(
-                            auth.getUID(),
-                          ))
-                    ];
-                  }
-                },
-                error: (error, stackTrace) => const [BLError()],
-                loading: () => const [BLLoading()],
-              ),
-            ),
-          ),
-          Expanded(
-              child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                const SizedBox(height: 10),
+        child: SafeArea(
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                BLButton(
+                    onPressed: () {
+                      toast.showToast(context, 'Test notif');
+                    },
+                    child: BLText('notif')),
                 Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SlideInLeft(
                       duration: const Duration(milliseconds: 1000),
@@ -207,16 +153,15 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen>
                     )
                   ],
                 ),
-                const SizedBox(
-                  height: 100,
-                ),
                 SpacedColumn(
                     spacing: 10,
                     children: auth.isLoggedIn()
                         ? loggedInMenu(context, nav)
                         : loggedOutMenu(context, nav))
-              ]))
-        ]),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -241,12 +186,9 @@ List<Widget> loggedInMenu(BuildContext context, CustomNavigation nav) {
     ),
     BLButton(
       onPressed: () => nav.push(
-          context,
-
-          /// TODO: change back to creator mode later
-          const GameRoom(
-            roomID: 'testing',
-          )),
+        context,
+        const CreatorMode(),
+      ),
       child: const Text(
         'Creator Mode',
         style: TextStyle(fontSize: 16),

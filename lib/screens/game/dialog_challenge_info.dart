@@ -8,8 +8,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class DialogChallengeInfo extends ConsumerWidget {
-  const DialogChallengeInfo({required this.challenge, super.key});
   final Challenge challenge;
+  const DialogChallengeInfo({required this.challenge, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -38,8 +38,8 @@ class DialogChallengeInfo extends ConsumerWidget {
           padding: const EdgeInsets.only(left: 8),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: List.generate(challenge.limitations.length, (i) {
-              return Wrap(children: [BLText('• ${challenge.limitations[i]}')]);
+            children: List.generate(challenge.limitations!.length, (i) {
+              return Wrap(children: [BLText('• ${challenge.limitations![i]}')]);
             }),
           ),
         ),
