@@ -1,9 +1,9 @@
 import 'package:block_logic/components/background.dart';
-import 'package:block_logic/components/button/back_button.dart';
+import 'package:block_logic/components/button/back.dart';
 import 'package:block_logic/components/button/button.dart';
-import 'package:block_logic/components/button/text_button.dart';
+import 'package:block_logic/components/button/text.dart';
 import 'package:block_logic/components/checkbox.dart';
-import 'package:block_logic/components/panel.dart';
+import 'package:block_logic/components/panel/panel.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/textbox.dart';
 import 'package:block_logic/components/util/blank_widget.dart';
@@ -12,6 +12,7 @@ import 'package:block_logic/logic/services/auth.dart';
 import 'package:block_logic/logic/services/navigation.dart';
 import 'package:block_logic/logic/services/toast.dart';
 import 'package:block_logic/logic/services/validator_text.dart';
+import 'package:block_logic/route_observer.dart';
 import 'package:block_logic/screens/auth/check_acc.dart';
 import 'package:block_logic/screens/auth/login.dart';
 import 'package:block_logic/screens/terms_and_conditions.dart';
@@ -27,28 +28,22 @@ class Signup extends ConsumerStatefulWidget {
   ConsumerState<Signup> createState() => _SignupState();
 }
 
-class _SignupState extends ConsumerState<Signup> {
+class _SignupState extends ConsumerState<Signup> with RouteAware {
   final TextEditingController displayNameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController phoneNumController = TextEditingController();
   final _signupFormKey = GlobalKey<FormState>();
   late Widget msg;
+  late Toast toast;
   bool processing = false;
   bool checkedTerms = false;
-
-  @override
-  void initState() {
-    msg = const BlankWidget();
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
     final validator = ref.read(textValidatorProvider);
     final nav = ref.read(customNavigationProvider);
     final auth = ref.read(authServiceProvider.notifier);
-    final toast = ref.read(toastProvider.notifier);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Background(
@@ -178,7 +173,6 @@ class _SignupState extends ConsumerState<Signup> {
                                   }
                                   if (!context.mounted) return;
                                   toast.showToast(
-                                    context,
                                     'Creating Account ...',
                                     type: NotifType.error,
                                   );
@@ -195,14 +189,12 @@ class _SignupState extends ConsumerState<Signup> {
                                     if (emailVerification != null) {
                                       if (!context.mounted) return;
                                       toast.showToast(
-                                        context,
                                         emailVerification,
                                         type: NotifType.error,
                                       );
                                     } else {
                                       if (!context.mounted) return;
                                       toast.showToast(
-                                        context,
                                         'Verification email sent.',
                                         type: NotifType.success,
                                       );
@@ -212,7 +204,6 @@ class _SignupState extends ConsumerState<Signup> {
                                   } else {
                                     if (!context.mounted) return;
                                     toast.showToast(
-                                      context,
                                       error,
                                       type: NotifType.error,
                                     );
@@ -246,5 +237,30 @@ class _SignupState extends ConsumerState<Signup> {
         ],
       )),
     );
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    routeObserver.subscribe(this, ModalRoute.of(context) as PageRoute);
+  }
+
+  @override
+  void didPopNext() {
+    toast.dismissAllToast();
+    super.didPop();
+  }
+
+  @override
+  void didPushNext() {
+    toast.dismissAllToast();
+    super.didPushNext();
+  }
+
+  @override
+  void initState() {
+    toast = ref.read(toastProvider.notifier);
+    msg = const BlankWidget();
+    super.initState();
   }
 }

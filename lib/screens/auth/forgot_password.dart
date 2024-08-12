@@ -4,7 +4,6 @@ import 'package:block_logic/components/textbox.dart';
 import 'package:block_logic/components/util/blank_widget.dart';
 import 'package:block_logic/logic/services/auth.dart';
 import 'package:block_logic/logic/services/navigation.dart';
-import 'package:block_logic/logic/services/toast.dart';
 import 'package:block_logic/logic/services/validator_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -20,14 +19,13 @@ class ForgotPasswordDialog extends ConsumerStatefulWidget {
 class _ForgotPasswordDialogState extends ConsumerState<ForgotPasswordDialog> {
   final TextEditingController emailController = TextEditingController();
   final formKey = GlobalKey<FormState>();
-  Widget errorMsg = BlankWidget();
+  Widget errorMsg = const BlankWidget();
   bool processing = false;
 
   @override
   Widget build(BuildContext context) {
     final auth = ref.read(authServiceProvider.notifier);
     final nav = ref.read(customNavigationProvider);
-    final toast = ref.read(toastProvider.notifier);
     final validator = ref.read(textValidatorProvider);
     return BLDialog(
         child: Form(

@@ -1,55 +1,67 @@
+import 'package:block_logic/logic/enums.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Room {
-  final String id;
+  final String? id;
   final String? hostID;
-  final List<String>? challengeIDs;
   final String? icon;
   final String? name;
   final String? password;
-  final int? playerCount;
+  final List<String>? players;
+  final List<String>? challengeIDs;
   final int? maxPlayers;
-  final bool? started;
-  final bool? ended;
+  final RoomStatus? status;
   Room({
-    required this.id,
+    this.id,
+    this.players,
     this.icon,
     this.hostID,
     this.challengeIDs,
     this.name,
-    this.playerCount,
-    this.started,
-    this.ended,
+    this.status,
     this.password,
     this.maxPlayers,
   });
 
-  /// When calling this with [QueryDocumentSnapshot], cast it to [DocumentSnapshot]
   factory Room.fromFirestore(DocumentSnapshot doc) {
+    Map<String, dynamic> data = {};
+    if (doc.data() != null) {
+      data = doc.data() as Map<String, dynamic>;
+    }
+    RoomStatus? status;
+    if (data['status'] == RoomStatus.available.name) {
+      status = RoomStatus.available;
+    } else if (data['status'] == RoomStatus.finalizing.name) {
+      status = RoomStatus.finalizing;
+    } else if (data['status'] == RoomStatus.inGame.name) {
+      status = RoomStatus.inGame;
+    }
     return Room(
       id: doc.id,
-      playerCount: doc.get('inRoom') ?? -1,
-      started: doc.get('started'),
-      ended: doc.get('ended'),
-      icon: doc.get('icon') ?? '',
-      hostID: doc.get('hostID') ?? '',
-      challengeIDs: doc.get('challengeIDs') == null
+      players: data['players'] == null
           ? null
-          : (doc.get('challengeIDs') as List)
+          : (data['players'] as List).map((item) => item as String).toList(),
+      status: status,
+      icon: data['icon'],
+      hostID: data['hostID'],
+      challengeIDs: data['challengeIDs'] == null
+          ? null
+          : (data['challengeIDs'] as List)
               .map((item) => item as String)
               .toList(),
-      name: doc.get('name') ?? '',
-      password: doc.get('password'),
-      maxPlayers: doc.get('capacity') ?? -1,
+      name: data['name'] ?? '',
+      password: data['password'],
+      maxPlayers: data['maxPlayers'],
     );
   }
+
   Map<String, dynamic> toFirestore(Room room) {
     Map<String, dynamic> toFirestoreMap = {};
     if (room.challengeIDs != null) {
       toFirestoreMap.addAll({'challengeIDs': room.challengeIDs});
     }
-    if (room.playerCount != null) {
-      toFirestoreMap.addAll({'playerCount': room.playerCount});
+    if (room.players != null) {
+      toFirestoreMap.addAll({'players!.length': room.players});
     }
     if (room.hostID != null) {
       toFirestoreMap.addAll({'hostID': room.hostID});
@@ -63,11 +75,8 @@ class Room {
     if (room.password != null) {
       toFirestoreMap.addAll({'password': room.password});
     }
-    if (room.ended != null) {
-      toFirestoreMap.addAll({'ended': room.ended});
-    }
-    if (room.started != null) {
-      toFirestoreMap.addAll({'started': room.started});
+    if (room.status != null) {
+      toFirestoreMap.addAll({'status': room.status!.name});
     }
     return toFirestoreMap;
   }

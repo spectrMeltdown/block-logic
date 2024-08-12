@@ -2,13 +2,12 @@ import 'dart:async';
 
 import 'package:block_logic/components/background.dart';
 import 'package:block_logic/components/button/button.dart';
-import 'package:block_logic/components/button/text_button.dart';
+import 'package:block_logic/components/button/text.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/util/animation_player.dart';
 import 'package:block_logic/logic/services/assets.dart';
 import 'package:block_logic/logic/services/auth.dart';
 import 'package:block_logic/logic/services/navigation.dart';
-import 'package:block_logic/logic/services/toast.dart';
 import 'package:block_logic/screens/main_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -25,44 +24,10 @@ class _VerifyEmailState extends ConsumerState<VerifyEmail>
   late final AnimationController _controller;
   late final Timer timer;
   late final AuthService auth;
-  late final Toast toast;
   late final CustomNavigation nav;
   late final Assets assets;
   bool processing = false;
   bool isEmailVerified = false;
-  @override
-  void initState() {
-    auth = ref.read(authServiceProvider.notifier);
-    toast = ref.read(toastProvider.notifier);
-    nav = ref.read(customNavigationProvider);
-    assets = ref.read(assetsProvider);
-    _controller = AnimationController(vsync: this);
-    timer = Timer.periodic(const Duration(seconds: 5), (_) async {
-      if (!context.mounted) return;
-      try {
-        await auth.reload();
-        isEmailVerified = auth.isEmailVerified();
-      } catch (e) {
-        return;
-      }
-      if (isEmailVerified) {
-        timer.cancel();
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          // toast.showToast('Email verified successfully');
-          nav.pushReplace(context, const MainMenuScreen());
-        });
-      }
-    });
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    timer.cancel();
-    super.dispose();
-  }
-
   // void emailVerified() async {
   //   if (processed) return;
   //   timer.cancel();
@@ -142,5 +107,37 @@ class _VerifyEmailState extends ConsumerState<VerifyEmail>
         ),
       )),
     );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    timer.cancel();
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    auth = ref.read(authServiceProvider.notifier);
+    nav = ref.read(customNavigationProvider);
+    assets = ref.read(assetsProvider);
+    _controller = AnimationController(vsync: this);
+    timer = Timer.periodic(const Duration(seconds: 5), (_) async {
+      if (!context.mounted) return;
+      try {
+        await auth.reload();
+        isEmailVerified = auth.isEmailVerified();
+      } catch (e) {
+        return;
+      }
+      if (isEmailVerified) {
+        timer.cancel();
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          // toast.showToast('Email verified successfully');
+          nav.pushReplace(context, const MainMenuScreen());
+        });
+      }
+    });
+    super.initState();
   }
 }

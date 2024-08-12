@@ -1,3 +1,4 @@
+import 'package:block_logic/logic/enums.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Leaderboard {
@@ -5,9 +6,11 @@ class Leaderboard {
   final String? roomID;
   final DateTime? dateCreated;
   final int? totalScore;
+  final LeaderboardStatus? status;
   Leaderboard({
     required this.id,
     this.roomID,
+    this.status,
     this.dateCreated,
     this.totalScore,
   });
@@ -17,11 +20,20 @@ class Leaderboard {
     if (doc.data() != null) {
       data = doc.data() as Map<String, dynamic>;
     }
+    LeaderboardStatus? status;
+    if (data['status'] == LeaderboardStatus.complete.name) {
+      status = LeaderboardStatus.complete;
+    } else if (data['status'] == LeaderboardStatus.incomplete.name) {
+      status = LeaderboardStatus.incomplete;
+    } else if (data['status'] == LeaderboardStatus.pending.name) {
+      status = LeaderboardStatus.pending;
+    }
 
     return Leaderboard(
       id: doc.id,
       roomID: data['roomID'] ?? '',
       totalScore: data['totalScore'] ?? '',
+      status: status,
       dateCreated: (data['dateCreated'] as Timestamp).toDate(),
     );
   }
@@ -35,6 +47,9 @@ class Leaderboard {
     }
     if (leaderboard.totalScore != null) {
       toFirestoreMap.addAll({'totalScore': leaderboard.totalScore});
+    }
+    if (leaderboard.status != null) {
+      toFirestoreMap.addAll({'totalScore': leaderboard.status!.name});
     }
     return toFirestoreMap;
   }

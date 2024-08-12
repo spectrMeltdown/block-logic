@@ -10,11 +10,11 @@ class Score {
   final ScoreStatus? status;
   Score({
     this.id,
-    this.playerScore,
-    this.rank,
     this.accountID,
-    this.status,
+    this.playerScore,
     this.timeElapsed,
+    this.rank,
+    this.status,
   });
 
   factory Score.fromFirestore(DocumentSnapshot doc) {
@@ -25,10 +25,10 @@ class Score {
 
     return Score(
       id: doc.id,
-      rank: data['rank'],
-      timeElapsed: data['timeElapsed'],
-      playerScore: data['playerScore'],
       accountID: data['accountID'],
+      playerScore: data['playerScore'],
+      timeElapsed: data['timeElapsed'],
+      rank: data['rank'],
       status: data['status'],
     );
   }

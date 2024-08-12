@@ -1,4 +1,3 @@
-import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/services/audio.dart';
 import 'package:block_logic/logic/services/ui.dart';
 import 'package:flame/extensions.dart';
@@ -6,21 +5,30 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class BLCard extends ConsumerStatefulWidget {
-  const BLCard({
-    super.key,
-    this.type,
-    required this.onPressed,
-    required this.child,
-    this.height = 80,
-    this.padding,
-    this.color,
-  });
-  final CodeBlockType? type;
   final VoidCallback onPressed;
   final Widget child;
-  final EdgeInsets? padding;
-  final double height;
-  final Color? color;
+  final EdgeInsets innerPadding;
+  final EdgeInsets outerPadding;
+  final Color color;
+  final Color? darkShade;
+  final List<BoxShadow>? glow;
+  final List<BoxShadow>? pressedOverlayColor;
+  final double? height;
+  final double? width;
+  const BLCard({
+    super.key,
+    required this.color,
+    required this.onPressed,
+    required this.child,
+    this.glow,
+    this.height,
+    this.width,
+    this.pressedOverlayColor,
+    this.darkShade,
+    this.outerPadding = const EdgeInsets.symmetric(horizontal: 20),
+    this.innerPadding =
+        const EdgeInsets.symmetric(horizontal: 30.0, vertical: 10),
+  });
 
   @override
   ConsumerState<BLCard> createState() => _BLCardState();
@@ -28,28 +36,69 @@ class BLCard extends ConsumerStatefulWidget {
 
 class _BLCardState extends ConsumerState<BLCard> {
   bool _isTapped = false;
-  late final List<Color> cardColorPressed;
-  late final List<Color> cardColor;
-  final Color darkerShade = Colors.blueGrey.shade900;
-  final Color darkShade = Colors.blueGrey.shade800;
-  final List<BoxShadow> cardShadow = [
-    BoxShadow(
-      color: Colors.white.withOpacity(0.5),
-      spreadRadius: 2,
-      blurRadius: 20,
-    ),
-  ];
-  void _onTapUp(TapUpDetails tapUp) {
-    setState(() {
-      _isTapped = false;
-    });
-    widget.onPressed.call();
+  late final List<Color> colorPressed;
+  late final List<Color> color;
+  double width = 10;
+  final containerKey = GlobalKey();
+
+  @override
+  Widget build(BuildContext context) {
+    final audio = ref.read(bLAudioStateProvider.notifier);
+    final blui = ref.read(bLUIProvider);
+    return Container(
+      padding: widget.outerPadding,
+      child: GestureDetector(
+        onTapDown: (details) {
+          audio.playBtn();
+          _onTapDown();
+        },
+        onTapUp: _onTapUp,
+        onTapCancel: _onTapCancel,
+        child: Container(
+            key: containerKey,
+            width: widget.width,
+            height: widget.height,
+            padding: widget.innerPadding,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12.0),
+              border: Border.all(color: Colors.white, width: 3.0),
+              gradient: RadialGradient(
+                  colors: _isTapped ? colorPressed : color,
+                  radius: blui.getRadius(context, width)),
+              boxShadow: (_isTapped
+                  ? <BoxShadow>[
+                      ...widget.pressedOverlayColor ?? [],
+                      ...widget.glow ??
+                          [
+                            BoxShadow(
+                              color:
+                                  widget.color.brighten(0.4).withOpacity(0.8),
+                              spreadRadius: -20,
+                              blurRadius: 10,
+                            )
+                          ],
+                    ]
+                  : null),
+            ),
+            child: widget.child),
+      ),
+    );
   }
 
-  void _onTapDown() {
-    setState(() {
-      _isTapped = true;
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // Access the width after the first frame is rendered
+      final RenderBox renderBox =
+          containerKey.currentContext?.findRenderObject() as RenderBox;
+      setState(() {
+        width = renderBox.size.width;
+      });
     });
+    final darkShade = widget.darkShade ?? widget.color.darken(0.4);
+    color = [widget.color, darkShade];
+    colorPressed = [widget.color.brighten(0.2), darkShade];
+    super.initState();
   }
 
   void _onTapCancel() {
@@ -58,87 +107,16 @@ class _BLCardState extends ConsumerState<BLCard> {
     });
   }
 
-// get gradient radius based on padding provided
-  double getRadius(EdgeInsets? padding) {
-    double defaultRadius = 2;
-    if (padding == null) return defaultRadius;
-    if (padding.left >= 40 || padding.right >= 40) {
-      return 3;
-    } else {
-      return defaultRadius;
-    }
+  void _onTapDown() {
+    setState(() {
+      _isTapped = true;
+    });
   }
 
-  @override
-  void initState() {
-    cardColor = [BLUI().getBlockColor(widget.type), darkShade];
-    cardColorPressed = [
-      BLUI().getBlockColor(widget.type).brighten(0.2),
-      darkShade
-    ];
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final audio = ref.read(bLAudioStateProvider.notifier);
-    final mediaQuery = MediaQuery.of(context);
-
-    /// space around the card
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child:
-
-          /// detect user touches
-          GestureDetector(
-        onTapDown: (details) {
-          audio.playBtn;
-          _onTapDown();
-        },
-        onTapUp: _onTapUp,
-        onTapCancel: _onTapCancel,
-
-        /// when user touches card, but releases it outside the card
-        child:
-
-            /// the actual card
-            SizedBox(
-                width: mediaQuery.size.width,
-                height: widget.height,
-                child: Container(
-                  padding: widget.padding ??
-                      const EdgeInsets.symmetric(
-                          horizontal: 30.0, vertical: 10),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.rectangle,
-                    borderRadius: BorderRadius.circular(12.0),
-                    border: Border.all(color: Colors.white, width: 3.0),
-                    gradient: RadialGradient(
-                        colors: _isTapped ? cardColorPressed : cardColor,
-                        radius: (widget.padding != null)
-                            ? getRadius(widget.padding)
-                            : 5),
-                    boxShadow: (_isTapped
-                        ? cardShadow
-                        : [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.8),
-                              spreadRadius: -20,
-                              blurRadius: 10,
-                            )
-                          ]),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [widget.child]),
-                      const Icon(Icons.arrow_forward_ios)
-                    ],
-                  ),
-                )),
-      ),
-    );
+  void _onTapUp(TapUpDetails tapUp) {
+    setState(() {
+      _isTapped = false;
+    });
+    widget.onPressed.call();
   }
 }

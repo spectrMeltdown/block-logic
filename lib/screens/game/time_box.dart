@@ -1,14 +1,14 @@
 import 'dart:async';
 
-import 'package:block_logic/components/panel.dart';
+import 'package:block_logic/components/panel/bordered.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:widget_and_text_animator/widget_and_text_animator.dart';
 
 class TimeBox extends StatefulWidget {
-  const TimeBox(this.pauseTimer, {super.key});
   final bool pauseTimer;
+  const TimeBox(this.pauseTimer, {super.key});
 
   @override
   State<TimeBox> createState() => _TimeBoxState();
@@ -19,47 +19,6 @@ class _TimeBoxState extends State<TimeBox> {
   late bool shouldPauseTimer;
   late String timeString;
   late Timer timer;
-
-  @override
-  void initState() {
-    shouldPauseTimer = widget.pauseTimer;
-    timer = createTimer();
-    super.initState();
-  }
-
-  Timer createTimer() {
-    return Timer.periodic(const Duration(seconds: 1), (Timer t) {
-      seconds++;
-      setState(() {});
-    });
-  }
-
-  void pauseTimer() {
-    timer.cancel();
-    setState(() {});
-  }
-
-  void resumeTimer() {
-    if (timer.isActive) {
-      return;
-    } else {
-      timer = createTimer();
-    }
-  }
-
-  String formatTime(int seconds) {
-    final int hours = seconds ~/ 3600;
-    final int minutes = (seconds % 3600) ~/ 60;
-    final int remainingSeconds = seconds % 60;
-
-    return '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${remainingSeconds.toString().padLeft(2, '0')}';
-  }
-
-  @override
-  void dispose() {
-    timer.cancel();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -92,5 +51,46 @@ class _TimeBoxState extends State<TimeBox> {
         ],
       ),
     ));
+  }
+
+  Timer createTimer() {
+    return Timer.periodic(const Duration(seconds: 1), (Timer t) {
+      seconds++;
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    timer.cancel();
+    super.dispose();
+  }
+
+  String formatTime(int seconds) {
+    final int hours = seconds ~/ 3600;
+    final int minutes = (seconds % 3600) ~/ 60;
+    final int remainingSeconds = seconds % 60;
+
+    return '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${remainingSeconds.toString().padLeft(2, '0')}';
+  }
+
+  @override
+  void initState() {
+    shouldPauseTimer = widget.pauseTimer;
+    timer = createTimer();
+    super.initState();
+  }
+
+  void pauseTimer() {
+    timer.cancel();
+    setState(() {});
+  }
+
+  void resumeTimer() {
+    if (timer.isActive) {
+      return;
+    } else {
+      timer = createTimer();
+    }
   }
 }

@@ -1,9 +1,9 @@
 import 'package:block_logic/components/background.dart';
-import 'package:block_logic/components/button/back_button.dart';
-import 'package:block_logic/components/button/text_button.dart';
-import 'package:block_logic/components/panel.dart';
+import 'package:block_logic/components/button/back.dart';
+import 'package:block_logic/components/button/back.dart';
+import 'package:block_logic/components/button/text.dart';
+import 'package:block_logic/components/panel/panel.dart';
 import 'package:block_logic/components/text/text.dart';
-import 'package:block_logic/components/util/blank_widget.dart';
 import 'package:block_logic/components/util/provider_default.dart';
 import 'package:block_logic/logic/firebase_providers/auth.dart';
 import 'package:block_logic/logic/services/navigation.dart';
@@ -44,7 +44,7 @@ class _SettingsState extends ConsumerState<Settings> {
               child: ListView(
                 padding: const EdgeInsets.fromLTRB(15, 0, 15, 30),
                 children: [
-                  AccountSettingsWidget(),
+                  const AccountSettingsWidget(),
                   const SizedBox(
                     height: 20,
                   ),

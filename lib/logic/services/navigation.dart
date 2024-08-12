@@ -10,7 +10,7 @@ class CustomNavigation extends _$CustomNavigation {
   @override
   CustomNavigation build() => CustomNavigation();
 
-  void pop(BuildContext context, [String? result]) {
+  void pop(BuildContext context, [Object? result]) {
     Navigator.pop(context, result);
   }
 

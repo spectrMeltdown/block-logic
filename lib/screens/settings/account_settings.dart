@@ -1,10 +1,10 @@
 import 'package:block_logic/components/account/display_name.dart';
 import 'package:block_logic/components/account/email.dart';
 import 'package:block_logic/components/button/button.dart';
-import 'package:block_logic/components/button/login_signup_btns.dart';
-import 'package:block_logic/components/button/text_button.dart';
+import 'package:block_logic/components/button/login_signup.dart';
+import 'package:block_logic/components/button/text.dart';
 import 'package:block_logic/components/dialog/reauth.dart';
-import 'package:block_logic/components/panel.dart';
+import 'package:block_logic/components/panel/panel.dart';
 import 'package:block_logic/components/profile_pic.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/util/blank_widget.dart';
@@ -13,7 +13,6 @@ import 'package:block_logic/logic/firebase_providers/auth.dart';
 import 'package:block_logic/logic/services/account.dart';
 import 'package:block_logic/logic/services/auth.dart';
 import 'package:block_logic/logic/services/navigation.dart';
-import 'package:block_logic/logic/services/toast.dart';
 import 'package:block_logic/screens/auth/change_display_name.dart';
 import 'package:block_logic/screens/auth/change_email.dart';
 import 'package:block_logic/screens/auth/change_password.dart';
@@ -22,7 +21,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class AccountSettingsWidget extends ConsumerStatefulWidget {
-  const AccountSettingsWidget({super.key});
   final Widget editIcon = const Padding(
     padding: EdgeInsets.only(left: 8.0),
     child: Icon(
@@ -31,6 +29,7 @@ class AccountSettingsWidget extends ConsumerStatefulWidget {
       size: 20,
     ),
   );
+  const AccountSettingsWidget({super.key});
   @override
   ConsumerState<AccountSettingsWidget> createState() =>
       _AccountSettingsWidgetState();
@@ -43,7 +42,6 @@ class _AccountSettingsWidgetState extends ConsumerState<AccountSettingsWidget> {
   Widget build(BuildContext context) {
     final auth = ref.read(authServiceProvider.notifier);
     final accountService = ref.read(accountServiceProvider.notifier);
-    final toast = ref.read(toastProvider.notifier);
     final user = ref.read(accountAuthProvider);
     final nav = ref.read(customNavigationProvider);
     return BLPanel(
@@ -64,13 +62,17 @@ class _AccountSettingsWidgetState extends ConsumerState<AccountSettingsWidget> {
             } else {
               return Column(
                 children: [
-                  BLProfilePic(auth.getUID(), onPressed: () async {
-                    if (processing == true) return;
-                    processing = true;
-                    await accountService
-                        .changeProfilePic(FirestoreCollections.users);
-                    processing = false;
-                  }, size: 100),
+                  BLProfilePic(
+                    auth.getUID(),
+                    onPressed: () async {
+                      if (processing == true) return;
+                      processing = true;
+                      await accountService
+                          .changeProfilePic(FirestoreCollections.users);
+                      processing = false;
+                    },
+                    size: 100,
+                  ),
                   const SizedBox(height: 10),
                   const BLText(
                     'Profile picture',

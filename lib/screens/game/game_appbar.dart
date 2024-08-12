@@ -1,4 +1,4 @@
-import 'package:block_logic/components/panel.dart';
+import 'package:block_logic/components/panel/bordered.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/logic/firebase_models/challenge.dart';
 import 'package:block_logic/logic/services/audio.dart';
@@ -19,10 +19,10 @@ import 'package:marquee/marquee.dart';
 /// - room title
 /// - time box (track elapsed time)
 class GameAppbar extends ConsumerStatefulWidget {
-  const GameAppbar(
-      {required this.roomName, required this.challenge, super.key});
   final String roomName;
   final Challenge challenge;
+  const GameAppbar(
+      {required this.roomName, required this.challenge, super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _GameAppbarState();
@@ -35,10 +35,67 @@ class _GameAppbarState extends ConsumerState<GameAppbar> {
   late final DialogService pauseDialog;
 
   @override
-  void initState() {
-    pauseDialog = ref.read(dialogServiceStateProvider);
-    audio = ref.read(bLAudioStateProvider.notifier);
-    super.initState();
+  Widget build(BuildContext context) {
+    ref.watch(gameManagerStateProvider);
+    final gameManagerState = ref.read(gameManagerStateProvider.notifier);
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        GestureDetector(
+          onTapDown: (details) => audio.playBtn(),
+          onTapUp: (details) async {
+            gameManagerState.pauseTimer();
+            debugPrint('pause timer: ${gameManagerState.getTimer()}');
+            await showGeneralDialog(
+                context: context,
+                transitionDuration: const Duration(milliseconds: 500),
+                transitionBuilder:
+                    (context, animation, secondaryAnimation, child) {
+                  final primaryCurve = CurvedAnimation(
+                    parent: animation,
+                    //     begin: const Offset(0, 1),
+                    //     end: const Offset(0, 0),
+                    //   ).animate(animation),
+                    //   child: child,
+                    // );
+                    curve: Curves.easeInOut,
+                    reverseCurve: Curves.easeInOut,
+                  );
+                  return SlideTransition(
+                    position: Tween<Offset>(
+                      begin: const Offset(0, 1),
+                      end: const Offset(0, 0),
+                    ).animate(primaryCurve),
+                    child: child,
+                  );
+                  // return SlideTransition(
+                  //   position: Tween<Offset>(
+                },
+                pageBuilder: (context, animation1, animation2) {
+                  return const PauseDialog();
+                });
+            gameManagerState.resumeTimer();
+            debugPrint('pause timer: ${gameManagerState.getTimer()}');
+          },
+          child: const BLBorderedPanel(
+            child: Icon(
+              FontAwesomeIcons.pause,
+              size: 20,
+            ),
+          ),
+        ),
+        Flexible(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [buildText(true), buildText()],
+          ),
+        ),
+        const SizedBox(
+          width: 10,
+        ),
+        Expanded(child: TimeBox(gameManagerState.getTimer())),
+      ],
+    );
   }
 
   Widget buildText([bool isChallenge = false]) {
@@ -106,66 +163,9 @@ class _GameAppbarState extends ConsumerState<GameAppbar> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    ref.watch(gameManagerStateProvider);
-    final gameManagerState = ref.read(gameManagerStateProvider.notifier);
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        GestureDetector(
-          onTapDown: (details) => audio.playBtn(),
-          onTapUp: (details) async {
-            gameManagerState.pauseTimer();
-            debugPrint('pause timer: ${gameManagerState.getTimer()}');
-            await showGeneralDialog(
-                context: context,
-                transitionDuration: const Duration(milliseconds: 500),
-                transitionBuilder:
-                    (context, animation, secondaryAnimation, child) {
-                  final primaryCurve = CurvedAnimation(
-                    parent: animation,
-                    //     begin: const Offset(0, 1),
-                    //     end: const Offset(0, 0),
-                    //   ).animate(animation),
-                    //   child: child,
-                    // );
-                    curve: Curves.easeInOut,
-                    reverseCurve: Curves.easeInOut,
-                  );
-                  return SlideTransition(
-                    position: Tween<Offset>(
-                      begin: const Offset(0, 1),
-                      end: const Offset(0, 0),
-                    ).animate(primaryCurve),
-                    child: child,
-                  );
-                  // return SlideTransition(
-                  //   position: Tween<Offset>(
-                },
-                pageBuilder: (context, animation1, animation2) {
-                  return const PauseDialog();
-                });
-            gameManagerState.resumeTimer();
-            debugPrint('pause timer: ${gameManagerState.getTimer()}');
-          },
-          child: const BLBorderedPanel(
-            child: Icon(
-              FontAwesomeIcons.pause,
-              size: 20,
-            ),
-          ),
-        ),
-        Flexible(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [buildText(true), buildText()],
-          ),
-        ),
-        const SizedBox(
-          width: 10,
-        ),
-        Expanded(child: TimeBox(gameManagerState.getTimer())),
-      ],
-    );
+  void initState() {
+    pauseDialog = ref.read(dialogServiceStateProvider);
+    audio = ref.read(bLAudioStateProvider.notifier);
+    super.initState();
   }
 }

@@ -5,7 +5,7 @@ import 'package:block_logic/logic/firebase_models/room.dart';
 import 'package:block_logic/logic/firebase_providers/selected_user.dart';
 import 'package:block_logic/logic/services/navigation.dart';
 import 'package:block_logic/screens/game/game_room.dart';
-import 'package:block_logic/screens/rooms/rooms.dart';
+import 'package:block_logic/screens/rooms/room_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -26,12 +26,11 @@ class CreatorRoomItem extends ConsumerWidget {
             icon: room.icon ?? '',
             title: room.name ?? '',
             subTitle: hostData?.displayName ?? '',
-            bottomRowStart:
-                BLRoomState((room.password == null) ? 'open' : 'closed'),
+            bottomRowStart: BLRoomState(room.status),
             bottomRowEnd: BLText(
-              '${room.playerCount}/${room.maxPlayers}',
+              '${room.players!.length}/${room.maxPlayers}',
               bold: true,
-              color: room.playerCount == room.maxPlayers
+              color: room.players!.length == room.maxPlayers
                   ? Colors.red
                   : Colors.green,
             ),

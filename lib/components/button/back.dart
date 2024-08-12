@@ -4,16 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class BLBackButton extends ConsumerStatefulWidget {
-  const BLBackButton({super.key});
+class BLBackButton extends ConsumerWidget {
+  final VoidCallback? onPressed;
+  const BLBackButton({this.onPressed, super.key});
 
   @override
-  ConsumerState<BLBackButton> createState() => _BLBackButtonState();
-}
-
-class _BLBackButtonState extends ConsumerState<BLBackButton> {
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final audio = ref.read(bLAudioStateProvider.notifier);
     final nav = ref.read(customNavigationProvider);
     return Padding(
@@ -21,7 +17,11 @@ class _BLBackButtonState extends ConsumerState<BLBackButton> {
       child: IconButton(
           onPressed: () {
             audio.playBtn();
-            nav.pop(context);
+            if (onPressed != null) {
+              onPressed?.call();
+            } else {
+              nav.pop(context);
+            }
           },
           icon: const Icon(
             FontAwesomeIcons.circleArrowLeft,

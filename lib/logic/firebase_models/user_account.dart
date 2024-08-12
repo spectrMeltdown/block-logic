@@ -20,6 +20,7 @@ class UserAccount extends AccountModel {
       createdAt: (data['createdAt'] as Timestamp).toDate(),
       displayName: data['displayName'] ?? '',
       profilePicLink: data['profilePicLink'] ?? '',
+      phoneNum: data['phoneNum'],
     );
   }
   Map<String, dynamic> toFirestore(UserAccount user) {

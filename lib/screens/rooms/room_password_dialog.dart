@@ -1,0 +1,92 @@
+import 'package:block_logic/components/button/button.dart';
+import 'package:block_logic/components/dialog/dialog.dart';
+import 'package:block_logic/components/text/text.dart';
+import 'package:block_logic/components/textbox.dart';
+import 'package:block_logic/components/util/blank_widget.dart';
+import 'package:block_logic/logic/enums.dart';
+import 'package:block_logic/logic/services/navigation.dart';
+import 'package:block_logic/logic/services/room_manager.dart';
+import 'package:block_logic/logic/services/validator_text.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
+class RoomPasswordDialog extends ConsumerStatefulWidget {
+  final String pass;
+  final String hostID;
+
+  const RoomPasswordDialog({
+    required this.pass,
+    required this.hostID,
+    super.key,
+  });
+
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() =>
+      RoomPasswordDialogState();
+}
+
+class RoomPasswordDialogState extends ConsumerState<RoomPasswordDialog> {
+  final passController = TextEditingController();
+  final formKey = GlobalKey<FormState>();
+  Widget msg = const BlankWidget();
+  bool processing = false;
+  @override
+  Widget build(BuildContext context) {
+    final nav = ref.read(customNavigationProvider);
+    final validator = ref.read(textValidatorProvider);
+    final roomManager = ref.read(roomManagerProvider.notifier);
+    return BLDialog(
+        child: Form(
+      key: formKey,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const BLSmallTitle('Room password:'),
+          const SizedBox(height: 10),
+          BLTextBox(
+            validator: (pass) => validator.validatePassword(pass),
+            controller: passController,
+            isObscure: true,
+            prefixIcon: const Icon(FontAwesomeIcons.lock),
+          ),
+          const SizedBox(height: 10),
+          msg,
+          const SizedBox(height: 5),
+          BLButton(
+              onPressed: () async {
+                if (processing) return;
+                processing = true;
+                if (formKey.currentState!.validate()) {
+                  debugPrint(widget.hostID);
+                  final correctInput = await roomManager.validatePassword(
+                      input: passController.text.trim(),
+                      pass: widget.pass,
+                      hostID: widget.hostID);
+                  if (correctInput) {
+                    if (!context.mounted) return;
+                    nav.pop(context, true);
+                  } else {
+                    setState(() {
+                      msg = const BLText(
+                        'Wrong password.',
+                        color: Colors.red,
+                      );
+                    });
+                  }
+                }
+                processing = false;
+              },
+              child: const BLText('Submit')),
+          const SizedBox(height: 10),
+          BLButton(
+              onPressed: () {
+                nav.pop(context, false);
+              },
+              type: BtnType.red,
+              child: const BLText('Back'))
+        ],
+      ),
+    ));
+  }
+}

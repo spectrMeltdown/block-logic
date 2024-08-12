@@ -1,7 +1,7 @@
 import 'package:block_logic/components/background.dart';
-import 'package:block_logic/components/button/back_button.dart';
+import 'package:block_logic/components/button/back.dart';
 import 'package:block_logic/components/button/button.dart';
-import 'package:block_logic/components/panel.dart';
+import 'package:block_logic/components/panel/panel.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/services/assets.dart';

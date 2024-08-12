@@ -1,11 +1,10 @@
 import 'package:block_logic/components/background.dart';
-import 'package:block_logic/components/button/back_button.dart';
-import 'package:block_logic/components/card/card.dart';
+import 'package:block_logic/components/button/back.dart';
+import 'package:block_logic/components/card/tutorial_item.dart';
 import 'package:block_logic/components/text/text.dart';
-import 'package:block_logic/components/util/spaced_col.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/services/navigation.dart';
-import 'package:block_logic/screens/tutorials/classes.dart';
+import 'package:block_logic/screens/tutorials/classes_and_objects.dart';
 import 'package:block_logic/screens/tutorials/conditionals_and_loops.dart';
 import 'package:block_logic/screens/tutorials/data_type_and_literals.dart';
 import 'package:block_logic/screens/tutorials/functions.dart';
@@ -24,70 +23,48 @@ class Tutorials extends ConsumerWidget {
       body: Background(
           child: Column(
         children: [
-          const Row(
-            children: [BLBackButton()],
+          const Align(
+            alignment: Alignment.centerLeft,
+            child: BLBackButton(),
           ),
+          const BLTitle('Tutorials'),
+          const SizedBox(height: 10),
           Expanded(
-              child: SpacedColumn(
-            spacing: 15,
-            children: [
-              const BLTitle('Tutorials'),
-              BLCard(
-                  onPressed: () => nav.push(context, const Variables()),
-                  type: CodeBlockType.variables,
-                  child: const BLText(
-                    'Variables',
-                    size: 23,
-                    color: Colors.white,
-                  )),
-              BLCard(
-                  onPressed: () =>
-                      nav.push(context, const DataTypesAndLiterals()),
-                  type: CodeBlockType.literals,
-                  height: 100,
-                  child: const BLText(
-                    'Data Types & \nLiterals',
-                    size: 23,
-                    color: Colors.white,
-                  )),
-              BLCard(
-                  onPressed: () => nav.push(context, const Functions()),
-                  type: CodeBlockType.functions,
-                  child: const BLText(
-                    'Functions',
-                    size: 23,
-                    color: Colors.white,
-                  )),
-              BLCard(
-                  onPressed: () => nav.push(context, const Classes()),
-                  type: CodeBlockType.classes,
-                  child: const BLText(
-                    'Classes',
-                    size: 23,
-                    color: Colors.white,
-                  )),
-              BLCard(
-                  onPressed: () => nav.push(context, const Operators()),
-                  type: CodeBlockType.operators,
-                  child: const BLText(
-                    'Operators',
-                    size: 23,
-                    color: Colors.white,
-                  )),
-              BLCard(
-                  onPressed: () =>
-                      nav.push(context, const ConditionalsAndLoops()),
-                  type: CodeBlockType.loops,
-                  height: 100,
-                  child: const BLText(
-                    'Conditionals &\nLoops',
-                    size: 23,
-                    color: Colors.white,
-                  )),
-            ],
+              child: ListView.separated(
+            padding: EdgeInsets.zero,
+            itemBuilder: (context, i) {
+              var tutorial = getData(TutorialType.values[i]);
+              return TutorialItem(
+                  onPressed: () => nav.push(context, tutorial[0]),
+                  type: TutorialType.values[i],
+                  childText: tutorial[1]);
+            },
+            itemCount: TutorialType.values.length,
+            separatorBuilder: (context, index) {
+              return const SizedBox(height: 12);
+            },
           )),
         ],
       )),
     );
+  }
+
+  List<dynamic> getData(TutorialType type) {
+    switch (type) {
+      case TutorialType.dataTypesAndliterals:
+        return [const DataTypesAndLiterals(), 'Data Types\n& Literals'];
+      case TutorialType.functions:
+        return [const Functions(), 'Functions'];
+      case TutorialType.conditionalsAndLoops:
+        return [const ConditionalsAndLoops(), 'Conditionals\n& Loops'];
+      case TutorialType.classesAndObjects:
+        return [const ClassesAndObjects(), 'Classes & Objects'];
+      case TutorialType.variables:
+        return [const Variables(), 'Variables'];
+      case TutorialType.operators:
+        return [const Operators(), 'Operators'];
+      case TutorialType.keywords:
+        return [const Placeholder(), 'Keywords'];
+    }
   }
 }

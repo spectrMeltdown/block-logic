@@ -6,7 +6,7 @@ part of '../internet_connection.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$internetStatusHash() => r'159bffb50f213873b13323dd2c099001cf9b0778';
+String _$internetStatusHash() => r'585f700c52a5ac862c34e20a2f4fc13c1f42b9ab';
 
 /// See also [InternetStatus].
 @ProviderFor(InternetStatus)

@@ -12,19 +12,19 @@ class AdminAccount extends AccountModel {
     super.createdAt,
   });
 
-  factory AdminAccount.fromFirestore(dynamic doc) {
+  factory AdminAccount.fromFirestore(DocumentSnapshot doc) {
     Map<String, dynamic> data = {};
     if (doc.data() != null) {
       data = doc.data() as Map<String, dynamic>;
     }
 
     return AdminAccount(
-      id: doc.id,
-      isApproved: data['isApproved'] ?? false,
-      createdAt: (data['createdAt'] as Timestamp).toDate(),
-      displayName: data['displayName'] ?? '',
-      profilePicLink: data['profilePicLink'] ?? '',
-    );
+        id: doc.id,
+        isApproved: data['isApproved'] ?? false,
+        createdAt: (data['createdAt'] as Timestamp).toDate(),
+        displayName: data['displayName'] ?? '',
+        profilePicLink: data['profilePicLink'] ?? '',
+        phoneNum: data['phoneNum']);
   }
 
   Map<String, dynamic> toFirestore(AdminAccount admin) {

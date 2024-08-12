@@ -4,12 +4,11 @@ import 'package:block_logic/components/util/blank_widget.dart';
 import 'package:block_logic/logic/services/assets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:widget_and_text_animator/widget_and_text_animator.dart';
 
 class TopThreePlayers extends ConsumerStatefulWidget {
-  const TopThreePlayers(this.playerPhotoURL, {super.key});
   final List<String> playerPhotoURL;
+  const TopThreePlayers(this.playerPhotoURL, {super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -17,23 +16,16 @@ class TopThreePlayers extends ConsumerStatefulWidget {
 }
 
 class _TopThreePlayersState extends ConsumerState<TopThreePlayers> {
-  final Duration picStartDelay = Duration(milliseconds: 500);
-  final Duration picDelay = Duration(milliseconds: 300);
+  final Duration picStartDelay = const Duration(milliseconds: 500);
+  final Duration picDelay = const Duration(milliseconds: 300);
   late final Duration iconStartDelay;
   late final Duration iconDelay;
-
-  @override
-  void initState() {
-    iconStartDelay = picStartDelay + picDelay + picDelay;
-    iconDelay = picDelay;
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
     final assets = ref.read(assetsProvider);
     if (widget.playerPhotoURL.isEmpty) {
-      return Center(
+      return const Center(
         child: BLText('No players..'),
       );
     }
@@ -42,7 +34,7 @@ class _TopThreePlayersState extends ConsumerState<TopThreePlayers> {
       children: List.generate(widget.playerPhotoURL.length, (i) {
         if (i == 1) {
           return Padding(
-            padding: EdgeInsets.only(bottom: 10),
+            padding: const EdgeInsets.only(bottom: 10),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 5),
               child: Stack(
@@ -78,7 +70,7 @@ class _TopThreePlayersState extends ConsumerState<TopThreePlayers> {
           );
         } else if (i == 0 || i == 2) {
           return Padding(
-            padding: EdgeInsets.only(top: 60),
+            padding: const EdgeInsets.only(top: 60),
             child: Stack(
               clipBehavior: Clip.none,
               children: [
@@ -117,8 +109,15 @@ class _TopThreePlayersState extends ConsumerState<TopThreePlayers> {
           );
         }
         debugPrint('Received an extra $i top player.');
-        return BlankWidget();
+        return const BlankWidget();
       }),
     );
+  }
+
+  @override
+  void initState() {
+    iconStartDelay = picStartDelay + picDelay + picDelay;
+    iconDelay = picDelay;
+    super.initState();
   }
 }

@@ -1,21 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+/// Displays a image in a circular cut.
 class BLCircular extends StatelessWidget {
-  const BLCircular(
-      {this.url,
-      this.asset,
-      this.icon,
-      this.backgroundColor,
-      this.fit = BoxFit.cover,
-      this.iconColor,
-      this.iconSize = 40,
-      this.imgPadding = 3,
-      this.width,
-      this.height,
-      super.key});
   final String? url;
   final String? asset;
   final IconData? icon;
@@ -26,6 +14,18 @@ class BLCircular extends StatelessWidget {
   final double iconSize;
   final double? width;
   final double? height;
+  const BLCircular(
+      {this.url,
+      this.asset,
+      this.icon,
+      this.backgroundColor,
+      this.fit = BoxFit.cover,
+      this.iconColor,
+      this.iconSize = 40,
+      this.imgPadding = 0,
+      this.width,
+      this.height,
+      super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -46,6 +46,15 @@ class BLCircular extends StatelessWidget {
                     ? buildIcon()
                     : buildImage()),
       ),
+    );
+  }
+
+  Widget buildIcon() {
+    if (icon == null) throw (ArgumentError('Icon was null!!'));
+    return Icon(
+      icon,
+      size: iconSize,
+      color: iconColor,
     );
   }
 
@@ -94,15 +103,6 @@ class BLCircular extends StatelessWidget {
         }
         return Icon(Icons.error, color: Colors.white, size: iconSize);
       },
-    );
-  }
-
-  Widget buildIcon() {
-    if (icon == null) throw (ArgumentError('Icon was null!!'));
-    return Icon(
-      icon,
-      size: iconSize,
-      color: iconColor,
     );
   }
 }

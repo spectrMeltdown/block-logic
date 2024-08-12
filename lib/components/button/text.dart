@@ -3,28 +3,28 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class BLTextButton extends ConsumerStatefulWidget {
-  const BLTextButton({required this.onPressed, required this.child, super.key});
   final VoidCallback onPressed;
   final Widget child;
+  const BLTextButton({required this.onPressed, required this.child, super.key});
 
   @override
-  ConsumerState<BLTextButton> createState() => _BtnState();
+  ConsumerState<BLTextButton> createState() => _BLTextButtonState();
 }
 
-class _BtnState extends ConsumerState<BLTextButton> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
+class _BLTextButtonState extends ConsumerState<BLTextButton> {
   @override
   Widget build(BuildContext context) {
     final audio = ref.read(bLAudioStateProvider.notifier);
-    return TextButton(
+    return OutlinedButton(
         onPressed: () {
           audio.playBtn();
           widget.onPressed.call();
         },
         child: widget.child);
+  }
+
+  @override
+  void initState() {
+    super.initState();
   }
 }

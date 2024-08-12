@@ -4,88 +4,33 @@ part 'generated/validator_text.g.dart';
 
 @Riverpod()
 class TextValidator extends _$TextValidator {
+  final _emailRegex = RegExp(
+      r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+"); // follow email format
+
+  final _nameRegex = RegExp(
+      r'^([a-zA-Z\.]+([.-]?[a-zA-Z]+)?(\s|$)){1,10}\.?$'); // no special symbols
+
+  final _maxPlayers = RegExp(r'^(?:[1-9]|1[0-9]|20)$'); // max 20
+
   @override
   TextValidator build() => TextValidator();
 
-  // must have three words,
-  // 1st & 2nd connected by '@',
-  // 2nd & 3rd connected by '.',
-  final _emailRegex = RegExp(
-      r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
-
-  //disallow special chars except for dashes and periods
-  final _nameRegex = RegExp(r'^([a-zA-Z\.]+([.-]?[a-zA-Z]+)?(\s|$)){1,10}\.?$');
-
-  final _maxPlayers = RegExp(r'^(?:[1-9]|1[0-9]|20)$');
-
-  String? validateMaxPlayers(String? maxPlayers) {
-    /// if blank input
-    if (maxPlayers == null || maxPlayers.isEmpty) return 'Cannot be empty';
-
-    /// if matches requirements
-    if (_maxPlayers.hasMatch(maxPlayers)) return null;
-
-    /// if doesn't match requirements
-    return 'Not a valid number';
+  String? validateDisplayName(String? name) {
+    if (name == null || name.isEmpty) return 'Cannot be empty';
+    if (_nameRegex.hasMatch(name)) return null;
+    return 'Not a valid name';
   }
 
-/*
-  r'^
-  (?=.*[A-Z])       // should contain at least one upper case
-  (?=.*[a-z])       // should contain at least one lower case
-  (?=.*?[0-9])      // should contain at least one digit
-  (?=.*?[!@#\$&*~]) // should contain at least one Special character
-  .{8,}             // Must be at least 8 characters in _length  
-  */
-
-// Initialized regexp because recalling can be expensive
-// separated to provide different error text for different missing elements
-  // final _hasUpper = RegExp(r'^(?=.*[A-Z])');
-  // final _hasLower = RegExp(r'^(?=.*[a-z])');
-  // final _hasDigit = RegExp(r'^(?=.*?[0-9])');
-  // final _length = RegExp(r'^.{8,}$');
-
-// bool validateTotalScore(String? score) {
-//   if (score != null) {
-//     /// regex for instructor id
-//     final RegExp totalScoreRegex = RegExp(r'^(?:[5-9]|[1-9]\d|1\d\d|200)$');
-//     bool totalScore = totalScoreRegex.hasMatch(score);
-//     return totalScore;
-//   }
-//   return false;
-// }
-
-// bool validateScore(String? score) {
-//   if (score != null) {
-//     /// regex for instructor id
-//     final RegExp scoreRegex = RegExp(r'^(?:[0-9]|[1-9]\d|1\d\d|200)$');
-//     bool matchScore = scoreRegex.hasMatch(score);
-//     return matchScore;
-//   }
-//   return false;
-// }
-
-// return a string or a null
   String? validateEmail(String? email) {
-    /// if blank input
     if (email == null || email.isEmpty) return 'Cannot be empty';
-
-    /// if matches requirements
     if (_emailRegex.hasMatch(email)) return null;
-
-    /// if doesn't match requirements
     return 'Not a valid email';
   }
 
-  String? validateDisplayName(String? name) {
-    /// if blank imput
-    if (name == null || name.isEmpty) return 'Cannot be empty';
-
-    /// if matches requirements
-    if (_nameRegex.hasMatch(name)) return null;
-
-    /// if doesn't match requirements
-    return 'Not a valid name';
+  String? validateMaxPlayers(String? maxPlayers) {
+    if (maxPlayers == null || maxPlayers.isEmpty) return 'Cannot be empty';
+    if (_maxPlayers.hasMatch(maxPlayers)) return null;
+    return 'Not a valid number';
   }
 
   String? validatePassword(String? pass) {
@@ -101,6 +46,20 @@ class TextValidator extends _$TextValidator {
     //   'length': _length.hasMatch(pass),
     // };
     return null;
+  }
+
+  String? validateRoomName(String? name) {
+    if (name == null || name.isEmpty) return 'Cannot be empty';
+    //if (_emailRegex.hasMatch(email))
+    return null;
+    // return 'Not a valid email';
+  }
+
+  String? validateRoomPass(String? pass) {
+    if (pass == null || pass.isEmpty) return 'Cannot be empty';
+    //if (_emailRegex.hasMatch(email))
+    return null;
+    // return 'Not a valid email';
   }
 //         if (widget.hintText != null && widget.hintText == value) {
 //           return null;

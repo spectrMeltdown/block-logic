@@ -13,17 +13,17 @@ class Toast extends _$Toast {
   @override
   void build() {}
 
+  void dismissAllToast() => toastification.dismissAll(delayForAnimation: false);
+
   void showToast(
-    BuildContext context,
     String title, {
-    NotifType type = NotifType.info,
+    required NotifType type,
     String? description,
     Duration duration = const Duration(seconds: 5),
     double paddingX = 20,
   }) {
     toastification.dismissAll();
     toastification.showCustom(
-        context: context,
         autoCloseDuration: duration,
         alignment: Alignment.topCenter,
         animationBuilder: (context, animation, alignment, child) {
@@ -35,7 +35,7 @@ class Toast extends _$Toast {
         builder: (context, item) {
           return Container(
             alignment: Alignment.topCenter,
-            margin: EdgeInsets.only(top: 30),
+            margin: const EdgeInsets.only(top: 30),
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: paddingX, vertical: 10),
               decoration: BoxDecoration(
@@ -48,11 +48,11 @@ class Toast extends _$Toast {
                   color: _getColor(type),
                   size: 16,
                 );
-                final space = SizedBox(width: 10);
+                const space = SizedBox(width: 10);
                 final textPainter = TextPainter(
                   text: TextSpan(
                       text: title,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 18,
                       )),
                   maxLines: 1,
@@ -129,8 +129,6 @@ class Toast extends _$Toast {
     }
     return withOpacity ? color.withOpacity(0.3) : color;
   }
-
-  void dismissAllToast() => toastification.dismissAll(delayForAnimation: false);
 
   IconData? _getIcon(NotifType type) {
     switch (type) {

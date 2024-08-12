@@ -1,4 +1,5 @@
 import 'package:block_logic/components/background.dart';
+import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_models/challenge.dart';
 import 'package:block_logic/logic/firebase_models/room.dart';
 import 'package:block_logic/logic/services/game_manager.dart';
@@ -20,16 +21,16 @@ class _GameRoomState extends ConsumerState<GameRoom> {
   late GameManagerState gameManagerState;
 
   final testingRoom = Room(
-      started: true,
-      ended: false,
-      id: 'id',
-      icon: 'icon',
-      hostID: 'hostID',
-      challengeIDs: [],
-      name: 'Willow\'s Room',
-      password: 'password',
-      playerCount: 2,
-      maxPlayers: 5);
+    id: 'id',
+    icon: 'icon',
+    hostID: 'hostID',
+    challengeIDs: [],
+    name: 'Willow\'s Room',
+    password: 'password',
+    players: [],
+    maxPlayers: 5,
+    status: RoomStatus.available,
+  );
 
   final testingChallenges = [
     Challenge(

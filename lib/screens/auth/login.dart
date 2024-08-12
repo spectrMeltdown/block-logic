@@ -1,11 +1,10 @@
 import 'package:block_logic/components/background.dart';
-import 'package:block_logic/components/button/back_button.dart';
+import 'package:block_logic/components/button/back.dart';
 import 'package:block_logic/components/button/button.dart';
-import 'package:block_logic/components/button/text_button.dart';
-import 'package:block_logic/components/panel.dart';
+import 'package:block_logic/components/button/text.dart';
+import 'package:block_logic/components/panel/panel.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/textbox.dart';
-import 'package:block_logic/components/util/provider_default.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_providers/account_settings.dart';
 import 'package:block_logic/logic/services/auth.dart';
@@ -13,13 +12,13 @@ import 'package:block_logic/logic/services/login_alert.dart';
 import 'package:block_logic/logic/services/navigation.dart';
 import 'package:block_logic/logic/services/toast.dart';
 import 'package:block_logic/logic/services/validator_text.dart';
+import 'package:block_logic/route_observer.dart';
 import 'package:block_logic/screens/auth/forgot_password.dart';
 import 'package:block_logic/screens/auth/signup.dart';
 import 'package:block_logic/screens/main_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:toastification/toastification.dart';
 
 class Login extends ConsumerStatefulWidget {
   const Login({super.key});
@@ -28,10 +27,11 @@ class Login extends ConsumerStatefulWidget {
   ConsumerState<Login> createState() => _LoginState();
 }
 
-class _LoginState extends ConsumerState<Login> {
+class _LoginState extends ConsumerState<Login> with RouteAware {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final _loginFormKey = GlobalKey<FormState>();
+  late Toast toast;
   bool processing = false;
 
   @override
@@ -39,8 +39,8 @@ class _LoginState extends ConsumerState<Login> {
     final validator = ref.read(textValidatorProvider);
     final nav = ref.read(customNavigationProvider);
     final auth = ref.read(authServiceProvider.notifier);
-    final toast = ref.read(toastProvider.notifier);
-    final settings = ref.read(SettingsProvider(FirestoreCollections.users));
+    final settings =
+        ref.read(SettingsProvider(FirestoreCollections.users).future);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Background(
@@ -126,36 +126,28 @@ class _LoginState extends ConsumerState<Login> {
                                 processing = true;
                                 if (_loginFormKey.currentState!.validate()) {
                                   //toast.dismissAllToast();
-                                  toast.showToast(
-                                    context,
-                                    'Logging in',
-                                  );
+                                  toast.showToast('Logging in',
+                                      type: NotifType.info);
                                   final error = await auth.login(
                                       email: emailController.text.trim(),
                                       password: passwordController.text.trim());
                                   if (error == null) {
-                                    settings.when(
-                                        data: (settings) async {
-                                          final loginAlert = ref.read(
-                                              LoginAlertProvider(settings)
-                                                  .notifier);
-                                          final result =
-                                              await loginAlert.send();
-                                          if (result != null) {
-                                            if (!context.mounted) return;
-                                            toast.showToast(context, result);
-                                          }
-                                          if (!context.mounted) return;
-                                          toast.ref.invalidateSelf();
-                                          nav.pushReplace(
-                                              context, const MainMenuScreen());
-                                        },
-                                        error: blankError,
-                                        loading: blankLoading);
+                                    final awaitedSettings = await settings;
+                                    final loginAlert = ref.read(
+                                        LoginAlertProvider(awaitedSettings)
+                                            .notifier);
+                                    final result = await loginAlert.send();
+                                    if (result != null) {
+                                      if (!context.mounted) return;
+                                      toast.showToast(result,
+                                          type: NotifType.error);
+                                    }
+                                    if (!context.mounted) return;
+                                    nav.pushReplace(
+                                        context, const MainMenuScreen());
                                   } else {
                                     if (!context.mounted) return;
                                     toast.showToast(
-                                      context,
                                       error,
                                       type: NotifType.error,
                                     );
@@ -189,5 +181,29 @@ class _LoginState extends ConsumerState<Login> {
         ],
       )),
     );
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    routeObserver.subscribe(this, ModalRoute.of(context) as PageRoute);
+  }
+
+  @override
+  void didPopNext() {
+    toast.dismissAllToast();
+    super.didPop();
+  }
+
+  @override
+  void didPushNext() {
+    toast.dismissAllToast();
+    super.didPushNext();
+  }
+
+  @override
+  void initState() {
+    toast = ref.read(toastProvider.notifier);
+    super.initState();
   }
 }

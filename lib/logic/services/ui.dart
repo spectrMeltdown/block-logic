@@ -1,8 +1,19 @@
+// ignore_for_file: avoid_build_context_in_providers
 import 'package:block_logic/logic/enums.dart';
 import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'generated/ui.g.dart';
+
+class BlockColors {
+  Color variables = const Color(0xFFA77D00);
+  Color literals = const Color(0xFFEB3223);
+  Color condLoops = const Color(0xFF37225C);
+  Color functions = const Color(0xFFAC6363);
+  Color classes = const Color(0xFF347E77);
+  Color operators = const Color(0xFF2C612E);
+  Color keywords = const Color.fromARGB(255, 221, 221, 221);
+}
 
 @Riverpod()
 class BLUI extends _$BLUI {
@@ -40,21 +51,56 @@ class BLUI extends _$BLUI {
         return blockColors.functions;
       case CodeBlockType.classes || CodeBlockType.objects:
         return blockColors.classes;
-      case CodeBlockType.variables || CodeBlockType.keyword:
+      case CodeBlockType.variables:
         return blockColors.variables;
       case CodeBlockType.operators:
         return blockColors.operators;
+      case CodeBlockType.keyword:
+        return blockColors.keywords;
       case null:
         return Colors.white;
     }
   }
-}
 
-class BlockColors {
-  Color variables = const Color(0xFFA77D00);
-  Color literals = const Color(0xFFEB3223);
-  Color condLoops = const Color(0xFF37225C);
-  Color functions = const Color(0xFFAC6363);
-  Color classes = const Color(0xFF347E77);
-  Color operators = const Color(0xFF2C612E);
+  Color getBtnColor(BtnType type) {
+    switch (type) {
+      case BtnType.normal:
+        return Colors.blue;
+      case BtnType.green:
+        return Colors.green;
+      case BtnType.red:
+        return Colors.red;
+    }
+  }
+
+// get gradient radius based on width provided
+  double getRadius(BuildContext context, double width) {
+    const double defaultRadius = 2;
+    if (width >= MediaQuery.of(context).size.width / 2) {
+      return defaultRadius + 2;
+    }
+    return defaultRadius;
+  }
+
+  Color getTutorialColor(TutorialType? type) {
+    final blockColors = BlockColors();
+    switch (type) {
+      case TutorialType.dataTypesAndliterals:
+        return blockColors.literals;
+      case TutorialType.conditionalsAndLoops:
+        return blockColors.condLoops;
+      case TutorialType.functions:
+        return blockColors.functions;
+      case TutorialType.classesAndObjects:
+        return blockColors.classes;
+      case TutorialType.variables:
+        return blockColors.variables;
+      case TutorialType.operators:
+        return blockColors.operators;
+      case TutorialType.keywords:
+        return blockColors.keywords;
+      case null:
+        return Colors.white;
+    }
+  }
 }

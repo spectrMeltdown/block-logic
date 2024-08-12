@@ -1,4 +1,4 @@
-import 'package:block_logic/components/panel.dart';
+import 'package:block_logic/components/panel/bordered.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/game/block_data.dart';
 import 'package:block_logic/logic/services/game_manager.dart';
@@ -11,8 +11,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class GameBlocks extends ConsumerStatefulWidget {
-  const GameBlocks(this.blocks, {super.key});
   final Map<CodeBlockType, List<GameBlockData>> blocks;
+  const GameBlocks(this.blocks, {super.key});
 
   @override
   ConsumerState<GameBlocks> createState() => _GameBlocksState();
@@ -29,26 +29,6 @@ class _GameBlocksState extends ConsumerState<GameBlocks>
     return firstLetter + name.substring(1, name.length);
   });
   late Map<CodeBlockType, List<GameBlockData>> blocks;
-  @override
-  void initState() {
-    gameManagerState = ref.read(gameManagerStateProvider.notifier);
-    // TODO: get Map<CodeBlockType[], List<GameBlockData>> from challenge data
-    blocks = AllBlocks.getAllBlocks();
-    blocksTabList.remove('FunctionDefinition');
-    blocksTabController =
-        TabController(length: blocksTabList.length, vsync: this);
-    blocksTabController.addListener(() {
-      setState(() {});
-    });
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    blocksTabController.dispose();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
@@ -102,5 +82,25 @@ class _GameBlocksState extends ConsumerState<GameBlocks>
         )
       ],
     );
+  }
+
+  @override
+  void dispose() {
+    blocksTabController.dispose();
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    gameManagerState = ref.read(gameManagerStateProvider.notifier);
+    // TODO: get Map<CodeBlockType[], List<GameBlockData>> from challenge data
+    blocks = AllBlocks.getAllBlocks();
+    blocksTabList.remove('FunctionDefinition');
+    blocksTabController =
+        TabController(length: blocksTabList.length, vsync: this);
+    blocksTabController.addListener(() {
+      setState(() {});
+    });
+    super.initState();
   }
 }

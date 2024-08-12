@@ -3,6 +3,24 @@ import 'package:block_logic/logic/services/ui.dart';
 import 'package:flutter/material.dart';
 
 class BLTextBox extends StatefulWidget {
+  final int? maxLength;
+  final int maxLines;
+  final String? helperText;
+  final String? validatorText;
+  final bool isAutoFocus;
+  final AutovalidateMode? isAutoValidate;
+  final bool? enabled;
+  final Widget? prefixIcon;
+  final Widget? suffixIcon;
+  final TextEditingController? controller;
+  final VoidCallback? onTap;
+  final String? labelText;
+  final bool isObscure;
+  final String? Function(String?)? validator;
+  //final Widget? error;
+  final String? hintText;
+  final InputBorder? border;
+  final TextInputType? keyboardType;
   const BLTextBox(
       {required this.controller,
       this.helperText,
@@ -23,24 +41,6 @@ class BLTextBox extends StatefulWidget {
       this.maxLength,
       this.maxLines = 1,
       super.key});
-  final int? maxLength;
-  final int maxLines;
-  final String? helperText;
-  final String? validatorText;
-  final bool isAutoFocus;
-  final AutovalidateMode? isAutoValidate;
-  final bool? enabled;
-  final Widget? prefixIcon;
-  final Widget? suffixIcon;
-  final TextEditingController? controller;
-  final VoidCallback? onTap;
-  final String? labelText;
-  final bool isObscure;
-  final String? Function(String?)? validator;
-  //final Widget? error;
-  final String? hintText;
-  final InputBorder? border;
-  final TextInputType? keyboardType;
 
   @override
   State<BLTextBox> createState() => _BLInputState();
@@ -50,20 +50,6 @@ class _BLInputState extends State<BLTextBox> {
   late bool showPass;
   String? helperText;
   FocusNode focusNode = FocusNode();
-  @override
-  void initState() {
-    super.initState();
-    showPass = widget.isObscure;
-    focusNode.addListener(() {
-      if (focusNode.hasFocus) {
-        helperText = widget.helperText;
-      } else {
-        helperText = null;
-      }
-      setState(() {});
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return TextFormField(
@@ -77,6 +63,8 @@ class _BLInputState extends State<BLTextBox> {
       controller: widget.controller,
       obscureText: showPass,
       keyboardType: widget.keyboardType,
+      cursorColor: Colors.white,
+      cursorErrorColor: Colors.amber,
       decoration: InputDecoration(
           hintText: widget.hintText,
           hintStyle:
@@ -86,6 +74,9 @@ class _BLInputState extends State<BLTextBox> {
           floatingLabelBehavior: FloatingLabelBehavior
               .never, // when the placeholder animates to the top portion
           helperText: helperText,
+          enabledBorder: const OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.grey, width: 1),
+          ),
           filled: true,
           fillColor: Colors.teal.shade900.withAlpha(200),
           // error: widget.error,
@@ -130,5 +121,19 @@ class _BLInputState extends State<BLTextBox> {
           labelText: widget.labelText),
       validator: widget.validator,
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    showPass = widget.isObscure;
+    focusNode.addListener(() {
+      if (focusNode.hasFocus) {
+        helperText = widget.helperText;
+      } else {
+        helperText = null;
+      }
+      setState(() {});
+    });
   }
 }

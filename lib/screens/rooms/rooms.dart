@@ -1,7 +1,7 @@
 import 'package:block_logic/components/background.dart';
-import 'package:block_logic/components/button/back_button.dart';
-import 'package:block_logic/components/dialog/help_dialog.dart';
-import 'package:block_logic/components/panel.dart';
+import 'package:block_logic/components/button/back.dart';
+import 'package:block_logic/components/dialog/help.dart';
+import 'package:block_logic/components/panel/bordered.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/textbox.dart';
 import 'package:block_logic/logic/services/ui.dart';
@@ -22,12 +22,7 @@ class _RoomSelectorState extends ConsumerState<RoomSelector>
     with TickerProviderStateMixin {
   late final TabController tabController;
   final searchController = TextEditingController();
-
-  @override
-  void initState() {
-    tabController = TabController(length: 2, vsync: this);
-    super.initState();
-  }
+  String searchQuery = '';
 
   @override
   Widget build(BuildContext context) {
@@ -95,7 +90,10 @@ class _RoomSelectorState extends ConsumerState<RoomSelector>
                           clipBehavior: Clip.antiAlias,
                           physics: const NeverScrollableScrollPhysics(),
                           controller: tabController,
-                          children: const [PublicRooms(), UserRooms()]),
+                          children: [
+                            PublicRooms(searchQuery: searchQuery),
+                            const UserRooms()
+                          ]),
                     )
                   ],
                 ),
@@ -106,27 +104,15 @@ class _RoomSelectorState extends ConsumerState<RoomSelector>
       )),
     );
   }
-}
-
-class BLRoomState extends StatelessWidget {
-  const BLRoomState(this.roomState, {super.key});
-  final String roomState;
 
   @override
-  Widget build(BuildContext context) {
-    switch (roomState.toLowerCase()) {
-      case 'open':
-        return BLText(
-          '• Open for all',
-          color: BLUI().getAppColor('lightgreen'),
-        );
-      case 'password':
-        return BLText(
-          '• Password-protected',
-          color: BLUI().getAppColor('amber'),
-        );
-    }
-    //debugPrint('undefined room');
-    return const BLText('');
+  void initState() {
+    tabController = TabController(length: 2, vsync: this);
+    searchController.addListener(() {
+      setState(() {
+        searchQuery = searchController.text.trim();
+      });
+    });
+    super.initState();
   }
 }

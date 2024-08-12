@@ -18,7 +18,13 @@ class PauseDialog extends ConsumerWidget {
       children: [
         const BLSmallTitle('PAUSE'),
         BLButton(
-            onPressed: () {}, type: BtnType.red, child: const BLText('Exit')),
+            // TODO: update this later with room exit logic
+            onPressed: () async {
+              nav.pop(context);
+              nav.pop(context);
+            },
+            type: BtnType.red,
+            child: const BLText('Exit')),
         const SizedBox(height: 10),
         BLButton(
             onPressed: () => nav.pop(context),

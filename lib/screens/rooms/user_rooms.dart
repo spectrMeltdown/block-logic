@@ -1,16 +1,16 @@
 import 'package:block_logic/components/card/card_translucent.dart';
 import 'package:block_logic/components/text/text.dart';
-import 'package:block_logic/components/util/blank_widget.dart';
 import 'package:block_logic/components/util/provider_default.dart';
 import 'package:block_logic/logic/firebase_providers/leaderboard_selected.dart';
 import 'package:block_logic/logic/firebase_providers/selected_rooms.dart';
 import 'package:block_logic/logic/services/auth.dart';
-import 'package:block_logic/screens/rooms/rooms.dart';
+import 'package:block_logic/screens/rooms/room_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class UserRooms extends ConsumerStatefulWidget {
-  const UserRooms({super.key});
+  final String? searchQuery;
+  const UserRooms({this.searchQuery, super.key});
 
   @override
   ConsumerState<UserRooms> createState() => _UserRoomsState();
@@ -54,15 +54,14 @@ class _UserRoomsState extends ConsumerState<UserRooms> {
                 },
                 icon: rooms[i].icon ?? '',
                 title: rooms[i].name ?? 'Loading ...',
-                subTitle: getLeaderboard(rooms[i].id),
-                bottomRowStart: BLRoomState(
-                    (rooms[i].password == null) ? 'open' : 'closed'),
+                subTitle: getLeaderboard(rooms[i].id!),
+                bottomRowStart: BLRoomState(rooms[i].status),
                 bottomRowEnd: BLText('${rooms[i].maxPlayers} players'),
               );
             });
       },
-      error: (error, stackTrace) => const BlankWidget(),
-      loading: () => const BlankWidget(),
+      error: genericError,
+      loading: genericLoading,
     );
   }
 }

@@ -4,22 +4,13 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'generated/dialog.g.dart';
 
-// had a problem with riverpod, so I just made this a class even though it doesn't hold state
-@riverpod
-class DialogServiceState extends _$DialogServiceState {
-  @override
-  DialogService build() {
-    return DialogService();
-  }
-}
-
 class DialogService {
-  Future<Object> show(
+  Future<Object?> show(
     BuildContext context,
     Widget dialog, {
     bool barrierDismissable = false,
   }) async {
-    return showGeneralDialog(
+    final result = await showGeneralDialog(
         context: context,
         barrierDismissible: barrierDismissable,
         transitionDuration: const Duration(milliseconds: 500),
@@ -47,5 +38,15 @@ class DialogService {
         pageBuilder: (context, animation1, animation2) {
           return dialog;
         });
+    return result;
+  }
+}
+
+// had a problem with riverpod, so I just made this a class even though it doesn't hold state
+@riverpod
+class DialogServiceState extends _$DialogServiceState {
+  @override
+  DialogService build() {
+    return DialogService();
   }
 }

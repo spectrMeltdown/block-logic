@@ -1,4 +1,4 @@
-import 'package:block_logic/components/panel.dart';
+import 'package:block_logic/components/panel/panel.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/logic/firebase_models/challenge.dart';
 import 'package:block_logic/logic/services/dialog.dart';

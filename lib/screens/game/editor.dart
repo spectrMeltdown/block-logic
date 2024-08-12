@@ -1,4 +1,4 @@
-import 'package:block_logic/components/panel.dart';
+import 'package:block_logic/components/panel/bordered.dart';
 import 'package:block_logic/screens/game/custom_add_tab.dart';
 import 'package:block_logic/screens/game/custom_tab.dart';
 import 'package:block_logic/screens/game/editor_view.dart';
@@ -17,32 +17,6 @@ class _EditorState extends ConsumerState<Editor> with TickerProviderStateMixin {
   List<String> mainTabList = [];
   List<Widget> mainTabViewList = [];
   final editorWidgetKey = GlobalKey();
-  @override
-  void initState() {
-    mainTabList = ['Main'];
-    mainTabViewList = [EditorView(editorWidgetKey: editorWidgetKey)];
-    mainTabController =
-        TabController(length: mainTabList.length + 1, vsync: this);
-
-    mainTabController.addListener(() {
-      setState(() {});
-    });
-    super.initState();
-  }
-
-  Widget buildTab(String tabName, int tabNum, int selectedIndex) {
-    return CustomTab(
-      title: tabNum == 0 ? 'Main' : tabName,
-      isSelected: selectedIndex == tabNum,
-    );
-  }
-
-  Widget buildTabView() {
-    return EditorView(
-      editorWidgetKey: editorWidgetKey,
-    );
-  }
-
   void addNew() {
     /// add the new tab
     mainTabList.add('New ${mainTabList.length + 1}');
@@ -53,20 +27,6 @@ class _EditorState extends ConsumerState<Editor> with TickerProviderStateMixin {
         vsync: this,
         initialIndex: mainTabList.length - 1);
     setState(() {});
-  }
-
-  void disableForAddTab(int index) {
-    /// if add tab was tapped, move back to previousIndex
-    mainTabController.index = index == mainTabController.length
-        ? mainTabController.previousIndex
-        : index;
-    setState(() {});
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    mainTabController.dispose();
   }
 
   @override
@@ -127,5 +87,45 @@ class _EditorState extends ConsumerState<Editor> with TickerProviderStateMixin {
         ],
       ),
     );
+  }
+
+  Widget buildTab(String tabName, int tabNum, int selectedIndex) {
+    return CustomTab(
+      title: tabNum == 0 ? 'Main' : tabName,
+      isSelected: selectedIndex == tabNum,
+    );
+  }
+
+  Widget buildTabView() {
+    return EditorView(
+      editorWidgetKey: editorWidgetKey,
+    );
+  }
+
+  void disableForAddTab(int index) {
+    /// if add tab was tapped, move back to previousIndex
+    mainTabController.index = index == mainTabController.length
+        ? mainTabController.previousIndex
+        : index;
+    setState(() {});
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    mainTabController.dispose();
+  }
+
+  @override
+  void initState() {
+    mainTabList = ['Main'];
+    mainTabViewList = [EditorView(editorWidgetKey: editorWidgetKey)];
+    mainTabController =
+        TabController(length: mainTabList.length + 1, vsync: this);
+
+    mainTabController.addListener(() {
+      setState(() {});
+    });
+    super.initState();
   }
 }

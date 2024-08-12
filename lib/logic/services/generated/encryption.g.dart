@@ -6,12 +6,12 @@ part of '../encryption.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$encryptionHash() => r'dfc1cf28af1c173b4f37063679d804b7a1e3ff33';
+String _$encryptionHash() => r'19305254e4e0df833fb563e4c6851d84d97593ae';
 
 /// See also [Encryption].
 @ProviderFor(Encryption)
 final encryptionProvider =
-    AutoDisposeNotifierProvider<Encryption, Encryption>.internal(
+    AutoDisposeNotifierProvider<Encryption, void>.internal(
   Encryption.new,
   name: r'encryptionProvider',
   debugGetCreateSourceHash:
@@ -20,6 +20,6 @@ final encryptionProvider =
   allTransitiveDependencies: null,
 );
 
-typedef _$Encryption = AutoDisposeNotifier<Encryption>;
+typedef _$Encryption = AutoDisposeNotifier<void>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

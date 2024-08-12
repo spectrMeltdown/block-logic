@@ -1,3 +1,5 @@
+// TODO: compare to other providers later when using it
+
 // import 'package:cloud_firestore/cloud_firestore.dart';
 
 // class Notification {

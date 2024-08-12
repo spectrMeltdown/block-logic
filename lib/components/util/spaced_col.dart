@@ -2,10 +2,15 @@ import 'package:flutter/material.dart';
 
 /// For a column with spacing
 class SpacedColumn extends StatelessWidget {
-  const SpacedColumn(
-      {super.key, required this.spacing, required this.children});
   final double spacing;
   final List<Widget> children;
+  final MainAxisSize mainAxisSize;
+  const SpacedColumn({
+    super.key,
+    required this.spacing,
+    required this.children,
+    this.mainAxisSize = MainAxisSize.max,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -17,6 +22,6 @@ class SpacedColumn extends StatelessWidget {
         spacedChildren.add(SizedBox(height: spacing));
       }
     }
-    return Column(children: spacedChildren);
+    return Column(mainAxisSize: mainAxisSize, children: spacedChildren);
   }
 }

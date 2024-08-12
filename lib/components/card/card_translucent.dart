@@ -1,4 +1,3 @@
-import 'package:block_logic/components/circular_image.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/util/blank_widget.dart';
 import 'package:block_logic/logic/services/audio.dart';
@@ -8,18 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class BLTranslucentCard extends ConsumerStatefulWidget {
-  const BLTranslucentCard({
-    super.key,
-    required this.onPressed,
-    this.height,
-    this.padding,
-    this.color,
-    required this.icon,
-    required this.title,
-    this.subTitle = '',
-    this.bottomRowStart,
-    this.bottomRowEnd,
-  });
   final VoidCallback onPressed;
   final String icon;
   final String title;
@@ -29,6 +16,20 @@ class BLTranslucentCard extends ConsumerStatefulWidget {
   final EdgeInsets? padding;
   final double? height;
   final Color? color;
+  final bool? hasPass;
+  const BLTranslucentCard({
+    super.key,
+    required this.onPressed,
+    this.height,
+    this.padding,
+    this.color,
+    this.hasPass,
+    required this.icon,
+    required this.title,
+    this.subTitle = '',
+    this.bottomRowStart,
+    this.bottomRowEnd,
+  });
 
   @override
   ConsumerState<BLTranslucentCard> createState() => _BLCardState();
@@ -38,7 +39,6 @@ class _BLCardState extends ConsumerState<BLTranslucentCard> {
   bool _isTapped = false;
   late final List<Color> cardColorPressed;
   late final List<Color> cardColor;
-  final Color darkerShade = Colors.blueGrey.shade900;
   final Color darkShade = Colors.blueGrey.shade800;
   final List<BoxShadow> cardShadow = [
     BoxShadow(
@@ -47,43 +47,6 @@ class _BLCardState extends ConsumerState<BLTranslucentCard> {
       blurRadius: 20,
     ),
   ];
-
-  @override
-  void initState() {
-    cardColor = [Colors.grey.withOpacity(0.5), darkShade];
-    cardColorPressed = [Colors.grey.brighten(0.2), darkShade];
-    super.initState();
-  }
-
-  void _onTapUp(TapUpDetails tapUp) {
-    setState(() {
-      _isTapped = false;
-    });
-    widget.onPressed.call();
-  }
-
-  void _onTapDown() {
-    setState(() {
-      _isTapped = true;
-    });
-  }
-
-  void _onTapCancel() {
-    setState(() {
-      _isTapped = false;
-    });
-  }
-
-// get gradient radius based on padding provided
-  double getRadius(EdgeInsets? padding) {
-    double defaultRadius = 2;
-    if (padding == null) return defaultRadius;
-    if (padding.left >= 40 || padding.right >= 40) {
-      return 3;
-    } else {
-      return defaultRadius;
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -123,15 +86,7 @@ class _BLCardState extends ConsumerState<BLTranslucentCard> {
                         radius: (widget.padding != null)
                             ? getRadius(widget.padding)
                             : 5),
-                    boxShadow: (_isTapped
-                        ? cardShadow
-                        : [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.8),
-                              spreadRadius: -20,
-                              blurRadius: 10,
-                            )
-                          ]),
+                    boxShadow: (_isTapped ? cardShadow : null),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -141,12 +96,24 @@ class _BLCardState extends ConsumerState<BLTranslucentCard> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   BLText(
                                     widget.title,
                                     color: BLUI().getAppColor('amber'),
                                     bold: true,
-                                  )
+                                    size: 18,
+                                  ),
+                                  const SizedBox(
+                                    width: 10,
+                                  ),
+                                  widget.hasPass == null
+                                      ? const BlankWidget()
+                                      : widget.hasPass ?? false
+                                          ? const Icon(
+                                              Icons.lock_outline_rounded)
+                                          : const BlankWidget()
                                 ],
                               ),
                               Row(
@@ -154,7 +121,7 @@ class _BLCardState extends ConsumerState<BLTranslucentCard> {
                                   BLText(
                                     widget.subTitle,
                                     color: BLUI().getAppColor(''),
-                                    size: 17,
+                                    size: 16,
                                   )
                                 ],
                               ),
@@ -173,5 +140,42 @@ class _BLCardState extends ConsumerState<BLTranslucentCard> {
                 )),
       ),
     );
+  }
+
+  // get gradient radius based on padding provided
+  double getRadius(EdgeInsets? padding) {
+    double defaultRadius = 2;
+    if (padding == null) return defaultRadius;
+    if (padding.left >= 40 || padding.right >= 40) {
+      return 3;
+    } else {
+      return defaultRadius;
+    }
+  }
+
+  @override
+  void initState() {
+    cardColor = [Colors.grey.withOpacity(0.5), darkShade];
+    cardColorPressed = [Colors.grey.brighten(0.2), darkShade];
+    super.initState();
+  }
+
+  void _onTapCancel() {
+    setState(() {
+      _isTapped = false;
+    });
+  }
+
+  void _onTapDown() {
+    setState(() {
+      _isTapped = true;
+    });
+  }
+
+  void _onTapUp(TapUpDetails tapUp) {
+    setState(() {
+      _isTapped = false;
+    });
+    widget.onPressed.call();
   }
 }

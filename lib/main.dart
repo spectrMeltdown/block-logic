@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:block_logic/logic/services/audio.dart';
 import 'package:block_logic/logic/services/internet_connection.dart';
 import 'package:block_logic/logic/services/shared_pref.dart';
+import 'package:block_logic/route_observer.dart';
 import 'package:block_logic/screens/auth/check_acc.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flame/flame.dart';
@@ -10,6 +11,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:toastification/toastification.dart';
 
 import 'firebase_options.dart';
 
@@ -105,22 +107,25 @@ class BlockLogic extends ConsumerWidget {
       ),
     );
     //final navigatorKey = GlobalKey<NavigatorState>();
-    return MaterialApp(
-        title: 'Block-Logic',
-        debugShowCheckedModeBanner: false,
-        //navigatorKey: navigatorKey,
-        // builder: (context, child) {
-        //   // Wrap with toast.
-        //   child = Toast(navigatorKey: navigatorKey, child: child!);
-        //   return child;
-        // },
-        theme: appTheme
-        // .copyWith(
-        //   materialTapTargetSize: MaterialTapTargetSize.padded,
-        //   extensions: [const FlashToastTheme(), const FlashBarTheme()],
-        // )
-        ,
-        darkTheme: appTheme,
-        home: const CheckAcc());
+    return ToastificationWrapper(
+      child: MaterialApp(
+          title: 'Block-Logic',
+          navigatorObservers: [routeObserver],
+          debugShowCheckedModeBanner: false,
+          //navigatorKey: navigatorKey,
+          // builder: (context, child) {
+          //   // Wrap with toast.
+          //   child = Toast(navigatorKey: navigatorKey, child: child!);
+          //   return child;
+          // },
+          theme: appTheme
+          // .copyWith(
+          //   materialTapTargetSize: MaterialTapTargetSize.padded,
+          //   extensions: [const FlashToastTheme(), const FlashBarTheme()],
+          // )
+          ,
+          darkTheme: appTheme,
+          home: const CheckAcc()),
+    );
   }
 }

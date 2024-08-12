@@ -1,16 +1,15 @@
 import 'package:block_logic/components/button/button.dart';
+import 'package:block_logic/components/button/toggle.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/textbox.dart';
-import 'package:block_logic/components/button/toggle.dart';
 import 'package:block_logic/components/util/blank_widget.dart';
 import 'package:block_logic/components/util/provider_default.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_models/challenge.dart';
-import 'package:block_logic/logic/firebase_providers/selected_rooms.dart';
 import 'package:block_logic/logic/firebase_providers/selected_room_names.dart';
+import 'package:block_logic/logic/firebase_providers/selected_rooms.dart';
 import 'package:block_logic/logic/services/creator_mode.dart';
 import 'package:block_logic/logic/services/navigation.dart';
-import 'package:block_logic/logic/services/toast.dart';
 import 'package:block_logic/logic/services/validator_text.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -43,7 +42,6 @@ class _AddRoomBottomSheetState extends ConsumerState<AddRoomBottomSheet> {
     final textValidator = ref.read(textValidatorProvider);
     final creatorMode = ref.read(creatorModeProvider.notifier);
     final nav = ref.read(customNavigationProvider);
-    final toast = ref.read(toastProvider.notifier);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 30),
@@ -77,6 +75,8 @@ class _AddRoomBottomSheetState extends ConsumerState<AddRoomBottomSheet> {
                                   labelText: 'My room',
                                   controller: roomNameController,
                                   maxLength: 100,
+                                  validator: (roomName) =>
+                                      textValidator.validateRoomName(roomName),
                                 ),
                               ),
                             ),
@@ -90,6 +90,8 @@ class _AddRoomBottomSheetState extends ConsumerState<AddRoomBottomSheet> {
                                   ),
                                   labelText: '10',
                                   controller: maxPlayersController,
+                                  validator: (maxPlayers) => textValidator
+                                      .validateMaxPlayers(maxPlayers),
                                 ),
                               ),
                             ),
@@ -123,6 +125,8 @@ class _AddRoomBottomSheetState extends ConsumerState<AddRoomBottomSheet> {
                                       labelText: '*****',
                                       controller: passwordController,
                                       isObscure: true,
+                                      validator: (pass) =>
+                                          textValidator.validateRoomPass(pass),
                                     ),
                                   ),
                                 ),
