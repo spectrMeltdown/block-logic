@@ -21,7 +21,7 @@ class GameBlocks extends ConsumerStatefulWidget {
 class _GameBlocksState extends ConsumerState<GameBlocks>
     with TickerProviderStateMixin {
   late TabController blocksTabController;
-  late GameManagerState gameManagerState;
+  late GameManager gameManager;
   List<String> blocksTabList =
       List.generate(CodeBlockType.values.length, (index) {
     final name = CodeBlockType.values[index].name;
@@ -32,7 +32,7 @@ class _GameBlocksState extends ConsumerState<GameBlocks>
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
-    ref.watch(gameManagerStateProvider);
+    ref.watch(gameManagerProvider);
     return Column(
       children: [
         Padding(
@@ -92,7 +92,7 @@ class _GameBlocksState extends ConsumerState<GameBlocks>
 
   @override
   void initState() {
-    gameManagerState = ref.read(gameManagerStateProvider.notifier);
+    gameManager = ref.read(gameManagerProvider.notifier);
     // TODO: get Map<CodeBlockType[], List<GameBlockData>> from challenge data
     blocks = AllBlocks.getAllBlocks();
     blocksTabList.remove('FunctionDefinition');

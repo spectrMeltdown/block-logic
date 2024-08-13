@@ -5,7 +5,7 @@ class Leaderboard {
   final String? id;
   final String? roomID;
   final DateTime? dateCreated;
-  final int? totalScore;
+  final int? totalScore; // refers to num of challenges
   final LeaderboardStatus? status;
   Leaderboard({
     required this.id,
@@ -40,7 +40,8 @@ class Leaderboard {
   Map<String, dynamic> toFirestore(Leaderboard leaderboard) {
     Map<String, dynamic> toFirestoreMap = {};
     if (leaderboard.dateCreated != null) {
-      toFirestoreMap.addAll({'dateCreated': leaderboard.dateCreated});
+      toFirestoreMap.addAll(
+          {'dateCreated': Timestamp.fromDate(leaderboard.dateCreated!)});
     }
     if (leaderboard.roomID != null) {
       toFirestoreMap.addAll({'roomID': leaderboard.roomID});

@@ -2,7 +2,7 @@ import 'package:block_logic/components/background.dart';
 import 'package:block_logic/components/button/back.dart';
 import 'package:block_logic/components/dialog/help.dart';
 import 'package:block_logic/components/panel/bordered.dart';
-import 'package:block_logic/components/text/text.dart';
+import 'package:block_logic/components/text/title.dart';
 import 'package:block_logic/components/textbox.dart';
 import 'package:block_logic/logic/services/ui.dart';
 import 'package:block_logic/screens/rooms/public_rooms.dart';
@@ -47,11 +47,9 @@ class _RoomSelectorState extends ConsumerState<RoomSelector>
                       icon: const Icon(FontAwesomeIcons.circleQuestion))
                 ]),
           ),
-          const Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-            BLTitle(
-              'ROOMS',
-            )
-          ]),
+          const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [BLTitle('ROOMS')]),
           Column(
             children: [
               Padding(
@@ -92,7 +90,7 @@ class _RoomSelectorState extends ConsumerState<RoomSelector>
                           controller: tabController,
                           children: [
                             PublicRooms(searchQuery: searchQuery),
-                            const UserRooms()
+                            UserRooms(searchQuery: searchQuery)
                           ]),
                     )
                   ],

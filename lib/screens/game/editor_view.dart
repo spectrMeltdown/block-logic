@@ -7,8 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class EditorView extends ConsumerStatefulWidget {
-  const EditorView({required this.editorWidgetKey, super.key});
   final GlobalKey editorWidgetKey;
+  const EditorView({required this.editorWidgetKey, super.key});
   @override
   ConsumerState<EditorView> createState() => _CustomTabViewState();
 }
@@ -19,108 +19,21 @@ class _CustomTabViewState extends ConsumerState<EditorView>
   List<GameBlockData> blocksData = [];
   bool editorOutline = false;
   bool addedPlaceholder = false;
-  // late final GameManagerState gameManagerState;
+  // late final GameState GameState;
   final validator = BlockValidator();
 
   @override
   bool get wantKeepAlive => true;
 
-  // void addStatement(GameBlockData initial) {
-  //   final dataSelected = initial.copyWith(state: CodeBlockState.selected);
-  //   blocks.add(StatementBox(
-  //     firstBLock: dataSelected,
-  //   ));
-  // }
-
-  // void addBlock(GameBlockData initial) {
-  //   final dataSelected = initial.copyWith(state: CodeBlockState.selected);
-  //   blocks.add(GameBlock(data: dataSelected));
-  // }
-
-  // void addPlaceholder(GameBlockData data) {
-  //   if (addedPlaceholder == true) return;
-  //   final dataWithPlaceholder = data.copyWith(state: CodeBlockState.faded);
-  //   debugPrint('add placeholder ${dataWithPlaceholder.state}');
-  //   blocks.add(GameBlock(data: dataWithPlaceholder));
-  //   addedPlaceholder = true;
-  // }
-
-  // void removePlaceholder() {
-  //   if (addedPlaceholder == true) {
-  //     blocks.removeLast();
-  //     debugPrint('removed, codeblocks empty = ${blocks.isEmpty}');
-  //     addedPlaceholder = false;
-  //   }
-  // }
-
-  Widget buildDragTarget() {
-    return DragTargetWrapper(
-      builderChild: () {
-        if (blocks.isNotEmpty) {
-          return const SizedBox();
-        }
-        return const Center(child: BLText('Drop a block'));
-      },
-      onWillAcceptWithDetails: (blockData) {
-        /// accept all blockData because this is top-level
-        return true;
-      },
-      onAcceptWithDetails: (block, gameManagerState) {
-        if (block == null) return;
-        //gameManagerState.addData(currentIndexPath: [], data: block);
-      },
-    );
-    // return Container(
-    //   decoration: editorOutline
-    //       ? BoxDecoration(
-    //           borderRadius: const BorderRadius.all(Radius.circular(10)),
-    //           border: Border.all(color: Colors.white))
-    //       : null,
-    //   child: DragTarget(
-    //     // rejected bypasses onMove
-    //     builder: (context, accepted, rejected) {},
-    //     onWillAcceptWithDetails: (details) {
-    //       block = gameManagerState.obtainBlockData();
-    //       if (block == null) return false;
-    //       setState(() {
-    //         editorOutline = true;
-    //       });
-    //       return true;
-    //       // if (validator.topLevelBox(block!)) {
-    //       //   return true;
-    //       // }
-    //       // return false;
-    //     },
-    //     onAcceptWithDetails: (details) {
-    //       setState(() {
-    //         editorOutline = false;
-    //       });
-    //       if (block == null) return;
-    //       if (validator.rootStatementBox(data: block!)) {
-    //         addStatement(block!);
-    //       } else {
-    //         addBlock(block!);
-    //       }
-    //       gameManagerState.removePassedBlockData();
-    //     },
-    //     onLeave: (details) {
-    //       setState(() {
-    //         editorOutline = false;
-    //       });
-    //     },
-    //   ),
-    // );
-  }
-
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final gameManagerState = ref.read(gameManagerStateProvider.notifier);
-    final gameManager = ref.watch(gameManagerStateProvider);
+    final gameManager = ref.read(gameManagerProvider.notifier);
+    final gameState = ref.watch(gameManagerProvider);
 
     /// get the block
     blocksData = [];
-    //     gameManagerState.getBlockData([], isTopLevel: true).map((item) {
+    //     GameState.getBlockData([], isTopLevel: true).map((item) {
     //   return item as GameBlockData;
     // }).toList();
     // blocks = blocksData.map((data){
@@ -130,11 +43,10 @@ class _CustomTabViewState extends ConsumerState<EditorView>
     // ));
     //   }
     // }).toList();
-    if (gameManager.isDropCancelled) {
+    if (gameState.isDropCancelled) {
       // TODO: if drop was cancelled, reverse to previous state of this widget.
       // Use this when animation is applied
-      gameManagerState.isDropCancelled(false);
-      setState(() {});
+      gameManager.isDropCancelled(false);
     }
 
     if (blocks.isEmpty) return buildDragTarget();
@@ -177,5 +89,92 @@ class _CustomTabViewState extends ConsumerState<EditorView>
             ],
           )),
     );
+  }
+
+  // void addStatement(GameBlockData initial) {
+  //   final dataSelected = initial.copyWith(state: CodeBlockState.selected);
+  //   blocks.add(StatementBox(
+  //     firstBLock: dataSelected,
+  //   ));
+  // }
+
+  // void addBlock(GameBlockData initial) {
+  //   final dataSelected = initial.copyWith(state: CodeBlockState.selected);
+  //   blocks.add(GameBlock(data: dataSelected));
+  // }
+
+  // void addPlaceholder(GameBlockData data) {
+  //   if (addedPlaceholder == true) return;
+  //   final dataWithPlaceholder = data.copyWith(state: CodeBlockState.faded);
+  //   debugPrint('add placeholder ${dataWithPlaceholder.state}');
+  //   blocks.add(GameBlock(data: dataWithPlaceholder));
+  //   addedPlaceholder = true;
+  // }
+
+  // void removePlaceholder() {
+  //   if (addedPlaceholder == true) {
+  //     blocks.removeLast();
+  //     debugPrint('removed, codeblocks empty = ${blocks.isEmpty}');
+  //     addedPlaceholder = false;
+  //   }
+  // }
+
+  Widget buildDragTarget() {
+    return DragTargetWrapper(
+      builderChild: () {
+        if (blocks.isNotEmpty) {
+          return const SizedBox();
+        }
+        return const Center(child: BLText('Drop a block'));
+      },
+      onWillAcceptWithDetails: (blockData) {
+        /// accept all blockData because this is top-level
+        return true;
+      },
+      onAcceptWithDetails: (block, gameManager) {
+        if (block == null) return;
+        //GameState.addData(currentIndexPath: [], data: block);
+      },
+    );
+    // return Container(
+    //   decoration: editorOutline
+    //       ? BoxDecoration(
+    //           borderRadius: const BorderRadius.all(Radius.circular(10)),
+    //           border: Border.all(color: Colors.white))
+    //       : null,
+    //   child: DragTarget(
+    //     // rejected bypasses onMove
+    //     builder: (context, accepted, rejected) {},
+    //     onWillAcceptWithDetails: (details) {
+    //       block = GameState.obtainBlockData();
+    //       if (block == null) return false;
+    //       setState(() {
+    //         editorOutline = true;
+    //       });
+    //       return true;
+    //       // if (validator.topLevelBox(block!)) {
+    //       //   return true;
+    //       // }
+    //       // return false;
+    //     },
+    //     onAcceptWithDetails: (details) {
+    //       setState(() {
+    //         editorOutline = false;
+    //       });
+    //       if (block == null) return;
+    //       if (validator.rootStatementBox(data: block!)) {
+    //         addStatement(block!);
+    //       } else {
+    //         addBlock(block!);
+    //       }
+    //       GameState.removePassedBlockData();
+    //     },
+    //     onLeave: (details) {
+    //       setState(() {
+    //         editorOutline = false;
+    //       });
+    //     },
+    //   ),
+    // );
   }
 }

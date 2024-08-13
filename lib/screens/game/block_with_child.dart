@@ -11,8 +11,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class GameBlockWithChild extends ConsumerStatefulWidget {
-  const GameBlockWithChild({required this.data, super.key});
   final GameBlockData data;
+  const GameBlockWithChild({required this.data, super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -48,8 +48,8 @@ class _GameBlockWithChildState extends ConsumerState<GameBlockWithChild> {
 
   @override
   Widget build(BuildContext context) {
-    ref.watch(gameManagerStateProvider);
-    final gameManagerState = ref.watch(gameManagerStateProvider.notifier);
+    ref.watch(gameManagerProvider);
+    final gameManager = ref.watch(gameManagerProvider.notifier);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -78,12 +78,12 @@ class _GameBlockWithChildState extends ConsumerState<GameBlockWithChild> {
                 onAcceptWithDetails: (details) {
                   if (block == null) return;
                   addParameter(block!);
-                  gameManagerState.removePassedBlockData();
+                  gameManager.removePassedBlockData();
                 },
 
                 /// Parameters/condition box
                 onWillAcceptWithDetails: (details) {
-                  block = gameManagerState.obtainPassedBlockData();
+                  block = gameManager.obtainPassedBlockData();
                   if (block == null) return false;
                   // TODO: customize to accept custom blocks only
                   if (widget.data.type == CodeBlockType.conditionals) {
@@ -110,10 +110,10 @@ class _GameBlockWithChildState extends ConsumerState<GameBlockWithChild> {
             onAcceptWithDetails: (details) {
               if (block == null) return;
               addBlock(block!);
-              gameManagerState.removePassedBlockData();
+              gameManager.removePassedBlockData();
             },
             onWillAcceptWithDetails: (details) {
-              block = gameManagerState.obtainPassedBlockData();
+              block = gameManager.obtainPassedBlockData();
               if (block == null) return false;
               // TODO: customize to accept custom blocks only
               return validator.nestedBox(

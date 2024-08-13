@@ -1,4 +1,5 @@
 import 'package:block_logic/components/text/text.dart';
+import 'package:block_logic/components/text/title_small.dart';
 import 'package:block_logic/components/textbox.dart';
 import 'package:block_logic/components/util/blank_widget.dart';
 import 'package:block_logic/logic/services/auth.dart';
@@ -17,12 +18,6 @@ class _ReauthDialogState extends ConsumerState<ReauthDialog> {
   final passwordController = TextEditingController();
   int attemptsLeft = 3;
   late Widget errorMessage;
-
-  @override
-  void initState() {
-    errorMessage = const BlankWidget();
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -73,5 +68,11 @@ class _ReauthDialogState extends ConsumerState<ReauthDialog> {
             child: const BLText('Submit', color: Colors.green)),
       ],
     );
+  }
+
+  @override
+  void initState() {
+    errorMessage = const BlankWidget();
+    super.initState();
   }
 }

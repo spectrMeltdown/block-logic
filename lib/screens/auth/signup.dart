@@ -5,6 +5,8 @@ import 'package:block_logic/components/button/text.dart';
 import 'package:block_logic/components/checkbox.dart';
 import 'package:block_logic/components/panel/panel.dart';
 import 'package:block_logic/components/text/text.dart';
+import 'package:block_logic/components/text/text_span.dart';
+import 'package:block_logic/components/text/title.dart';
 import 'package:block_logic/components/textbox.dart';
 import 'package:block_logic/components/util/blank_widget.dart';
 import 'package:block_logic/logic/enums.dart';

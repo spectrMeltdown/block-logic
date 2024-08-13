@@ -1,9 +1,10 @@
 import 'package:block_logic/components/background.dart';
 import 'package:block_logic/components/button/back.dart';
-import 'package:block_logic/components/button/back.dart';
 import 'package:block_logic/components/button/text.dart';
 import 'package:block_logic/components/panel/panel.dart';
 import 'package:block_logic/components/text/text.dart';
+import 'package:block_logic/components/text/title.dart';
+import 'package:block_logic/components/text/title_small.dart';
 import 'package:block_logic/components/util/provider_default.dart';
 import 'package:block_logic/logic/firebase_providers/auth.dart';
 import 'package:block_logic/logic/services/navigation.dart';
@@ -13,14 +14,14 @@ import 'package:block_logic/screens/settings/system_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class Settings extends ConsumerStatefulWidget {
-  const Settings({super.key});
+class SettingsPage extends ConsumerStatefulWidget {
+  const SettingsPage({super.key});
 
   @override
-  ConsumerState<Settings> createState() => _SettingsState();
+  ConsumerState<SettingsPage> createState() => _SettingsPageState();
 }
 
-class _SettingsState extends ConsumerState<Settings> {
+class _SettingsPageState extends ConsumerState<SettingsPage> {
   bool processing = false;
 
   @override

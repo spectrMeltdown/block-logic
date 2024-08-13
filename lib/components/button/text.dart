@@ -15,16 +15,11 @@ class _BLTextButtonState extends ConsumerState<BLTextButton> {
   @override
   Widget build(BuildContext context) {
     final audio = ref.read(bLAudioStateProvider.notifier);
-    return OutlinedButton(
+    return TextButton(
         onPressed: () {
           audio.playBtn();
           widget.onPressed.call();
         },
         child: widget.child);
-  }
-
-  @override
-  void initState() {
-    super.initState();
   }
 }

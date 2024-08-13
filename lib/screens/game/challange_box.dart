@@ -17,14 +17,14 @@ class ChallengeBox extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final gameManagerState = ref.read(gameManagerStateProvider.notifier);
+    final gameManager = ref.read(gameManagerProvider.notifier);
     final challengeDialog = ref.read(dialogServiceStateProvider);
     return GestureDetector(
       onTapUp: (details) async {
-        gameManagerState.pauseTimer();
+        gameManager.pauseTimer();
         await challengeDialog.show(
             context, DialogChallengeInfo(challenge: challenge));
-        gameManagerState.resumeTimer();
+        gameManager.resumeTimer();
       },
       child: Container(
         constraints:

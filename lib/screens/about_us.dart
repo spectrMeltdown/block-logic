@@ -3,6 +3,8 @@ import 'package:block_logic/components/button/back.dart';
 import 'package:block_logic/components/button/button.dart';
 import 'package:block_logic/components/panel/panel.dart';
 import 'package:block_logic/components/text/text.dart';
+import 'package:block_logic/components/text/title.dart';
+import 'package:block_logic/components/text/title_small.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/services/assets.dart';
 import 'package:block_logic/logic/services/navigation.dart';

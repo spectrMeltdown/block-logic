@@ -4,6 +4,7 @@ import 'package:block_logic/components/button/button.dart';
 import 'package:block_logic/components/button/text.dart';
 import 'package:block_logic/components/panel/panel.dart';
 import 'package:block_logic/components/text/text.dart';
+import 'package:block_logic/components/text/title.dart';
 import 'package:block_logic/components/textbox.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_providers/account_settings.dart';

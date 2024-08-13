@@ -4,6 +4,7 @@ import 'package:block_logic/components/button/button.dart';
 import 'package:block_logic/components/dialog/help.dart';
 import 'package:block_logic/components/panel/bordered.dart';
 import 'package:block_logic/components/text/text.dart';
+import 'package:block_logic/components/text/title.dart';
 import 'package:block_logic/components/util/provider_default.dart';
 import 'package:block_logic/logic/firebase_providers/selected_rooms.dart';
 import 'package:block_logic/logic/services/auth.dart';

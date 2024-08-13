@@ -6,13 +6,18 @@ import 'package:block_logic/components/error.dart';
 import 'package:block_logic/components/panel/bordered.dart';
 import 'package:block_logic/components/profile_pic.dart';
 import 'package:block_logic/components/text/text.dart';
+import 'package:block_logic/components/text/title_small.dart';
 import 'package:block_logic/components/util/provider_default.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_providers/selected_room.dart';
 import 'package:block_logic/logic/services/dialog.dart';
 import 'package:block_logic/logic/services/navigation.dart';
+import 'package:block_logic/logic/services/room_manager.dart';
+import 'package:block_logic/screens/game/game_room.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:widget_and_text_animator/widget_and_text_animator.dart';
 
 class WaitingRoom extends ConsumerStatefulWidget {
   final String roomID;
@@ -23,16 +28,27 @@ class WaitingRoom extends ConsumerStatefulWidget {
 }
 
 class _WaitingRoomState extends ConsumerState<WaitingRoom> {
+  String? roomID;
   @override
   Widget build(BuildContext context) {
     final room = ref.watch(SelectedRoomProvider(widget.roomID));
     final nav = ref.read(customNavigationProvider);
     final dialog = ref.read(dialogServiceStateProvider);
+    final roomManger = ref.read(roomManagerProvider.notifier);
+
+    void exit() async {
+      final exit = await dialog.show(context, const ConfirmDialog());
+      if (context.mounted && exit is bool && exit) {
+        if (roomID != null) roomManger.leaveRoom(roomID!);
+        nav.pop(context);
+      }
+    }
+
     return PopScope(
       canPop: false,
       onPopInvoked: (didPop) async {
-        final exit = await dialog.show(context, const ConfirmDialog());
-        if (context.mounted && exit is bool && exit) {}
+        if (didPop) return;
+        exit();
       },
       child: Scaffold(
           resizeToAvoidBottomInset: false,
@@ -45,31 +61,72 @@ class _WaitingRoomState extends ConsumerState<WaitingRoom> {
               ),
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
                   child: BLBorderedPanel(
                     child: room.when(
                         data: (room) {
                           if (room == null) {
+                            debugPrint('room doesnt exist');
                             return const BLError();
                           }
                           if (room.players!.isEmpty) {
-                            return const BLError(message: 'No players!');
+                            return const Center(
+                                child: BLText('No players yet ...'));
                           }
+                          roomID = room.id;
                           return Column(
                             children: [
+                              const SizedBox(
+                                height: 10,
+                              ),
                               BLText(
-                                  '${room.players?.length} / ${room.maxPlayers}'),
-                              ListView.builder(
-                                  padding: EdgeInsets.zero,
-                                  itemCount: room.players!.length,
-                                  itemBuilder: (context, i) {
-                                    return Row(
-                                      children: [
-                                        BLProfilePic(room.players![i]),
-                                        BLDisplayName(room.players![i])
-                                      ],
-                                    );
-                                  })
+                                '${room.players?.length} / ${room.maxPlayers}',
+                                color: Colors.orange,
+                              ),
+                              Flexible(
+                                child: Stack(
+                                  children: [
+                                    ListView.builder(
+                                        padding: EdgeInsets.zero,
+                                        itemCount: room.players!.length,
+                                        itemBuilder: (context, i) {
+                                          return Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                vertical: 10, horizontal: 20),
+                                            child: WidgetAnimator(
+                                              incomingEffect:
+                                                  WidgetTransitionEffects
+                                                      .incomingScaleUp(),
+                                              child: Row(
+                                                children: [
+                                                  BLProfilePic(
+                                                      room.players![i]),
+                                                  const SizedBox(width: 10),
+                                                  BLDisplayName(
+                                                    room.players![i],
+                                                    size: 16,
+                                                  )
+                                                ],
+                                              ),
+                                            ),
+                                          );
+                                        }),
+                                    if (kDebugMode)
+                                      Positioned(
+                                        bottom: 0,
+                                        left:
+                                            MediaQuery.of(context).size.width /
+                                                4,
+                                        child: BLButton(
+                                            onPressed: () {
+                                              nav.pushReplace(
+                                                  context, GameRoom(room));
+                                            },
+                                            child: const BLText('Start game')),
+                                      ),
+                                  ],
+                                ),
+                              )
                             ],
                           );
                         },
@@ -83,9 +140,9 @@ class _WaitingRoomState extends ConsumerState<WaitingRoom> {
                   type: BtnType.red,
                   paddingX: MediaQuery.of(context).size.width / 3,
                   onPressed: () {
-                    nav.pop(context);
+                    exit();
                   },
-                  child: const BLText('Exit')),
+                  child: const BLText('Leave')),
               const SizedBox(height: 10),
             ],
           ))),

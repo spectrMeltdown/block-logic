@@ -14,7 +14,8 @@ Stream<Room?> selectedRoom(
   await for (final room in roomStream) {
     if (room.exists) {
       yield Room.fromFirestore(room);
+    } else {
+      yield null;
     }
-    yield null;
   }
 }

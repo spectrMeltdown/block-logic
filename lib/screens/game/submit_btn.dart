@@ -9,10 +9,10 @@ class GameSubmitButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final gameManagerState = ref.read(gameManagerStateProvider.notifier);
+    final gameManager = ref.read(gameManagerProvider.notifier);
     return BLButton(
         onPressed: () {
-          gameManagerState.nextChallengeIndex();
+          gameManager.nextChallenge();
         },
         padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
         child: const Row(

@@ -31,21 +31,21 @@ class GameAppbar extends ConsumerStatefulWidget {
 class _GameAppbarState extends ConsumerState<GameAppbar> {
   late final BLAudioState audio;
   //late bool pauseTimer;
-  //late final GameManagerState gameManagerState;
+  //late final GameState GameState;
   late final DialogService pauseDialog;
 
   @override
   Widget build(BuildContext context) {
-    ref.watch(gameManagerStateProvider);
-    final gameManagerState = ref.read(gameManagerStateProvider.notifier);
+    ref.watch(gameManagerProvider);
+    final gameManager = ref.read(gameManagerProvider.notifier);
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         GestureDetector(
           onTapDown: (details) => audio.playBtn(),
           onTapUp: (details) async {
-            gameManagerState.pauseTimer();
-            debugPrint('pause timer: ${gameManagerState.getTimer()}');
+            gameManager.pauseTimer();
+            debugPrint('pause timer: ${gameManager.getTimer()}');
             await showGeneralDialog(
                 context: context,
                 transitionDuration: const Duration(milliseconds: 500),
@@ -74,8 +74,8 @@ class _GameAppbarState extends ConsumerState<GameAppbar> {
                 pageBuilder: (context, animation1, animation2) {
                   return const PauseDialog();
                 });
-            gameManagerState.resumeTimer();
-            debugPrint('pause timer: ${gameManagerState.getTimer()}');
+            gameManager.resumeTimer();
+            debugPrint('pause timer: ${gameManager.getTimer()}');
           },
           child: const BLBorderedPanel(
             child: Icon(
@@ -93,7 +93,7 @@ class _GameAppbarState extends ConsumerState<GameAppbar> {
         const SizedBox(
           width: 10,
         ),
-        Expanded(child: TimeBox(gameManagerState.getTimer())),
+        Expanded(child: TimeBox(gameManager.getTimer())),
       ],
     );
   }

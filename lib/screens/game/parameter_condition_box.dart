@@ -7,8 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ParameterConditionBox extends ConsumerStatefulWidget {
-  const ParameterConditionBox({required this.parameters, super.key});
   final List<GameBlockData> parameters;
+  const ParameterConditionBox({required this.parameters, super.key});
   @override
   ConsumerState<ParameterConditionBox> createState() =>
       _ParameterConditionBoxState();
@@ -16,21 +16,15 @@ class ParameterConditionBox extends ConsumerStatefulWidget {
 
 class _ParameterConditionBoxState extends ConsumerState<ParameterConditionBox> {
   final validator = BlockValidator();
-  late final GameManagerState gameManagerState;
+  late final GameManager gameManager;
   GameBlockData? data;
   bool editorOutline = false;
-
-  @override
-  void initState() {
-    gameManagerState = ref.read(gameManagerStateProvider.notifier);
-    super.initState();
-  }
 
   void addBlock(GameBlockData block) {}
 
   @override
   Widget build(BuildContext context) {
-    ref.watch(gameManagerStateProvider);
+    ref.watch(gameManagerProvider);
     return Container(
       decoration: editorOutline
           ? BoxDecoration(
@@ -55,10 +49,10 @@ class _ParameterConditionBoxState extends ConsumerState<ParameterConditionBox> {
         onAcceptWithDetails: (details) {
           if (data == null) return;
           addBlock(data!);
-          gameManagerState.removePassedBlockData();
+          gameManager.removePassedBlockData();
         },
         onWillAcceptWithDetails: (details) {
-          data = gameManagerState.obtainPassedBlockData();
+          data = gameManager.obtainPassedBlockData();
           if (data == null) return false;
           // TODO: customize to accept custom parameters only
           return validator.nestedBox(data: data!, dataToAccept: data!);
@@ -67,5 +61,11 @@ class _ParameterConditionBoxState extends ConsumerState<ParameterConditionBox> {
         onLeave: (details) {},
       ),
     );
+  }
+
+  @override
+  void initState() {
+    gameManager = ref.read(gameManagerProvider.notifier);
+    super.initState();
   }
 }

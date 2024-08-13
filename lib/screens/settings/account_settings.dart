@@ -2,12 +2,14 @@ import 'package:block_logic/components/account/display_name.dart';
 import 'package:block_logic/components/account/email.dart';
 import 'package:block_logic/components/button/button.dart';
 import 'package:block_logic/components/button/login_signup.dart';
+import 'package:block_logic/components/button/outline.dart';
 import 'package:block_logic/components/button/text.dart';
 import 'package:block_logic/components/dialog/reauth.dart';
 import 'package:block_logic/components/panel/panel.dart';
 import 'package:block_logic/components/profile_pic.dart';
 import 'package:block_logic/components/text/text.dart';
-import 'package:block_logic/components/util/blank_widget.dart';
+import 'package:block_logic/components/text/title_small.dart';
+import 'package:block_logic/components/util/provider_default.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_providers/auth.dart';
 import 'package:block_logic/logic/services/account.dart';
@@ -87,7 +89,6 @@ class _AccountSettingsWidgetState extends ConsumerState<AccountSettingsWidget> {
                   ),
                   const SizedBox(height: 20),
                   Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       BLTextButton(
                           onPressed: () async {
@@ -166,66 +167,64 @@ class _AccountSettingsWidgetState extends ConsumerState<AccountSettingsWidget> {
                               widget.editIcon
                             ],
                           )),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      Center(
-                        child: Column(
-                          children: [
-                            BLButton(
-                                type: BtnType.red,
-                                onPressed: () async {
-                                  auth.logout();
-                                  nav.pop(context);
-                                },
-                                child: const Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(
-                                      Icons.logout,
-                                      color: Colors.white,
-                                    ),
-                                    SizedBox(
-                                      width: 10,
-                                    ),
-                                    BLText(
-                                      'Logout',
-                                      color: Colors.white,
-                                    )
-                                  ],
-                                )),
-                            BLTextButton(
-                                onPressed: () async {
-                                  String? reauth = await showDialog(
-                                    context: context,
-                                    builder: (BuildContext context) =>
-                                        const ReauthDialog(),
-                                  );
-                                  if (reauth == 'success') {
-                                    if (!context.mounted) {
-                                      return;
-                                    }
-                                    auth.deleteAccount();
+                      const SizedBox(height: 20),
+                      Column(
+                        children: [
+                          BLButton(
+                              type: BtnType.red,
+                              onPressed: () async {
+                                auth.logout();
+                                nav.pop(context);
+                              },
+                              child: const Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.logout,
+                                    color: Colors.white,
+                                  ),
+                                  SizedBox(width: 10),
+                                  BLText(
+                                    'Logout',
+                                    color: Colors.white,
+                                  )
+                                ],
+                              )),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          BLOutlineButton(
+                              type: BtnType.red,
+                              onPressed: () async {
+                                String? reauth = await showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) =>
+                                      const ReauthDialog(),
+                                );
+                                if (reauth == 'success') {
+                                  if (!context.mounted) {
+                                    return;
                                   }
-                                },
-                                child: const Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(
-                                      Icons.delete_forever,
-                                      color: Colors.red,
-                                    ),
-                                    SizedBox(
-                                      width: 15,
-                                    ),
-                                    BLText(
-                                      'Delete account',
-                                      color: Colors.red,
-                                    )
-                                  ],
-                                )),
-                          ],
-                        ),
+                                  auth.deleteAccount();
+                                }
+                              },
+                              child: const Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.delete_forever,
+                                    color: Colors.red,
+                                  ),
+                                  SizedBox(
+                                    width: 15,
+                                  ),
+                                  BLText(
+                                    'Delete account',
+                                    color: Colors.red,
+                                  )
+                                ],
+                              )),
+                        ],
                       ),
                     ],
                   ),
@@ -233,8 +232,8 @@ class _AccountSettingsWidgetState extends ConsumerState<AccountSettingsWidget> {
               );
             }
           },
-          error: (error, stackTrace) => const BlankWidget(),
-          loading: () => const BlankWidget(),
+          error: genericError,
+          loading: genericLoading,
         ),
         const SizedBox(height: 15),
       ],

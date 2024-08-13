@@ -5,12 +5,13 @@ import 'package:block_logic/logic/firebase_providers/leaderboard_selected.dart';
 import 'package:block_logic/logic/firebase_providers/selected_rooms.dart';
 import 'package:block_logic/logic/services/auth.dart';
 import 'package:block_logic/screens/rooms/room_state.dart';
+import 'package:block_logic/screens/rooms/user_room_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class UserRooms extends ConsumerStatefulWidget {
   final String? searchQuery;
-  const UserRooms({this.searchQuery, super.key});
+  const UserRooms({required this.searchQuery, super.key});
 
   @override
   ConsumerState<UserRooms> createState() => _UserRoomsState();
@@ -48,16 +49,7 @@ class _UserRoomsState extends ConsumerState<UserRooms> {
             padding: const EdgeInsets.symmetric(vertical: 15),
             itemCount: rooms.length,
             itemBuilder: (context, i) {
-              return BLTranslucentCard(
-                onPressed: () {
-                  // TODO: Implement game config for host
-                },
-                icon: rooms[i].icon ?? '',
-                title: rooms[i].name ?? 'Loading ...',
-                subTitle: getLeaderboard(rooms[i].id!),
-                bottomRowStart: BLRoomState(rooms[i].status),
-                bottomRowEnd: BLText('${rooms[i].maxPlayers} players'),
-              );
+              return UserRoomItem();
             });
       },
       error: genericError,

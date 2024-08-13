@@ -1,4 +1,4 @@
-import 'package:block_logic/components/text/text.dart';
+import 'package:block_logic/components/text/title.dart';
 import 'package:block_logic/logic/services/assets.dart';
 import 'package:block_logic/screens/auth/check_acc.dart';
 import 'package:flame_splash_screen/flame_splash_screen.dart';

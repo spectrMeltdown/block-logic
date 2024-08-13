@@ -46,7 +46,7 @@ class Challenge {
       toFirestoreMap.addAll({'additionalInfo': challenge.additionalInfo});
     }
     if (challenge.blocks != null) {
-      toFirestoreMap.addAll({'blocks': challenge.blocks});
+      toFirestoreMap.addAll({'blocks': {}});
     }
     if (challenge.difficulty != null) {
       toFirestoreMap.addAll({'difficulty': challenge.difficulty});

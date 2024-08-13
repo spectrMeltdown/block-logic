@@ -27,6 +27,11 @@ class BLOutlineButton extends ConsumerWidget {
     final blui = ref.read(bLUIProvider);
     return OutlinedButton(
         style: OutlinedButton.styleFrom(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(
+                  8), // Adjust the radius for rounded corners
+            ),
+            backgroundColor: blui.getBtnColor(type).withOpacity(0.1),
             side: BorderSide(color: blui.getBtnColor(type))),
         onPressed: () {
           audio.playBtn();

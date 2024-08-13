@@ -8,24 +8,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class StatementBox extends ConsumerStatefulWidget {
-  const StatementBox({required this.firstBLock, super.key});
   final GameBlockData firstBLock;
+  const StatementBox({required this.firstBLock, super.key});
   @override
   ConsumerState<StatementBox> createState() => _StatementBoxState();
 }
 
 class _StatementBoxState extends ConsumerState<StatementBox> {
   final validator = BlockValidator();
-  late final GameManagerState gameManagerState;
+  late final GameManager gameManager;
   final List<Widget> blocks = [];
   GameBlockData? passedBlock;
-  @override
-  void initState() {
-    gameManagerState = ref.read(gameManagerStateProvider.notifier);
-    addBlock(widget.firstBLock);
-    super.initState();
-  }
-
   void addBlock(GameBlockData data) {
     final dataSelected = data.copyWith(state: CodeBlockState.selected);
     debugPrint('add block ${dataSelected.state}');
@@ -37,7 +30,7 @@ class _StatementBoxState extends ConsumerState<StatementBox> {
 
   @override
   Widget build(BuildContext context) {
-    ref.watch(gameManagerStateProvider);
+    ref.watch(gameManagerProvider);
     return DragTarget(
       builder: (context, accepted, rejected) {
         if (blocks.isNotEmpty) {
@@ -51,10 +44,10 @@ class _StatementBoxState extends ConsumerState<StatementBox> {
       onAcceptWithDetails: (details) {
         if (passedBlock == null) return;
         addBlock(passedBlock!);
-        gameManagerState.removePassedBlockData();
+        gameManager.removePassedBlockData();
       },
       onWillAcceptWithDetails: (details) {
-        passedBlock = gameManagerState.obtainPassedBlockData();
+        passedBlock = gameManager.obtainPassedBlockData();
         if (passedBlock == null) return false;
         // TODO: customize to accept custom blocks only
         return validator.rootStatementBox(data: passedBlock!);
@@ -62,5 +55,12 @@ class _StatementBoxState extends ConsumerState<StatementBox> {
       onMove: (details) {},
       onLeave: (details) {},
     );
+  }
+
+  @override
+  void initState() {
+    gameManager = ref.read(gameManagerProvider.notifier);
+    addBlock(widget.firstBLock);
+    super.initState();
   }
 }

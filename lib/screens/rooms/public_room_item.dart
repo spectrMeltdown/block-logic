@@ -5,6 +5,7 @@ import 'package:block_logic/logic/firebase_models/room.dart';
 import 'package:block_logic/logic/firebase_providers/selected_user.dart';
 import 'package:block_logic/logic/services/dialog.dart';
 import 'package:block_logic/logic/services/navigation.dart';
+import 'package:block_logic/logic/services/room_manager.dart';
 import 'package:block_logic/screens/rooms/room_password_dialog.dart';
 import 'package:block_logic/screens/rooms/room_state.dart';
 import 'package:block_logic/screens/rooms/waiting_room.dart';
@@ -13,19 +14,29 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class PublicRoomItem extends ConsumerWidget {
   final Room room;
-  const PublicRoomItem({super.key, required this.room});
+  final VoidCallback toggleProcessing;
+  const PublicRoomItem({
+    super.key,
+    required this.room,
+    required this.toggleProcessing,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final hostData = ref.watch(SelectedUserProvider(room.hostID!));
     final nav = ref.read(customNavigationProvider);
     final dialog = ref.read(dialogServiceStateProvider);
+    final roomManager = ref.read(roomManagerProvider.notifier);
     return hostData.when(
         data: (hostData) {
           return BLTranslucentCard(
             onPressed: () async {
               if (room.password == null || room.password!.isEmpty) {
-                nav.push(context, WaitingRoom(room.id!));
+                final joinResult = await roomManager.joinRoom(room.id!);
+                if (context.mounted && joinResult) {
+                  toggleProcessing.call();
+                  nav.push(context, WaitingRoom(room.id!));
+                }
               } else {
                 final result = await dialog.show(
                     context,
@@ -33,6 +44,7 @@ class PublicRoomItem extends ConsumerWidget {
                         pass: room.password ?? '', hostID: room.hostID!));
                 if (result is bool && result) {
                   if (!context.mounted) return;
+                  toggleProcessing.call();
                   nav.push(context, WaitingRoom(room.id!));
                 }
               }

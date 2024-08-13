@@ -6,14 +6,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Returns the user display name as BLText
 class BLDisplayName extends ConsumerWidget {
-  const BLDisplayName(this.accountID, {super.key});
   final String accountID;
+  final double? size;
+  const BLDisplayName(this.accountID, {this.size, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(SelectedUserProvider(accountID));
     return user.when(
-        data: (user) => BLText(user?.displayName ?? ''),
+        data: (user) => BLText(user?.displayName ?? '', size: size),
         error: (error, stackTrace) => const BlankWidget(),
         loading: () => const BlankWidget());
   }

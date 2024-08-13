@@ -1,5 +1,6 @@
 import 'package:block_logic/components/dialog/dialog.dart';
 import 'package:block_logic/components/text/text.dart';
+import 'package:block_logic/components/text/title_small.dart';
 import 'package:block_logic/components/textbox.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_providers/selected_user.dart';

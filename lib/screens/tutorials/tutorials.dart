@@ -1,7 +1,7 @@
 import 'package:block_logic/components/background.dart';
 import 'package:block_logic/components/button/back.dart';
 import 'package:block_logic/components/card/tutorial_item.dart';
-import 'package:block_logic/components/text/text.dart';
+import 'package:block_logic/components/text/title.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/services/navigation.dart';
 import 'package:block_logic/screens/tutorials/classes_and_objects.dart';

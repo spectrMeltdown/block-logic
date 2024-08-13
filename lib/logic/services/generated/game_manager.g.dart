@@ -6,21 +6,20 @@ part of '../game_manager.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$gameManagerStateHash() => r'120ffc1e243dcfeda2af897ed1429d32d867a991';
+String _$gameManagerHash() => r'f7fbbc7a22f2bc0706a50d3bac46c9d8d4c541d5';
 
-/// See also [GameManagerState].
-@ProviderFor(GameManagerState)
-final gameManagerStateProvider =
-    AutoDisposeNotifierProvider<GameManagerState, GameManager>.internal(
-  GameManagerState.new,
-  name: r'gameManagerStateProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$gameManagerStateHash,
+/// See also [GameManager].
+@ProviderFor(GameManager)
+final gameManagerProvider =
+    AutoDisposeNotifierProvider<GameManager, GameState>.internal(
+  GameManager.new,
+  name: r'gameManagerProvider',
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product') ? null : _$gameManagerHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef _$GameManagerState = AutoDisposeNotifier<GameManager>;
+typedef _$GameManager = AutoDisposeNotifier<GameState>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

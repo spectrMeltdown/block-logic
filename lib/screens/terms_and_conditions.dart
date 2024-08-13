@@ -1,58 +1,11 @@
 import 'package:block_logic/components/background.dart';
 import 'package:block_logic/components/button/button.dart';
 import 'package:block_logic/components/text/text.dart';
+import 'package:block_logic/components/text/title_small.dart';
 import 'package:block_logic/components/util/spaced_col.dart';
 import 'package:block_logic/logic/services/navigation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-class TermsAndConditions extends ConsumerWidget {
-  const TermsAndConditions({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final nav = ref.read(customNavigationProvider);
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      body: Background(
-          child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 40),
-        child: Column(
-          children: [
-            const BLSmallTitle('Terms & Conditions'),
-            Expanded(
-              child: SingleChildScrollView(
-                child: Center(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 20, vertical: 30),
-                    child: SpacedColumn(
-                      spacing: 20,
-                      children: [
-                        SingleChildScrollView(
-                          child: Text(getTC()),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-            BLButton(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 90, vertical: 10),
-                onPressed: () => nav.pop(context),
-                child: const BLText(
-                  'OK',
-                  color: Colors.white,
-                ))
-          ],
-        ),
-      )),
-    );
-  }
-}
 
 String getTC() {
   return '''
@@ -144,4 +97,52 @@ The limitations and prohibitions of liability set in this Section and elsewhere 
 
 As long as the website and the information and services on the website are provided free of charge, we will not be liable for any loss or damage of any nature.
 ''';
+}
+
+class TermsAndConditions extends ConsumerWidget {
+  const TermsAndConditions({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final nav = ref.read(customNavigationProvider);
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      body: Background(
+          child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 40),
+        child: Column(
+          children: [
+            const BLSmallTitle('Terms & Conditions'),
+            Expanded(
+              child: SingleChildScrollView(
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 30),
+                    child: SpacedColumn(
+                      spacing: 20,
+                      children: [
+                        SingleChildScrollView(
+                          child: Text(getTC()),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            BLButton(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 90, vertical: 10),
+                onPressed: () => nav.pop(context),
+                child: const BLText(
+                  'OK',
+                  color: Colors.white,
+                ))
+          ],
+        ),
+      )),
+    );
+  }
 }

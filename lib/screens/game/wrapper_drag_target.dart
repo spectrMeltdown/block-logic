@@ -4,6 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class DragTargetWrapper extends ConsumerStatefulWidget {
+  final Function()? builder;
+  final bool Function(GameBlockData?) onWillAcceptWithDetails;
+  final void Function(GameBlockData?, GameManager)? onAcceptWithDetails;
+  final Widget Function()? builderChild;
+  final void Function()? onLeave;
   const DragTargetWrapper({
     required this.builderChild,
     required this.onWillAcceptWithDetails,
@@ -12,11 +17,6 @@ class DragTargetWrapper extends ConsumerStatefulWidget {
     this.builder,
     super.key,
   });
-  final Function()? builder;
-  final bool Function(GameBlockData?) onWillAcceptWithDetails;
-  final void Function(GameBlockData?, GameManagerState)? onAcceptWithDetails;
-  final Widget Function()? builderChild;
-  final void Function()? onLeave;
 
   @override
   ConsumerState<DragTargetWrapper> createState() => _GameDragTargetState();
@@ -25,13 +25,7 @@ class DragTargetWrapper extends ConsumerStatefulWidget {
 class _GameDragTargetState extends ConsumerState<DragTargetWrapper> {
   GameBlockData? blockData;
   bool editorOutline = false;
-  late final GameManagerState gameManagerState;
-
-  @override
-  void initState() {
-    gameManagerState = ref.read(gameManagerStateProvider.notifier);
-    super.initState();
-  }
+  late final GameManager gameManager;
 
   @override
   Widget build(BuildContext context) {
@@ -51,13 +45,13 @@ class _GameDragTargetState extends ConsumerState<DragTargetWrapper> {
           setState(() {
             editorOutline = false;
           });
-          widget.onAcceptWithDetails?.call(blockData!, gameManagerState);
+          widget.onAcceptWithDetails?.call(blockData!, gameManager);
         },
         onWillAcceptWithDetails: (details) {
           setState(() {
             editorOutline = true;
           });
-          blockData = gameManagerState.obtainPassedBlockData();
+          blockData = gameManager.obtainPassedBlockData();
           if (blockData == null) return false;
           return widget.onWillAcceptWithDetails.call(blockData);
         },
@@ -69,5 +63,11 @@ class _GameDragTargetState extends ConsumerState<DragTargetWrapper> {
         },
       ),
     );
+  }
+
+  @override
+  void initState() {
+    gameManager = ref.read(gameManagerProvider.notifier);
+    super.initState();
   }
 }

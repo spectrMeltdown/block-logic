@@ -1,3 +1,4 @@
+import 'package:block_logic/logic/services/auth.dart';
 import 'package:block_logic/logic/services/encryption.dart';
 import 'package:block_logic/logic/services/error_handler.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -15,15 +16,31 @@ class RoomManager extends _$RoomManager {
     _encryption = ref.read(encryptionProvider.notifier);
   }
 
-  Future<void> joinRoom(String roomID, List<String> newPlayers) async {
+  Future<bool> joinRoom(String roomID) async {
     final db = FirebaseFirestore.instance;
+    final id = ref.read(authServiceProvider.notifier).getUID();
     try {
-      await db
-          .collection('rooms')
-          .doc(roomID)
-          .set({'players': newPlayers}, SetOptions(merge: true));
+      await db.collection('rooms').doc(roomID).set({
+        'players': FieldValue.arrayUnion([id]),
+      }, SetOptions(merge: true));
+      return true;
     } catch (e) {
       _errorHandler?.call(e);
+      return false;
+    }
+  }
+
+  Future<bool> leaveRoom(String roomID) async {
+    final db = FirebaseFirestore.instance;
+    final id = ref.read(authServiceProvider.notifier).getUID();
+    try {
+      await db.collection('rooms').doc(roomID).set({
+        'players': FieldValue.arrayRemove([id])
+      }, SetOptions(merge: true));
+      return true;
+    } catch (e) {
+      _errorHandler?.call(e);
+      return false;
     }
   }
 

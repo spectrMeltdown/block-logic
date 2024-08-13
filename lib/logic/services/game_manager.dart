@@ -1,47 +1,121 @@
+import 'package:block_logic/logic/enums.dart';
+import 'package:block_logic/logic/firebase_models/challenge.dart';
+import 'package:block_logic/logic/firebase_models/leaderboard.dart';
+import 'package:block_logic/logic/firebase_models/room.dart';
 import 'package:block_logic/logic/game/block_data.dart';
 import 'package:block_logic/logic/game/py_class.dart';
 import 'package:block_logic/logic/game/py_function.dart';
 import 'package:block_logic/logic/game/py_variable.dart';
+import 'package:block_logic/logic/services/error_handler.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'generated/game_manager.g.dart';
 
 @riverpod
-class GameManagerState extends _$GameManagerState {
+class GameManager extends _$GameManager {
+  /// adds data to the current tree the callee is on
+  List<int> addData({
+    required List<int> currentIndexPath,
+    required List<GameBlockData> data,
+  }) {
+    //   final List<GameBlockData> finalData = [];
+    //   for (final blockData in data) {
+    //     finalData.add(blockData.copyWith(state: CodeBlockState.selected));
+    //   }
+    //   final parentList = _getNestedList(currentIndexPath);
+
+    //   state.blockDataTree.add(data);
+    //   debugPrint(state.blockDataTree.toString());
+    //   return currentIndexPath.add();
+    // }
+
+    // /// gets the item found at the indexPath, deletes it from the tree
+    // void deleteFromTree(List<int> indexPath) {
+    //   final listToDelete = _getNestedList(indexPath);
+    //   // remove it
+    //   listToDelete.removeAt(indexPath.last);
+    return [];
+  }
+
+  void assignChallenges(List<Challenge> challenges) =>
+      state._challenges = challenges;
+
+  void assignRoom(Room room) => state._room = room;
+
   @override
-  GameManager build() => GameManager(
-        blockDataTree: [],
-        variables: [],
-        classes: [],
-        functions: [],
-      );
-
-  void pauseTimer() {
-    state._pauseTimer = true;
+  GameState build() {
+    final errorHandler = ref.read(errorHandlerProvider.notifier);
+    return GameState(
+      blockDataTree: [],
+      variables: [],
+      classes: [],
+      functions: [],
+      errorHandler: errorHandler,
+    );
   }
 
-  void resumeTimer() {
-    state._pauseTimer = false;
+  Future<bool> createLeaderboard() async {
+    if (state._room == null) {
+      debugPrint('Room was null, cannot create leaderboard');
+      return false;
+    }
+    try {
+      final id = '${state._room!.id}_${DateTime.now()}';
+      final leaderboard = Leaderboard(
+          id: id,
+          totalScore: state._room?.challengeIDs!.length,
+          roomID: state._room!.id,
+          status: LeaderboardStatus.pending,
+          dateCreated: DateTime.now());
+      state._db
+          .collection('leaderboards')
+          .doc(id)
+          .set(leaderboard.toFirestore(leaderboard), SetOptions(merge: true));
+      return true;
+    } catch (e) {
+      state._errorHandler.call(e);
+      return false;
+    }
   }
 
-  bool getTimer() => state._pauseTimer;
+  int getChallengesLength() => state._challenges!.length;
 
-  int getCurrentChallenge() => state._currentChallenge;
-
-  void nextChallengeIndex() {
-    state._currentChallenge++;
+  List<int>? getPath(String targetID) {
+    //final List<int> path = [];
+    //List<GameBlockData> currentBlocks = state.blockDataTree;
+    //for (final block in currentBlocks) {}
+    // not found
+    return null;
   }
 
   void getScrollController() {}
+
+  bool getTimer() => state.pauseTimer;
 
   void isDropCancelled(bool newState) {
     state.isDropCancelled = newState;
   }
 
-  /// when passing block data from [Draggable] to [DragTarget].
-  void passBlockData(GameBlockData blockData) {
-    state._blockData = blockData;
+  Future<bool> leaveGame() async {
+    if (state._room == null) {
+      debugPrint('Room was null, havent left the game');
+      return false;
+    }
+    try {
+      state._db.collection('leaderboards').doc(state._leaderboard?.id);
+      return true;
+    } catch (e) {
+      state._errorHandler.call(e);
+      return false;
+    }
+  }
+
+  void nextChallenge() {
+    assert(state._challengeIndex != null && state._challenges != null);
+    state._challengeIndex = state._challengeIndex! + 1;
+    state.currentChallenge = state._challenges![state._challengeIndex!];
   }
 
   GameBlockData? obtainPassedBlockData() {
@@ -50,16 +124,17 @@ class GameManagerState extends _$GameManagerState {
     return blockData;
   }
 
-  void removePassedBlockData() {
-    state._blockData == null;
+  /// when passing block data from [Draggable] to [DragTarget].
+  void passBlockData(GameBlockData blockData) {
+    state._blockData = blockData;
   }
 
-  List<int>? getPath(String targetID) {
-    //final List<int> path = [];
-    //List<GameBlockData> currentBlocks = state.blockDataTree;
-    //for (final block in currentBlocks) {}
-    // not found
-    return null;
+  void pauseTimer() {
+    state.pauseTimer = true;
+  }
+
+  void removePassedBlockData() {
+    state._blockData == null;
   }
 
   // List<GameBlockData> updateList(List<int> indexPath, {bool isTopLevel = false}) {
@@ -105,52 +180,38 @@ class GameManagerState extends _$GameManagerState {
   // List<dynamic> getBlockData(List<int> indexPath, {bool isTopLevel = false}) =>
   //     _getNestedList(indexPath, isTopLevel: isTopLevel);
 
-  /// adds data to the current tree the callee is on
-  List<int> addData({
-    required List<int> currentIndexPath,
-    required List<GameBlockData> data,
-  }) {
-    //   final List<GameBlockData> finalData = [];
-    //   for (final blockData in data) {
-    //     finalData.add(blockData.copyWith(state: CodeBlockState.selected));
-    //   }
-    //   final parentList = _getNestedList(currentIndexPath);
-
-    //   state.blockDataTree.add(data);
-    //   debugPrint(state.blockDataTree.toString());
-    //   return currentIndexPath.add();
-    // }
-
-    // /// gets the item found at the indexPath, deletes it from the tree
-    // void deleteFromTree(List<int> indexPath) {
-    //   final listToDelete = _getNestedList(indexPath);
-    //   // remove it
-    //   listToDelete.removeAt(indexPath.last);
-    return [];
+  void resumeTimer() {
+    state.pauseTimer = false;
   }
 }
 
-class GameManager {
+class GameState {
   bool isDropCancelled;
+  final _db = FirebaseFirestore.instance;
   List<PyVariable> variables = [];
   List<PyClass> classes = [];
   List<PyFunction> functions = [];
   List<GameBlockData> blockDataTree = [];
-  bool _pauseTimer;
-  int _currentChallenge;
+  bool pauseTimer;
+  Challenge? currentChallenge;
+  int? _challengeIndex;
   GameBlockData? _blockData;
   ScrollController? verticalScrollController;
   ScrollController? horizontalScrollController;
-  GameManager(
-      {this.isDropCancelled = false,
-      int currentChallenge = 0,
-      bool pauseTimer = false,
-      required this.blockDataTree,
-      required this.variables,
-      required this.classes,
-      required this.functions,
-      this.verticalScrollController,
-      this.horizontalScrollController})
-      : _pauseTimer = pauseTimer,
-        _currentChallenge = currentChallenge;
+  final ErrorHandler _errorHandler;
+  Room? _room;
+  List<Challenge>? _challenges;
+  Leaderboard? _leaderboard;
+  GameState({
+    this.isDropCancelled = false,
+    this.currentChallenge,
+    this.pauseTimer = false,
+    required ErrorHandler errorHandler,
+    required this.blockDataTree,
+    required this.variables,
+    required this.classes,
+    required this.functions,
+    this.verticalScrollController,
+    this.horizontalScrollController,
+  }) : _errorHandler = errorHandler;
 }

@@ -9,36 +9,47 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class GameBlock extends ConsumerStatefulWidget {
-  const GameBlock({required this.data, super.key});
   final GameBlockData data;
+  const GameBlock({required this.data, super.key});
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => GameCodeBlockState();
 }
 
 class GameCodeBlockState extends ConsumerState<GameBlock>
     with TickerProviderStateMixin {
-  late final GameManagerState gameManagerState;
+  late final GameManager gameManager;
   late final BLUI blui;
   late final String id;
-  // Offset position = const Offset(100, 100);
-  // Offset startPosition = const Offset(100, 100);
-  // late AnimationController _controller;
-  // late Animation<Offset> _animation;
   @override
-  void initState() {
-    gameManagerState = ref.read(gameManagerStateProvider.notifier);
-    blui = ref.read(bLUIProvider);
-
-    // _controller = AnimationController(
-    //   duration: const Duration(milliseconds: 300),
-    //   vsync: this,
-    // );
-    // _controller.addListener(() {
-    //   setState(() {
-    //     position = _animation.value;
-    //   });
-    // });
-    super.initState();
+  Widget build(BuildContext context) {
+    ref.watch(gameManagerProvider);
+    // TODO: animate when cancelled
+    return LongPressDraggable(
+      delay: const Duration(milliseconds: 100),
+      data: '', // drag target will not detect if data is null
+      onDragUpdate: (details) {},
+      dragAnchorStrategy: (draggable, context, position) {
+        return const Offset(-30, 50);
+      },
+      onDragStarted: () {
+        gameManager.passBlockData(widget.data);
+        //startPosition = position;
+      },
+      onDraggableCanceled: (velocity, offset) {
+        gameManager.removePassedBlockData();
+        gameManager.isDropCancelled(true);
+        //_animateBackToStartPosition(offset);
+      },
+      onDragEnd: (details) {
+        // Ensure that the item snaps back only when it's not dropped on a valid DragTarget.
+        // if (details.wasAccepted == false) {
+        //   _animateBackToStartPosition(details.offset);
+        // }
+      },
+      childWhenDragging: buildBlockState(CodeBlockState.faded),
+      feedback: buildBlockState(CodeBlockState.unselected),
+      child: buildBlockState(widget.data.state),
+    );
   }
 
   // @override
@@ -119,35 +130,24 @@ class GameCodeBlockState extends ConsumerState<GameBlock>
     }
   }
 
+  // Offset position = const Offset(100, 100);
+  // Offset startPosition = const Offset(100, 100);
+  // late AnimationController _controller;
+  // late Animation<Offset> _animation;
   @override
-  Widget build(BuildContext context) {
-    ref.watch(gameManagerStateProvider);
-    // TODO: animate when cancelled
-    return LongPressDraggable(
-      delay: const Duration(milliseconds: 100),
-      data: '', // drag target will not detect if data is null
-      onDragUpdate: (details) {},
-      dragAnchorStrategy: (draggable, context, position) {
-        return const Offset(-30, 50);
-      },
-      onDragStarted: () {
-        gameManagerState.passBlockData(widget.data);
-        //startPosition = position;
-      },
-      onDraggableCanceled: (velocity, offset) {
-        gameManagerState.removePassedBlockData();
-        gameManagerState.isDropCancelled(true);
-        //_animateBackToStartPosition(offset);
-      },
-      onDragEnd: (details) {
-        // Ensure that the item snaps back only when it's not dropped on a valid DragTarget.
-        // if (details.wasAccepted == false) {
-        //   _animateBackToStartPosition(details.offset);
-        // }
-      },
-      childWhenDragging: buildBlockState(CodeBlockState.faded),
-      feedback: buildBlockState(CodeBlockState.unselected),
-      child: buildBlockState(widget.data.state),
-    );
+  void initState() {
+    gameManager = ref.read(gameManagerProvider.notifier);
+    blui = ref.read(bLUIProvider);
+
+    // _controller = AnimationController(
+    //   duration: const Duration(milliseconds: 300),
+    //   vsync: this,
+    // );
+    // _controller.addListener(() {
+    //   setState(() {
+    //     position = _animation.value;
+    //   });
+    // });
+    super.initState();
   }
 }

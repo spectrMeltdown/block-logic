@@ -4,6 +4,8 @@ import 'package:block_logic/components/background.dart';
 import 'package:block_logic/components/button/button.dart';
 import 'package:block_logic/components/button/text.dart';
 import 'package:block_logic/components/text/text.dart';
+import 'package:block_logic/components/text/text_span.dart';
+import 'package:block_logic/components/text/title_small.dart';
 import 'package:block_logic/components/util/animation_player.dart';
 import 'package:block_logic/logic/services/assets.dart';
 import 'package:block_logic/logic/services/auth.dart';

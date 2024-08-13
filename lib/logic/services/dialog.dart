@@ -10,7 +10,7 @@ class DialogService {
     Widget dialog, {
     bool barrierDismissable = false,
   }) async {
-    final result = await showGeneralDialog(
+    return showGeneralDialog(
         context: context,
         barrierDismissible: barrierDismissable,
         transitionDuration: const Duration(milliseconds: 500),
@@ -38,7 +38,6 @@ class DialogService {
         pageBuilder: (context, animation1, animation2) {
           return dialog;
         });
-    return result;
   }
 }
 

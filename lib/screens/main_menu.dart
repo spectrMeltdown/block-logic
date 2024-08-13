@@ -14,7 +14,8 @@ import 'package:block_logic/route_observer.dart';
 import 'package:block_logic/screens/auth/login.dart';
 import 'package:block_logic/screens/creator_mode/creator_mode.dart';
 import 'package:block_logic/screens/rooms/rooms.dart';
-import 'package:block_logic/screens/settings/settings.dart';
+import 'package:block_logic/screens/settings/settings_page.dart';
+import 'package:block_logic/screens/testing.dart';
 import 'package:block_logic/screens/tutorials/tutorials.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -50,7 +51,7 @@ List<Widget> loggedInMenu(BuildContext context, CustomNavigation nav) {
       ),
     ),
     BLButton(
-      onPressed: () => nav.push(context, const Settings()),
+      onPressed: () => nav.push(context, const SettingsPage()),
       child: const Text(
         'Settings',
         style: TextStyle(fontSize: 16),
@@ -96,7 +97,7 @@ List<Widget> loggedOutMenu(BuildContext context, CustomNavigation nav) {
       ),
     ),
     BLButton(
-      onPressed: () => nav.push(context, const Settings()),
+      onPressed: () => nav.push(context, const SettingsPage()),
       child: const Text(
         'Settings',
         style: TextStyle(fontSize: 16),
@@ -152,11 +153,6 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen>
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              BLButton(
-                  onPressed: () {
-                    toast.showToast('Test notif', type: NotifType.info);
-                  },
-                  child: const BLText('notif')),
               Column(
                 children: [
                   SlideInLeft(
@@ -199,11 +195,17 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen>
                   )
                 ],
               ),
-              SpacedColumn(
-                  spacing: 10,
-                  children: auth.isLoggedIn()
-                      ? loggedInMenu(context, nav)
-                      : loggedOutMenu(context, nav))
+              SpacedColumn(spacing: 10, children: [
+                ...auth.isLoggedIn()
+                    ? loggedInMenu(context, nav)
+                    : loggedOutMenu(context, nav),
+                if (kDebugMode)
+                  BLButton(
+                      onPressed: () {
+                        nav.push(context, const TestingPage());
+                      },
+                      child: const BLText('Dev testing'))
+              ])
             ],
           ),
         ),

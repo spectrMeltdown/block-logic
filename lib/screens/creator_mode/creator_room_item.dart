@@ -21,7 +21,7 @@ class CreatorRoomItem extends ConsumerWidget {
     return hostData.when(
         data: (hostData) {
           return BLTranslucentCard(
-            onPressed: () => nav.push(context, GameRoom(roomID: room.id ?? '')),
+            onPressed: () => nav.push(context, GameRoom(room)),
             color: Colors.black,
             icon: room.icon ?? '',
             title: room.name ?? '',
