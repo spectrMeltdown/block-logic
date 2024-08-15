@@ -5,10 +5,14 @@ class SpacedColumn extends StatelessWidget {
   final double spacing;
   final List<Widget> children;
   final MainAxisSize mainAxisSize;
+  final MainAxisAlignment mainAxisAlignment;
+  final CrossAxisAlignment crossAxisAlignment;
   const SpacedColumn({
     super.key,
     required this.spacing,
     required this.children,
+    this.mainAxisAlignment = MainAxisAlignment.start,
+    this.crossAxisAlignment = CrossAxisAlignment.center,
     this.mainAxisSize = MainAxisSize.max,
   });
 
@@ -22,6 +26,11 @@ class SpacedColumn extends StatelessWidget {
         spacedChildren.add(SizedBox(height: spacing));
       }
     }
-    return Column(mainAxisSize: mainAxisSize, children: spacedChildren);
+    return Column(
+      mainAxisSize: mainAxisSize,
+      mainAxisAlignment: mainAxisAlignment,
+      crossAxisAlignment: crossAxisAlignment,
+      children: spacedChildren,
+    );
   }
 }

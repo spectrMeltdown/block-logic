@@ -23,6 +23,7 @@ class TestingPage extends ConsumerWidget {
       body: Background(
         child: Center(
           child: SpacedColumn(
+            mainAxisAlignment: MainAxisAlignment.center,
             spacing: 20,
             children: [
               BLButton(

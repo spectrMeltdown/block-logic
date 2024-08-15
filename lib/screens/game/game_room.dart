@@ -33,9 +33,6 @@ class _GameRoomState extends ConsumerState<GameRoom> {
         ref.read(SelectedChallengesProvider(widget.room.challengeIDs!));
     gameManager.assignRoom(widget.room);
     final dialog = ref.read(dialogServiceStateProvider);
-    setState(() {
-      currentChallenge = gameState.currentChallenge!;
-    });
     return PopScope(
       canPop: false,
       onPopInvoked: (didPop) async {
@@ -54,7 +51,7 @@ class _GameRoomState extends ConsumerState<GameRoom> {
                 gameManager.createLeaderboard();
                 return GameChallenge(
                   roomName: widget.room.name ?? '',
-                  challenge: currentChallenge,
+                  challenge: gameState.currentChallenge!,
                   challengeCount: gameManager.getChallengesLength(),
                 );
               },
@@ -85,5 +82,11 @@ class _GameRoomState extends ConsumerState<GameRoom> {
   void initState() {
     gameManager = ref.read(gameManagerProvider.notifier);
     super.initState();
+  }
+
+  void updateChallenge() {
+    setState(() {
+      //currentChallenge = gameState.currentChallenge!;
+    });
   }
 }

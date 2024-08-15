@@ -39,8 +39,11 @@ class GameManager extends _$GameManager {
     return [];
   }
 
-  void assignChallenges(List<Challenge> challenges) =>
-      state._challenges = challenges;
+  void assignChallenges(List<Challenge> challenges) {
+    if (challenges.isEmpty) throw ArgumentError('Got a blank challenge list!');
+    state._challenges = challenges;
+    state.currentChallenge = challenges.first;
+  }
 
   void assignRoom(Room room) => state._room = room;
 

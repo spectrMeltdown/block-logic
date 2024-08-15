@@ -1,10 +1,7 @@
-import 'package:block_logic/components/card/card_translucent.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/util/provider_default.dart';
-import 'package:block_logic/logic/firebase_providers/leaderboard_selected.dart';
 import 'package:block_logic/logic/firebase_providers/selected_rooms.dart';
 import 'package:block_logic/logic/services/auth.dart';
-import 'package:block_logic/screens/rooms/room_state.dart';
 import 'package:block_logic/screens/rooms/user_room_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -18,25 +15,22 @@ class UserRooms extends ConsumerStatefulWidget {
 }
 
 class _UserRoomsState extends ConsumerState<UserRooms> {
+  bool processing = false;
   @override
   Widget build(BuildContext context) {
     final auth = ref.read(authServiceProvider.notifier);
     final ownRooms = ref.watch(SelectedRoomsProvider(auth.getUID()));
 
-    String getLeaderboard(String roomID) {
-      final leaderboard = ref.read(SelectedLeaderboardProvider(roomID));
-      leaderboard.when(
-          data: (leaderboard) {
-            debugPrint('leadboard called');
-          },
-          error: genericError,
-          loading: genericLoading);
-
-      return '';
-    }
-
     return ownRooms.when(
       data: (rooms) {
+        if (widget.searchQuery != null && widget.searchQuery!.isNotEmpty) {
+          return const Center(
+            child: BLText(
+              'Sorry, we couldn\'t find that..',
+              alignCenter: true,
+            ),
+          );
+        }
         if (rooms.isEmpty) {
           return const Center(
             child: BLText(
@@ -49,11 +43,20 @@ class _UserRoomsState extends ConsumerState<UserRooms> {
             padding: const EdgeInsets.symmetric(vertical: 15),
             itemCount: rooms.length,
             itemBuilder: (context, i) {
-              return UserRoomItem();
+              return UserRoomItem(
+                room: rooms[i],
+                toggleProcessing: toggleProcessing,
+              );
             });
       },
       error: genericError,
       loading: genericLoading,
     );
+  }
+
+  void toggleProcessing() {
+    setState(() {
+      processing = !processing;
+    });
   }
 }
