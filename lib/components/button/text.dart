@@ -1,4 +1,5 @@
 import 'package:block_logic/logic/services/audio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -14,10 +15,13 @@ class BLTextButton extends ConsumerStatefulWidget {
 class _BLTextButtonState extends ConsumerState<BLTextButton> {
   @override
   Widget build(BuildContext context) {
-    final audio = ref.read(bLAudioStateProvider.notifier);
+    BLAudioState? audio;
+    if (!kIsWeb) {
+      audio = ref.read(bLAudioStateProvider.notifier);
+    }
     return TextButton(
         onPressed: () {
-          audio.playBtn();
+          audio?.playBtn();
           widget.onPressed.call();
         },
         child: widget.child);

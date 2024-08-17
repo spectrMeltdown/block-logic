@@ -21,7 +21,9 @@ class AdminAccount extends AccountModel {
     return AdminAccount(
         id: doc.id,
         isApproved: data['isApproved'] ?? false,
-        createdAt: (data['createdAt'] as Timestamp).toDate(),
+        createdAt: data['createdAt'] == null
+            ? null
+            : (data['createdAt'] as Timestamp).toDate(),
         displayName: data['displayName'] ?? '',
         profilePicLink: data['profilePicLink'] ?? '',
         phoneNum: data['phoneNum']);

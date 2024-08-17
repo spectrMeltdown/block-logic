@@ -24,7 +24,7 @@
 //       id: doc.id,
 //       title: data['title'] ?? '',
 //       message: data['message'] ?? '',
-//       createdAt: (data['createdAt'] as Timestamp).toDate(),
+//       createdAt: data['createdAt'] == null ? null :(data['createdAt'] as Timestamp).toDate(),
 //     );
 //   }
 // Map<String, dynamic> toFirestore(AdminAccount admin) {

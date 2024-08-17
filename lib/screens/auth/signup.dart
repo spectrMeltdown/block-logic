@@ -15,8 +15,8 @@ import 'package:block_logic/logic/services/navigation.dart';
 import 'package:block_logic/logic/services/toast.dart';
 import 'package:block_logic/logic/services/validator_text.dart';
 import 'package:block_logic/route_observer.dart';
-import 'package:block_logic/screens/auth/check_acc.dart';
 import 'package:block_logic/screens/auth/login.dart';
+import 'package:block_logic/screens/init_android.dart';
 import 'package:block_logic/screens/terms_and_conditions.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -69,10 +69,9 @@ class _SignupState extends ConsumerState<Signup> with RouteAware {
                         children: [
                           const SizedBox(height: 5),
                           const BLTitle(
-                            'SIGNUP',
+                            'Hello there, dev!',
                             bottomPadding: 10,
                           ),
-                          const BLText('Hello there, dev!'),
                           const SizedBox(height: 30),
                           BLTextBox(
                             controller: displayNameController,
@@ -202,7 +201,8 @@ class _SignupState extends ConsumerState<Signup> with RouteAware {
                                       );
                                     }
                                     if (!context.mounted) return;
-                                    nav.pushReplace(context, const CheckAcc());
+                                    nav.pushReplace(
+                                        context, const InitAndroid());
                                   } else {
                                     if (!context.mounted) return;
                                     toast.showToast(
@@ -221,8 +221,11 @@ class _SignupState extends ConsumerState<Signup> with RouteAware {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               BLTextButton(
-                                  onPressed: () =>
-                                      nav.pushReplace(context, const Login()),
+                                  onPressed: () => nav.pushReplace(
+                                      context,
+                                      const Login(
+                                        accountType: FirestoreCollections.users,
+                                      )),
                                   child: const BLText(
                                     'Login to existing account',
                                     underlined: true,

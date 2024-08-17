@@ -1,5 +1,15 @@
 enum AccountType { admin, user }
 
+enum BLColors {
+  grey,
+  blue,
+  darkblue,
+  lightblue,
+  amber,
+  orange,
+  lightgreen,
+}
+
 enum BtnType {
   normal,
   green,

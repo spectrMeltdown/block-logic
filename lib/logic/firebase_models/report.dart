@@ -31,7 +31,7 @@
 //       data: data['data'] ?? '',
 //       startDate: (data['startDate'] as Timestamp).toDate(),
 //       endDate: (data['endDate'] as Timestamp).toDate(),
-//       createdAt: (data['createdAt'] as Timestamp).toDate(),
+//       createdAt:data['createdAt'] == null ? null :  (data['createdAt'] as Timestamp).toDate(),
 //       modifiedAt: (data['modifiedAt'] as Timestamp).toDate(),
 //     );
 //   }

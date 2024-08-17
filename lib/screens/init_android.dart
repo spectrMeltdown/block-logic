@@ -12,33 +12,27 @@ import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class CheckAcc extends ConsumerStatefulWidget {
-  const CheckAcc({super.key});
+class InitAndroid extends ConsumerStatefulWidget {
+  const InitAndroid({super.key});
 
   @override
-  ConsumerState<CheckAcc> createState() => _CheckAccState();
+  ConsumerState<InitAndroid> createState() => _InitAndroidState();
 }
 
-class _CheckAccState extends ConsumerState<CheckAcc> {
+class _InitAndroidState extends ConsumerState<InitAndroid> {
   @override
-  void initState() {
-    final sharedPref = ref.read(sharedPrefProvider);
-    final assets = ref.read(assetsProvider);
-    FlameAudio.bgm.initialize();
-
-    /// check if a backgroundMusic setting exists
-    final backgroundMusic = sharedPref.getBool('backgroundMusic');
-    if (backgroundMusic == null || backgroundMusic == true) {
-      /// initialize the audio
-      FlameAudio.bgm.play(assets.audioBG1);
-    } else {
-      /// play silently to load the track
-      FlameAudio.bgm.play(assets.audioBG1, volume: 0);
-
-      /// pause after track loaded
-      FlameAudio.bgm.pause();
-    }
-    super.initState();
+  Widget build(BuildContext context) {
+    final auth = ref.read(authServiceProvider.notifier);
+    final user = ref.watch(accountAuthProvider);
+    final dbService = ref.watch(dBServiceProvider.notifier);
+    final userFirestore = ref.watch(SelectedUserProvider(auth.getUID()));
+    return user.when(
+        data: (user) => getWidget(
+            auth: auth, userFirestore: userFirestore, dbService: dbService),
+        error: (error, stackTrace) => getWidget(
+            auth: auth, userFirestore: userFirestore, dbService: dbService),
+        loading: () => getWidget(
+            auth: auth, userFirestore: userFirestore, dbService: dbService));
   }
 
   Widget getWidget(
@@ -75,17 +69,23 @@ class _CheckAccState extends ConsumerState<CheckAcc> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final auth = ref.read(authServiceProvider.notifier);
-    final user = ref.watch(accountAuthProvider);
-    final dbService = ref.watch(dBServiceProvider.notifier);
-    final userFirestore = ref.watch(SelectedUserProvider(auth.getUID()));
-    return user.when(
-        data: (user) => getWidget(
-            auth: auth, userFirestore: userFirestore, dbService: dbService),
-        error: (error, stackTrace) => getWidget(
-            auth: auth, userFirestore: userFirestore, dbService: dbService),
-        loading: () => getWidget(
-            auth: auth, userFirestore: userFirestore, dbService: dbService));
+  void initState() {
+    final sharedPref = ref.read(sharedPrefProvider);
+    final assets = ref.read(assetsProvider);
+    FlameAudio.bgm.initialize();
+
+    /// check if a backgroundMusic setting exists
+    final backgroundMusic = sharedPref.getBool('backgroundMusic');
+    if (backgroundMusic == null || backgroundMusic == true) {
+      /// initialize the audio
+      FlameAudio.bgm.play(assets.audioBG1);
+    } else {
+      /// play silently to load the track
+      FlameAudio.bgm.play(assets.audioBG1, volume: 0);
+
+      /// pause after track loaded
+      FlameAudio.bgm.pause();
+    }
+    super.initState();
   }
 }

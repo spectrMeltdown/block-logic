@@ -1,6 +1,7 @@
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/services/audio.dart';
 import 'package:block_logic/logic/services/ui.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -25,6 +26,7 @@ class BLButton extends ConsumerStatefulWidget {
 }
 
 class _BtnState extends ConsumerState<BLButton> {
+  BLAudioState? audio;
   bool _isTapped = false;
   late List<Color> btnPressedColor;
   late List<Color> btnColor;
@@ -43,11 +45,10 @@ class _BtnState extends ConsumerState<BLButton> {
 
   @override
   Widget build(BuildContext context) {
-    final audio = ref.read(bLAudioStateProvider.notifier);
     final blui = ref.read(bLUIProvider);
     return GestureDetector(
       onTapDown: (details) {
-        audio.playBtn();
+        audio?.playBtn();
         _onTapDown();
       },
       onTapUp: _onTapUp,
@@ -90,6 +91,7 @@ class _BtnState extends ConsumerState<BLButton> {
 
   @override
   void initState() {
+    if (!kIsWeb) audio = ref.read(bLAudioStateProvider.notifier);
     getBtnColor();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // Access the width after the first frame is rendered

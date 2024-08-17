@@ -1,14 +1,19 @@
-import 'dart:io';
+import 'dart:async';
 
+import 'package:block_logic/app_theme.dart';
+import 'package:block_logic/logic/firebase_providers/selected_admin.dart';
 import 'package:block_logic/logic/services/audio.dart';
+import 'package:block_logic/logic/services/auth.dart';
 import 'package:block_logic/logic/services/internet_connection.dart';
+import 'package:block_logic/logic/services/redirect.dart';
 import 'package:block_logic/logic/services/shared_pref.dart';
 import 'package:block_logic/route_observer.dart';
-import 'package:block_logic/screens/auth/check_acc.dart';
+import 'package:block_logic/router_config.dart';
+import 'package:block_logic/screens/init_android.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flame/flame.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toastification/toastification.dart';
@@ -16,26 +21,14 @@ import 'package:toastification/toastification.dart';
 import 'firebase_options.dart';
 
 Future<void> main() async {
-  /// Ensure the system overlays are set before running the app
   WidgetsFlutterBinding.ensureInitialized();
-
-  /// Set the device to fullScreen, hiding status bar & navigation buttons
-  //await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
-  Flame.device.fullScreen();
-  Flame.device.setPortraitUpOnly;
-  // Hide the status bar
-  //SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: [SystemUiOverlay.bottom]);
-
-  // re-hide the status bar after user opens it
-  // SystemChrome.setSystemUIChangeCallback((systemOverlaysAreVisible) async {
-  //   await Future.delayed(const Duration(seconds: 1));
-  //   SystemChrome.restoreSystemUIOverlays();
-  // });
-
-  if (Platform.isAndroid) {
-    /// Setup Firebase
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  if (!kIsWeb) {
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+    SystemChrome.setPreferredOrientations(
+      <DeviceOrientation>[DeviceOrientation.portraitUp],
     );
     // FlutterError.onError = (errorDetails) {
     //   FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
@@ -46,13 +39,9 @@ Future<void> main() async {
     //   return true;
     // };
   }
-  // check if platform is web
-  else if (kIsWeb) {}
   final prefs = await SharedPreferences.getInstance();
   runApp(ProviderScope(
-    overrides: [
-      sharedPrefProvider.overrideWithValue(prefs),
-    ],
+    overrides: [sharedPrefProvider.overrideWithValue(prefs)],
     child: const BlockLogic(),
   ));
 }
@@ -62,70 +51,32 @@ class BlockLogic extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    ref.read(audioInitProvider);
-    ref.watch(internetStatusProvider);
-    const TextStyle appTextStyle = TextStyle(
-      color: Colors.white,
-    );
+    final appTheme = AppTheme();
+    if (!kIsWeb) {
+      ref.read(audioInitProvider);
+      ref.watch(internetStatusProvider);
+      return ToastificationWrapper(
+        child: MaterialApp(
+            title: 'Block-Logic',
+            navigatorObservers: [routeObserver],
+            debugShowCheckedModeBanner: false,
+            theme: appTheme.theme(),
+            darkTheme: appTheme.theme(),
+            home: const InitAndroid()),
+      );
+    }
 
-    /// Make the same text theme for both system dark/light theme
-    const TextTheme appTextTheme = TextTheme(
-      displayLarge: appTextStyle,
-      displayMedium: appTextStyle,
-      displaySmall: appTextStyle,
-      headlineLarge: appTextStyle,
-      headlineMedium: appTextStyle,
-      headlineSmall: appTextStyle,
-      titleLarge: appTextStyle,
-      titleMedium: appTextStyle,
-      titleSmall: appTextStyle,
-      bodyLarge: appTextStyle,
-      bodyMedium: appTextStyle,
-      bodySmall: appTextStyle,
-      labelLarge: appTextStyle,
-      labelMedium: appTextStyle,
-      labelSmall: appTextStyle,
-    );
-
-    /// Make the same app theme for system dark or light theme
-    final appTheme = ThemeData(
-      fontFamily: 'Play',
-      textTheme: appTextTheme,
-      colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo.shade400),
-      scaffoldBackgroundColor: Colors.transparent,
-      tabBarTheme: const TabBarTheme(dividerColor: Colors.transparent),
-      inputDecorationTheme: const InputDecorationTheme(
-          prefixIconColor: Colors.white, suffixIconColor: Colors.white),
-      dialogTheme: DialogTheme(
-        backgroundColor: Colors.blueGrey.shade900,
-      ),
-      bottomSheetTheme: BottomSheetThemeData(
-        backgroundColor: Colors.blueGrey.shade900,
-      ),
-      iconTheme: const IconThemeData(
-        color: Colors.white,
-      ),
-    );
-    //final navigatorKey = GlobalKey<NavigatorState>();
+    final auth = ref.read(authServiceProvider.notifier);
+    final adminFirestore = ref.watch(SelectedAdminProvider(auth.getUID()));
+    final redirect = ref.watch(RedirectProvider(adminFirestore, auth));
     return ToastificationWrapper(
-      child: MaterialApp(
-          title: 'Block-Logic',
-          navigatorObservers: [routeObserver],
-          debugShowCheckedModeBanner: false,
-          //navigatorKey: navigatorKey,
-          // builder: (context, child) {
-          //   // Wrap with toast.
-          //   child = Toast(navigatorKey: navigatorKey, child: child!);
-          //   return child;
-          // },
-          theme: appTheme
-          // .copyWith(
-          //   materialTapTargetSize: MaterialTapTargetSize.padded,
-          //   extensions: [const FlashToastTheme(), const FlashBarTheme()],
-          // )
-          ,
-          darkTheme: appTheme,
-          home: const CheckAcc()),
+      child: MaterialApp.router(
+        routerConfig: router(redirect),
+        title: 'Block-Logic',
+        debugShowCheckedModeBanner: false,
+        theme: appTheme.theme(),
+        darkTheme: appTheme.theme(),
+      ),
     );
   }
 }

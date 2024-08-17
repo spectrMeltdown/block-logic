@@ -6,10 +6,13 @@ part 'generated/selected_admin.g.dart';
 
 @Riverpod(dependencies: [])
 Stream<AdminAccount?> selectedAdmin(SelectedAdminRef ref, String id) async* {
-  if (id.isEmpty) yield null;
   final db = FirebaseFirestore.instance;
-  final stream = db.collection('admins').doc(id).snapshots();
-  await for (final doc in stream) {
-    yield AdminAccount.fromFirestore(doc);
+  if (id.isNotEmpty) {
+    final stream = db.collection('admins').doc(id).snapshots();
+    await for (final doc in stream) {
+      yield AdminAccount.fromFirestore(doc);
+    }
+  } else {
+    yield null;
   }
 }

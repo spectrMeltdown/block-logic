@@ -82,7 +82,11 @@ List<Widget> loggedInMenu(BuildContext context, CustomNavigation nav) {
 List<Widget> loggedOutMenu(BuildContext context, CustomNavigation nav) {
   return [
     BLButton(
-      onPressed: () => nav.push(context, const Login()),
+      onPressed: () => nav.push(
+          context,
+          const Login(
+            accountType: FirestoreCollections.users,
+          )),
       type: BtnType.green,
       child: const Text(
         'Login to Play',

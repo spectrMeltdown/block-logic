@@ -5,6 +5,5 @@ part 'generated/auth.g.dart';
 
 /// fired only when login/loggout
 @riverpod
-Stream<User?> accountAuth(AccountAuthRef ref) {
-  return FirebaseAuth.instance.authStateChanges();
-}
+Stream<User?> accountAuth(AccountAuthRef ref) =>
+    FirebaseAuth.instance.authStateChanges();

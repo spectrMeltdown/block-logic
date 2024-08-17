@@ -17,12 +17,15 @@ import 'package:block_logic/route_observer.dart';
 import 'package:block_logic/screens/auth/forgot_password.dart';
 import 'package:block_logic/screens/auth/signup.dart';
 import 'package:block_logic/screens/main_menu.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
 
 class Login extends ConsumerStatefulWidget {
-  const Login({super.key});
+  final FirestoreCollections accountType;
+  const Login({required this.accountType, super.key});
 
   @override
   ConsumerState<Login> createState() => _LoginState();
@@ -40,39 +43,78 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
     final validator = ref.read(textValidatorProvider);
     final nav = ref.read(customNavigationProvider);
     final auth = ref.read(authServiceProvider.notifier);
-    final settings =
-        ref.read(SettingsProvider(FirestoreCollections.users).future);
+    final settings = ref.read(SettingsProvider(widget.accountType).future);
+    final width = MediaQuery.of(context).size.width;
+
+    Future<void> onPressed() async {
+      if (_loginFormKey.currentState!.validate()) {
+        //toast.dismissAllToast();
+        toast.showToast('Logging in', type: NotifType.info);
+        final error = await auth.login(
+            email: emailController.text.trim(),
+            password: passwordController.text.trim());
+        if (error == null) {
+          final awaitedSettings = await settings;
+          final loginAlert =
+              ref.read(LoginAlertProvider(awaitedSettings).notifier);
+          final result = await loginAlert.send();
+          if (result != null) {
+            if (!context.mounted) return;
+            toast.showToast(result, type: NotifType.error);
+          }
+          if (!context.mounted) return;
+          if (kIsWeb) {
+            context.go('/');
+          }
+          nav.pushReplace(context, const MainMenuScreen());
+        } else {
+          if (!context.mounted) return;
+          toast.showToast(
+            error,
+            type: NotifType.error,
+          );
+        }
+      }
+    }
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Background(
           child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Row(children: [BLBackButton()]),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                BLPanel(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 30),
-                    child: Form(
-                      key: _loginFormKey,
+          if (!kIsWeb) const Row(children: [BLBackButton()]),
+          Align(
+            alignment: Alignment.center,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: BLPanel(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: kIsWeb ? 50 : 15,
+                    vertical: kIsWeb ? 50 : 35,
+                  ),
+                  child: Form(
+                    key: _loginFormKey,
+                    child: Container(
+                      constraints: BoxConstraints(maxWidth: width / 2),
                       child: Column(
-                        mainAxisSize: MainAxisSize.min,
                         mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           const SizedBox(height: 5),
                           const BLTitle(
-                            'LOGIN',
+                            kIsWeb ? 'Welcome!' : 'Welcome back, dev!',
                             bottomPadding: 10,
                           ),
-                          const BLText('Welcome back, dev!'),
                           const SizedBox(height: 30),
                           BLTextBox(
                             controller: emailController,
                             hintText: 'Email',
+                            onFieldSubmitted: (p0) {
+                              if (processing == true) return;
+                              processing = true;
+                              onPressed();
+                              processing = false;
+                            },
                             prefixIcon: const Icon(
                               FontAwesomeIcons.envelope,
                               color: Colors.white,
@@ -86,6 +128,12 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
                           BLTextBox(
                             controller: passwordController,
                             hintText: 'Password',
+                            onFieldSubmitted: (p0) {
+                              if (processing == true) return;
+                              processing = true;
+                              onPressed();
+                              processing = false;
+                            },
                             prefixIcon: const Icon(
                               FontAwesomeIcons.lock,
                               color: Colors.white,
@@ -125,58 +173,31 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
                               onPressed: () async {
                                 if (processing == true) return;
                                 processing = true;
-                                if (_loginFormKey.currentState!.validate()) {
-                                  //toast.dismissAllToast();
-                                  toast.showToast('Logging in',
-                                      type: NotifType.info);
-                                  final error = await auth.login(
-                                      email: emailController.text.trim(),
-                                      password: passwordController.text.trim());
-                                  if (error == null) {
-                                    final awaitedSettings = await settings;
-                                    final loginAlert = ref.read(
-                                        LoginAlertProvider(awaitedSettings)
-                                            .notifier);
-                                    final result = await loginAlert.send();
-                                    if (result != null) {
-                                      if (!context.mounted) return;
-                                      toast.showToast(result,
-                                          type: NotifType.error);
-                                    }
-                                    if (!context.mounted) return;
-                                    nav.pushReplace(
-                                        context, const MainMenuScreen());
-                                  } else {
-                                    if (!context.mounted) return;
-                                    toast.showToast(
-                                      error,
-                                      type: NotifType.error,
-                                    );
-                                  }
-                                }
+                                onPressed();
                                 processing = false;
                               },
                               child: const BLText(
                                 'Login',
                                 color: Colors.white,
                               )),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              BLTextButton(
-                                  onPressed: () =>
-                                      nav.pushReplace(context, const Signup()),
-                                  child: const BLText(
-                                    'Create an account instead',
-                                    underlined: true,
-                                    size: 15,
-                                  ))
-                            ],
-                          ),
+                          if (!kIsWeb)
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                BLTextButton(
+                                    onPressed: () => nav.pushReplace(
+                                        context, const Signup()),
+                                    child: const BLText(
+                                      'Create an account instead',
+                                      underlined: true,
+                                      size: 15,
+                                    ))
+                              ],
+                            ),
                         ],
                       ),
-                    )),
-              ],
+                    ),
+                  )),
             ),
           ),
         ],

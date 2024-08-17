@@ -7,7 +7,7 @@ part of '../auth_changes.dart';
 // **************************************************************************
 
 String _$accountAuthChangesHash() =>
-    r'4be134337879becae76cd7c4ca0dad052d77261d';
+    r'5e4e6376335b539f4f0e870294cc777bd38c72a9';
 
 /// fired when update email/password/phoneNum/displayName/photoURL
 ///

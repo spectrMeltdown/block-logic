@@ -1,6 +1,7 @@
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/services/audio.dart';
 import 'package:block_logic/logic/services/ui.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -23,7 +24,10 @@ class BLOutlineButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final audio = ref.read(bLAudioStateProvider.notifier);
+    BLAudioState? audio;
+    if (!kIsWeb) {
+      audio = ref.read(bLAudioStateProvider.notifier);
+    }
     final blui = ref.read(bLUIProvider);
     return OutlinedButton(
         style: OutlinedButton.styleFrom(
@@ -34,7 +38,7 @@ class BLOutlineButton extends ConsumerWidget {
             backgroundColor: blui.getBtnColor(type).withOpacity(0.1),
             side: BorderSide(color: blui.getBtnColor(type))),
         onPressed: () {
-          audio.playBtn();
+          audio?.playBtn();
           onPressed.call();
         },
         child: Padding(

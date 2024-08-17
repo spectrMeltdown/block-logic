@@ -6,6 +6,5 @@ part 'generated/auth_changes.g.dart';
 @riverpod
 
 /// fired when update email/password/phoneNum/displayName/photoURL
-Stream<User?> accountAuthChanges(AccountAuthChangesRef ref) {
-  return FirebaseAuth.instance.userChanges();
-}
+Stream<User?> accountAuthChanges(AccountAuthChangesRef ref) =>
+    FirebaseAuth.instance.userChanges();

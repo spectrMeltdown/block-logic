@@ -17,7 +17,9 @@ class UserAccount extends AccountModel {
     }
     return UserAccount(
       id: doc.id,
-      createdAt: (data['createdAt'] as Timestamp).toDate(),
+      createdAt: data['createdAt'] == null
+          ? null
+          : (data['createdAt'] as Timestamp).toDate(),
       displayName: data['displayName'] ?? '',
       profilePicLink: data['profilePicLink'] ?? '',
       phoneNum: data['phoneNum'],

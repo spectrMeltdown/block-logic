@@ -34,7 +34,9 @@ class Leaderboard {
       roomID: data['roomID'] ?? '',
       totalScore: data['totalScore'] ?? '',
       status: status,
-      dateCreated: (data['dateCreated'] as Timestamp).toDate(),
+      dateCreated: data['dateCreated'] == null
+          ? null
+          : (data['dateCreated'] as Timestamp).toDate(),
     );
   }
   Map<String, dynamic> toFirestore(Leaderboard leaderboard) {

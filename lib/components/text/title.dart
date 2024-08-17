@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class BLTitle extends StatelessWidget {
@@ -5,11 +6,13 @@ class BLTitle extends StatelessWidget {
   final double size;
   final double bottomPadding;
   final double topPadding;
-  const BLTitle(this.text,
-      {super.key,
-      this.size = 35,
-      this.bottomPadding = 20,
-      this.topPadding = 0});
+  const BLTitle(
+    this.text, {
+    super.key,
+    this.size = kIsWeb ? 70 : 35,
+    this.bottomPadding = 20,
+    this.topPadding = 0,
+  });
 
   @override
   Widget build(BuildContext context) {

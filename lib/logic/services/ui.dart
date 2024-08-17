@@ -15,7 +15,7 @@ class BlockColors {
   Color keywords = const Color.fromARGB(255, 221, 221, 221);
 }
 
-@Riverpod()
+@riverpod
 class BLUI extends _$BLUI {
   @override
   BLUI build() => BLUI();

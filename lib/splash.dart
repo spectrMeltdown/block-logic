@@ -1,6 +1,6 @@
 import 'package:block_logic/components/text/title.dart';
 import 'package:block_logic/logic/services/assets.dart';
-import 'package:block_logic/screens/auth/check_acc.dart';
+import 'package:block_logic/screens/init_android.dart';
 import 'package:flame_splash_screen/flame_splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -42,7 +42,7 @@ class _Splash extends ConsumerState<Splash> {
                       fit: BoxFit.cover,
                     ),
                   )),
-          onFinish: (context) => const CheckAcc()),
+          onFinish: (context) => const InitAndroid()),
     );
   }
 }
