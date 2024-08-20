@@ -39,8 +39,8 @@ class _WaitingRoomState extends ConsumerState<WaitingRoom> {
     void exit() async {
       final exit = await dialog.show(context, const ConfirmDialog());
       if (context.mounted && exit is bool && exit) {
-        if (roomID != null) roomManger.leaveRoom(roomID!);
         nav.pop(context);
+        if (roomID != null) await roomManger.leaveRoom(roomID!);
       }
     }
 

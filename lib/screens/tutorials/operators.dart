@@ -35,7 +35,7 @@ class _OperatorsState extends ConsumerState<Operators> {
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    BLTextSpan([
+                    BLRichText([
                       TextSpan(text: '''
 Operators are special symbols that carry out operations on operands (variables and values). Common types of operators include:\n
 • Arithmetic operators: Perform basic mathematical operations (e.g., +, -, *, /).\n

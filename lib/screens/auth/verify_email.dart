@@ -69,7 +69,7 @@ class _VerifyEmailState extends ConsumerState<VerifyEmail>
               },
             ),
             const SizedBox(height: 30),
-            BLTextSpan(
+            BLRichText(
               [
                 const TextSpan(text: 'A link was sent to your email:\n'),
                 TextSpan(

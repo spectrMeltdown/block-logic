@@ -6,7 +6,7 @@ part of '../redirect.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$redirectHash() => r'9d74fb352d976f0c49567e15a091b31e54445524';
+String _$redirectHash() => r'e849dae02b8d4ea818df9e4c026ba1bec0890494';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -34,7 +34,7 @@ class _SystemHash {
 const redirectProvider = RedirectFamily();
 
 /// See also [redirect].
-class RedirectFamily extends Family<AsyncValue<String>> {
+class RedirectFamily extends Family<AsyncValue<String?>> {
   /// See also [redirect].
   const RedirectFamily();
 
@@ -75,7 +75,7 @@ class RedirectFamily extends Family<AsyncValue<String>> {
 }
 
 /// See also [redirect].
-class RedirectProvider extends AutoDisposeFutureProvider<String> {
+class RedirectProvider extends AutoDisposeFutureProvider<String?> {
   /// See also [redirect].
   RedirectProvider(
     AsyncValue<AdminAccount?> adminFirestore,
@@ -114,7 +114,7 @@ class RedirectProvider extends AutoDisposeFutureProvider<String> {
 
   @override
   Override overrideWith(
-    FutureOr<String> Function(RedirectRef provider) create,
+    FutureOr<String?> Function(RedirectRef provider) create,
   ) {
     return ProviderOverride(
       origin: this,
@@ -132,7 +132,7 @@ class RedirectProvider extends AutoDisposeFutureProvider<String> {
   }
 
   @override
-  AutoDisposeFutureProviderElement<String> createElement() {
+  AutoDisposeFutureProviderElement<String?> createElement() {
     return _RedirectProviderElement(this);
   }
 
@@ -153,7 +153,7 @@ class RedirectProvider extends AutoDisposeFutureProvider<String> {
   }
 }
 
-mixin RedirectRef on AutoDisposeFutureProviderRef<String> {
+mixin RedirectRef on AutoDisposeFutureProviderRef<String?> {
   /// The parameter `adminFirestore` of this provider.
   AsyncValue<AdminAccount?> get adminFirestore;
 
@@ -161,7 +161,7 @@ mixin RedirectRef on AutoDisposeFutureProviderRef<String> {
   AuthService get auth;
 }
 
-class _RedirectProviderElement extends AutoDisposeFutureProviderElement<String>
+class _RedirectProviderElement extends AutoDisposeFutureProviderElement<String?>
     with RedirectRef {
   _RedirectProviderElement(super.provider);
 

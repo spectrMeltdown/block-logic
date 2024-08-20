@@ -15,6 +15,7 @@ class UserAccount extends AccountModel {
     if (doc.data() != null) {
       data = doc.data() as Map<String, dynamic>;
     }
+
     return UserAccount(
       id: doc.id,
       createdAt: data['createdAt'] == null

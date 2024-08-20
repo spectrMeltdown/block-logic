@@ -4,7 +4,6 @@ import 'package:block_logic/app_theme.dart';
 import 'package:block_logic/logic/firebase_providers/selected_admin.dart';
 import 'package:block_logic/logic/services/audio.dart';
 import 'package:block_logic/logic/services/auth.dart';
-import 'package:block_logic/logic/services/internet_connection.dart';
 import 'package:block_logic/logic/services/redirect.dart';
 import 'package:block_logic/logic/services/shared_pref.dart';
 import 'package:block_logic/route_observer.dart';
@@ -54,7 +53,7 @@ class BlockLogic extends ConsumerWidget {
     final appTheme = AppTheme();
     if (!kIsWeb) {
       ref.read(audioInitProvider);
-      ref.watch(internetStatusProvider);
+      //ref.watch(internetStatusProvider);
       return ToastificationWrapper(
         child: MaterialApp(
             title: 'Block-Logic',
@@ -68,9 +67,18 @@ class BlockLogic extends ConsumerWidget {
 
     final auth = ref.read(authServiceProvider.notifier);
     final adminFirestore = ref.watch(SelectedAdminProvider(auth.getUID()));
-    final redirect = ref.watch(RedirectProvider(adminFirestore, auth));
+    final redirect = ref.watch(RedirectProvider(adminFirestore, auth).future);
     return ToastificationWrapper(
       child: MaterialApp.router(
+        // builder: (context, child) => ResponsiveBreakpoints.builder(
+        //   child: child!,
+        //   breakpoints: [
+        //     const Breakpoint(start: 0, end: 450, name: MOBILE),
+        //     const Breakpoint(start: 451, end: 800, name: TABLET),
+        //     const Breakpoint(start: 801, end: 1920, name: DESKTOP),
+        //     const Breakpoint(start: 1921, end: double.infinity, name: '4K'),
+        //   ],
+        // ),
         routerConfig: router(redirect),
         title: 'Block-Logic',
         debugShowCheckedModeBanner: false,

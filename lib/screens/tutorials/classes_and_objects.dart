@@ -35,7 +35,7 @@ class _ClassesAndObjectsState extends ConsumerState<ClassesAndObjects> {
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    BLTextSpan([
+                    BLRichText([
                       TextSpan(text: '''
 Classes provide a way to create custom data types by bundling data and methods (functions) that operate on that data. \n\nA class defines the structure and behavior of the objects created from it. For instance, you might define a Dog class to represent dogs in a program:\n\n
 ''', style: tutorialData.paragraphStyle),

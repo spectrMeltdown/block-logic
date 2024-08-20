@@ -36,7 +36,7 @@ class _ConditionalsAndLoopsState extends ConsumerState<ConditionalsAndLoops> {
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    BLTextSpan([
+                    BLRichText([
                       TextSpan(text: '''
 Conditionals allow programs to make decisions based on certain conditions. The most common conditional statement is if, which executes a block of code only if a specified condition is true. For example:\n\n
 ''', style: tutorialData.paragraphStyle),

@@ -89,6 +89,8 @@ class _BLInputState extends State<BLTextBox> {
             fillColor: Colors.teal.shade900.withAlpha(200),
             // error: widget.error,
             errorStyle: const TextStyle(color: Colors.amber),
+            focusedErrorBorder: const OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.deepOrange, width: 2)),
             errorBorder: const OutlineInputBorder(
                 borderSide: BorderSide(color: Colors.amber, width: 2)),
             border: widget.border ??

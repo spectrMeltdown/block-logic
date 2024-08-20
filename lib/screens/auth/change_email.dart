@@ -20,14 +20,6 @@ class _ChangeEmailState extends ConsumerState<ChangeEmail> {
   late final AuthService auth;
 
   @override
-  void initState() {
-    final auth = ref.read(authServiceProvider.notifier);
-    oldEmail = auth.getEmail();
-    emailController = TextEditingController(text: oldEmail);
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final nav = ref.watch(customNavigationProvider);
     return BLDialog(
@@ -40,6 +32,7 @@ class _ChangeEmailState extends ConsumerState<ChangeEmail> {
         ),
         BLTextBox(
           controller: emailController,
+          keyboardType: TextInputType.emailAddress,
           prefixIcon: const Icon(
             Icons.mail,
             color: Colors.white,
@@ -79,5 +72,13 @@ class _ChangeEmailState extends ConsumerState<ChangeEmail> {
         )
       ],
     ));
+  }
+
+  @override
+  void initState() {
+    final auth = ref.read(authServiceProvider.notifier);
+    oldEmail = auth.getEmail();
+    emailController = TextEditingController(text: oldEmail);
+    super.initState();
   }
 }

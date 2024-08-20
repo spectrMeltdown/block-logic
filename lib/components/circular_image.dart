@@ -30,7 +30,7 @@ class BLCircular extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (asset == null && url == null && icon == null) {
-      throw (ArgumentError('Provide a url or a icon!!'));
+      throw (ArgumentError('Provide a url, icon, or asset!!'));
     }
     return ClipRRect(
       borderRadius: const BorderRadius.all(Radius.circular(100)),
@@ -41,7 +41,7 @@ class BLCircular extends StatelessWidget {
         child: Padding(
             padding: EdgeInsets.all(imgPadding),
             child: url != null
-                ? buildImageFromURL()
+                ? imageFromURL()
                 : icon != null
                     ? buildIcon()
                     : buildImage()),
@@ -74,21 +74,19 @@ class BLCircular extends StatelessWidget {
     );
   }
 
-  Widget buildImageFromURL() {
+  Widget imageFromURL() {
     if (url == null) throw (ArgumentError('url was empty!!'));
     return Image.network(
-      url ?? '',
+      url!,
       fit: fit,
-      loadingBuilder: (BuildContext context, Widget child,
-          ImageChunkEvent? loadingProgress) {
+      loadingBuilder: (context, child, loadingProgress) {
         if (loadingProgress == null) {
           return child;
         } else {
           return const CircularProgressIndicator();
         }
       },
-      errorBuilder:
-          (BuildContext context, Object error, StackTrace? stackTrace) {
+      errorBuilder: (context, error, stackTrace) {
         if (error
             .toString()
             .contains('No host specified in URI file:///default')) {

@@ -32,9 +32,10 @@ class PublicRoomItem extends ConsumerWidget {
           return BLTranslucentCard(
             onPressed: () async {
               if (room.password == null || room.password!.isEmpty) {
-                final joinResult = await roomManager.joinRoom(room.id!);
-                if (context.mounted && joinResult) {
-                  toggleProcessing.call();
+                toggleProcessing();
+                await roomManager.joinRoom(room.id!);
+                toggleProcessing();
+                if (context.mounted) {
                   nav.push(context, WaitingRoom(room.id!));
                 }
               } else {
@@ -44,7 +45,6 @@ class PublicRoomItem extends ConsumerWidget {
                         pass: room.password ?? '', hostID: room.hostID!));
                 if (result is bool && result) {
                   if (!context.mounted) return;
-                  toggleProcessing.call();
                   nav.push(context, WaitingRoom(room.id!));
                 }
               }

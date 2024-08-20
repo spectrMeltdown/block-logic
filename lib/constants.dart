@@ -1,7 +1,7 @@
-const int desktopMin = 1281;
+const double desktopMin = 1281;
 
-const int mobileMax = 767;
-const int mobileMin = 320;
+const double mobileMax = 767;
+const double mobileMin = 320;
 
-const int tabletMax = 1024;
-const int tabletMin = 768;
+const double tabletMax = 1024;
+const double tabletMin = 768;

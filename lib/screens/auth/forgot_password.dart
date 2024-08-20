@@ -38,6 +38,7 @@ class _ForgotPasswordDialogState extends ConsumerState<ForgotPasswordDialog> {
           const SizedBox(height: 10),
           BLTextBox(
             controller: emailController,
+            keyboardType: TextInputType.emailAddress,
             prefixIcon: const Icon(
               Icons.mail,
             ),
@@ -74,12 +75,7 @@ class _ForgotPasswordDialogState extends ConsumerState<ForgotPasswordDialog> {
                         );
                       });
                     } else {
-                      setState(() {
-                        errorMsg = const BlankWidget();
-                      });
-                      if (context.mounted) nav.pop(context);
-                      // toast.showToast(
-                      // 'A password reset link was sent to your email.');
+                      if (context.mounted) nav.pop(context, true);
                     }
                     processing = false;
                   },

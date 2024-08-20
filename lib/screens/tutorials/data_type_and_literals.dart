@@ -36,7 +36,7 @@ class _DataTypesAndLiteralsState extends ConsumerState<DataTypesAndLiterals> {
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    BLTextSpan([
+                    BLRichText([
                       TextSpan(text: '''
 Data types define the kind of data a variable can hold. Common data types include integers (whole numbers), floats (decimal numbers), strings (text), and booleans (true/false values).  \n\n
 ''', style: tutorialData.paragraphStyle),

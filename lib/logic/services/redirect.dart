@@ -8,7 +8,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'generated/redirect.g.dart';
 
-getWidget({
+String? getWidget({
   required AsyncValue<AdminAccount?> adminFirestore,
   required AuthService auth,
   required DBService dbService,
@@ -32,18 +32,18 @@ getWidget({
         },
         error: genericError,
         loading: genericLoading);
+    return null;
   } else {
     return '/login';
   }
-  return '/';
 }
 
 @riverpod
-FutureOr<String> redirect(
+Future<String?> redirect(
   RedirectRef ref,
   AsyncValue<AdminAccount?> adminFirestore,
   AuthService auth,
-) {
+) async {
   final user = ref.watch(accountAuthProvider);
   final dbService = ref.watch(dBServiceProvider.notifier);
   return switch (user) {

@@ -1,7 +1,9 @@
+import 'package:block_logic/logic/services/responsive.dart';
 import 'package:block_logic/logic/services/ui.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class BLText extends StatefulWidget {
+class BLText extends ConsumerStatefulWidget {
   final bool softWrap;
   final int? maxLines;
   final String text;
@@ -27,14 +29,18 @@ class BLText extends StatefulWidget {
       this.duration = const Duration(milliseconds: 500)});
 
   @override
-  State<BLText> createState() => _BLTextState();
+  ConsumerState<BLText> createState() => _BLTextState();
 }
 
-class _BLTextState extends State<BLText> with SingleTickerProviderStateMixin {
+class _BLTextState extends ConsumerState<BLText>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<int> _characterCount;
+
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
+    final responsive = ref.read(responsiveManagerProvider.notifier);
     return Text(
       widget.animated
           ? widget.text.substring(0, _characterCount.value)
@@ -42,9 +48,10 @@ class _BLTextState extends State<BLText> with SingleTickerProviderStateMixin {
       textAlign: widget.alignCenter == true ? TextAlign.center : null,
       softWrap: widget.softWrap,
       maxLines: widget.maxLines,
+      overflow: TextOverflow.ellipsis,
       style: TextStyle(
         color: widget.color ?? BLUI().getAppColor('lightBlue'),
-        fontSize: widget.size,
+        fontSize: widget.size ?? responsive.getTextSize(width),
         fontStyle: widget.fontStyle,
         fontWeight: widget.bold == true ? FontWeight.bold : null,
         decoration: widget.underlined == true ? TextDecoration.underline : null,

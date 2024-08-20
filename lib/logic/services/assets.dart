@@ -15,6 +15,7 @@ class Assets {
   final String leadeboardFirst = 'assets/images/leaderboard-first.png';
   final String leadeboardSecond = 'assets/images/leaderboard-second.png';
   final String leadeboardThird = 'assets/images/leaderboard-third.png';
+  final String headerWeb = 'assets/images/header_web.jpg';
 
   /// audio
   /// TODO: find the following audio

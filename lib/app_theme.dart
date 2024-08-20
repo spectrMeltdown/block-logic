@@ -26,21 +26,33 @@ class AppTheme {
 
   /// Make the same app theme for system dark or light theme
   ThemeData theme() => ThemeData(
-        fontFamily: 'Play',
-        textTheme: textTheme(),
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo.shade400),
-        scaffoldBackgroundColor: Colors.transparent,
-        tabBarTheme: const TabBarTheme(dividerColor: Colors.transparent),
-        inputDecorationTheme: const InputDecorationTheme(
-            prefixIconColor: Colors.white, suffixIconColor: Colors.white),
-        dialogTheme: DialogTheme(
-          backgroundColor: Colors.blueGrey.shade900,
-        ),
-        bottomSheetTheme: BottomSheetThemeData(
-          backgroundColor: Colors.blueGrey.shade900,
-        ),
-        iconTheme: const IconThemeData(
-          color: Colors.white,
-        ),
-      );
+      fontFamily: 'Play',
+      textTheme: textTheme(),
+      colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo.shade400),
+      scaffoldBackgroundColor: Colors.transparent,
+      tabBarTheme: const TabBarTheme(dividerColor: Colors.transparent),
+      inputDecorationTheme: InputDecorationTheme(
+        prefixIconColor: Colors.white,
+        suffixIconColor: Colors.white,
+        filled: true,
+        fillColor: Colors.teal.shade900.withAlpha(200),
+      ),
+      dialogTheme: DialogTheme(
+        backgroundColor: Colors.blueGrey.shade900,
+      ),
+      bottomSheetTheme: BottomSheetThemeData(
+        backgroundColor: Colors.blueGrey.shade900,
+      ),
+      iconTheme: const IconThemeData(
+        color: Colors.white,
+      ),
+      canvasColor: Colors.blue, // Background color for dropdown menu
+      dropdownMenuTheme: const DropdownMenuThemeData(
+          menuStyle:
+              MenuStyle(padding: WidgetStatePropertyAll(EdgeInsets.zero)),
+          inputDecorationTheme:
+              InputDecorationTheme(contentPadding: EdgeInsets.zero)),
+      menuButtonTheme: const MenuButtonThemeData(),
+      scrollbarTheme: const ScrollbarThemeData(
+          thumbColor: WidgetStatePropertyAll(Colors.white60)));
 }

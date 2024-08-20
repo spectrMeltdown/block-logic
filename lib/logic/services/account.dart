@@ -92,7 +92,7 @@ class AccountService extends _$AccountService {
           //debugPrint(downloadURL);
 
           /// save link to new profile pic
-          state._dbService.updateProfilePicLink(downloadURL, collection);
+          await state._dbService.updateProfilePicLink(downloadURL, collection);
           return null;
         } catch (e) {
           return state._errorHandler.call(e);
@@ -100,14 +100,15 @@ class AccountService extends _$AccountService {
       } else {
         return 'Sorry, try that again.';
       }
+    } else {
+      return 'cancel';
     }
-    return null;
   }
 }
 
 class AccountServiceState {
   final _instance = FirebaseFirestore.instance;
-  final _userStorageRef = FirebaseStorage.instance.ref('users/');
+  final _userStorageRef = FirebaseStorage.instance.ref('users');
   final DBService _dbService;
   final AuthService _auth;
   final ErrorHandler _errorHandler;

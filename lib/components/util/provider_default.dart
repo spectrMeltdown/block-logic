@@ -3,7 +3,8 @@ import 'package:block_logic/components/error.dart';
 import 'package:flutter/material.dart';
 
 Widget genericError(error, stackTrace) {
-  debugPrint(error.toString());
+  debugPrint('error: ${error.toString()}');
+  debugPrint('stackTrace: ${stackTrace.toString()}');
   return const BLError();
 }
 

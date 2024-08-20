@@ -35,7 +35,7 @@ class _FunctionsState extends ConsumerState<Functions> {
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    BLTextSpan([
+                    BLRichText([
                       TextSpan(text: '''
 A function is a reusable block of code designed to perform a particular task. Functions can take input values (arguments), process them, and return an output.  \n\n
 ''', style: tutorialData.paragraphStyle),

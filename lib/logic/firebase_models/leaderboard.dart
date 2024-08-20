@@ -8,7 +8,7 @@ class Leaderboard {
   final int? totalScore; // refers to num of challenges
   final LeaderboardStatus? status;
   Leaderboard({
-    required this.id,
+    this.id,
     this.roomID,
     this.status,
     this.dateCreated,

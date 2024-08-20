@@ -2,7 +2,6 @@ import 'package:block_logic/components/account/display_name.dart';
 import 'package:block_logic/components/account/email.dart';
 import 'package:block_logic/components/button/button.dart';
 import 'package:block_logic/components/button/login_signup.dart';
-import 'package:block_logic/components/button/outline.dart';
 import 'package:block_logic/components/button/text.dart';
 import 'package:block_logic/components/dialog/reauth.dart';
 import 'package:block_logic/components/panel/panel.dart';
@@ -98,14 +97,12 @@ class _AccountSettingsWidgetState extends ConsumerState<AccountSettingsWidget> {
                                     const ChangeDisplayName());
                           },
                           child: Row(
-                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               const Icon(FontAwesomeIcons.user,
                                   color: Colors.white),
                               const SizedBox(width: 15),
-                              BLDisplayName(
-                                auth.getUID(),
-                              ),
+                              Flexible(child: BLDisplayName(auth.getUID())),
                               const SizedBox(width: 5),
                               widget.editIcon
                             ],
@@ -125,12 +122,12 @@ class _AccountSettingsWidgetState extends ConsumerState<AccountSettingsWidget> {
                             }
                           },
                           child: Row(
-                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               const Icon(FontAwesomeIcons.envelope,
                                   color: Colors.white),
                               const SizedBox(width: 15),
-                              const BLEmail(),
+                              const Flexible(child: BLEmail()),
                               const SizedBox(width: 5),
                               widget.editIcon
                             ],
@@ -157,7 +154,7 @@ class _AccountSettingsWidgetState extends ConsumerState<AccountSettingsWidget> {
                             }
                           },
                           child: Row(
-                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               const Icon(FontAwesomeIcons.lock,
                                   color: Colors.white),
@@ -171,29 +168,6 @@ class _AccountSettingsWidgetState extends ConsumerState<AccountSettingsWidget> {
                       Column(
                         children: [
                           BLButton(
-                              type: BtnType.red,
-                              onPressed: () async {
-                                auth.logout();
-                                nav.pop(context);
-                              },
-                              child: const Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(
-                                    Icons.logout,
-                                    color: Colors.white,
-                                  ),
-                                  SizedBox(width: 10),
-                                  BLText(
-                                    'Logout',
-                                    color: Colors.white,
-                                  )
-                                ],
-                              )),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          BLOutlineButton(
                               type: BtnType.red,
                               onPressed: () async {
                                 String? reauth = await showDialog(
@@ -211,16 +185,34 @@ class _AccountSettingsWidgetState extends ConsumerState<AccountSettingsWidget> {
                               child: const Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Icon(
-                                    Icons.delete_forever,
-                                    color: Colors.red,
-                                  ),
-                                  SizedBox(
-                                    width: 15,
-                                  ),
+                                  Icon(Icons.delete_forever),
+                                  SizedBox(width: 10),
                                   BLText(
                                     'Delete account',
-                                    color: Colors.red,
+                                    color: Colors.white,
+                                  )
+                                ],
+                              )),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          BLButton(
+                              type: BtnType.orange,
+                              onPressed: () async {
+                                auth.logout();
+                                nav.pop(context);
+                              },
+                              child: const Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.logout,
+                                    color: Colors.white,
+                                  ),
+                                  SizedBox(width: 10),
+                                  BLText(
+                                    'Logout',
+                                    color: Colors.white,
                                   )
                                 ],
                               )),

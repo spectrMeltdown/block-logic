@@ -35,7 +35,7 @@ class _VariablesScreenState extends ConsumerState<Variables> {
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    BLTextSpan([
+                    BLRichText([
                       TextSpan(text: '''
 Variables act as containers for storing data values. Each variable has a name, and it can be used to store information that can be referenced and manipulated in a program. \n\n
 ''', style: tutorialData.paragraphStyle),

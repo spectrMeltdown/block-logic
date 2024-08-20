@@ -48,7 +48,14 @@ class _PublicRoomsState extends ConsumerState<PublicRooms> {
                   return PublicRoomItem(
                       room: rooms[i], toggleProcessing: toggleProcessing);
                 }),
-            if (processing) const Positioned.fill(child: BLLoading())
+            Visibility(
+                visible: processing,
+                child: Positioned.fill(
+                    child: Container(
+                        color: Colors.black.withOpacity(0.6),
+                        child: const BLLoading(
+                          message: 'Joining room...',
+                        ))))
           ],
         );
       },

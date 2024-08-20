@@ -3,17 +3,17 @@ import 'package:block_logic/components/circular_image.dart';
 import 'package:block_logic/components/util/blank_widget.dart';
 import 'package:block_logic/logic/firebase_providers/selected_user.dart';
 import 'package:block_logic/logic/services/audio.dart';
-import 'package:block_logic/logic/services/auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class BLProfilePic extends ConsumerStatefulWidget {
-  final String accountID;
+  final String id;
   final double size;
   final VoidCallback? onPressed;
   const BLProfilePic(
-    this.accountID, {
+    this.id, {
     super.key,
     this.size = 50,
     this.onPressed,
@@ -25,16 +25,14 @@ class BLProfilePic extends ConsumerStatefulWidget {
 
 class _BLProfilePicState extends ConsumerState<BLProfilePic> {
   double _opacity = 0;
-  String? oldPhotoURL;
+  BLAudioState? audio;
 
   @override
   Widget build(BuildContext context) {
-    final auth = ref.watch(authServiceProvider.notifier);
-    final user = ref.watch(SelectedUserProvider(auth.getUID()));
-    final audio = ref.read(bLAudioStateProvider.notifier);
+    final user = ref.watch(SelectedUserProvider(widget.id));
     return GestureDetector(
       onTapDown: (TapDownDetails tapDown) {
-        audio.playBtn();
+        audio?.playBtn();
         onTapDown();
       },
       onTapUp: onTapUp,
@@ -95,22 +93,34 @@ class _BLProfilePicState extends ConsumerState<BLProfilePic> {
     );
   }
 
+  @override
+  void initState() {
+    if (!kIsWeb) audio = ref.read(bLAudioStateProvider.notifier);
+    super.initState();
+  }
+
   void onTapCancel() {
-    setState(() {
-      _opacity = 0;
-    });
+    if (!kIsWeb) {
+      setState(() {
+        _opacity = 0;
+      });
+    }
   }
 
   void onTapDown() {
-    setState(() {
-      _opacity = 1;
-    });
+    if (!kIsWeb) {
+      setState(() {
+        _opacity = 1;
+      });
+    }
   }
 
   void onTapUp(TapUpDetails tapUp) {
-    setState(() {
-      _opacity = 0;
-    });
-    widget.onPressed?.call();
+    if (!kIsWeb) {
+      setState(() {
+        _opacity = 0;
+      });
+      widget.onPressed?.call();
+    }
   }
 }

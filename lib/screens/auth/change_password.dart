@@ -31,6 +31,7 @@ class _ChangePasswordState extends ConsumerState<ChangePassword> {
         ),
         BLTextBox(
           controller: passController,
+          keyboardType: TextInputType.visiblePassword,
           prefixIcon: const Icon(
             Icons.lock,
             color: Colors.white,

@@ -9,11 +9,11 @@ import 'package:block_logic/web/screens/reports/reports.dart';
 import 'package:block_logic/web/screens/settings/settings.dart';
 import 'package:block_logic/web/screens/status/not_found.dart';
 import 'package:block_logic/web/screens/status/waiting_approval.dart';
+import 'package:block_logic/web/screens/web_scaffold.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-GoRouter router(AsyncValue<String> redirect) {
+GoRouter router(Future<String?> redirect) {
   final parentKey = GlobalKey<NavigatorState>();
   final shellKey = GlobalKey<NavigatorState>();
   List<List<dynamic>> shellRoutes = [
@@ -34,28 +34,33 @@ GoRouter router(AsyncValue<String> redirect) {
   ];
   return GoRouter(
     navigatorKey: parentKey,
+    //debugLogDiagnostics: true, // displays route tree
+    initialLocation: '/settings',
     routes: [
       ...List.generate(routes.length, (i) {
         return GoRoute(
-            path: routes[i][0], builder: (context, state) => routes[i][1]);
+            parentNavigatorKey: parentKey,
+            path: routes[i][0],
+            builder: (context, state) => routes[i][1]);
       }),
       ShellRoute(
           navigatorKey: shellKey,
+          pageBuilder: (context, state, child) {
+            return NoTransitionPage(
+                child: WebScaffold(
+              location: state.fullPath!,
+              child: child,
+            ));
+          },
           routes: List.generate(shellRoutes.length, (i) {
             return GoRoute(
-                parentNavigatorKey: shellKey,
                 path: shellRoutes[i][0],
                 builder: (context, state) => shellRoutes[i][1]);
           })),
     ],
     observers: [routeObserver],
     redirect: (context, state) async {
-      return redirect.when(
-          data: (link) {
-            return link;
-          },
-          error: (error, stackTrace) => '/notfound',
-          loading: () => '/loading');
+      return await redirect;
     },
     errorBuilder: (context, state) {
       return const NotFound();
