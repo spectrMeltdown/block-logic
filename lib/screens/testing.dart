@@ -57,7 +57,7 @@ class TestingPage extends ConsumerWidget {
                           'No functions',
                           'No classes'
                         ],
-                        blocks: AllBlocks.getAllBlocks(),
+                        blocks: AllBlocks.get(),
                         difficulty: 'Intermediate',
                         tags: ['conditionals', ''],
                       ),
@@ -68,7 +68,7 @@ class TestingPage extends ConsumerWidget {
                             'Count the number of vowels in a given string.',
                         additionalInfo: '',
                         limitations: ['2 block lines', 'Use one function', ''],
-                        blocks: AllBlocks.getAllBlocks(),
+                        blocks: AllBlocks.get(),
                         difficulty: 'Beginner',
                         tags: [
                           'conditionals',

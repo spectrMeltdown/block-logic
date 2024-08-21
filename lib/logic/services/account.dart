@@ -7,6 +7,7 @@ import 'package:block_logic/logic/services/error_handler.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 import 'package:mime/mime.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
@@ -51,47 +52,30 @@ class AccountService extends _$AccountService {
       'gif',
     ]);
 
-    /// check if an image was selected or not
     if (img != null) {
-      /// get the path of the image selected
       String? imagePath = img.files.first.path;
-
-      /// check if path exists
       if (imagePath != null) {
-        /// get the file type of the image
         final mimeType = lookupMimeType(imagePath);
-
-        /// create a file object from image path
         File selectedPhoto = File(imagePath);
-
-        /// create reference to the images of the user
-        final Reference profilePicRef = state._userStorageRef
-            .child(state._auth.getUID())
-            .child('profile_pic');
-
-        // Get temp directory
+        final Reference storageRef =
+            kIsWeb ? state._adminStorageRef : state._userStorageRef;
+        final Reference profilePicRef =
+            storageRef.child(state._auth.getUID()).child('profilePic');
         Directory tempDir = await getTemporaryDirectory();
         String tempPath = tempDir.path;
-
-        // Copy and rename file
         String fileName = 'profile_pic${extension(imagePath)}';
         File renamedSelectedPhoto =
             await selectedPhoto.copy('$tempPath/$fileName');
 
         try {
-          /// upload the file, with metadata
           await profilePicRef.putFile(
               renamedSelectedPhoto,
               SettableMetadata(
                 contentType: mimeType,
               ));
 
-          /// get the url
           final downloadURL = await profilePicRef.getDownloadURL();
 
-          //debugPrint(downloadURL);
-
-          /// save link to new profile pic
           await state._dbService.updateProfilePicLink(downloadURL, collection);
           return null;
         } catch (e) {
@@ -109,6 +93,7 @@ class AccountService extends _$AccountService {
 class AccountServiceState {
   final _instance = FirebaseFirestore.instance;
   final _userStorageRef = FirebaseStorage.instance.ref('users');
+  final _adminStorageRef = FirebaseStorage.instance.ref('admins');
   final DBService _dbService;
   final AuthService _auth;
   final ErrorHandler _errorHandler;

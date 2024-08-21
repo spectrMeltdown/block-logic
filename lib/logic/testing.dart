@@ -8,7 +8,7 @@ import 'package:block_logic/logic/game/py_loops.dart';
 import 'package:block_logic/logic/game/py_operators.dart';
 
 class AllBlocks {
-  static Map<CodeBlockType, List<GameBlockData>> getAllBlocks() {
+  static Map<CodeBlockType, List<GameBlockData>> get() {
     return {
       CodeBlockType.classes: [
         GameBlockData.createClass(name: 'MyClass'),

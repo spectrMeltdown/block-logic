@@ -36,36 +36,17 @@ class GameBlockData {
     this.value,
   });
 
-  ///overwrite any fields provided, copies any old existing data from the object
-  GameBlockData copyWith({
-    CodeBlockType? type,
-    String? name,
-    CodeBlockState? state,
+  factory GameBlockData.createClass({
+    // required String id,
+    required String name,
     PyInitFunction? init,
-    List<GameBlockData>? body,
-    PyLiteral? return_,
-    List<GameBlockData>? parameters,
-    List<GameBlockData>? arguments,
-    List<GameBlockData>? condition,
-    GameBlockData? functionDefinition,
-    GameBlockData? classDefinition,
-    PyLiteral? value,
-    String? id,
   }) {
+    const type = CodeBlockType.classes;
     return GameBlockData(
-      //id: id ?? this.id,
-      type: type ?? this.type,
-      name: name ?? this.name,
-      state: state ?? this.state,
-      init: init ?? this.init,
-      body: body ?? this.body,
-      return_: return_ ?? this.return_,
-      parameters: parameters ?? this.parameters,
-      arguments: arguments ?? this.arguments,
-      condition: condition ?? this.condition,
-      functionDefinition: functionDefinition ?? this.functionDefinition,
-      classDefinition: classDefinition ?? this.classDefinition,
-      value: value ?? this.value,
+      // id: id,
+      type: type,
+      name: name,
+      init: init,
     );
   }
 
@@ -101,6 +82,21 @@ class GameBlockData {
     }
   }
 
+  factory GameBlockData.createFunction({
+    // required String id,
+    required String name,
+    GameBlockData? functionDefinition,
+  }) {
+    const type = CodeBlockType.functions;
+    return GameBlockData(
+      // id: id,
+      type: type,
+      name: name,
+      arguments: [],
+      functionDefinition: functionDefinition,
+    );
+  }
+
   factory GameBlockData.createFunctionDefinition({
     // required String id,
     required String name,
@@ -117,61 +113,15 @@ class GameBlockData {
     );
   }
 
-  factory GameBlockData.createFunction({
+  factory GameBlockData.createLiteral({
     // required String id,
-    required String name,
-    GameBlockData? functionDefinition,
+    required PyLiteral literal,
   }) {
-    const type = CodeBlockType.functions;
+    const type = CodeBlockType.literals;
     return GameBlockData(
       // id: id,
       type: type,
-      name: name,
-      arguments: [],
-      functionDefinition: functionDefinition,
-    );
-  }
-
-  factory GameBlockData.createClass({
-    // required String id,
-    required String name,
-    PyInitFunction? init,
-  }) {
-    const type = CodeBlockType.classes;
-    return GameBlockData(
-      // id: id,
-      type: type,
-      name: name,
-      init: init,
-    );
-  }
-
-  factory GameBlockData.createObject({
-    // required String id,
-    required String name,
-    GameBlockData? classDefinition,
-  }) {
-    const type = CodeBlockType.objects;
-    return GameBlockData(
-      // id: id,
-      type: type,
-      name: name,
-      arguments: [],
-      classDefinition: classDefinition,
-    );
-  }
-
-  factory GameBlockData.createVariable({
-    // required String id,
-    required String name,
-    required PyLiteral value,
-  }) {
-    const type = CodeBlockType.variables;
-    return GameBlockData(
-      // id: id,
-      type: type,
-      name: name,
-      value: value,
+      name: literal.value,
     );
   }
 
@@ -200,15 +150,18 @@ class GameBlockData {
     }
   }
 
-  factory GameBlockData.createLiteral({
+  factory GameBlockData.createObject({
     // required String id,
-    required PyLiteral literal,
+    required String name,
+    GameBlockData? classDefinition,
   }) {
-    const type = CodeBlockType.literals;
+    const type = CodeBlockType.objects;
     return GameBlockData(
       // id: id,
       type: type,
-      name: literal.value,
+      name: name,
+      arguments: [],
+      classDefinition: classDefinition,
     );
   }
 
@@ -286,6 +239,53 @@ class GameBlockData {
       // id: id,
       type: type,
       name: '',
+    );
+  }
+
+  factory GameBlockData.createVariable({
+    // required String id,
+    required String name,
+    required PyLiteral value,
+  }) {
+    const type = CodeBlockType.variables;
+    return GameBlockData(
+      // id: id,
+      type: type,
+      name: name,
+      value: value,
+    );
+  }
+
+  ///overwrite any fields provided, copies any old existing data from the object
+  GameBlockData copyWith({
+    CodeBlockType? type,
+    String? name,
+    CodeBlockState? state,
+    PyInitFunction? init,
+    List<GameBlockData>? body,
+    PyLiteral? return_,
+    List<GameBlockData>? parameters,
+    List<GameBlockData>? arguments,
+    List<GameBlockData>? condition,
+    GameBlockData? functionDefinition,
+    GameBlockData? classDefinition,
+    PyLiteral? value,
+    String? id,
+  }) {
+    return GameBlockData(
+      //id: id ?? this.id,
+      type: type ?? this.type,
+      name: name ?? this.name,
+      state: state ?? this.state,
+      init: init ?? this.init,
+      body: body ?? this.body,
+      return_: return_ ?? this.return_,
+      parameters: parameters ?? this.parameters,
+      arguments: arguments ?? this.arguments,
+      condition: condition ?? this.condition,
+      functionDefinition: functionDefinition ?? this.functionDefinition,
+      classDefinition: classDefinition ?? this.classDefinition,
+      value: value ?? this.value,
     );
   }
 }

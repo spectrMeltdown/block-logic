@@ -58,6 +58,7 @@ class _AdminSettingsState extends ConsumerState<AdminSettings> {
                           auth.getUID(),
                           size: 150,
                         ),
+                        const SizedBox(height: 10),
                         BLTextButton(
                             onPressed: () async {
                               if (processing) return;
@@ -67,6 +68,7 @@ class _AdminSettingsState extends ConsumerState<AdminSettings> {
                                       FirestoreCollections.admins);
                               if (result != null) {
                                 if (result == 'cancel') {
+                                  processing = false;
                                   return;
                                 }
                                 setState(() {
@@ -81,7 +83,7 @@ class _AdminSettingsState extends ConsumerState<AdminSettings> {
                               }
                               processing = false;
                             },
-                            child: const BLText('Edit')),
+                            child: const BLText('Change')),
                         account.when(
                             data: (account) {
                               if (account == null) {
@@ -106,18 +108,34 @@ class _AdminSettingsState extends ConsumerState<AdminSettings> {
                                         ConstrainedBox(
                                             constraints: BoxConstraints(
                                                 maxWidth: width * 0.3),
-                                            child: BLTextBox(
-                                              controller: nameController,
-                                              validator: (name) => validator
-                                                  .validateDisplayName(name),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                const BLText('Display Name:'),
+                                                BLTextBox(
+                                                  controller: nameController,
+                                                  validator: (name) => validator
+                                                      .validateDisplayName(
+                                                          name),
+                                                ),
+                                              ],
                                             )),
                                         ConstrainedBox(
                                             constraints: BoxConstraints(
                                                 maxWidth: width * 0.3),
-                                            child: BLTextBox(
-                                              controller: emailController,
-                                              validator: (email) => validator
-                                                  .validateEmail(email),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                const BLText('Email:'),
+                                                BLTextBox(
+                                                  controller: emailController,
+                                                  validator: (email) =>
+                                                      validator
+                                                          .validateEmail(email),
+                                                ),
+                                              ],
                                             ))
                                       ],
                                     ),
@@ -145,6 +163,7 @@ class _AdminSettingsState extends ConsumerState<AdminSettings> {
                                         )
                                       ],
                                     ),
+                                    const BLText('Phone Number:'),
                                     ConstrainedBox(
                                         constraints: BoxConstraints(
                                             maxWidth: width * 0.3),

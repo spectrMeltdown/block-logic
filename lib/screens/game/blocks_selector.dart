@@ -94,7 +94,7 @@ class _GameBlocksState extends ConsumerState<GameBlocks>
   void initState() {
     gameManager = ref.read(gameManagerProvider.notifier);
     // TODO: get Map<CodeBlockType[], List<GameBlockData>> from challenge data
-    blocks = AllBlocks.getAllBlocks();
+    blocks = AllBlocks.get();
     blocksTabList.remove('FunctionDefinition');
     blocksTabController =
         TabController(length: blocksTabList.length, vsync: this);

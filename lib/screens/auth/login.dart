@@ -49,12 +49,13 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
     final mediaQ = MediaQuery.of(context);
     final width = mediaQ.size.width;
 
-    Future<void> onPressed() async {
+    Future<void> submit() async {
       if (_loginFormKey.currentState!.validate()) {
         toast.showToast('Logging in', type: NotifType.info);
         final error = await auth.login(
             email: emailController.text.trim(),
             password: passwordController.text.trim());
+        debugPrint('after login code');
         if (error == null) {
           final awaitedSettings = await settings;
           final loginAlert =
@@ -138,10 +139,10 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
                                     BLTextBox(
                                       controller: emailController,
                                       hintText: 'Email',
-                                      onFieldSubmitted: (p0) {
+                                      onFieldSubmitted: (p0) async {
                                         if (processing == true) return;
                                         processing = true;
-                                        onPressed();
+                                        await submit();
                                         processing = false;
                                       },
                                       prefixIcon: const Icon(
@@ -158,10 +159,10 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
                                     BLTextBox(
                                       controller: passwordController,
                                       hintText: 'Password',
-                                      onFieldSubmitted: (p0) {
+                                      onFieldSubmitted: (p0) async {
                                         if (processing == true) return;
                                         processing = true;
-                                        onPressed();
+                                        await submit();
                                         processing = false;
                                       },
                                       prefixIcon: const Icon(
@@ -208,7 +209,7 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
                                         onPressed: () async {
                                           if (processing == true) return;
                                           processing = true;
-                                          await onPressed();
+                                          await submit();
                                           processing = false;
                                         },
                                         child: const BLText(
