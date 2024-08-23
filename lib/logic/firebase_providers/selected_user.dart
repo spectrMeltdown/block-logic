@@ -10,6 +10,10 @@ Stream<UserAccount?> selectedUser(SelectedUserRef ref, String id) async* {
   final db = FirebaseFirestore.instance;
   final stream = db.collection('users').doc(id).snapshots();
   await for (final doc in stream) {
-    yield UserAccount.fromFirestore(doc);
+    if (doc.exists == false) {
+      yield null;
+    } else {
+      yield UserAccount.fromFirestore(doc);
+    }
   }
 }

@@ -3,11 +3,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class FeedbackData {
   final String? id;
   final String? title;
+  final String? userID;
   final String? message;
   final DateTime? createdAt;
   FeedbackData({
     this.id,
     this.title,
+    this.userID,
     this.message,
     this.createdAt,
   });
@@ -22,6 +24,7 @@ class FeedbackData {
       id: doc.id,
       title: data['title'] ?? '',
       message: data['message'] ?? '',
+      userID: data['userID'] ?? '',
       createdAt: data['createdAt'] == null
           ? null
           : (data['createdAt'] as Timestamp).toDate(),
@@ -37,6 +40,9 @@ class FeedbackData {
     }
     if (feedback.title != null) {
       toFirestoreMap.addAll({'title': feedback.title});
+    }
+    if (feedback.userID != null) {
+      toFirestoreMap.addAll({'userID': feedback.userID});
     }
     return toFirestoreMap;
   }

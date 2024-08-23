@@ -182,7 +182,7 @@ class _SignupState extends ConsumerState<Signup> with RouteAware {
                                       if (!context.mounted) return;
                                       toast.showToast(
                                         'Creating Account ...',
-                                        type: NotifType.error,
+                                        type: NotifType.info,
                                       );
                                       final error = await auth.createAccount(
                                           email: emailController.text.trim(),

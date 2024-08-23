@@ -1,14 +1,11 @@
 import 'package:block_logic/components/text/text.dart';
-import 'package:block_logic/components/textbox.dart';
-import 'package:block_logic/components/util/provider_default.dart';
 import 'package:block_logic/constants.dart';
-import 'package:block_logic/logic/firebase_providers/all_challenges.dart';
-import 'package:block_logic/logic/firebase_providers/selected_challenge.dart';
-import 'package:block_logic/web/components/bl_table.dart';
 import 'package:block_logic/web/components/button.dart';
 import 'package:block_logic/web/components/card_simple.dart';
 import 'package:block_logic/web/components/header.dart';
 import 'package:block_logic/web/components/search.dart';
+import 'package:block_logic/web/screens/challenges/challenges_selector.dart';
+import 'package:block_logic/web/screens/challenges/edit_challenge.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -23,20 +20,11 @@ class ChallengesState extends ConsumerState<Challenges> {
   final pageScrollController = ScrollController();
   final searchController = SearchController();
   String selectedChallengeID = '';
-  final List<String> challengeProps = [
-    'Name',
-    'Short Description',
-    'Additional Info',
-    'Limitations',
-    'Blocks',
-    'Difficulty',
-    'Tags',
-  ];
-  late final List<TextEditingController> challengeEditingControllers;
+  String searchQuery = '';
+  bool processing = false;
+
   @override
   Widget build(BuildContext context) {
-    final challenges = ref.watch(challengesProvider);
-    final selectedChallenge = ref.watch(SelectedChallengeProvider(''));
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     return Column(
@@ -50,7 +38,7 @@ class ChallengesState extends ConsumerState<Challenges> {
                 children: [
                   const Header(title: 'Challenges'),
                   Padding(
-                    padding: const EdgeInsets.all(15),
+                    padding: const EdgeInsets.all(10),
                     child: Wrap(
                       spacing: 10,
                       runSpacing: 10,
@@ -59,112 +47,46 @@ class ChallengesState extends ConsumerState<Challenges> {
                           constraints: BoxConstraints(
                               maxWidth: width <= desktopMin
                                   ? width * 0.8
-                                  : width * 0.4,
-                              maxHeight: height * 0.5),
+                                  : width * 0.43,
+                              maxHeight: width <= desktopMin
+                                  ? height * 0.55
+                                  : height * 0.5),
                           child: Column(
                             children: [
-                              AdminSearchBar(
-                                  searchController: searchController),
-                              Expanded(
-                                child: BLCardSimple(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(15),
-                                    child: Column(
-                                      children: [
-                                        BLAdminButton(
-                                            type: AdminBtnType.teal,
-                                            child: const Row(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                Icon(
-                                                  Icons.add,
-                                                  color: Colors.white,
-                                                ),
-                                                BLText('Create')
-                                              ],
-                                            ),
-                                            onPressed: () {}),
-                                        const SizedBox(
-                                          height: 10,
-                                        ),
-                                        challenges.when(
-                                            data: (challenges) {
-                                              if (challenges.isEmpty) {
-                                                return const Center(
-                                                  child: BLText(
-                                                      'No challenges found.'),
-                                                );
-                                              }
-                                              return Padding(
-                                                padding:
-                                                    const EdgeInsets.all(15),
-                                                child: BLTable(
-                                                  columns: List.generate(
-                                                      challengeProps.length,
-                                                      (i) {
-                                                    return DataColumn(
-                                                        label: BLText(
-                                                            challengeProps[i]));
-                                                  }),
-                                                  rows: List.generate(
-                                                      challenges.length, (i) {
-                                                    return DataRow(
-                                                        cells: List.generate(
-                                                            challengeProps
-                                                                .length, (i) {
-                                                      return DataCell(BLText(
-                                                          challenges[i].name ??
-                                                              '--'));
-                                                    }));
-                                                  }),
-                                                ),
-                                              );
-                                            },
-                                            error: genericError,
-                                            loading: genericLoading)
-                                      ],
-                                    ),
+                              AdminSearchBar((newQuery) {
+                                setState(() {
+                                  searchQuery = newQuery;
+                                });
+                              }),
+                              BLCardSimple(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(15),
+                                  child: Column(
+                                    children: [
+                                      ChallengesSelector(
+                                          updateSelectedChallengeID),
+                                      const SizedBox(height: 10),
+                                      BLAdminButton(
+                                          type: AdminBtnType.teal,
+                                          child: const Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Icon(
+                                                Icons.add,
+                                                color: Colors.white,
+                                              ),
+                                              BLText('Create')
+                                            ],
+                                          ),
+                                          onPressed: () {}),
+                                    ],
                                   ),
                                 ),
                               ),
                             ],
                           ),
                         ),
-                        ConstrainedBox(
-                          constraints: BoxConstraints(
-                              maxWidth: width <= desktopMin
-                                  ? width * 0.8
-                                  : width * 0.4,
-                              maxHeight: height * 0.5),
-                          child: BLCardSimple(
-                              child: selectedChallenge.when(
-                                  data: (challenge) {
-                                    if (challenge == null) {
-                                      return const Center(
-                                        child: BLText(
-                                            'Couldn\'t load that challenge..'),
-                                      );
-                                    }
-                                    return Column(
-                                      children: List.generate(
-                                          challengeProps.length, (i) {
-                                        return Row(children: [
-                                          BLText(challengeProps[i]),
-                                          BLTextBox(
-                                              controller:
-                                                  challengeEditingControllers[
-                                                      i])
-                                        ]);
-                                      }),
-                                    );
-                                  },
-                                  error: selectedChallengeID.isEmpty
-                                      ? (error, stackTrace) => const Center(
-                                            child: BLText('Select a challenge'),
-                                          )
-                                      : genericError,
-                                  loading: genericLoading)),
-                        )
+                        BLCardSimple(child: EditChallenge(selectedChallengeID))
                       ],
                     ),
                   )
@@ -177,11 +99,9 @@ class ChallengesState extends ConsumerState<Challenges> {
     );
   }
 
-  @override
-  void initState() {
-    challengeEditingControllers = List.generate(challengeProps.length, (i) {
-      return TextEditingController();
+  void updateSelectedChallengeID(String newValue) {
+    setState(() {
+      selectedChallengeID = newValue;
     });
-    super.initState();
   }
 }

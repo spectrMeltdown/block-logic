@@ -11,9 +11,12 @@ Stream<AccountSettings?> settings(
     SettingsRef ref, FirestoreCollections accountCollection) async* {
   final db = FirebaseFirestore.instance;
   final id = ref.read(authServiceProvider.notifier).getUID();
-  if (id.isEmpty) yield null;
-  final stream = db.collection(accountCollection.name).doc(id).snapshots();
-  await for (final doc in stream) {
-    yield AccountSettings.fromFirestore(doc);
+  if (id.isEmpty) {
+    yield null;
+  } else {
+    final stream = db.collection(accountCollection.name).doc(id).snapshots();
+    await for (final doc in stream) {
+      yield AccountSettings.fromFirestore(doc);
+    }
   }
 }

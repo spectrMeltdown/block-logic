@@ -3,20 +3,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AdminSearchBar extends ConsumerStatefulWidget {
-  final TextEditingController searchController;
+  final void Function(String) searchQueryCallBack;
   final EdgeInsets? padding;
-  const AdminSearchBar(
-      {required this.searchController, this.padding, super.key});
+  const AdminSearchBar(this.searchQueryCallBack, {this.padding, super.key});
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _AdminSearchBarState();
 }
 
 class _AdminSearchBarState extends ConsumerState<AdminSearchBar> {
+  final searchController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: SearchBar(
+        controller: searchController,
         hintText: 'Search ...',
         backgroundColor: WidgetStatePropertyAll(Colors.blueGrey.brighten(0.3)),
         leading: const Padding(
@@ -47,5 +48,15 @@ class _AdminSearchBarState extends ConsumerState<AdminSearchBar> {
     //     ),
     //   ),
     // );
+  }
+
+  @override
+  void initState() {
+    searchController.addListener(() {
+      setState(() {
+        widget.searchQueryCallBack.call(searchController.text.trim());
+      });
+    });
+    super.initState();
   }
 }

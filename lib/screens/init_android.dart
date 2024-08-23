@@ -35,10 +35,11 @@ class _InitAndroidState extends ConsumerState<InitAndroid> {
             auth: auth, userFirestore: userFirestore, dbService: dbService));
   }
 
-  Widget getWidget(
-      {required AuthService auth,
-      required AsyncValue<UserAccount?> userFirestore,
-      required DBService dbService}) {
+  Widget getWidget({
+    required AuthService auth,
+    required AsyncValue<UserAccount?> userFirestore,
+    required DBService dbService,
+  }) {
     /// check if logged in
     if (auth.isLoggedIn()) {
       /// check if email is not verified

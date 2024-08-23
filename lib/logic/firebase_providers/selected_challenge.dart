@@ -1,5 +1,4 @@
 import 'package:block_logic/logic/firebase_models/challenge.dart';
-import 'package:block_logic/logic/services/error_handler.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 

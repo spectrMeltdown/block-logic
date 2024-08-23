@@ -59,7 +59,7 @@ class _ReportsState extends ConsumerState<Reports> {
     'Rooms',
   ];
 
-  final searchController = TextEditingController();
+  String searchQuery = '';
 
   LineChartData avgData() {
     return LineChartData(
@@ -237,8 +237,11 @@ class _ReportsState extends ConsumerState<Reports> {
                                       ),
                                     ),
                                     Flexible(
-                                      child: AdminSearchBar(
-                                          searchController: searchController),
+                                      child: AdminSearchBar((newQuery) {
+                                        setState(() {
+                                          searchQuery = newQuery;
+                                        });
+                                      }),
                                     )
                                   ],
                                 ),

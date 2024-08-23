@@ -58,7 +58,7 @@ class TestingPage extends ConsumerWidget {
                           'No classes'
                         ],
                         blocks: AllBlocks.get(),
-                        difficulty: 'Intermediate',
+                        difficulty: Difficulty.intermediate,
                         tags: ['conditionals', ''],
                       ),
                       Challenge(
@@ -69,7 +69,7 @@ class TestingPage extends ConsumerWidget {
                         additionalInfo: '',
                         limitations: ['2 block lines', 'Use one function', ''],
                         blocks: AllBlocks.get(),
-                        difficulty: 'Beginner',
+                        difficulty: Difficulty.beginner,
                         tags: [
                           'conditionals',
                           'functions',

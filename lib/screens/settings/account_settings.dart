@@ -64,6 +64,7 @@ class _AccountSettingsWidgetState extends ConsumerState<AccountSettingsWidget> {
               return Column(
                 children: [
                   BLProfilePic(
+                    type: AccountType.user,
                     auth.getUID(),
                     onPressed: () async {
                       if (processing == true) return;

@@ -288,4 +288,46 @@ class GameBlockData {
       value: value ?? this.value,
     );
   }
+
+  // fromJson factory method
+  factory GameBlockData.fromJson(Map<String, dynamic> json) {
+    return GameBlockData(
+      type:
+          CodeBlockType.values.firstWhere((e) => e.toString() == json['type']),
+      name: json['name'] as String,
+      state: CodeBlockState.values.firstWhere(
+          (e) => e.toString() == json['state'],
+          orElse: () => CodeBlockState.unselected),
+      //init: json['init'] != null ? PyInitFunction.fromJson(json['init']) : null,
+      return_:
+          json['return'] != null ? PyLiteral.fromJson(json['return']) : null,
+      parameters: json['parameters'] != null
+          ? (json['parameters'] as List<dynamic>)
+              .map((item) => GameBlockData.fromJson(item))
+              .toList()
+          : null,
+      arguments: json['arguments'] != null
+          ? (json['arguments'] as List<dynamic>)
+              .map((item) => GameBlockData.fromJson(item))
+              .toList()
+          : null,
+      condition: json['condition'] != null
+          ? (json['condition'] as List<dynamic>)
+              .map((item) => GameBlockData.fromJson(item))
+              .toList()
+          : null,
+      body: json['body'] != null
+          ? (json['body'] as List<dynamic>)
+              .map((item) => GameBlockData.fromJson(item))
+              .toList()
+          : null,
+      functionDefinition: json['functionDefinition'] != null
+          ? GameBlockData.fromJson(json['functionDefinition'])
+          : null,
+      classDefinition: json['classDefinition'] != null
+          ? GameBlockData.fromJson(json['classDefinition'])
+          : null,
+      value: json['value'] != null ? PyLiteral.fromJson(json['value']) : null,
+    );
+  }
 }

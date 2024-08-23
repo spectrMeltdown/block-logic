@@ -28,6 +28,12 @@ enum CodeBlockType {
   operators
 }
 
+enum Difficulty {
+  beginner,
+  intermediate,
+  advanced,
+}
+
 enum FirestoreCollections {
   admins,
   users,

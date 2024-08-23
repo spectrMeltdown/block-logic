@@ -2,9 +2,7 @@ import 'package:block_logic/logic/firebase_models/account_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AdminAccount extends AccountModel {
-  final bool? isApproved;
   AdminAccount({
-    this.isApproved,
     super.id,
     super.displayName,
     super.phoneNum,
@@ -20,7 +18,6 @@ class AdminAccount extends AccountModel {
 
     return AdminAccount(
         id: doc.id,
-        isApproved: data['isApproved'] ?? false,
         createdAt: data['createdAt'] == null
             ? null
             : (data['createdAt'] as Timestamp).toDate(),
@@ -42,9 +39,6 @@ class AdminAccount extends AccountModel {
     }
     if (admin.profilePicLink != null) {
       toFirestoreMap.addAll({'profilePicLink': admin.profilePicLink});
-    }
-    if (admin.isApproved != null) {
-      toFirestoreMap.addAll({'isApproved': admin.isApproved});
     }
     return toFirestoreMap;
   }

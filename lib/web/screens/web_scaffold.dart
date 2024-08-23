@@ -50,6 +50,7 @@ class _WebScaffoldState extends ConsumerState<WebScaffold> {
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     final sidebar = Sidebar(location: widget.location);
+    //debugPrint(FirebaseAuth.instance.currentUser?.uid);
     return Scaffold(
       key: scaffoldKey,
       drawer: Drawer(

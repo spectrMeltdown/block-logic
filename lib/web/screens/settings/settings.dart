@@ -31,12 +31,13 @@ class _AdminSettingsState extends ConsumerState<AdminSettings> {
   final confirmPassController = TextEditingController();
   bool processing = false;
   Widget msg = const BlankWidget();
-
+  late final AccountService accountService;
+  late final Toast toast;
   @override
   Widget build(BuildContext context) {
     final account = ref.watch(SelectedAdminProvider(auth.getUID()));
-    final accountService = ref.read(accountServiceProvider.notifier);
-    final toast = ref.read(toastProvider.notifier);
+    accountService = ref.read(accountServiceProvider.notifier);
+    toast = ref.read(toastProvider.notifier);
     final validator = ref.read(textValidatorProvider);
     double width = MediaQuery.of(context).size.width;
     //double height = MediaQuery.of(context).size.height;
@@ -55,35 +56,16 @@ class _AdminSettingsState extends ConsumerState<AdminSettings> {
                     child: Column(
                       children: [
                         BLProfilePic(
+                          type: AccountType.admin,
                           auth.getUID(),
                           size: 150,
                         ),
                         const SizedBox(height: 10),
                         BLTextButton(
-                            onPressed: () async {
-                              if (processing) return;
-                              processing = true;
-                              final result =
-                                  await accountService.changeProfilePic(
-                                      FirestoreCollections.admins);
-                              if (result != null) {
-                                if (result == 'cancel') {
-                                  processing = false;
-                                  return;
-                                }
-                                setState(() {
-                                  msg = BLText(
-                                    result,
-                                    color: Colors.red,
-                                  );
-                                });
-                              } else {
-                                toast.showToast('Success',
-                                    type: NotifType.success);
-                              }
-                              processing = false;
+                            onPressed: () {
+                              updateProfilePic();
                             },
-                            child: const BLText('Change')),
+                            child: const BLText('Change', underlined: true)),
                         account.when(
                             data: (account) {
                               if (account == null) {
@@ -193,5 +175,27 @@ class _AdminSettingsState extends ConsumerState<AdminSettings> {
     auth = ref.read(authServiceProvider.notifier);
     emailController = TextEditingController(text: auth.getEmail());
     super.initState();
+  }
+
+  Future<void> updateProfilePic() async {
+    if (processing) return;
+    processing = true;
+    final result =
+        await accountService.changeProfilePic(FirestoreCollections.admins);
+    if (result != null) {
+      if (result == 'cancel') {
+        processing = false;
+        return;
+      }
+      setState(() {
+        msg = BLText(
+          result,
+          color: Colors.red,
+        );
+      });
+    } else {
+      toast.showToast('Success', type: NotifType.success);
+    }
+    processing = false;
   }
 }

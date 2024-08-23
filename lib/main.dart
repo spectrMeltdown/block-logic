@@ -1,10 +1,11 @@
 import 'dart:async';
 
 import 'package:block_logic/app_theme.dart';
+import 'package:block_logic/logic/firebase_providers/auth.dart';
 import 'package:block_logic/logic/firebase_providers/selected_admin.dart';
 import 'package:block_logic/logic/services/audio.dart';
 import 'package:block_logic/logic/services/auth.dart';
-import 'package:block_logic/logic/services/redirect.dart';
+import 'package:block_logic/logic/services/db.dart';
 import 'package:block_logic/logic/services/shared_pref.dart';
 import 'package:block_logic/route_observer.dart';
 import 'package:block_logic/router_config.dart';
@@ -66,8 +67,28 @@ class BlockLogic extends ConsumerWidget {
     }
 
     final auth = ref.read(authServiceProvider.notifier);
-    final adminFirestore = ref.watch(SelectedAdminProvider(auth.getUID()));
-    final redirect = ref.watch(RedirectProvider(adminFirestore, auth).future);
+    final user = ref.watch(accountAuthProvider);
+    final dbService = ref.watch(dBServiceProvider.notifier);
+    Future<String?> redirect() async {
+      if (user.isLoading || user.hasError) return '/loading';
+      if (auth.isLoggedIn()) {
+        if (!auth.isEmailVerified()) {
+          /// go to email verification screen (after main menu finish building)
+          return '/verify-email';
+        }
+
+        /// TODO: check if phone number was verified
+        final adminFirestore =
+            await ref.watch(SelectedAdminProvider(auth.getUID()).future);
+        if (adminFirestore == null) {
+          return '/unauthorized';
+        }
+        return null;
+      } else {
+        return '/login';
+      }
+    }
+
     return ToastificationWrapper(
       child: MaterialApp.router(
         // builder: (context, child) => ResponsiveBreakpoints.builder(
@@ -79,7 +100,7 @@ class BlockLogic extends ConsumerWidget {
         //     const Breakpoint(start: 1921, end: double.infinity, name: '4K'),
         //   ],
         // ),
-        routerConfig: router(redirect),
+        routerConfig: router(redirect()),
         title: 'Block-Logic',
         debugShowCheckedModeBanner: false,
         theme: appTheme.theme(),

@@ -4,8 +4,6 @@ class PyLiteral {
   PyDataType? dataType;
   String value;
 
-  PyLiteral._(this.dataType, this.value);
-
   factory PyLiteral.boolean(bool value) {
     const dataType = PyDataType.boolean_;
     switch (value) {
@@ -16,11 +14,21 @@ class PyLiteral {
     }
   }
 
+  // fromJson factory method
+  factory PyLiteral.fromJson(Map<String, dynamic> json) {
+    return PyLiteral._(
+      json['dataType'] != null
+          ? PyDataType.values
+              .firstWhere((e) => e.toString() == json['dataType'])
+          : null,
+      json['value'] as String,
+    );
+  }
+
   factory PyLiteral.none() {
     const dataType = PyDataType.none_;
     return PyLiteral._(dataType, 'None');
   }
-
   factory PyLiteral.number({double? doubleNum, int? intNum}) {
     if (doubleNum == null && intNum == null) {
       throw ArgumentError('Must have at least one argument');
@@ -40,4 +48,6 @@ class PyLiteral {
     const dataType = PyDataType.string_;
     return PyLiteral._(dataType, '"$string"');
   }
+
+  PyLiteral._(this.dataType, this.value);
 }

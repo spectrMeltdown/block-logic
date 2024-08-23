@@ -10,7 +10,11 @@ Stream<AdminAccount?> selectedAdmin(SelectedAdminRef ref, String id) async* {
   if (id.isNotEmpty) {
     final stream = db.collection('admins').doc(id).snapshots();
     await for (final doc in stream) {
-      yield AdminAccount.fromFirestore(doc);
+      if (doc.exists == false) {
+        yield null;
+      } else {
+        yield AdminAccount.fromFirestore(doc);
+      }
     }
   } else {
     yield null;

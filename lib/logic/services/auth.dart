@@ -44,22 +44,20 @@ class AuthService extends _$AuthService {
     }
   }
 
-  Future<String?> createAccount(
-      {required String email,
-      required String password,
-      required String displayName,
-      required String phoneNum}) async {
+  Future<String?> createAccount({
+    required String email,
+    required String password,
+    required String displayName,
+    required String phoneNum,
+  }) async {
     try {
       /// create account
       await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
 
-      /// assign display name
-      await FirebaseAuth.instance.currentUser!
-          .updateDisplayName(displayName.trim());
-
       /// save phoneNum temporarily, if app data is cleared and signup was not completed
-      await state._dbService.updateUserAccount(UserAccount(phoneNum: phoneNum));
+      await state._dbService.updateUserAccount(
+          UserAccount(displayName: displayName, phoneNum: phoneNum));
       return null;
     } catch (e) {
       return state._errorHandler.call(e);

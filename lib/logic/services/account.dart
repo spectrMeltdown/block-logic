@@ -9,8 +9,6 @@ import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:mime/mime.dart';
-import 'package:path/path.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'generated/account.g.dart';
@@ -53,36 +51,42 @@ class AccountService extends _$AccountService {
     ]);
 
     if (img != null) {
-      String? imagePath = img.files.first.path;
-      if (imagePath != null) {
-        final mimeType = lookupMimeType(imagePath);
-        File selectedPhoto = File(imagePath);
-        final Reference storageRef =
-            kIsWeb ? state._adminStorageRef : state._userStorageRef;
-        final Reference profilePicRef =
-            storageRef.child(state._auth.getUID()).child('profilePic');
-        Directory tempDir = await getTemporaryDirectory();
-        String tempPath = tempDir.path;
-        String fileName = 'profile_pic${extension(imagePath)}';
-        File renamedSelectedPhoto =
-            await selectedPhoto.copy('$tempPath/$fileName');
-
-        try {
-          await profilePicRef.putFile(
-              renamedSelectedPhoto,
+      PlatformFile? file = img.files.first;
+      if (!kIsWeb && file.path == null) {
+        return 'The path to your image doesn\'t exist.';
+      }
+      if (kIsWeb && file.bytes == null) {
+        return 'The image you selected appears to be corrupt.';
+      }
+      final mimeType = kIsWeb
+          ? lookupMimeType('', headerBytes: file.bytes)
+          : lookupMimeType(file.path!);
+      final Reference storageRef =
+          kIsWeb ? state._adminStorageRef : state._userStorageRef;
+      final Reference profilePicRef =
+          storageRef.child(state._auth.getUID()).child('profilePic');
+      try {
+        if (kIsWeb) {
+          await profilePicRef.putData(
+              file.bytes!,
               SettableMetadata(
                 contentType: mimeType,
               ));
-
-          final downloadURL = await profilePicRef.getDownloadURL();
-
-          await state._dbService.updateProfilePicLink(downloadURL, collection);
-          return null;
-        } catch (e) {
-          return state._errorHandler.call(e);
+        } else {
+          final image = File.fromRawPath(file.bytes!);
+          await profilePicRef.putFile(
+              image,
+              SettableMetadata(
+                contentType: mimeType,
+              ));
         }
-      } else {
-        return 'Sorry, try that again.';
+
+        final downloadURL = await profilePicRef.getDownloadURL();
+
+        await state._dbService.updateProfilePicLink(downloadURL, collection);
+        return null;
+      } catch (e) {
+        return state._errorHandler.call(e);
       }
     } else {
       return 'cancel';

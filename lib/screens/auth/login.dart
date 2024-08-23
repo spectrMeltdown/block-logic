@@ -45,7 +45,7 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
     final validator = ref.read(textValidatorProvider);
     final nav = ref.read(customNavigationProvider);
     final auth = ref.read(authServiceProvider.notifier);
-    final settings = ref.read(SettingsProvider(widget.accountType).future);
+    final settings = ref.watch(SettingsProvider(widget.accountType).future);
     final mediaQ = MediaQuery.of(context);
     final width = mediaQ.size.width;
 
@@ -55,7 +55,6 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
         final error = await auth.login(
             email: emailController.text.trim(),
             password: passwordController.text.trim());
-        debugPrint('after login code');
         if (error == null) {
           final awaitedSettings = await settings;
           final loginAlert =

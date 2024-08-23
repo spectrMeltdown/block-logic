@@ -31,11 +31,22 @@ class _BLAdminButtonState extends State<BLAdminButton> {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-        style: ElevatedButton.styleFrom(
-            backgroundColor: getBgColor(),
-            padding: EdgeInsets.symmetric(
-                horizontal: widget.paddingX ?? 15,
-                vertical: widget.paddingY ?? 13)),
+        style: ButtonStyle(
+          backgroundColor: WidgetStateProperty.resolveWith<Color?>(
+            (Set<WidgetState> states) {
+              if (states.contains(WidgetState.hovered)) {
+                return getBgColor(); // Change color when hovered
+              }
+              return getBgColor().withOpacity(0.9); // Default background color
+            },
+          ),
+          padding: WidgetStateProperty.all<EdgeInsets>(
+            EdgeInsets.symmetric(
+              horizontal: widget.paddingX ?? 15,
+              vertical: widget.paddingY ?? 13,
+            ),
+          ),
+        ),
         onPressed: widget.onPressed,
         child: widget.child);
   }

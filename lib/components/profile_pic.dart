@@ -1,6 +1,8 @@
 import 'package:block_logic/components/async/loading.dart';
 import 'package:block_logic/components/circular_image.dart';
 import 'package:block_logic/components/util/blank_widget.dart';
+import 'package:block_logic/logic/enums.dart';
+import 'package:block_logic/logic/firebase_providers/selected_admin.dart';
 import 'package:block_logic/logic/firebase_providers/selected_user.dart';
 import 'package:block_logic/logic/services/audio.dart';
 import 'package:flutter/foundation.dart';
@@ -12,8 +14,10 @@ class BLProfilePic extends ConsumerStatefulWidget {
   final String id;
   final double size;
   final VoidCallback? onPressed;
+  final AccountType type;
   const BLProfilePic(
     this.id, {
+    required this.type,
     super.key,
     this.size = 50,
     this.onPressed,
@@ -29,7 +33,9 @@ class _BLProfilePicState extends ConsumerState<BLProfilePic> {
 
   @override
   Widget build(BuildContext context) {
-    final user = ref.watch(SelectedUserProvider(widget.id));
+    final account = widget.type == AccountType.admin
+        ? ref.watch(SelectedAdminProvider(widget.id))
+        : ref.watch(SelectedUserProvider(widget.id));
     return GestureDetector(
       onTapDown: (TapDownDetails tapDown) {
         audio?.playBtn();
@@ -59,15 +65,15 @@ class _BLProfilePicState extends ConsumerState<BLProfilePic> {
                 child: FractionallySizedBox(
                     widthFactor: 1,
                     heightFactor: 1,
-                    child: user.when(
-                        data: (user) {
-                          if (user?.profilePicLink == null ||
-                              user!.profilePicLink!.isEmpty) {
+                    child: account.when(
+                        data: (account) {
+                          if (account?.profilePicLink == null ||
+                              account!.profilePicLink!.isEmpty) {
                             return const BLLoading(color: Colors.black);
-                          } else if (user.profilePicLink == 'new_user') {
+                          } else if (account.profilePicLink == 'default') {
                             return const Icon(FontAwesomeIcons.user);
                           } else {
-                            return BLCircular(url: user.profilePicLink);
+                            return BLCircular(url: account.profilePicLink);
                           }
                         },
                         error: (error, stackTrace) => const BlankWidget(),

@@ -48,7 +48,9 @@ class _BLTextState extends ConsumerState<BLText>
       textAlign: widget.alignCenter == true ? TextAlign.center : null,
       softWrap: widget.softWrap,
       maxLines: widget.maxLines,
-      overflow: TextOverflow.ellipsis,
+      overflow: widget.softWrap == true
+          ? TextOverflow.visible
+          : TextOverflow.ellipsis,
       style: TextStyle(
         color: widget.color ?? BLUI().getAppColor('lightBlue'),
         fontSize: widget.size ?? responsive.getTextSize(width),

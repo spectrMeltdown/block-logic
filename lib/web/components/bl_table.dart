@@ -4,9 +4,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class BLTable extends ConsumerStatefulWidget {
   final List<DataColumn> columns;
   final List<DataRow> rows;
+  final double bottomPadding;
   const BLTable({
     required this.columns,
     required this.rows,
+    this.bottomPadding = 10,
     super.key,
   });
 
@@ -24,10 +26,12 @@ class _BLTableState extends ConsumerState<BLTable> {
         controller: controller,
         scrollDirection: Axis.horizontal,
         child: Container(
+          padding: EdgeInsets.only(bottom: widget.bottomPadding),
           decoration: const BoxDecoration(
               //border: Border.all(color: Colors.black),
               borderRadius: BorderRadius.all(Radius.circular(20))),
           child: DataTable(
+              showCheckboxColumn: false,
               clipBehavior: Clip.antiAlias,
               decoration: const BoxDecoration(
                   borderRadius: BorderRadius.all(Radius.circular(20))),

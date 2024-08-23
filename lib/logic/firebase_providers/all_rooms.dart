@@ -11,7 +11,7 @@ Stream<List<Room>> rooms(RoomsRef ref, [String? searchQuery]) async* {
   await for (final rooms in roomsStream) {
     final List<Room> result = [];
     if (rooms.docs.isNotEmpty) {
-      if (searchQuery != null || searchQuery!.isNotEmpty) {
+      if (searchQuery != null && searchQuery.isNotEmpty) {
         // Convert query to lowercase for case-insensitive matching
         final lowerCaseQuery = searchQuery.toLowerCase();
 

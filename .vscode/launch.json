@@ -5,7 +5,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "block-logic",
+      "name": "debug",
       "request": "launch",
       "type": "dart"
     },
@@ -24,13 +24,13 @@
       ],
     },
     {
-      "name": "block-logic (profile mode)",
+      "name": "profile",
       "request": "launch",
       "type": "dart",
       "flutterMode": "profile"
     },
     {
-      "name": "block-logic (release mode)",
+      "name": "release",
       "request": "launch",
       "type": "dart",
       "flutterMode": "release"

@@ -100,6 +100,7 @@ class _WaitingRoomState extends ConsumerState<WaitingRoom> {
                                               child: Row(
                                                 children: [
                                                   BLProfilePic(
+                                                      type: AccountType.user,
                                                       room.players![i]),
                                                   const SizedBox(width: 10),
                                                   BLDisplayName(

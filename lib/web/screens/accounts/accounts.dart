@@ -2,6 +2,7 @@ import 'package:block_logic/components/account/display_name.dart';
 import 'package:block_logic/components/profile_pic.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/util/provider_default.dart';
+import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_models/admin_account.dart';
 import 'package:block_logic/logic/firebase_models/user_account.dart';
 import 'package:block_logic/logic/firebase_providers/all_admin.dart';
@@ -25,8 +26,8 @@ class Accounts extends ConsumerStatefulWidget {
 
 class _AccountsState extends ConsumerState<Accounts> {
   final pageScrollController = ScrollController();
-  final searchController = TextEditingController();
   late String selectedAccType;
+  String searchQuery = '';
   final List<String> accTypes = [
     'Users',
     'Admins',
@@ -35,8 +36,10 @@ class _AccountsState extends ConsumerState<Accounts> {
     'Pic',
     'Display Name',
     'Created At',
+    'Actions'
   ];
   late final List<String> adminProps;
+  bool processing = false;
   @override
   Widget build(BuildContext context) {
     final users = ref.watch(allUsersProvider);
@@ -80,9 +83,11 @@ class _AccountsState extends ConsumerState<Accounts> {
                                 hint: const BLText('Select a option'),
                               ),
                             ),
-                            Flexible(
-                                child: AdminSearchBar(
-                                    searchController: searchController)),
+                            Flexible(child: AdminSearchBar((newQuery) {
+                              setState(() {
+                                searchQuery = newQuery;
+                              });
+                            })),
                           ],
                         ),
                         ConstrainedBox(
@@ -145,22 +150,28 @@ class _AccountsState extends ConsumerState<Accounts> {
                   child: BLText('There are no users at the moment...'),
                 );
               }
-              users.removeWhere((users) =>
-                  users.id == FirebaseAuth.instance.currentUser!.uid);
-              if (users.isEmpty) {
-                return const Center(
-                  child: BLText('There are no users at the moment...'),
-                );
-              }
               return BLTable(
                   columns: List.generate(userProps.length,
                       (i) => DataColumn(label: BLText(userProps[i]))),
                   rows: List.generate(users.length, (i) {
                     return DataRow(cells: [
-                      DataCell(BLProfilePic(users[i].id ?? '')),
+                      DataCell(BLProfilePic(
+                          type: AccountType.user, users[i].id ?? '')),
                       DataCell(BLDisplayName(users[i].displayName ?? '')),
-                      DataCell(BLText(DateFormat('dd / mm / yyyy')
-                          .format(users[i].createdAt!))),
+                      DataCell(BLText(users[i].createdAt != null
+                          ? DateFormat('dd / mm / yyyy')
+                              .format(users[i].createdAt!)
+                          : '--')),
+                      DataCell(Wrap(
+                        children: [
+                          BLAdminButton(
+                              type: AdminBtnType.red,
+                              child: const BLText('Delete'),
+                              onPressed: () {
+                                // TODO: connect to firebase admin sdk
+                              })
+                        ],
+                      )),
                     ]);
                   }));
             },
@@ -169,11 +180,6 @@ class _AccountsState extends ConsumerState<Accounts> {
       default:
         return admins.when(
             data: (admins) {
-              if (admins.isEmpty) {
-                return const Center(
-                  child: BLText('There are no other admins at the moment...'),
-                );
-              }
               admins.removeWhere((admin) =>
                   admin.id == FirebaseAuth.instance.currentUser!.uid);
               if (admins.isEmpty) {
@@ -186,15 +192,23 @@ class _AccountsState extends ConsumerState<Accounts> {
                       (i) => DataColumn(label: BLText(adminProps[i]))),
                   rows: List.generate(admins.length, (i) {
                     return DataRow(cells: [
-                      DataCell(BLProfilePic(admins[i].id ?? '')),
+                      DataCell(BLProfilePic(
+                          type: AccountType.admin, admins[i].id ?? '')),
                       DataCell(BLDisplayName(admins[i].displayName ?? '')),
-                      DataCell(BLText(DateFormat('dd / mm / yyyy')
-                          .format(admins[i].createdAt!))),
-                      DataCell(BLText(admins[i].isApproved == null
-                          ? '--'
-                          : admins[i].isApproved == true
-                              ? 'Yes'
-                              : 'No')),
+                      DataCell(BLText(admins[i].createdAt != null
+                          ? DateFormat('dd / mm / yyyy')
+                              .format(admins[i].createdAt!)
+                          : '--')),
+                      DataCell(Wrap(
+                        children: [
+                          BLAdminButton(
+                              type: AdminBtnType.red,
+                              child: const BLText('Delete'),
+                              onPressed: () {
+                                // TODO: connect to firebase admin sdk
+                              })
+                        ],
+                      )),
                     ]);
                   }));
             },
@@ -206,7 +220,7 @@ class _AccountsState extends ConsumerState<Accounts> {
   @override
   void initState() {
     selectedAccType = accTypes.first;
-    adminProps = [...userProps, 'Is Approved'];
+    adminProps = [...userProps];
     super.initState();
   }
 }

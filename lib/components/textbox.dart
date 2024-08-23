@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 class BLTextBox extends StatefulWidget {
   final int? maxLength;
-  final int maxLines;
+  final int? maxLines;
   final String? helperText;
   final String? validatorText;
   final bool isAutoFocus;
@@ -22,10 +22,12 @@ class BLTextBox extends StatefulWidget {
   final InputBorder? border;
   final TextInputType? keyboardType;
   final BoxConstraints? constraints;
+  final void Function(String?)? onSaved;
   final void Function(String)? onFieldSubmitted;
   const BLTextBox({
     required this.controller,
     this.onFieldSubmitted,
+    this.onSaved,
     this.constraints,
     this.helperText,
     this.validatorText,
@@ -60,6 +62,7 @@ class _BLInputState extends State<BLTextBox> {
     return Container(
       constraints: widget.constraints,
       child: TextFormField(
+        onSaved: widget.onSaved,
         onTap: widget.onTap,
         enabled: widget.enabled,
         focusNode: focusNode,

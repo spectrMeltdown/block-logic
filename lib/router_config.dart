@@ -5,7 +5,10 @@ import 'package:block_logic/screens/auth/verify_email.dart';
 import 'package:block_logic/web/screens/accounts/accounts.dart';
 import 'package:block_logic/web/screens/challenges/challenges.dart';
 import 'package:block_logic/web/screens/dashboard/dashboard.dart';
+import 'package:block_logic/web/screens/feedback/feedback.dart';
+import 'package:block_logic/web/screens/feedback/selected_feedback.dart';
 import 'package:block_logic/web/screens/reports/reports.dart';
+import 'package:block_logic/web/screens/rooms/rooms.dart';
 import 'package:block_logic/web/screens/settings/settings.dart';
 import 'package:block_logic/web/screens/status/not_found.dart';
 import 'package:block_logic/web/screens/status/waiting_approval.dart';
@@ -19,9 +22,11 @@ GoRouter router(Future<String?> redirect) {
   List<List<dynamic>> shellRoutes = [
     ['/dashboard', const Dashboard()],
     ['/reports', const Reports()],
+    ['/feedback', const FeedbackManager()],
     ['/challenges', const Challenges()],
     ['/settings', const AdminSettings()],
-    ['/accounts', const Accounts()]
+    ['/accounts', const Accounts()],
+    ['/rooms', const RoomsManager()]
   ];
   List<List<dynamic>> routes = [
     ['/not-found', const NotFound()],
@@ -32,10 +37,11 @@ GoRouter router(Future<String?> redirect) {
     ],
     ['/verify-email', const VerifyEmail()],
   ];
+  List<String> routesWithParameters = ['/feedback/:id'];
   return GoRouter(
     navigatorKey: parentKey,
     //debugLogDiagnostics: true, // displays route tree
-    initialLocation: '/settings',
+    initialLocation: '/challenges',
     routes: [
       ...List.generate(routes.length, (i) {
         return GoRoute(
@@ -52,11 +58,18 @@ GoRouter router(Future<String?> redirect) {
               child: child,
             ));
           },
-          routes: List.generate(shellRoutes.length, (i) {
-            return GoRoute(
-                path: shellRoutes[i][0],
-                builder: (context, state) => shellRoutes[i][1]);
-          })),
+          routes: [
+            ...List.generate(shellRoutes.length, (i) {
+              return GoRoute(
+                  path: shellRoutes[i][0],
+                  builder: (context, state) => shellRoutes[i][1]);
+            }),
+            GoRoute(
+              path: routesWithParameters[0],
+              builder: (context, state) =>
+                  SelectedFeedback(state.pathParameters['id']!),
+            ),
+          ]),
     ],
     observers: [routeObserver],
     redirect: (context, state) async {

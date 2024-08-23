@@ -5,7 +5,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'generated/feedback.g.dart';
 
 @Riverpod(dependencies: [])
-Stream<List<FeedbackData?>> feedback(FeedbackRef ref, String id) async* {
+Stream<List<FeedbackData?>> feedback(FeedbackRef ref) async* {
   final db = FirebaseFirestore.instance;
   final stream = db.collection('feedback').snapshots();
   await for (final feedbacks in stream) {

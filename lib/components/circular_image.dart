@@ -14,18 +14,19 @@ class BLCircular extends StatelessWidget {
   final double iconSize;
   final double? width;
   final double? height;
-  const BLCircular(
-      {this.url,
-      this.asset,
-      this.icon,
-      this.backgroundColor,
-      this.fit = BoxFit.cover,
-      this.iconColor,
-      this.iconSize = 40,
-      this.imgPadding = 0,
-      this.width,
-      this.height,
-      super.key});
+  const BLCircular({
+    this.url,
+    this.asset,
+    this.icon,
+    this.backgroundColor,
+    this.fit = BoxFit.cover,
+    this.iconColor,
+    this.iconSize = 40,
+    this.imgPadding = 0,
+    this.width,
+    this.height,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -99,6 +100,8 @@ class BLCircular extends StatelessWidget {
             color: Colors.black,
           );
         }
+        debugPrint(error.toString());
+        debugPrintStack(stackTrace: stackTrace);
         return Icon(Icons.error, color: Colors.white, size: iconSize);
       },
     );
