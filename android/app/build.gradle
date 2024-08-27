@@ -31,7 +31,9 @@ android {
     namespace = "com.uncaughtexception.blocklogic"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
-
+    debug {
+            applicationIdSuffix ".debug"
+        }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
