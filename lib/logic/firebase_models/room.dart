@@ -10,8 +10,10 @@ class Room {
   final List<String>? players;
   final List<String>? challengeIDs;
   final int? maxPlayers;
+  final bool? adminLocked;
   final RoomStatus? status;
   Room({
+    this.adminLocked,
     this.id,
     this.players,
     this.icon,
@@ -35,48 +37,48 @@ class Room {
       status = RoomStatus.finalizing;
     } else if (data['status'] == RoomStatus.inGame.name) {
       status = RoomStatus.inGame;
+    } else if (data['status'] == RoomStatus.locked.name) {
+      status = RoomStatus.locked;
     }
     return Room(
-      id: doc.id,
-      players: data['players'] == null
-          ? null
-          : (data['players'] as List).map((item) => item as String).toList(),
-      status: status,
-      icon: data['icon'],
-      hostID: data['hostID'],
-      challengeIDs: data['challengeIDs'] == null
-          ? null
-          : (data['challengeIDs'] as List)
-              .map((item) => item as String)
-              .toList(),
-      name: data['name'] ?? '',
-      password: data['password'],
-      maxPlayers: data['maxPlayers'],
-    );
+        id: doc.id,
+        players: data['players'] == null ? null : (data['players'] as List).map((item) => item as String).toList(),
+        status: status,
+        icon: data['icon'],
+        hostID: data['hostID'],
+        challengeIDs:
+            data['challengeIDs'] == null ? null : (data['challengeIDs'] as List).map((item) => item as String).toList(),
+        name: data['name'] ?? '',
+        password: data['password'],
+        maxPlayers: data['maxPlayers'],
+        adminLocked: data['adminLocked']);
   }
 
-  Map<String, dynamic> toFirestore(Room room) {
+  Map<String, dynamic> toFirestore() {
     Map<String, dynamic> toFirestoreMap = {};
-    if (room.challengeIDs != null) {
-      toFirestoreMap.addAll({'challengeIDs': room.challengeIDs});
+    if (challengeIDs != null) {
+      toFirestoreMap.addAll({'challengeIDs': challengeIDs});
     }
-    if (room.players != null) {
-      toFirestoreMap.addAll({'players!.length': room.players});
+    if (players != null) {
+      toFirestoreMap.addAll({'players!.length': players});
     }
-    if (room.hostID != null) {
-      toFirestoreMap.addAll({'hostID': room.hostID});
+    if (hostID != null) {
+      toFirestoreMap.addAll({'hostID': hostID});
     }
-    if (room.icon != null) {
-      toFirestoreMap.addAll({'icon': room.icon});
+    if (icon != null) {
+      toFirestoreMap.addAll({'icon': icon});
     }
-    if (room.name != null) {
-      toFirestoreMap.addAll({'name': room.name});
+    if (name != null) {
+      toFirestoreMap.addAll({'name': name});
     }
-    if (room.password != null) {
-      toFirestoreMap.addAll({'password': room.password});
+    if (password != null) {
+      toFirestoreMap.addAll({'password': password});
     }
-    if (room.status != null) {
-      toFirestoreMap.addAll({'status': room.status!.name});
+    if (status != null) {
+      toFirestoreMap.addAll({'status': status!.name});
+    }
+    if (adminLocked != null) {
+      toFirestoreMap.addAll({'adminLocked': adminLocked});
     }
     return toFirestoreMap;
   }

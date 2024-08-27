@@ -27,22 +27,22 @@
 //       createdAt: data['createdAt'] == null ? null :(data['createdAt'] as Timestamp).toDate(),
 //     );
 //   }
-// Map<String, dynamic> toFirestore(AdminAccount admin) {
+// Map<String, dynamic> toFirestore() {
 //     Map<String, dynamic> toFirestoreMap = {};
-//     if (admin.createdAt != null) {
-//       toFirestoreMap.addAll({'backgroundMusic': admin.createdAt});
+//     if (createdAt != null) {
+//       toFirestoreMap.addAll({'backgroundMusic': createdAt});
 //     }
-//     if (admin.displayName != null) {
-//       toFirestoreMap.addAll({'backgroundMusic': admin.displayName});
+//     if (displayName != null) {
+//       toFirestoreMap.addAll({'backgroundMusic': displayName});
 //     }
-//     if (admin.phoneNum != null) {
-//       toFirestoreMap.addAll({'backgroundMusic': admin.phoneNum});
+//     if (phoneNum != null) {
+//       toFirestoreMap.addAll({'backgroundMusic': phoneNum});
 //     }
-//     if (admin.profilePicLink != null) {
-//       toFirestoreMap.addAll({'backgroundMusic': admin.profilePicLink});
+//     if (profilePicLink != null) {
+//       toFirestoreMap.addAll({'backgroundMusic': profilePicLink});
 //     }
-//     if (admin.isApproved != null) {
-//       toFirestoreMap.addAll({'backgroundMusic': admin.isApproved});
+//     if (isApproved != null) {
+//       toFirestoreMap.addAll({'backgroundMusic': isApproved});
 //     }
 //     return toFirestoreMap;
 //   }

@@ -4,7 +4,7 @@ import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/constants.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/services/auth.dart';
-import 'package:block_logic/web/components/button.dart';
+import 'package:block_logic/web/components/logout_btn.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -54,7 +54,11 @@ class _SidebarState extends ConsumerState<Sidebar> {
                   const SizedBox(width: 10),
                   BLProfilePic(type: AccountType.admin, auth.getUID()),
                   const SizedBox(width: 10),
-                  Flexible(child: BLDisplayName(auth.getUID())),
+                  Flexible(
+                      child: BLDisplayName(
+                    auth.getUID(),
+                    AccountType.admin,
+                  )),
                   const SizedBox(width: 10),
                 ],
               ),
@@ -65,24 +69,10 @@ class _SidebarState extends ConsumerState<Sidebar> {
             padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
             child: Divider(),
           ),
-          Center(
+          const Center(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: BLAdminButton(
-                  type: AdminBtnType.red,
-                  paddingY: 20,
-                  onPressed: () => logout(),
-                  child: const Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.logout, color: Colors.white),
-                      SizedBox(width: 10),
-                      BLText(
-                        'Logout',
-                        color: Colors.white,
-                      )
-                    ],
-                  )),
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: LogoutBtn(),
             ),
           )
         ],
@@ -183,8 +173,7 @@ class _SidebarState extends ConsumerState<Sidebar> {
                         ? Colors.blueGrey.withOpacity(0.5) // Hover color
                         : Colors.transparent, // Default color
               ),
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 8.0, vertical: 15),
+              padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 15),
               margin: EdgeInsets.symmetric(
                 vertical: 2,
                 horizontal: width <= mobileMax ? 5 : 10,
@@ -203,12 +192,5 @@ class _SidebarState extends ConsumerState<Sidebar> {
         ),
       );
     });
-  }
-
-  Future<void> logout() async {
-    if (processing) return;
-    processing = true;
-    auth.logout();
-    processing = false;
   }
 }

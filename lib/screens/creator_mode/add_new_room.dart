@@ -38,21 +38,18 @@ class _AddRoomBottomSheetState extends ConsumerState<AddRoomBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final ownRooms = ref.watch(
-        SelectedRoomsProvider(FirebaseAuth.instance.currentUser?.uid ?? ''));
-    final textValidator = ref.read(textValidatorProvider);
+    final ownRooms = ref.watch(SelectedRoomsProvider(FirebaseAuth.instance.currentUser?.uid ?? ''));
+    final textValidator = ref.read(textValidatorProvider.notifier);
     final creatorMode = ref.read(creatorModeProvider.notifier);
     final nav = ref.read(customNavigationProvider);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 30),
       child: Padding(
-          padding:
-              EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+          padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
           child: ownRooms.when(
               data: (rooms) {
-                final roomNamesProvider =
-                    ref.watch(SelectedRoomNamesProvider(rooms));
+                final roomNamesProvider = ref.watch(SelectedRoomNamesProvider(rooms));
                 return roomNamesProvider.when(
                     data: (roomNames) {
                       return Form(
@@ -76,8 +73,7 @@ class _AddRoomBottomSheetState extends ConsumerState<AddRoomBottomSheet> {
                                   labelText: 'My room',
                                   controller: roomNameController,
                                   maxLength: 100,
-                                  validator: (roomName) =>
-                                      textValidator.validateRoomName(roomName),
+                                  validator: (roomName) => textValidator.validateRoomName(roomName),
                                 ),
                               ),
                             ),
@@ -91,8 +87,7 @@ class _AddRoomBottomSheetState extends ConsumerState<AddRoomBottomSheet> {
                                   ),
                                   labelText: '10',
                                   controller: maxPlayersController,
-                                  validator: (maxPlayers) => textValidator
-                                      .validateMaxPlayers(maxPlayers),
+                                  validator: (maxPlayers) => textValidator.validateMaxPlayers(maxPlayers),
                                 ),
                               ),
                             ),
@@ -113,10 +108,8 @@ class _AddRoomBottomSheetState extends ConsumerState<AddRoomBottomSheet> {
                               visible: includesPassword,
                               child: Flexible(
                                 child: WidgetAnimator(
-                                  incomingEffect:
-                                      WidgetTransitionEffects.incomingScaleUp(),
-                                  outgoingEffect: WidgetTransitionEffects
-                                      .outgoingScaleDown(),
+                                  incomingEffect: WidgetTransitionEffects.incomingScaleUp(),
+                                  outgoingEffect: WidgetTransitionEffects.outgoingScaleDown(),
                                   child: Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: BLTextBox(
@@ -126,8 +119,7 @@ class _AddRoomBottomSheetState extends ConsumerState<AddRoomBottomSheet> {
                                       labelText: '*****',
                                       controller: passwordController,
                                       isObscure: true,
-                                      validator: (pass) =>
-                                          textValidator.validateRoomPass(pass),
+                                      validator: (pass) => textValidator.validateRoomPass(pass),
                                     ),
                                   ),
                                 ),
@@ -135,38 +127,28 @@ class _AddRoomBottomSheetState extends ConsumerState<AddRoomBottomSheet> {
                             ),
                             const BLText('Challenges (max 5)'),
                             Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 10.0),
+                              padding: const EdgeInsets.symmetric(vertical: 10.0),
                               child: Center(child: errorMsg),
                             ),
                             Center(
                               child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 15),
+                                padding: const EdgeInsets.symmetric(vertical: 15),
                                 child: BLButton(
                                   onPressed: () async {
-                                    if (newRoomFormKey.currentState!
-                                        .validate()) {
+                                    if (newRoomFormKey.currentState!.validate()) {
                                       if (processing == true) {
                                         return;
                                       }
                                       processing = true;
-                                      if (roomNames.contains(
-                                          roomNameController.text.trim())) {
+                                      if (roomNames.contains(roomNameController.text.trim())) {
                                         processing = false;
                                       }
                                       final success = await creatorMode.addRoom(
-                                          roomName:
-                                              roomNameController.text.trim(),
-                                          maxPlayers: int.tryParse(
-                                                  maxPlayersController.text
-                                                      .trim()) ??
-                                              -1,
+                                          roomName: roomNameController.text.trim(),
+                                          maxPlayers: int.tryParse(maxPlayersController.text.trim()) ?? -1,
                                           challenges: challenges,
-                                          password: passwordController
-                                                  .text.isEmpty
-                                              ? passwordController.text.trim()
-                                              : null);
+                                          password:
+                                              passwordController.text.isEmpty ? passwordController.text.trim() : null);
                                       if (success == null) {
                                         if (!context.mounted) return;
                                         nav.pop(context);

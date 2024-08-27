@@ -21,7 +21,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:video_player/video_player.dart';
 
 List<Widget> loggedInMenu(BuildContext context, CustomNavigation nav) {
   return [
@@ -138,12 +137,12 @@ class MainMenuScreen extends ConsumerStatefulWidget {
 
 class _MainMenuScreenState extends ConsumerState<MainMenuScreen>
     with WidgetsBindingObserver, SingleTickerProviderStateMixin, RouteAware {
-  late AnimationController _titleAnimationController;
-  late Animation<double> _blurRadiusAnimation;
+  late final AnimationController _titleAnimationController;
+  late final Animation<double> _blurRadiusAnimation;
   final menuController = MenuController();
   late Assets assets;
   late Toast toast;
-  late final VideoPlayerController _controller;
+  //late final VideoPlayerController _controller;
 
   @override
   Widget build(BuildContext context) {
@@ -171,9 +170,7 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen>
                                 fontSize: 60,
                                 height: 1.05,
                                 shadows: <Shadow>[
-                                  Shadow(
-                                      blurRadius: _blurRadiusAnimation.value,
-                                      color: Colors.white),
+                                  Shadow(blurRadius: _blurRadiusAnimation.value, color: Colors.white),
                                 ],
                               ));
                         }),
@@ -190,9 +187,7 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen>
                                 fontSize: 60,
                                 height: 1.05,
                                 shadows: <Shadow>[
-                                  Shadow(
-                                      blurRadius: _blurRadiusAnimation.value,
-                                      color: Colors.white),
+                                  Shadow(blurRadius: _blurRadiusAnimation.value, color: Colors.white),
                                 ],
                               ));
                         }),
@@ -200,9 +195,7 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen>
                 ],
               ),
               SpacedColumn(spacing: 10, children: [
-                ...auth.isLoggedIn()
-                    ? loggedInMenu(context, nav)
-                    : loggedOutMenu(context, nav),
+                ...auth.isLoggedIn() ? loggedInMenu(context, nav) : loggedOutMenu(context, nav),
                 if (kDebugMode)
                   BLButton(
                       onPressed: () {
@@ -217,17 +210,17 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen>
     );
   }
 
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-      // App is in the foreground again
-      _controller.play();
-    } else {
-      // App is in the background or inactive
-      _controller.pause();
-    }
-    super.didChangeAppLifecycleState(state);
-  }
+  // @override
+  // void didChangeAppLifecycleState(AppLifecycleState state) {
+  //   if (state == AppLifecycleState.resumed) {
+  //     // App is in the foreground again
+  //     _controller.play();
+  //   } else {
+  //     // App is in the background or inactive
+  //     _controller.pause();
+  //   }
+  //   super.didChangeAppLifecycleState(state);
+  // }
 
   @override
   void didChangeDependencies() {
@@ -275,13 +268,13 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen>
     ));
 
     /// video bg
-    _controller = VideoPlayerController.asset(assets.bg1,
-        videoPlayerOptions: VideoPlayerOptions(allowBackgroundPlayback: true))
-      ..initialize().then((_) {
-        _controller.play();
-        setState(() {});
-      });
-    _controller.setLooping(true);
+    // _controller = VideoPlayerController.asset(assets.bg1,
+    //     videoPlayerOptions: VideoPlayerOptions(allowBackgroundPlayback: true))
+    //   ..initialize().then((_) {
+    //     _controller.play();
+    //     setState(() {});
+    //   });
+    //_controller.setLooping(true);
     WidgetsBinding.instance.addObserver(this);
     super.initState();
   }

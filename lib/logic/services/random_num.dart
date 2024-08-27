@@ -7,16 +7,22 @@ part 'generated/random_num.g.dart';
 @riverpod
 class RandomNum extends _$RandomNum {
   @override
-  RandomNum build() => RandomNum();
-  int _oldRandNum = 0;
+  RandomNumState build() => RandomNumState();
 
-  int getRandomInt() {
+  int getRandomInt(int rangeNum, [int? additional]) {
     final random = Random();
-    int randNum = random.nextInt(100000);
-    if (_oldRandNum == randNum) {
-      randNum = random.nextInt(100000);
-      _oldRandNum = randNum;
+    int randNum = random.nextInt(rangeNum);
+    if (additional != null) {
+      randNum + additional;
+    }
+    if (state._previous == randNum) {
+      randNum = random.nextInt(900000);
+      state._previous = randNum;
     }
     return randNum;
   }
+}
+
+class RandomNumState {
+  int _previous = 0;
 }

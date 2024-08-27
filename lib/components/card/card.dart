@@ -1,6 +1,6 @@
 import 'package:block_logic/logic/services/audio.dart';
+import 'package:block_logic/logic/services/color.dart';
 import 'package:block_logic/logic/services/ui.dart';
-import 'package:flame/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -26,8 +26,7 @@ class BLCard extends ConsumerStatefulWidget {
     this.pressedOverlayColor,
     this.darkShade,
     this.outerPadding = const EdgeInsets.symmetric(horizontal: 20),
-    this.innerPadding =
-        const EdgeInsets.symmetric(horizontal: 30.0, vertical: 10),
+    this.innerPadding = const EdgeInsets.symmetric(horizontal: 30.0, vertical: 10),
   });
 
   @override
@@ -44,7 +43,7 @@ class _BLCardState extends ConsumerState<BLCard> {
   @override
   Widget build(BuildContext context) {
     final audio = ref.read(bLAudioStateProvider.notifier);
-    final blui = ref.read(bLUIProvider);
+    final blui = ref.read(bLUIProvider.notifier);
     return Container(
       padding: widget.outerPadding,
       child: GestureDetector(
@@ -62,17 +61,15 @@ class _BLCardState extends ConsumerState<BLCard> {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12.0),
               border: Border.all(color: Colors.white, width: 3.0),
-              gradient: RadialGradient(
-                  colors: _isTapped ? colorPressed : color,
-                  radius: blui.getRadius(context, width)),
+              gradient:
+                  RadialGradient(colors: _isTapped ? colorPressed : color, radius: blui.getRadius(context, width)),
               boxShadow: (_isTapped
                   ? <BoxShadow>[
                       ...widget.pressedOverlayColor ?? [],
                       ...widget.glow ??
                           [
                             BoxShadow(
-                              color:
-                                  widget.color.brighten(0.4).withOpacity(0.8),
+                              color: widget.color.brighten(0.4).withOpacity(0.8),
                               spreadRadius: -20,
                               blurRadius: 10,
                             )
@@ -89,8 +86,7 @@ class _BLCardState extends ConsumerState<BLCard> {
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // Access the width after the first frame is rendered
-      final RenderBox renderBox =
-          containerKey.currentContext?.findRenderObject() as RenderBox;
+      final RenderBox renderBox = containerKey.currentContext?.findRenderObject() as RenderBox;
       setState(() {
         width = renderBox.size.width;
       });

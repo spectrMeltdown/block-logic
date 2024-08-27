@@ -5,7 +5,9 @@ class BLTable extends ConsumerStatefulWidget {
   final List<DataColumn> columns;
   final List<DataRow> rows;
   final double bottomPadding;
+  final double? dataRowMaxHeight;
   const BLTable({
+    this.dataRowMaxHeight,
     required this.columns,
     required this.rows,
     this.bottomPadding = 10,
@@ -31,10 +33,10 @@ class _BLTableState extends ConsumerState<BLTable> {
               //border: Border.all(color: Colors.black),
               borderRadius: BorderRadius.all(Radius.circular(20))),
           child: DataTable(
+              dataRowMaxHeight: widget.dataRowMaxHeight,
               showCheckboxColumn: false,
               clipBehavior: Clip.antiAlias,
-              decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(20))),
+              decoration: const BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(20))),
               headingRowColor: WidgetStatePropertyAll(Colors.blueGrey.shade700),
               columns: widget.columns,
               rows: widget.rows),

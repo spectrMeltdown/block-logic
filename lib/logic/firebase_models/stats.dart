@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class Stats {
   final String? id;
   final int? totalUsers;
@@ -15,7 +17,7 @@ class Stats {
     this.weeklyRooms,
   });
 
-  factory Stats.fromFirestore(dynamic doc) {
+  factory Stats.fromFirestore(DocumentSnapshot doc) {
     Map<String, dynamic> data = {};
     if (doc.data() != null) {
       data = doc.data() as Map<String, dynamic>;
@@ -40,29 +42,28 @@ class Stats {
   }) =>
       Stats(
         totalUsers: totalUsers ?? this.totalUsers,
-        totalChallengesPlayed:
-            totalChallengesPlayed ?? this.totalChallengesPlayed,
+        totalChallengesPlayed: totalChallengesPlayed ?? this.totalChallengesPlayed,
         totalRooms: totalRooms ?? this.totalRooms,
-        weeklyChallengesPlayed:
-            weeklyChallengesPlayed ?? this.weeklyChallengesPlayed,
+        weeklyChallengesPlayed: weeklyChallengesPlayed ?? this.weeklyChallengesPlayed,
         weeklyRooms: weeklyRooms ?? this.weeklyRooms,
       );
-  Map<String, dynamic> toFirestore(Stats stats) {
+
+  Map<String, dynamic> toFirestore() {
     Map<String, dynamic> toFirestoreMap = {};
-    if (stats.totalChallengesPlayed != null) {
-      toFirestoreMap.addAll({'totalChallenges': stats.totalChallengesPlayed});
+    if (totalChallengesPlayed != null) {
+      toFirestoreMap.addAll({'totalChallenges': totalChallengesPlayed});
     }
-    if (stats.totalRooms != null) {
-      toFirestoreMap.addAll({'totalRooms': stats.totalRooms});
+    if (totalRooms != null) {
+      toFirestoreMap.addAll({'totalRooms': totalRooms});
     }
-    if (stats.totalUsers != null) {
-      toFirestoreMap.addAll({'totalUsers': stats.totalUsers});
+    if (totalUsers != null) {
+      toFirestoreMap.addAll({'totalUsers': totalUsers});
     }
-    if (stats.weeklyChallengesPlayed != null) {
-      toFirestoreMap.addAll({'weeklyChallenges': stats.weeklyChallengesPlayed});
+    if (weeklyChallengesPlayed != null) {
+      toFirestoreMap.addAll({'weeklyChallenges': weeklyChallengesPlayed});
     }
-    if (stats.weeklyRooms != null) {
-      toFirestoreMap.addAll({'weeklyRooms': stats.weeklyRooms});
+    if (weeklyRooms != null) {
+      toFirestoreMap.addAll({'weeklyRooms': weeklyRooms});
     }
     return toFirestoreMap;
   }

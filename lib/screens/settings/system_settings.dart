@@ -4,8 +4,9 @@ import 'package:block_logic/components/util/provider_default.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_models/account_settings.dart';
 import 'package:block_logic/logic/firebase_providers/account_settings.dart';
+import 'package:block_logic/logic/services/account.dart';
 import 'package:block_logic/logic/services/audio.dart';
-import 'package:block_logic/logic/services/db.dart';
+
 import 'package:block_logic/logic/services/persistent_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -17,11 +18,9 @@ class SystemSettings extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final userSettings =
-        ref.watch(SettingsProvider(FirestoreCollections.users));
-    final dbService = ref.read(dBServiceProvider.notifier);
-    final persistentDataNotifier =
-        ref.read(persistentDataStateProvider.notifier);
+    final userSettings = ref.watch(SettingsProvider(FirestoreCollections.users));
+    final accountService = ref.read(accountServiceProvider.notifier);
+    final persistentDataNotifier = ref.read(persistentDataStateProvider.notifier);
     final gameAudio = ref.watch(bLAudioStateProvider);
     final gameAudioNotifier = ref.read(bLAudioStateProvider.notifier);
 
@@ -107,8 +106,7 @@ class SystemSettings extends ConsumerWidget {
 
                     try {
                       debugPrint('current value loginAlerts = $loginAlerts');
-                      await dbService.updateUserSettings(
-                          AccountSettings(loginAlerts: !loginAlerts));
+                      await accountService.updateUserSettings(AccountSettings(loginAlerts: !loginAlerts));
                     } catch (e) {
                       if (!context.mounted) {
                         debugPrint('Problem in settings.dart');

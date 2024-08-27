@@ -5,7 +5,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'generated/selected_challenges.g.dart';
 
-@Riverpod(dependencies: [])
+@riverpod
 Future<List<Challenge>> selectedChallenges(
   SelectedChallengesRef ref,
   List<String> challengeIDs,
@@ -16,7 +16,9 @@ Future<List<Challenge>> selectedChallenges(
   for (final id in challengeIDs) {
     try {
       final doc = await db.collection('challenges').doc(id).get();
-      challenges.add(Challenge.fromFirestore(doc));
+      if (doc.exists) {
+        challenges.add(Challenge.fromFirestore(doc));
+      }
     } catch (e) {
       errorhandler.call(e);
     }

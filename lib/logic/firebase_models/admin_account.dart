@@ -2,12 +2,15 @@ import 'package:block_logic/logic/firebase_models/account_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AdminAccount extends AccountModel {
+  final bool? isApproved;
   AdminAccount({
     super.id,
+    this.isApproved,
     super.displayName,
     super.phoneNum,
     super.profilePicLink,
     super.createdAt,
+    super.verificationID,
   });
 
   factory AdminAccount.fromFirestore(DocumentSnapshot doc) {
@@ -18,27 +21,33 @@ class AdminAccount extends AccountModel {
 
     return AdminAccount(
         id: doc.id,
-        createdAt: data['createdAt'] == null
-            ? null
-            : (data['createdAt'] as Timestamp).toDate(),
+        createdAt: data['createdAt'] == null ? null : (data['createdAt'] as Timestamp).toDate(),
         displayName: data['displayName'] ?? '',
         profilePicLink: data['profilePicLink'] ?? '',
-        phoneNum: data['phoneNum']);
+        phoneNum: data['phoneNum'],
+        verificationID: data['verificationID'],
+        isApproved: data['isApproved']);
   }
 
-  Map<String, dynamic> toFirestore(AdminAccount admin) {
+  Map<String, dynamic> toFirestore() {
     Map<String, dynamic> toFirestoreMap = {};
-    if (admin.createdAt != null) {
-      toFirestoreMap.addAll({'createdAt': admin.createdAt});
+    if (createdAt != null) {
+      toFirestoreMap.addAll({'createdAt': createdAt});
     }
-    if (admin.displayName != null) {
-      toFirestoreMap.addAll({'displayName': admin.displayName});
+    if (displayName != null) {
+      toFirestoreMap.addAll({'displayName': displayName});
     }
-    if (admin.phoneNum != null) {
-      toFirestoreMap.addAll({'phoneNum': admin.phoneNum});
+    if (phoneNum != null) {
+      toFirestoreMap.addAll({'phoneNum': phoneNum});
     }
-    if (admin.profilePicLink != null) {
-      toFirestoreMap.addAll({'profilePicLink': admin.profilePicLink});
+    if (profilePicLink != null) {
+      toFirestoreMap.addAll({'profilePicLink': profilePicLink});
+    }
+    if (verificationID != null) {
+      toFirestoreMap.addAll({'verificationID': verificationID});
+    }
+    if (isApproved != null) {
+      toFirestoreMap.addAll({'isApproved': isApproved});
     }
     return toFirestoreMap;
   }

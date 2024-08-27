@@ -10,7 +10,7 @@ class BLPasswordState extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final blui = ref.read(bLUIProvider);
+    final blui = ref.read(bLUIProvider.notifier);
     switch (password.toLowerCase()) {
       case 'open':
         return Icon(

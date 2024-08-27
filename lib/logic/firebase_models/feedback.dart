@@ -25,24 +25,22 @@ class FeedbackData {
       title: data['title'] ?? '',
       message: data['message'] ?? '',
       userID: data['userID'] ?? '',
-      createdAt: data['createdAt'] == null
-          ? null
-          : (data['createdAt'] as Timestamp).toDate(),
+      createdAt: data['createdAt'] == null ? null : (data['createdAt'] as Timestamp).toDate(),
     );
   }
-  Map<String, dynamic> toFirestore(FeedbackData feedback) {
+  Map<String, dynamic> toFirestore() {
     Map<String, dynamic> toFirestoreMap = {};
-    if (feedback.createdAt != null) {
-      toFirestoreMap.addAll({'createdAt': feedback.createdAt});
+    if (createdAt != null) {
+      toFirestoreMap.addAll({'createdAt': createdAt});
     }
-    if (feedback.message != null) {
-      toFirestoreMap.addAll({'message': feedback.message});
+    if (message != null) {
+      toFirestoreMap.addAll({'message': message});
     }
-    if (feedback.title != null) {
-      toFirestoreMap.addAll({'title': feedback.title});
+    if (title != null) {
+      toFirestoreMap.addAll({'title': title});
     }
-    if (feedback.userID != null) {
-      toFirestoreMap.addAll({'userID': feedback.userID});
+    if (userID != null) {
+      toFirestoreMap.addAll({'userID': userID});
     }
     return toFirestoreMap;
   }

@@ -1,6 +1,6 @@
 import 'package:block_logic/components/async/loading.dart';
 import 'package:block_logic/components/circular_image.dart';
-import 'package:block_logic/components/util/blank_widget.dart';
+import 'package:block_logic/components/util/provider_default.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_providers/selected_admin.dart';
 import 'package:block_logic/logic/firebase_providers/selected_user.dart';
@@ -15,9 +15,11 @@ class BLProfilePic extends ConsumerStatefulWidget {
   final double size;
   final VoidCallback? onPressed;
   final AccountType type;
+  final bool withBg;
   const BLProfilePic(
     this.id, {
     required this.type,
+    this.withBg = true,
     super.key,
     this.size = 50,
     this.onPressed,
@@ -37,66 +39,49 @@ class _BLProfilePicState extends ConsumerState<BLProfilePic> {
         ? ref.watch(SelectedAdminProvider(widget.id))
         : ref.watch(SelectedUserProvider(widget.id));
     return GestureDetector(
-      onTapDown: (TapDownDetails tapDown) {
-        audio?.playBtn();
-        onTapDown();
-      },
-      onTapUp: onTapUp,
-      onTapCancel: onTapCancel,
-      child: Stack(
-        children: [
-          /// profile pic border
-          Container(
-            width: widget.size,
-            height: widget.size,
-            padding: const EdgeInsets.all(3),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.blueGrey[300],
-              border: Border.all(
-                color: Colors.white,
-                width: 3.0,
-              ),
-            ),
+        onTapDown: kIsWeb
+            ? null
+            : (TapDownDetails tapDown) {
+                audio?.playBtn();
+                onTapDown();
+              },
+        onTapUp: kIsWeb ? null : onTapUp,
+        onTapCancel: kIsWeb ? null : onTapCancel,
+        child: widget.withBg
+            ? Stack(
+                children: [
+                  /// profile pic border
+                  Container(
+                      width: widget.size,
+                      height: widget.size,
+                      padding: const EdgeInsets.all(3),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.blueGrey[300],
+                        border: Border.all(
+                          color: Colors.white,
+                          width: 3.0,
+                        ),
+                      ),
 
-            /// profile pic
-            child: CircleAvatar(
-              child: Center(
-                child: FractionallySizedBox(
-                    widthFactor: 1,
-                    heightFactor: 1,
-                    child: account.when(
-                        data: (account) {
-                          if (account?.profilePicLink == null ||
-                              account!.profilePicLink!.isEmpty) {
-                            return const BLLoading(color: Colors.black);
-                          } else if (account.profilePicLink == 'default') {
-                            return const Icon(FontAwesomeIcons.user);
-                          } else {
-                            return BLCircular(url: account.profilePicLink);
-                          }
-                        },
-                        error: (error, stackTrace) => const BlankWidget(),
-                        loading: () => const BlankWidget())),
-              ),
-            ),
-          ),
+                      /// profile pic
+                      child: profilePic(account)),
 
-          /// blank overlay when tapDown
-          AnimatedOpacity(
-              duration: Durations.short3,
-              curve: Curves.easeInOut,
-              opacity: _opacity,
-              child: Container(
-                width: widget.size,
-                height: widget.size,
-                decoration: BoxDecoration(
-                    color: Colors.black.withAlpha(100),
-                    borderRadius: const BorderRadius.all(Radius.circular(100))),
-              )),
-        ],
-      ),
-    );
+                  /// blank overlay when tapDown
+                  AnimatedOpacity(
+                      duration: Durations.short3,
+                      curve: Curves.easeInOut,
+                      opacity: _opacity,
+                      child: Container(
+                        width: widget.size,
+                        height: widget.size,
+                        decoration: BoxDecoration(
+                            color: Colors.black.withAlpha(100),
+                            borderRadius: const BorderRadius.all(Radius.circular(100))),
+                      )),
+                ],
+              )
+            : profilePic(account));
   }
 
   @override
@@ -106,27 +91,36 @@ class _BLProfilePicState extends ConsumerState<BLProfilePic> {
   }
 
   void onTapCancel() {
-    if (!kIsWeb) {
-      setState(() {
-        _opacity = 0;
-      });
-    }
+    setState(() {
+      _opacity = 0;
+    });
   }
 
   void onTapDown() {
-    if (!kIsWeb) {
-      setState(() {
-        _opacity = 1;
-      });
-    }
+    setState(() {
+      _opacity = 1;
+    });
   }
 
   void onTapUp(TapUpDetails tapUp) {
-    if (!kIsWeb) {
-      setState(() {
-        _opacity = 0;
-      });
-      widget.onPressed?.call();
-    }
+    setState(() {
+      _opacity = 0;
+    });
+    widget.onPressed?.call();
+  }
+
+  Widget profilePic(AsyncValue account) {
+    return account.when(
+        data: (account) {
+          if (account?.profilePicLink == null || account!.profilePicLink!.isEmpty) {
+            return const BLLoading(color: Colors.black);
+          }
+          if (account.profilePicLink == 'default') {
+            return const Icon(FontAwesomeIcons.user);
+          }
+          return BLCircular(url: account.profilePicLink);
+        },
+        error: blankError,
+        loading: blankLoading);
   }
 }

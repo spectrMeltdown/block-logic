@@ -1,5 +1,4 @@
 import 'package:block_logic/components/text/text.dart';
-import 'package:block_logic/components/text/title_small.dart';
 import 'package:block_logic/components/textbox.dart';
 import 'package:block_logic/components/util/blank_widget.dart';
 import 'package:block_logic/components/util/provider_default.dart';
@@ -12,6 +11,8 @@ import 'package:block_logic/logic/services/toast.dart';
 import 'package:block_logic/web/components/bl_chip.dart';
 import 'package:block_logic/web/components/bl_segmented_button.dart';
 import 'package:block_logic/web/components/button.dart';
+import 'package:block_logic/web/components/card_simple.dart';
+import 'package:block_logic/web/components/header.dart';
 import 'package:block_logic/web/screens/challenges/chip_strip.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -21,10 +22,10 @@ class EditChallenge extends ConsumerStatefulWidget {
   const EditChallenge(this.selectedChallengeID, {super.key});
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _EditChallengeState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _SelectedChallengeState();
 }
 
-class _EditChallengeState extends ConsumerState<EditChallenge> {
+class _SelectedChallengeState extends ConsumerState<EditChallenge> {
   final tagBtnKey = GlobalKey();
   final limitationBtnKey = GlobalKey();
   late final Toast toast;
@@ -51,15 +52,12 @@ class _EditChallengeState extends ConsumerState<EditChallenge> {
   void addLimitationPop(BuildContext context) async {
     if (processing) return;
     processing = true;
-    final RenderBox button =
-        limitationBtnKey.currentContext!.findRenderObject() as RenderBox;
-    final RenderBox overlay =
-        Overlay.of(context).context.findRenderObject() as RenderBox;
+    final RenderBox button = limitationBtnKey.currentContext!.findRenderObject() as RenderBox;
+    final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
     final RelativeRect position = RelativeRect.fromRect(
       Rect.fromPoints(
         button.localToGlobal(Offset.zero, ancestor: overlay),
-        button.localToGlobal(button.size.bottomRight(Offset.zero),
-            ancestor: overlay),
+        button.localToGlobal(button.size.bottomRight(Offset.zero), ancestor: overlay),
       ),
       Offset.zero & overlay.size,
     );
@@ -79,9 +77,7 @@ class _EditChallengeState extends ConsumerState<EditChallenge> {
                 controller: limitationController,
               ),
               BLAdminButton(
-                  type: AdminBtnType.green,
-                  child: const BLText('Save'),
-                  onPressed: () => Navigator.pop(context))
+                  type: AdminBtnType.green, child: const BLText('Save'), onPressed: () => Navigator.pop(context))
             ],
           ),
         ),
@@ -99,15 +95,12 @@ class _EditChallengeState extends ConsumerState<EditChallenge> {
   void addTagPop(BuildContext context) async {
     if (processing) return;
     processing = true;
-    final RenderBox button =
-        tagBtnKey.currentContext!.findRenderObject() as RenderBox;
-    final RenderBox overlay =
-        Overlay.of(context).context.findRenderObject() as RenderBox;
+    final RenderBox button = tagBtnKey.currentContext!.findRenderObject() as RenderBox;
+    final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
     final RelativeRect position = RelativeRect.fromRect(
       Rect.fromPoints(
         button.localToGlobal(Offset.zero, ancestor: overlay),
-        button.localToGlobal(button.size.bottomRight(Offset.zero),
-            ancestor: overlay),
+        button.localToGlobal(button.size.bottomRight(Offset.zero), ancestor: overlay),
       ),
       Offset.zero & overlay.size,
     );
@@ -127,9 +120,7 @@ class _EditChallengeState extends ConsumerState<EditChallenge> {
                 controller: tagController,
               ),
               BLAdminButton(
-                  type: AdminBtnType.green,
-                  child: const BLText('Save'),
-                  onPressed: () => Navigator.pop(context))
+                  type: AdminBtnType.green, child: const BLText('Save'), onPressed: () => Navigator.pop(context))
             ],
           ),
         ),
@@ -146,77 +137,83 @@ class _EditChallengeState extends ConsumerState<EditChallenge> {
 
   @override
   Widget build(BuildContext context) {
-    final selectedChallenge =
-        ref.watch(SelectedChallengeProvider(widget.selectedChallengeID));
+    final selectedChallenge = ref.watch(SelectedChallengeProvider(widget.selectedChallengeID));
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
-    return selectedChallenge.when(
-        data: (challenge) {
-          if (challenge == null) {
-            return ConstrainedBox(
-              constraints: BoxConstraints(
-                  maxWidth: width <= desktopMin ? width * 0.8 : width * 0.4,
-                  maxHeight: height * 0.5),
-              child: const Center(
-                child: BLText('Couldn\'t load that challenge..'),
-              ),
-            );
-          }
-          tags = challenge.tags ?? [];
-          limitations = challenge.limitations ?? [];
-          difficultySelection = challenge.difficulty;
-          return Padding(
-            padding: const EdgeInsets.all(15),
-            child: Form(
-              key: formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const BLSmallTitle('Edit Challenge', size: 18),
-                  const SizedBox(height: 10),
-                  ...List.generate(challengeProps.length, (i) {
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      // spacing: 15,
-                      // runSpacing: 15,
-                      children: [
-                        const SizedBox(height: 10),
-                        BLText('${challengeProps[i]} : '),
-                        const SizedBox(height: 5),
-                        ConstrainedBox(
-                          constraints: BoxConstraints(
-                              maxWidth: width <= desktopMin
-                                  ? width * 0.8
-                                  : width * 0.3),
-                          child: getInputWidget(challengeProps[i], challenge),
-                        ),
-                      ],
-                    );
-                  }),
-                  const SizedBox(height: 20),
-                  BLAdminButton(
-                      type: AdminBtnType.green,
-                      onPressed: () {
-                        save();
-                      },
-                      child: const BLText('Save changes',
-                          color: Colors.white, size: 18))
-                ],
-              ),
-            ),
-          );
-        },
-        error: widget.selectedChallengeID.isEmpty
-            ? (error, stackTrace) => ConstrainedBox(
+    return ListView(
+      padding: EdgeInsets.zero,
+      children: [
+        const Header(title: 'Edit challenge'),
+        selectedChallenge.when(
+            data: (challenge) {
+              if (challenge == null) {
+                return ConstrainedBox(
                   constraints: BoxConstraints(
-                      maxWidth: width <= desktopMin ? width * 0.8 : width * 0.4,
-                      maxHeight: height * 0.5),
+                      maxWidth: width <= desktopMin ? width * 0.8 : width * 0.4, maxHeight: height * 0.5),
                   child: const Center(
-                    child: BLText('Select a challenge'),
+                    child: BLText('Couldn\'t load that challenge..'),
                   ),
-                )
-            : genericError,
-        loading: genericLoading);
+                );
+              }
+              tags = challenge.tags ?? [];
+              limitations = challenge.limitations ?? [];
+              difficultySelection = challenge.difficulty;
+              return Padding(
+                padding: const EdgeInsets.all(15),
+                child: Center(
+                  child: BLCardSimple(
+                    child: Padding(
+                      padding: const EdgeInsets.all(15),
+                      child: Form(
+                        key: formKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: 10),
+                            ...List.generate(challengeProps.length, (i) {
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                // spacing: 15,
+                                // runSpacing: 15,
+                                children: [
+                                  const SizedBox(height: 10),
+                                  BLText('${challengeProps[i]} : '),
+                                  const SizedBox(height: 5),
+                                  ConstrainedBox(
+                                    constraints:
+                                        BoxConstraints(maxWidth: width <= desktopMin ? width * 0.8 : width * 0.3),
+                                    child: getInputWidget(challengeProps[i], challenge),
+                                  ),
+                                ],
+                              );
+                            }),
+                            const SizedBox(height: 20),
+                            BLAdminButton(
+                                type: AdminBtnType.green,
+                                onPressed: () {
+                                  save();
+                                },
+                                child: const BLText('Save changes', color: Colors.white, size: 18))
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            },
+            error: widget.selectedChallengeID.isEmpty
+                ? (error, stackTrace) => ConstrainedBox(
+                      constraints: BoxConstraints(
+                          maxWidth: width <= desktopMin ? width * 0.8 : width * 0.4, maxHeight: height * 0.5),
+                      child: const Center(
+                        child: BLText('Select a challenge'),
+                      ),
+                    )
+                : genericError,
+            loading: genericLoading)
+      ],
+    );
   }
 
   Widget getInputWidget(String challengeProp, Challenge challenge) {
@@ -303,8 +300,9 @@ class _EditChallengeState extends ConsumerState<EditChallenge> {
                   ))
             ],
             onSelectionChanged: (selection) {
+              debugPrint(selection.toString());
               setState(() {
-                difficultySelection = selection.firstOrNull;
+                difficultySelection = selection.first;
               });
             });
       case 'Blocks':

@@ -2,6 +2,7 @@ import 'package:block_logic/components/account/display_name.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/util/provider_default.dart';
 import 'package:block_logic/constants.dart';
+import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_models/feedback.dart';
 import 'package:block_logic/logic/firebase_providers/all_feedback.dart';
 import 'package:block_logic/web/components/bl_table.dart';
@@ -33,9 +34,8 @@ class _FeedbackTableState extends ConsumerState<FeedbackTable> {
             data: (feedbacks) {
               if (widget.searchQuery.isNotEmpty && feedbacks.isEmpty) {
                 return ConstrainedBox(
-                  constraints: BoxConstraints(
-                      maxHeight: height * 0.2,
-                      maxWidth: width >= mobileMax ? width * 0.4 : width * 0.3),
+                  constraints:
+                      BoxConstraints(maxHeight: height * 0.2, maxWidth: width >= mobileMax ? width * 0.4 : width * 0.3),
                   child: const Center(
                     child: BLText('No results.'),
                   ),
@@ -43,8 +43,7 @@ class _FeedbackTableState extends ConsumerState<FeedbackTable> {
               }
               if (feedbacks.isEmpty) {
                 return ConstrainedBox(
-                  constraints: BoxConstraints(
-                      maxWidth: width >= mobileMax ? width * 0.4 : width * 0.3),
+                  constraints: BoxConstraints(maxWidth: width >= mobileMax ? width * 0.4 : width * 0.3),
                   child: const Center(
                     child: BLText('There are no messages at the moment ...'),
                   ),
@@ -53,8 +52,7 @@ class _FeedbackTableState extends ConsumerState<FeedbackTable> {
               feedbacksList = feedbacks;
               return BLTable(
                   columns: List.generate(FeedbackProps.values.length, (i) {
-                    return DataColumn(
-                        label: BLText(FeedbackProps.values[i].name));
+                    return DataColumn(label: BLText(FeedbackProps.values[i].name));
                   }),
                   rows: List.generate(feedbacksList.length, (i) {
                     return DataRow(
@@ -66,17 +64,12 @@ class _FeedbackTableState extends ConsumerState<FeedbackTable> {
                         cells: [
                           DataCell(BLText(feedbacksList[i].title ?? '--')),
                           DataCell(ConstrainedBox(
-                            constraints: BoxConstraints(
-                                maxWidth: width >= mobileMax
-                                    ? width * 0.4
-                                    : width * 0.3),
+                            constraints: BoxConstraints(maxWidth: width >= mobileMax ? width * 0.4 : width * 0.3),
                             child: BLText(feedbacksList[i].message ?? '--'),
                           )),
-                          DataCell(
-                              BLDisplayName(feedbacksList[i].userID ?? '')),
+                          DataCell(BLDisplayName(feedbacksList[i].userID ?? '', AccountType.user)),
                           DataCell(BLText(feedbacksList[i].createdAt != null
-                              ? DateFormat('dd / mm / yyyy')
-                                  .format(feedbacksList[i].createdAt!)
+                              ? DateFormat('dd / mm / yyyy').format(feedbacksList[i].createdAt!)
                               : '--')),
                         ]);
                   }));

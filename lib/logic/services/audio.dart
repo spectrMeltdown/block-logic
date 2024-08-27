@@ -22,10 +22,7 @@ class BLAudioState extends _$BLAudioState {
     final soundEffects = sharedPref.getBool('soundEffects') ?? true;
     final backgroundMusic = sharedPref.getBool('backgroundMusic') ?? true;
     return BLAudio(
-        soundEffects: soundEffects,
-        backgroundMusic: backgroundMusic,
-        sharedPref: sharedPref,
-        assets: assets);
+        soundEffects: soundEffects, backgroundMusic: backgroundMusic, sharedPref: sharedPref, assets: assets);
     // return BLAudio(
     //     soundEffects: soundEffects, backgroundMusic: backgroundMusic);
   }

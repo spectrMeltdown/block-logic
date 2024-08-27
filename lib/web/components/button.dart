@@ -14,6 +14,7 @@ class BLAdminButton extends StatefulWidget {
   final VoidCallback onPressed;
   final double? paddingX;
   final double? paddingY;
+  final bool disabled;
   const BLAdminButton({
     super.key,
     required this.type,
@@ -21,6 +22,7 @@ class BLAdminButton extends StatefulWidget {
     required this.onPressed,
     this.paddingX,
     this.paddingY,
+    this.disabled = false,
   });
 
   @override
@@ -47,7 +49,13 @@ class _BLAdminButtonState extends State<BLAdminButton> {
             ),
           ),
         ),
-        onPressed: widget.onPressed,
+        onPressed: () {
+          if (widget.disabled == false) {
+            widget.onPressed.call();
+          } else {
+            debugPrint('Button is disabled');
+          }
+        },
         child: widget.child);
   }
 

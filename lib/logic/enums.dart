@@ -59,7 +59,7 @@ enum NotifType { info, warning, error, success }
 ///   - all players left the room
 ///   - admin or host user terminated the room
 /// - complete, the game finished with no errors
-enum RoomStatus { available, inGame, finalizing }
+enum RoomStatus { available, inGame, finalizing, locked }
 
 /// Refers to the player score.
 /// - pending, the player is still in game

@@ -32,7 +32,7 @@ class _ChangeDisplayNameState extends ConsumerState<ChangeDisplayName> {
   Widget build(BuildContext context) {
     final nav = ref.read(customNavigationProvider);
     final accountService = ref.read(accountServiceProvider.notifier);
-    final validator = ref.read(textValidatorProvider);
+    final validator = ref.read(textValidatorProvider.notifier);
     return BLDialog(
         color: Colors.grey.shade800,
         child: Form(
@@ -75,9 +75,7 @@ class _ChangeDisplayNameState extends ConsumerState<ChangeDisplayName> {
                         if (formKey.currentState!.validate()) {
                           final newName = displayNameController.text.trim();
                           if (oldDisplayName != newName) {
-                            final result =
-                                await accountService.changeDisplayName(
-                                    newName, FirestoreCollections.users);
+                            final result = await accountService.changeDisplayName(newName, FirestoreCollections.users);
                             if (result != null) {
                               setState(() {
                                 msg = BLText(result);

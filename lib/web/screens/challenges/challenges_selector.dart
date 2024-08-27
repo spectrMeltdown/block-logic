@@ -4,10 +4,10 @@ import 'package:block_logic/logic/firebase_providers/all_challenges.dart';
 import 'package:block_logic/web/components/bl_table.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class ChallengesSelector extends ConsumerStatefulWidget {
-  final void Function(String) updateSelectedChallengeID;
-  const ChallengesSelector(this.updateSelectedChallengeID, {super.key});
+  const ChallengesSelector({super.key});
 
   @override
   ConsumerState<ChallengesSelector> createState() => _ChallengesSelectorState();
@@ -17,7 +17,7 @@ class _ChallengesSelectorState extends ConsumerState<ChallengesSelector> {
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
-    double height = MediaQuery.of(context).size.height;
+    //double height = MediaQuery.of(context).size.height;
     final challenges = ref.watch(challengesProvider);
     return challenges.when(
         data: (challenges) {
@@ -38,7 +38,7 @@ class _ChallengesSelectorState extends ConsumerState<ChallengesSelector> {
               rows: List.generate(challenges.length, (i) {
                 return DataRow(
                     onSelectChanged: (value) {
-                      widget.updateSelectedChallengeID(challenges[i].id!);
+                      context.go('/challenges/${challenges[i].id}');
                     },
                     cells: [
                       DataCell(BLText(challenges[i].name ?? '--')),
@@ -54,8 +54,7 @@ class _ChallengesSelectorState extends ConsumerState<ChallengesSelector> {
                       ),
                       DataCell(BLText(challenges[i].difficulty?.name ?? '--')),
                       DataCell(Row(
-                        children:
-                            List.generate(challenges[i].tags!.length, (j) {
+                        children: List.generate(challenges[i].tags!.length, (j) {
                           return BLText(challenges[i].tags![j]);
                         }),
                       )),

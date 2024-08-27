@@ -30,7 +30,7 @@ class _BackgroundState extends ConsumerState<Background> {
   // late final VideoPlayerController _controller;
   @override
   Widget build(BuildContext context) {
-    final blui = ref.read(bLUIProvider);
+    final blui = ref.read(bLUIProvider.notifier);
     return Stack(
       children: [
         // (asset != null)
@@ -39,8 +39,7 @@ class _BackgroundState extends ConsumerState<Background> {
         //         size: double.maxFinite,
         //       )
         (widget.asset != null)
-            ? widget.controller != null &&
-                    widget.controller!.value.isInitialized
+            ? widget.controller != null && widget.controller!.value.isInitialized
                 ? VideoPlayer(controller!)
                 : const BlankWidget()
             : Container(
@@ -59,9 +58,7 @@ class _BackgroundState extends ConsumerState<Background> {
                         ], radius: 1.5),
                       )),
         Padding(
-            padding: kIsWeb
-                ? EdgeInsets.zero
-                : const EdgeInsets.symmetric(horizontal: 5, vertical: 15),
+            padding: kIsWeb ? EdgeInsets.zero : const EdgeInsets.symmetric(horizontal: 5, vertical: 15),
             child: widget.child)
       ],
     );

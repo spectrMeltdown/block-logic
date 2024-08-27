@@ -38,7 +38,7 @@ class _AdminSettingsState extends ConsumerState<AdminSettings> {
     final account = ref.watch(SelectedAdminProvider(auth.getUID()));
     accountService = ref.read(accountServiceProvider.notifier);
     toast = ref.read(toastProvider.notifier);
-    final validator = ref.read(textValidatorProvider);
+    final validator = ref.read(textValidatorProvider.notifier);
     double width = MediaQuery.of(context).size.width;
     //double height = MediaQuery.of(context).size.height;
     return Column(
@@ -70,14 +70,11 @@ class _AdminSettingsState extends ConsumerState<AdminSettings> {
                             data: (account) {
                               if (account == null) {
                                 return const Center(
-                                  child: BLText(
-                                      'Sorry, there was a problem getting your account details.'),
+                                  child: BLText('Sorry, there was a problem getting your account details.'),
                                 );
                               }
-                              nameController = TextEditingController(
-                                  text: account.displayName);
-                              phoneNumController =
-                                  TextEditingController(text: account.phoneNum);
+                              nameController = TextEditingController(text: account.displayName);
+                              phoneNumController = TextEditingController(text: account.phoneNum);
                               return Padding(
                                 padding: const EdgeInsets.only(top: 20),
                                 child: Column(
@@ -88,34 +85,26 @@ class _AdminSettingsState extends ConsumerState<AdminSettings> {
                                       runSpacing: 10,
                                       children: [
                                         ConstrainedBox(
-                                            constraints: BoxConstraints(
-                                                maxWidth: width * 0.3),
+                                            constraints: BoxConstraints(maxWidth: width * 0.3),
                                             child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
+                                              crossAxisAlignment: CrossAxisAlignment.start,
                                               children: [
                                                 const BLText('Display Name:'),
                                                 BLTextBox(
                                                   controller: nameController,
-                                                  validator: (name) => validator
-                                                      .validateDisplayName(
-                                                          name),
+                                                  validator: (name) => validator.validateDisplayName(name),
                                                 ),
                                               ],
                                             )),
                                         ConstrainedBox(
-                                            constraints: BoxConstraints(
-                                                maxWidth: width * 0.3),
+                                            constraints: BoxConstraints(maxWidth: width * 0.3),
                                             child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
+                                              crossAxisAlignment: CrossAxisAlignment.start,
                                               children: [
                                                 const BLText('Email:'),
                                                 BLTextBox(
                                                   controller: emailController,
-                                                  validator: (email) =>
-                                                      validator
-                                                          .validateEmail(email),
+                                                  validator: (email) => validator.validateEmail(email),
                                                 ),
                                               ],
                                             ))
@@ -127,16 +116,14 @@ class _AdminSettingsState extends ConsumerState<AdminSettings> {
                                       runSpacing: 10,
                                       children: [
                                         ConstrainedBox(
-                                            constraints: BoxConstraints(
-                                                maxWidth: width * 0.3),
+                                            constraints: BoxConstraints(maxWidth: width * 0.3),
                                             child: BLTextBox(
                                               controller: passController,
                                               labelText: 'New password',
                                               isObscure: true,
                                             )),
                                         ConstrainedBox(
-                                          constraints: BoxConstraints(
-                                              maxWidth: width * 0.3),
+                                          constraints: BoxConstraints(maxWidth: width * 0.3),
                                           child: BLTextBox(
                                             controller: confirmPassController,
                                             labelText: 'Confirm new password',
@@ -147,8 +134,7 @@ class _AdminSettingsState extends ConsumerState<AdminSettings> {
                                     ),
                                     const BLText('Phone Number:'),
                                     ConstrainedBox(
-                                        constraints: BoxConstraints(
-                                            maxWidth: width * 0.3),
+                                        constraints: BoxConstraints(maxWidth: width * 0.3),
                                         child: BLTextBox(
                                           controller: phoneNumController,
                                         )),
@@ -180,8 +166,7 @@ class _AdminSettingsState extends ConsumerState<AdminSettings> {
   Future<void> updateProfilePic() async {
     if (processing) return;
     processing = true;
-    final result =
-        await accountService.changeProfilePic(FirestoreCollections.admins);
+    final result = await accountService.changeProfilePic(FirestoreCollections.admins);
     if (result != null) {
       if (result == 'cancel') {
         processing = false;

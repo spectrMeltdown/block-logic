@@ -6,7 +6,7 @@ part of '../selected_admin.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$selectedAdminHash() => r'0b4b8a420b85166e84802898934426340889fa22';
+String _$selectedAdminHash() => r'ad8e4c0db5a5c5d41dfa8e1b72fdee32670186b8';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -56,14 +56,12 @@ class SelectedAdminFamily extends Family<AsyncValue<AdminAccount?>> {
     );
   }
 
-  static final Iterable<ProviderOrFamily> _dependencies =
-      const <ProviderOrFamily>[];
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
 
   @override
   Iterable<ProviderOrFamily>? get dependencies => _dependencies;
 
-  static final Iterable<ProviderOrFamily> _allTransitiveDependencies =
-      const <ProviderOrFamily>{};
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
 
   @override
   Iterable<ProviderOrFamily>? get allTransitiveDependencies =>

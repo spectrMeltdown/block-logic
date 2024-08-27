@@ -15,8 +15,7 @@ class ForgotPasswordDialog extends ConsumerStatefulWidget {
   const ForgotPasswordDialog({super.key});
 
   @override
-  ConsumerState<ForgotPasswordDialog> createState() =>
-      _ForgotPasswordDialogState();
+  ConsumerState<ForgotPasswordDialog> createState() => _ForgotPasswordDialogState();
 }
 
 class _ForgotPasswordDialogState extends ConsumerState<ForgotPasswordDialog> {
@@ -31,13 +30,12 @@ class _ForgotPasswordDialogState extends ConsumerState<ForgotPasswordDialog> {
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
-    final validator = ref.read(textValidatorProvider);
+    final validator = ref.read(textValidatorProvider.notifier);
     return BLDialog(
         child: Form(
       key: formKey,
       child: ConstrainedBox(
-        constraints:
-            BoxConstraints(maxWidth: width * 0.3, maxHeight: height * 0.25),
+        constraints: BoxConstraints(maxWidth: width * 0.3, maxHeight: height * 0.25),
         child: Column(
           children: [
             const BLSmallTitle('Enter your email:'),
@@ -107,9 +105,7 @@ class _ForgotPasswordDialogState extends ConsumerState<ForgotPasswordDialog> {
       processing = false;
       if (!mounted) return;
       nav.pop(context);
-      toast.showToast(
-          'A password reset link was sent to ${emailController.text}.',
-          type: NotifType.info);
+      toast.showToast('A password reset link was sent to ${emailController.text}.', type: NotifType.info);
     }
     processing = false;
   }

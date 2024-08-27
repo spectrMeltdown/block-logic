@@ -21,33 +21,34 @@ class ErrorHandler extends _$ErrorHandler {
       debugPrint('Was not a FirebaseException!');
       debugPrint(e.toString());
       if (context?.mounted != null && !context!.mounted) return null;
-      debugPrint('From ${context?.widget.runtimeType}');
+      debugPrint('Exception from: ${context?.widget.runtimeType}');
       return null;
     }
     if (context == null) handleOverlay = false;
     //state.toast.dismissAllToast();
     debugPrint('FirebaseException Code: ${e.code}');
+    String? error;
     switch (e.code) {
       case 'network-request-failed':
-        const String error = 'Network Problem!';
+        error = 'Network Problem!';
         if (handleOverlay) {
           blShowNotifyDialog(context, title: 'Error', label: error);
         }
         return error;
       case 'invalid-credential':
-        const String error = 'Incorrect credentials';
+        error = 'Incorrect credentials';
         if (handleOverlay) {
           blShowNotifyDialog(context, title: 'Error', label: error);
         }
         return error;
       case 'invalid-email':
-        const String error = 'Incorrect email.';
+        error = 'Incorrect email.';
         if (handleOverlay) {
           blShowNotifyDialog(context, title: 'Error', label: error);
         }
         return error;
       case 'email-already-in-use':
-        const String error = 'Account already exists!';
+        error = 'Account already exists!';
         if (handleOverlay) {
           blShowNotifyDialog(context, title: 'Error', label: error);
         }
@@ -55,7 +56,19 @@ class ErrorHandler extends _$ErrorHandler {
       case 'requires-recent-login':
         return null;
       case 'too-many-requests':
-        const String error = 'Sorry, too many attempts. Try again later';
+        error = 'Sorry, too many attempts. Try again later';
+        if (handleOverlay) {
+          blShowNotifyDialog(context, title: 'Error', label: error);
+        }
+        return error;
+      case 'invalid-verification-code':
+        error = 'Wrong code.';
+        if (handleOverlay) {
+          blShowNotifyDialog(context, title: 'Error', label: error);
+        }
+        return error;
+      case 'invalid-verification-id':
+        error = 'The verification ID was incorrect (please contact developer).';
         if (handleOverlay) {
           blShowNotifyDialog(context, title: 'Error', label: error);
         }

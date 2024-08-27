@@ -6,7 +6,7 @@ part of '../selected_rooms.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$selectedRoomsHash() => r'c0e3b4b066d0703b4e761abc0c97b91b3be43cde';
+String _$selectedRoomsHash() => r'adaed4e34fb65339669a8cff128e7c984e8ce8da';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -56,14 +56,12 @@ class SelectedRoomsFamily extends Family<AsyncValue<List<Room>>> {
     );
   }
 
-  static final Iterable<ProviderOrFamily> _dependencies =
-      const <ProviderOrFamily>[];
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
 
   @override
   Iterable<ProviderOrFamily>? get dependencies => _dependencies;
 
-  static final Iterable<ProviderOrFamily> _allTransitiveDependencies =
-      const <ProviderOrFamily>{};
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
 
   @override
   Iterable<ProviderOrFamily>? get allTransitiveDependencies =>

@@ -5,22 +5,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class BlockDesignWrapper extends ConsumerWidget {
-  const BlockDesignWrapper(
-      {required this.child, required this.data, this.color, super.key});
   final GameBlockData data;
   final Color? color;
   final Widget child;
+  const BlockDesignWrapper({required this.child, required this.data, this.color, super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final blui = ref.read(bLUIProvider);
+    final blui = ref.read(bLUIProvider.notifier);
     return Material(
       color: Colors.transparent,
       child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
           decoration: BoxDecoration(
-            border: data.state == CodeBlockState.selected
-                ? Border.all(color: Colors.grey.shade700)
-                : null,
+            border: data.state == CodeBlockState.selected ? Border.all(color: Colors.grey.shade700) : null,
             borderRadius: const BorderRadius.all(Radius.circular(10)),
             color: color ?? blui.getBlockColor(data.type),
           ),

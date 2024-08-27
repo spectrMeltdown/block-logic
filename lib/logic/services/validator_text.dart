@@ -4,33 +4,41 @@ part 'generated/validator_text.g.dart';
 
 @Riverpod()
 class TextValidator extends _$TextValidator {
-  final _emailRegex = RegExp(
-      r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+"); // follow email format
-
-  final _nameRegex = RegExp(
-      r'^([a-zA-Z\.]+([.-]?[a-zA-Z]+)?(\s|$)){1,10}\.?$'); // no special symbols
-
-  final _maxPlayers = RegExp(r'^(?:[1-9]|1[0-9]|20)$'); // max 20
-
   @override
-  TextValidator build() => TextValidator();
+  TextValidatorState build() => TextValidatorState();
 
   String? validateDisplayName(String? name) {
     if (name == null || name.isEmpty) return 'Cannot be empty';
-    if (_nameRegex.hasMatch(name)) return null;
+    if (state._nameRegex.hasMatch(name)) return null;
     return 'Not a valid name';
   }
 
   String? validateEmail(String? email) {
     if (email == null || email.isEmpty) return 'Cannot be empty';
-    if (_emailRegex.hasMatch(email)) return null;
+    if (state._emailRegex.hasMatch(email)) return null;
     return 'Not a valid email';
   }
 
   String? validateMaxPlayers(String? maxPlayers) {
     if (maxPlayers == null || maxPlayers.isEmpty) return 'Cannot be empty';
-    if (_maxPlayers.hasMatch(maxPlayers)) return null;
+    if (state._maxPlayers.hasMatch(maxPlayers)) return null;
     return 'Not a valid number';
+  }
+
+  String? validateOtp(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter the OTP.';
+    }
+
+    if (value.length != 6) {
+      return 'OTP is 6 digits.';
+    }
+
+    if (!state._otpRegex.hasMatch(value)) {
+      return 'Only digits are allowed.';
+    }
+
+    return null; // If the input passes validation
   }
 
   String? validatePassword(String? pass) {
@@ -48,6 +56,22 @@ class TextValidator extends _$TextValidator {
     return null;
   }
 
+  String? validatePhoneNum(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter the OTP.';
+    }
+
+    if (value.length != 9) {
+      return 'Phone # is 9 digits, excluding the zero.';
+    }
+
+    if (!state._phoneNumRegex.hasMatch(value)) {
+      return 'Only digits are allowed.';
+    }
+
+    return null; // If the input passes validation
+  }
+
   String? validateRoomName(String? name) {
     if (name == null || name.isEmpty) return 'Cannot be empty';
     //if (_emailRegex.hasMatch(email))
@@ -61,6 +85,7 @@ class TextValidator extends _$TextValidator {
     return null;
     // return 'Not a valid email';
   }
+
 //         if (widget.hintText != null && widget.hintText == value) {
 //           return null;
 //         }
@@ -213,3 +238,12 @@ class TextValidator extends _$TextValidator {
 //       };
 //   }
 // }
+class TextValidatorState {
+  final _emailRegex =
+      RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+"); // follow email format
+
+  final _nameRegex = RegExp(r'^([a-zA-Z\.]+([.-]?[a-zA-Z]+)?(\s|$)){1,10}\.?$'); // no special symbols
+  final _otpRegex = RegExp(r'^\d{6}$');
+  final _phoneNumRegex = RegExp(r'^[0-9]+$');
+  final _maxPlayers = RegExp(r'^(?:[1-9]|1[0-9]|20)$'); // max 20
+}

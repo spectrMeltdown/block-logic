@@ -34,25 +34,22 @@ class Leaderboard {
       roomID: data['roomID'] ?? '',
       totalScore: data['totalScore'] ?? '',
       status: status,
-      dateCreated: data['dateCreated'] == null
-          ? null
-          : (data['dateCreated'] as Timestamp).toDate(),
+      dateCreated: data['dateCreated'] == null ? null : (data['dateCreated'] as Timestamp).toDate(),
     );
   }
-  Map<String, dynamic> toFirestore(Leaderboard leaderboard) {
+  Map<String, dynamic> toFirestore() {
     Map<String, dynamic> toFirestoreMap = {};
-    if (leaderboard.dateCreated != null) {
-      toFirestoreMap.addAll(
-          {'dateCreated': Timestamp.fromDate(leaderboard.dateCreated!)});
+    if (dateCreated != null) {
+      toFirestoreMap.addAll({'dateCreated': Timestamp.fromDate(dateCreated!)});
     }
-    if (leaderboard.roomID != null) {
-      toFirestoreMap.addAll({'roomID': leaderboard.roomID});
+    if (roomID != null) {
+      toFirestoreMap.addAll({'roomID': roomID});
     }
-    if (leaderboard.totalScore != null) {
-      toFirestoreMap.addAll({'totalScore': leaderboard.totalScore});
+    if (totalScore != null) {
+      toFirestoreMap.addAll({'totalScore': totalScore});
     }
-    if (leaderboard.status != null) {
-      toFirestoreMap.addAll({'totalScore': leaderboard.status!.name});
+    if (status != null) {
+      toFirestoreMap.addAll({'totalScore': status!.name});
     }
     return toFirestoreMap;
   }

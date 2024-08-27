@@ -17,27 +17,28 @@ class AccountSettings {
     if (doc.data() != null) {
       data = doc.data() as Map<String, dynamic>;
     }
+    final settings = data['settings'];
     return AccountSettings(
-      loginAlerts: data['loginAlerts'],
-      notifications: data['notifications'],
-      soundEffects: data['soundEffects'],
-      backgroundMusic: data['backgroundMusic'],
+      loginAlerts: settings['loginAlerts'],
+      notifications: settings['notifications'],
+      soundEffects: settings['soundEffects'],
+      backgroundMusic: settings['backgroundMusic'],
     );
   }
 
-  Map<String, dynamic> toFirestore(AccountSettings settings) {
+  Map<String, dynamic> toFirestore() {
     Map<String, dynamic> userSettings = {};
-    if (settings.backgroundMusic != null) {
-      userSettings.addAll({'backgroundMusic': settings.backgroundMusic});
+    if (backgroundMusic != null) {
+      userSettings.addAll({'backgroundMusic': backgroundMusic});
     }
-    if (settings.loginAlerts != null) {
-      userSettings.addAll({'loginAlerts': settings.loginAlerts});
+    if (loginAlerts != null) {
+      userSettings.addAll({'loginAlerts': loginAlerts});
     }
-    if (settings.soundEffects != null) {
-      userSettings.addAll({'soundEffects': settings.soundEffects});
+    if (soundEffects != null) {
+      userSettings.addAll({'soundEffects': soundEffects});
     }
-    if (settings.notifications != null) {
-      userSettings.addAll({'notifications': settings.notifications});
+    if (notifications != null) {
+      userSettings.addAll({'notifications': notifications});
     }
     Map<String, dynamic> toFirestoreMap = {'settings': userSettings};
     return toFirestoreMap;

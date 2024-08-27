@@ -3,9 +3,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'generated/assets.g.dart';
 
 @riverpod
-Assets assets(AssetsRef ref) {
-  return Assets();
-}
+Assets assets(AssetsRef ref) => Assets();
 
 class Assets {
   /// images

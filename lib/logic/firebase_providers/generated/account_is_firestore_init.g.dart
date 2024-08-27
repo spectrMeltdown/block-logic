@@ -1,13 +1,12 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of '../account_db_init.dart';
+part of '../account_is_firestore_init.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$isAccountFirestoreInitHash() =>
-    r'e7eca2c44c8d766a91dda4d82374947f83ad7c9a';
+String _$isFirestoreInitHash() => r'703ce3b432a54a6ddd5c916001deb5ab2c063c0d';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -32,35 +31,35 @@ class _SystemHash {
 
 /// a variant of streamUser, used to purposely get a null or non-null value from collection
 ///
-/// Copied from [isAccountFirestoreInit].
-@ProviderFor(isAccountFirestoreInit)
-const isAccountFirestoreInitProvider = IsAccountFirestoreInitFamily();
+/// Copied from [isFirestoreInit].
+@ProviderFor(isFirestoreInit)
+const isFirestoreInitProvider = IsFirestoreInitFamily();
 
 /// a variant of streamUser, used to purposely get a null or non-null value from collection
 ///
-/// Copied from [isAccountFirestoreInit].
-class IsAccountFirestoreInitFamily extends Family<AsyncValue<bool>> {
+/// Copied from [isFirestoreInit].
+class IsFirestoreInitFamily extends Family<AsyncValue<bool>> {
   /// a variant of streamUser, used to purposely get a null or non-null value from collection
   ///
-  /// Copied from [isAccountFirestoreInit].
-  const IsAccountFirestoreInitFamily();
+  /// Copied from [isFirestoreInit].
+  const IsFirestoreInitFamily();
 
   /// a variant of streamUser, used to purposely get a null or non-null value from collection
   ///
-  /// Copied from [isAccountFirestoreInit].
-  IsAccountFirestoreInitProvider call(
+  /// Copied from [isFirestoreInit].
+  IsFirestoreInitProvider call(
     String uid,
     FirestoreCollections accountCollection,
   ) {
-    return IsAccountFirestoreInitProvider(
+    return IsFirestoreInitProvider(
       uid,
       accountCollection,
     );
   }
 
   @override
-  IsAccountFirestoreInitProvider getProviderOverride(
-    covariant IsAccountFirestoreInitProvider provider,
+  IsFirestoreInitProvider getProviderOverride(
+    covariant IsFirestoreInitProvider provider,
   ) {
     return call(
       provider.uid,
@@ -80,39 +79,39 @@ class IsAccountFirestoreInitFamily extends Family<AsyncValue<bool>> {
       _allTransitiveDependencies;
 
   @override
-  String? get name => r'isAccountFirestoreInitProvider';
+  String? get name => r'isFirestoreInitProvider';
 }
 
 /// a variant of streamUser, used to purposely get a null or non-null value from collection
 ///
-/// Copied from [isAccountFirestoreInit].
-class IsAccountFirestoreInitProvider extends AutoDisposeStreamProvider<bool> {
+/// Copied from [isFirestoreInit].
+class IsFirestoreInitProvider extends AutoDisposeStreamProvider<bool> {
   /// a variant of streamUser, used to purposely get a null or non-null value from collection
   ///
-  /// Copied from [isAccountFirestoreInit].
-  IsAccountFirestoreInitProvider(
+  /// Copied from [isFirestoreInit].
+  IsFirestoreInitProvider(
     String uid,
     FirestoreCollections accountCollection,
   ) : this._internal(
-          (ref) => isAccountFirestoreInit(
-            ref as IsAccountFirestoreInitRef,
+          (ref) => isFirestoreInit(
+            ref as IsFirestoreInitRef,
             uid,
             accountCollection,
           ),
-          from: isAccountFirestoreInitProvider,
-          name: r'isAccountFirestoreInitProvider',
+          from: isFirestoreInitProvider,
+          name: r'isFirestoreInitProvider',
           debugGetCreateSourceHash:
               const bool.fromEnvironment('dart.vm.product')
                   ? null
-                  : _$isAccountFirestoreInitHash,
-          dependencies: IsAccountFirestoreInitFamily._dependencies,
+                  : _$isFirestoreInitHash,
+          dependencies: IsFirestoreInitFamily._dependencies,
           allTransitiveDependencies:
-              IsAccountFirestoreInitFamily._allTransitiveDependencies,
+              IsFirestoreInitFamily._allTransitiveDependencies,
           uid: uid,
           accountCollection: accountCollection,
         );
 
-  IsAccountFirestoreInitProvider._internal(
+  IsFirestoreInitProvider._internal(
     super._createNotifier, {
     required super.name,
     required super.dependencies,
@@ -128,12 +127,12 @@ class IsAccountFirestoreInitProvider extends AutoDisposeStreamProvider<bool> {
 
   @override
   Override overrideWith(
-    Stream<bool> Function(IsAccountFirestoreInitRef provider) create,
+    Stream<bool> Function(IsFirestoreInitRef provider) create,
   ) {
     return ProviderOverride(
       origin: this,
-      override: IsAccountFirestoreInitProvider._internal(
-        (ref) => create(ref as IsAccountFirestoreInitRef),
+      override: IsFirestoreInitProvider._internal(
+        (ref) => create(ref as IsFirestoreInitRef),
         from: from,
         name: null,
         dependencies: null,
@@ -147,12 +146,12 @@ class IsAccountFirestoreInitProvider extends AutoDisposeStreamProvider<bool> {
 
   @override
   AutoDisposeStreamProviderElement<bool> createElement() {
-    return _IsAccountFirestoreInitProviderElement(this);
+    return _IsFirestoreInitProviderElement(this);
   }
 
   @override
   bool operator ==(Object other) {
-    return other is IsAccountFirestoreInitProvider &&
+    return other is IsFirestoreInitProvider &&
         other.uid == uid &&
         other.accountCollection == accountCollection;
   }
@@ -167,7 +166,7 @@ class IsAccountFirestoreInitProvider extends AutoDisposeStreamProvider<bool> {
   }
 }
 
-mixin IsAccountFirestoreInitRef on AutoDisposeStreamProviderRef<bool> {
+mixin IsFirestoreInitRef on AutoDisposeStreamProviderRef<bool> {
   /// The parameter `uid` of this provider.
   String get uid;
 
@@ -175,16 +174,15 @@ mixin IsAccountFirestoreInitRef on AutoDisposeStreamProviderRef<bool> {
   FirestoreCollections get accountCollection;
 }
 
-class _IsAccountFirestoreInitProviderElement
-    extends AutoDisposeStreamProviderElement<bool>
-    with IsAccountFirestoreInitRef {
-  _IsAccountFirestoreInitProviderElement(super.provider);
+class _IsFirestoreInitProviderElement
+    extends AutoDisposeStreamProviderElement<bool> with IsFirestoreInitRef {
+  _IsFirestoreInitProviderElement(super.provider);
 
   @override
-  String get uid => (origin as IsAccountFirestoreInitProvider).uid;
+  String get uid => (origin as IsFirestoreInitProvider).uid;
   @override
   FirestoreCollections get accountCollection =>
-      (origin as IsAccountFirestoreInitProvider).accountCollection;
+      (origin as IsFirestoreInitProvider).accountCollection;
 }
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

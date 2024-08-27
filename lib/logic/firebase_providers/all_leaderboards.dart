@@ -5,7 +5,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'generated/all_leaderboards.g.dart';
 
 @Riverpod()
-Stream<List<Leaderboard>?> leaderboards(LeaderboardsRef ref) async* {
+Stream<List<Leaderboard>> leaderboards(LeaderboardsRef ref) async* {
   final db = FirebaseFirestore.instance;
   final leaderboardsStream = db.collection('leaderboards').snapshots();
   await for (final leaderboards in leaderboardsStream) {

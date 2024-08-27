@@ -4,7 +4,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'generated/selected_room.g.dart';
 
-@riverpod
+@Riverpod()
 Stream<Room?> selectedRoom(
   SelectedRoomRef ref,
   String roomID,

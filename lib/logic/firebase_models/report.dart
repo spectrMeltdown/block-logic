@@ -35,26 +35,26 @@
 //       modifiedAt: (data['modifiedAt'] as Timestamp).toDate(),
 //     );
 //   }
-//   Map<String, dynamic> toFirestore(Report report) {
+//   Map<String, dynamic> toFirestore() {
 //     Map<String, dynamic> toFirestoreMap = {};
-//     if (report.createdAt != null) {
-//       toFirestoreMap.addAll({'createdAt': report.createdAt});
+//     if (createdAt != null) {
+//       toFirestoreMap.addAll({'createdAt': createdAt});
 //     }
-//     if (report.modifiedAt != null) {
-//       toFirestoreMap.addAll({'modifiedAt': report.modifiedAt});
+//     if (modifiedAt != null) {
+//       toFirestoreMap.addAll({'modifiedAt': modifiedAt});
 //     }
-//     if (report.data != null) {
-//       toFirestoreMap.addAll({'data': report.data});
+//     if (data != null) {
+//       toFirestoreMap.addAll({'data': data});
 //     }
-//     if (report.endDate != null) {
-//       toFirestoreMap.addAll({'endDate': report.endDate});
+//     if (endDate != null) {
+//       toFirestoreMap.addAll({'endDate': endDate});
 //     }
-//     if (report.startDate != null) {
-//       toFirestoreMap.addAll({'startDate': report.startDate});
+//     if (startDate != null) {
+//       toFirestoreMap.addAll({'startDate': startDate});
 //     }
 
-//     if (report.reportType != null) {
-//       toFirestoreMap.addAll({'reportType': report.reportType});
+//     if (reportType != null) {
+//       toFirestoreMap.addAll({'reportType': reportType});
 //     }
 //     return toFirestoreMap;
 //   }

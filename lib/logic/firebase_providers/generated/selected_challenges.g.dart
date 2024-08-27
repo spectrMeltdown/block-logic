@@ -7,7 +7,7 @@ part of '../selected_challenges.dart';
 // **************************************************************************
 
 String _$selectedChallengesHash() =>
-    r'c4725090bd82733bfebfb1a44c489d186038cde0';
+    r'0f47c85cc8a2674cdc860473c4a9d88a887664f6';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -57,14 +57,12 @@ class SelectedChallengesFamily extends Family<AsyncValue<List<Challenge>>> {
     );
   }
 
-  static final Iterable<ProviderOrFamily> _dependencies =
-      const <ProviderOrFamily>[];
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
 
   @override
   Iterable<ProviderOrFamily>? get dependencies => _dependencies;
 
-  static final Iterable<ProviderOrFamily> _allTransitiveDependencies =
-      const <ProviderOrFamily>{};
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
 
   @override
   Iterable<ProviderOrFamily>? get allTransitiveDependencies =>

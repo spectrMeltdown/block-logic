@@ -8,8 +8,7 @@ class BLRichText extends ConsumerStatefulWidget {
   final Color? color;
   final TextAlign? alignment;
   final List<TextSpan> children;
-  const BLRichText(this.children,
-      {this.alignment, this.size, this.color, super.key});
+  const BLRichText(this.children, {this.alignment, this.size, this.color, super.key});
 
   @override
   ConsumerState<BLRichText> createState() => _BLRichTextState();
@@ -18,7 +17,7 @@ class BLRichText extends ConsumerStatefulWidget {
 class _BLRichTextState extends ConsumerState<BLRichText> {
   @override
   Widget build(BuildContext context) {
-    final blui = ref.read(bLUIProvider);
+    final blui = ref.read(bLUIProvider.notifier);
     final responsive = ref.read(responsiveManagerProvider.notifier);
     double width = MediaQuery.of(context).size.width;
     return RichText(

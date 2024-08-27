@@ -18,7 +18,8 @@ class BlockColors {
 @riverpod
 class BLUI extends _$BLUI {
   @override
-  BLUI build() => BLUI();
+  void build() {}
+
   Color getAppColor(String color) {
     switch (color.toLowerCase()) {
       case 'grey':

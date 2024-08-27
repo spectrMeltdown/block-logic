@@ -1,4 +1,4 @@
-import 'package:flame/extensions.dart';
+import 'package:block_logic/logic/services/color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -27,9 +27,7 @@ class _AdminSearchBarState extends ConsumerState<AdminSearchBar> {
             color: Colors.white,
           ),
         ),
-        trailing: [
-          IconButton(onPressed: () {}, icon: const Icon(Icons.arrow_forward))
-        ],
+        trailing: [IconButton(onPressed: () {}, icon: const Icon(Icons.arrow_forward))],
       ),
     );
     // return Padding(

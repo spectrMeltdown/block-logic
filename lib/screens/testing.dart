@@ -48,15 +48,10 @@ class TestingPage extends ConsumerWidget {
                       Challenge(
                         id: 'testing1',
                         name: 'Leap Year Check',
-                        shortDescription:
-                            'Check if the given year is a leap year.',
+                        shortDescription: 'Check if the given year is a leap year.',
                         additionalInfo:
                             'A leap year has 366 days, with an extra day in February (29 days instead of 28). It occurs every four years to keep the calendar year aligned with the solar year.',
-                        limitations: [
-                          '5 block lines',
-                          'No functions',
-                          'No classes'
-                        ],
+                        limitations: ['5 block lines', 'No functions', 'No classes'],
                         blocks: AllBlocks.get(),
                         difficulty: Difficulty.intermediate,
                         tags: ['conditionals', ''],
@@ -64,8 +59,7 @@ class TestingPage extends ConsumerWidget {
                       Challenge(
                         id: 'testing2',
                         name: 'Vowel Count',
-                        shortDescription:
-                            'Count the number of vowels in a given string.',
+                        shortDescription: 'Count the number of vowels in a given string.',
                         additionalInfo: '',
                         limitations: ['2 block lines', 'Use one function', ''],
                         blocks: AllBlocks.get(),
@@ -76,17 +70,14 @@ class TestingPage extends ConsumerWidget {
                         ],
                       )
                     ];
-                    await db
-                        .collection('rooms')
-                        .doc('testing')
-                        .set(room.toFirestore(room), SetOptions(merge: true));
+                    await db.collection('rooms').doc('testing').set(room.toFirestore(), SetOptions(merge: true));
                     for (int i = 0; i <= challenges.length - 1; i++) {
-                      await db.collection('challenges').doc('testing$i').set(
-                          challenges[i].toFirestore(challenges[i]),
-                          SetOptions(merge: true));
+                      await db
+                          .collection('challenges')
+                          .doc('testing$i')
+                          .set(challenges[i].toFirestore(), SetOptions(merge: true));
                     }
-                    toast.showToast('Creating success',
-                        type: NotifType.success);
+                    toast.showToast('Creating success', type: NotifType.success);
                   } catch (e) {
                     final errorHandler = ErrorHandler();
                     errorHandler.call(e);
@@ -102,8 +93,7 @@ class TestingPage extends ConsumerWidget {
                     await db.collection('rooms').doc('testing').delete();
                     await db.collection('challenges').doc('testing1').delete();
                     await db.collection('challenges').doc('testing2').delete();
-                    toast.showToast('Deleting success',
-                        type: NotifType.success);
+                    toast.showToast('Deleting success', type: NotifType.success);
                   } catch (e) {
                     final errorHandler = ErrorHandler();
                     errorHandler.call(e);

@@ -8,8 +8,8 @@ part 'generated/all_user.g.dart';
 Stream<List<UserAccount>> allUsers(AllUsersRef ref) async* {
   final db = FirebaseFirestore.instance;
   final users = db.collection('users').snapshots();
-  final result = <UserAccount>[];
   await for (final userList in users) {
+    final result = <UserAccount>[];
     if (userList.docs.isNotEmpty) {
       for (final user in userList.docs) {
         result.add(UserAccount.fromFirestore(user));

@@ -45,7 +45,7 @@ class _BtnState extends ConsumerState<BLButton> {
 
   @override
   Widget build(BuildContext context) {
-    final blui = ref.read(bLUIProvider);
+    final blui = ref.read(bLUIProvider.notifier);
     return GestureDetector(
       onTapDown: (details) {
         audio?.playBtn();
@@ -56,16 +56,13 @@ class _BtnState extends ConsumerState<BLButton> {
       child: Container(
           key: containerKey,
           padding: widget.padding ??
-              EdgeInsets.symmetric(
-                  horizontal: widget.paddingX ?? 30,
-                  vertical: widget.paddingY ?? 10),
+              EdgeInsets.symmetric(horizontal: widget.paddingX ?? 30, vertical: widget.paddingY ?? 10),
           decoration: BoxDecoration(
             shape: BoxShape.rectangle,
             borderRadius: BorderRadius.circular(12.0),
             border: Border.all(color: Colors.white, width: 2.0),
-            gradient: RadialGradient(
-                colors: _isTapped ? btnPressedColor : btnColor,
-                radius: blui.getRadius(context, width)),
+            gradient:
+                RadialGradient(colors: _isTapped ? btnPressedColor : btnColor, radius: blui.getRadius(context, width)),
             boxShadow: (_isTapped ? btnShadow : null),
           ),
           child: widget.child),
@@ -99,8 +96,7 @@ class _BtnState extends ConsumerState<BLButton> {
     getBtnColor();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // Access the width after the first frame is rendered
-      final RenderBox renderBox =
-          containerKey.currentContext?.findRenderObject() as RenderBox;
+      final RenderBox renderBox = containerKey.currentContext?.findRenderObject() as RenderBox;
       setState(() {
         width = renderBox.size.width;
       });

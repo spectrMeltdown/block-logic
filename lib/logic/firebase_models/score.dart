@@ -32,22 +32,22 @@ class Score {
       status: data['status'],
     );
   }
-  Map<String, dynamic> toFirestore(Score score) {
+  Map<String, dynamic> toFirestore() {
     Map<String, dynamic> toFirestoreMap = {};
-    if (score.accountID != null) {
-      toFirestoreMap.addAll({'accountID': score.accountID});
+    if (accountID != null) {
+      toFirestoreMap.addAll({'accountID': accountID});
     }
-    if (score.playerScore != null) {
-      toFirestoreMap.addAll({'playerScore': score.playerScore});
+    if (playerScore != null) {
+      toFirestoreMap.addAll({'playerScore': playerScore});
     }
-    if (score.rank != null) {
-      toFirestoreMap.addAll({'rank': score.rank});
+    if (rank != null) {
+      toFirestoreMap.addAll({'rank': rank});
     }
-    if (score.status != null) {
-      toFirestoreMap.addAll({'status': score.status});
+    if (status != null) {
+      toFirestoreMap.addAll({'status': status});
     }
-    if (score.timeElapsed != null) {
-      toFirestoreMap.addAll({'timeElapsed': score.timeElapsed});
+    if (timeElapsed != null) {
+      toFirestoreMap.addAll({'timeElapsed': timeElapsed});
     }
     return toFirestoreMap;
   }

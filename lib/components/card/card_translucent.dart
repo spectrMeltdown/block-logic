@@ -1,8 +1,8 @@
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/util/blank_widget.dart';
 import 'package:block_logic/logic/services/audio.dart';
+import 'package:block_logic/logic/services/color.dart';
 import 'package:block_logic/logic/services/ui.dart';
-import 'package:flame/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -75,65 +75,57 @@ class _BLCardState extends ConsumerState<BLTranslucentCard> {
                 width: mediaQuery.size.width,
                 height: widget.height,
                 child: Container(
-                  padding: widget.padding ??
-                      const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                  padding: widget.padding ?? const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
                   decoration: BoxDecoration(
                     shape: BoxShape.rectangle,
                     borderRadius: BorderRadius.circular(12.0),
                     border: Border.all(color: Colors.white, width: 3.0),
                     gradient: RadialGradient(
                         colors: _isTapped ? cardColorPressed : cardColor,
-                        radius: (widget.padding != null)
-                            ? getRadius(widget.padding)
-                            : 5),
+                        radius: (widget.padding != null) ? getRadius(widget.padding) : 5),
                     boxShadow: (_isTapped ? cardShadow : null),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Expanded(
-                        child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  BLText(
-                                    widget.title,
-                                    color: BLUI().getAppColor('amber'),
-                                    bold: true,
-                                    size: 18,
-                                  ),
-                                  const SizedBox(
-                                    width: 10,
-                                  ),
-                                  widget.hasPass == null
-                                      ? const BlankWidget()
-                                      : widget.hasPass ?? false
-                                          ? const Icon(
-                                              Icons.lock_outline_rounded)
-                                          : const BlankWidget()
-                                ],
+                              BLText(
+                                widget.title,
+                                color: BLUI().getAppColor('amber'),
+                                bold: true,
+                                size: 18,
                               ),
-                              Row(
-                                children: [
-                                  BLText(
-                                    widget.subTitle,
-                                    color: BLUI().getAppColor(''),
-                                    size: 16,
-                                  )
-                                ],
+                              const SizedBox(
+                                width: 10,
                               ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  widget.bottomRowStart ?? const BlankWidget(),
-                                  widget.bottomRowEnd ?? const BlankWidget()
-                                ],
+                              widget.hasPass == null
+                                  ? const BlankWidget()
+                                  : widget.hasPass ?? false
+                                      ? const Icon(Icons.lock_outline_rounded)
+                                      : const BlankWidget()
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              BLText(
+                                widget.subTitle,
+                                color: BLUI().getAppColor(''),
+                                size: 16,
                               )
-                            ]),
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              widget.bottomRowStart ?? const BlankWidget(),
+                              widget.bottomRowEnd ?? const BlankWidget()
+                            ],
+                          )
+                        ]),
                       ),
                     ],
                   ),

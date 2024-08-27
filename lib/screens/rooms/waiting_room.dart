@@ -70,8 +70,7 @@ class _WaitingRoomState extends ConsumerState<WaitingRoom> {
                             return const BLError();
                           }
                           if (room.players!.isEmpty) {
-                            return const Center(
-                                child: BLText('No players yet ...'));
+                            return const Center(child: BLText('No players yet ...'));
                           }
                           roomID = room.id;
                           return Column(
@@ -91,20 +90,16 @@ class _WaitingRoomState extends ConsumerState<WaitingRoom> {
                                         itemCount: room.players!.length,
                                         itemBuilder: (context, i) {
                                           return Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 10, horizontal: 20),
+                                            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                                             child: WidgetAnimator(
-                                              incomingEffect:
-                                                  WidgetTransitionEffects
-                                                      .incomingScaleUp(),
+                                              incomingEffect: WidgetTransitionEffects.incomingScaleUp(),
                                               child: Row(
                                                 children: [
-                                                  BLProfilePic(
-                                                      type: AccountType.user,
-                                                      room.players![i]),
+                                                  BLProfilePic(type: AccountType.user, room.players![i]),
                                                   const SizedBox(width: 10),
                                                   BLDisplayName(
                                                     room.players![i],
+                                                    AccountType.user,
                                                     size: 16,
                                                   )
                                                 ],
@@ -115,13 +110,10 @@ class _WaitingRoomState extends ConsumerState<WaitingRoom> {
                                     if (kDebugMode)
                                       Positioned(
                                         bottom: 0,
-                                        left:
-                                            MediaQuery.of(context).size.width /
-                                                4,
+                                        left: MediaQuery.of(context).size.width / 4,
                                         child: BLButton(
                                             onPressed: () {
-                                              nav.pushReplace(
-                                                  context, GameRoom(room));
+                                              nav.pushReplace(context, GameRoom(room));
                                             },
                                             child: const BLText('Start game')),
                                       ),

@@ -17,10 +17,7 @@ class ChallengeManager extends _$ChallengeManager {
 
   Future<String?> create(Challenge challenge) async {
     try {
-      await _db!
-          .collection('challenges')
-          .doc(challenge.id)
-          .set(challenge.toFirestore(challenge));
+      await _db!.collection('challenges').doc(challenge.id).set(challenge.toFirestore());
       return null;
     } catch (e) {
       return _errorHandler?.call(e);
@@ -38,10 +35,7 @@ class ChallengeManager extends _$ChallengeManager {
 
   Future<String?> update(Challenge challenge) async {
     try {
-      await _db!
-          .collection('challenges')
-          .doc(challenge.id)
-          .set(challenge.toFirestore(challenge), SetOptions(merge: true));
+      await _db!.collection('challenges').doc(challenge.id).set(challenge.toFirestore(), SetOptions(merge: true));
       return null;
     } catch (e) {
       return _errorHandler?.call(e);

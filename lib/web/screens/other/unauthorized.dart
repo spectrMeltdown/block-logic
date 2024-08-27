@@ -1,6 +1,7 @@
 import 'package:block_logic/components/background.dart';
-import 'package:block_logic/components/text/title.dart';
+import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/text/title_small.dart';
+import 'package:block_logic/web/components/logout_btn.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -23,9 +24,13 @@ class _UnauthorizedState extends ConsumerState<Unauthorized> {
           Icon(
             Icons.error,
             color: Colors.red,
+            size: 100,
           ),
-          BLTitle('Not Authorized'),
-          BLSmallTitle('This account is not registered as an admin.')
+          SizedBox(height: 15),
+          BLSmallTitle('Not Authorized'),
+          BLText('This account is not registered as an admin.'),
+          SizedBox(height: 25),
+          Center(child: LogoutBtn())
         ],
       ))),
     );

@@ -6,12 +6,12 @@ part of '../validator_text.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$textValidatorHash() => r'9622d36c44f17b624ae0937f85b5c29ad8509fc2';
+String _$textValidatorHash() => r'72c68da6794cf0713db754cda94b7f9bc3db238a';
 
 /// See also [TextValidator].
 @ProviderFor(TextValidator)
 final textValidatorProvider =
-    AutoDisposeNotifierProvider<TextValidator, TextValidator>.internal(
+    AutoDisposeNotifierProvider<TextValidator, TextValidatorState>.internal(
   TextValidator.new,
   name: r'textValidatorProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
@@ -21,6 +21,6 @@ final textValidatorProvider =
   allTransitiveDependencies: null,
 );
 
-typedef _$TextValidator = AutoDisposeNotifier<TextValidator>;
+typedef _$TextValidator = AutoDisposeNotifier<TextValidatorState>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

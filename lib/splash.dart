@@ -1,7 +1,4 @@
-import 'package:block_logic/components/text/title.dart';
 import 'package:block_logic/logic/services/assets.dart';
-import 'package:block_logic/screens/init_android.dart';
-import 'package:flame_splash_screen/flame_splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -25,24 +22,6 @@ class _Splash extends ConsumerState<Splash> {
   @override
   Widget build(BuildContext context) {
     final assets = ref.read(assetsProvider);
-    return Scaffold(
-      resizeToAvoidBottomInset: true,
-      body: FlameSplashScreen(
-          showBefore: (BuildContext context) {
-            return const BLTitle('Uncaught Exception');
-          },
-          theme: FlameSplashTheme(
-              backgroundDecoration: BoxDecoration(
-                  image: DecorationImage(
-                      image: AssetImage(assets.backgroundNoGrid))),
-              logoBuilder: (context) => Padding(
-                    padding: const EdgeInsets.all(80),
-                    child: Image.asset(
-                      assets.logo,
-                      fit: BoxFit.cover,
-                    ),
-                  )),
-          onFinish: (context) => const InitAndroid()),
-    );
+    return const Placeholder();
   }
 }

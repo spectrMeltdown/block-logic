@@ -23,8 +23,7 @@ class RoomPasswordDialog extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() =>
-      RoomPasswordDialogState();
+  ConsumerState<ConsumerStatefulWidget> createState() => RoomPasswordDialogState();
 }
 
 class RoomPasswordDialogState extends ConsumerState<RoomPasswordDialog> {
@@ -35,7 +34,7 @@ class RoomPasswordDialogState extends ConsumerState<RoomPasswordDialog> {
   @override
   Widget build(BuildContext context) {
     final nav = ref.read(customNavigationProvider);
-    final validator = ref.read(textValidatorProvider);
+    final validator = ref.read(textValidatorProvider.notifier);
     final roomManager = ref.read(roomManagerProvider.notifier);
     return BLDialog(
         child: Form(
@@ -61,9 +60,7 @@ class RoomPasswordDialogState extends ConsumerState<RoomPasswordDialog> {
                 if (formKey.currentState!.validate()) {
                   debugPrint(widget.hostID);
                   final correctInput = await roomManager.validatePassword(
-                      input: passController.text.trim(),
-                      pass: widget.pass,
-                      hostID: widget.hostID);
+                      input: passController.text.trim(), pass: widget.pass, hostID: widget.hostID);
                   if (correctInput) {
                     if (!context.mounted) return;
                     nav.pop(context, true);

@@ -1,15 +1,14 @@
 import 'dart:async';
 
 import 'package:block_logic/app_theme.dart';
-import 'package:block_logic/logic/firebase_providers/auth.dart';
+import 'package:block_logic/logic/firebase_providers/auth_changes.dart';
 import 'package:block_logic/logic/firebase_providers/selected_admin.dart';
 import 'package:block_logic/logic/services/audio.dart';
 import 'package:block_logic/logic/services/auth.dart';
-import 'package:block_logic/logic/services/db.dart';
 import 'package:block_logic/logic/services/shared_pref.dart';
 import 'package:block_logic/route_observer.dart';
 import 'package:block_logic/router_config.dart';
-import 'package:block_logic/screens/init_android.dart';
+import 'package:block_logic/screens/checkpoint.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -62,13 +61,12 @@ class BlockLogic extends ConsumerWidget {
             debugShowCheckedModeBanner: false,
             theme: appTheme.theme(),
             darkTheme: appTheme.theme(),
-            home: const InitAndroid()),
+            home: const Checkpoint()),
       );
     }
 
     final auth = ref.read(authServiceProvider.notifier);
-    final user = ref.watch(accountAuthProvider);
-    final dbService = ref.watch(dBServiceProvider.notifier);
+    final user = ref.watch(authInfoChangesProvider);
     Future<String?> redirect() async {
       if (user.isLoading || user.hasError) return '/loading';
       if (auth.isLoggedIn()) {
@@ -77,11 +75,13 @@ class BlockLogic extends ConsumerWidget {
           return '/verify-email';
         }
 
-        /// TODO: check if phone number was verified
-        final adminFirestore =
-            await ref.watch(SelectedAdminProvider(auth.getUID()).future);
+        final adminFirestore = await ref.watch(SelectedAdminProvider(auth.getUID()).future);
         if (adminFirestore == null) {
           return '/unauthorized';
+        }
+        if ((adminFirestore.phoneNum != null || adminFirestore.phoneNum!.isNotEmpty) &&
+            (adminFirestore.verificationID == null || adminFirestore.verificationID!.isNotEmpty)) {
+          return '/verify-phone-num';
         }
         return null;
       } else {

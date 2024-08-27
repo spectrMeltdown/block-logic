@@ -1,9 +1,11 @@
+import 'package:block_logic/logic/enums.dart';
+import 'package:block_logic/logic/firebase_models/admin_account.dart';
 import 'package:block_logic/logic/firebase_models/user_account.dart';
-import 'package:block_logic/logic/services/db.dart';
+import 'package:block_logic/logic/services/account.dart';
 import 'package:block_logic/logic/services/error_handler.dart';
 import 'package:block_logic/logic/services/shared_pref.dart';
-import 'package:block_logic/logic/services/toast.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -11,23 +13,39 @@ part 'generated/auth.g.dart';
 
 @riverpod
 class AuthService extends _$AuthService {
+  Future<void> addPhoneNumber(String phoneNumber) async {
+    FirebaseAuth auth = FirebaseAuth.instance;
+
+    await auth.verifyPhoneNumber(
+      phoneNumber: phoneNumber,
+      verificationCompleted: (PhoneAuthCredential credential) async {
+        // Automatic verification (e.g., on Android)
+        await auth.currentUser?.updatePhoneNumber(credential);
+      },
+      verificationFailed: (FirebaseAuthException e) {
+        debugPrint('Phone number verification failed: ${e.message}');
+      },
+      codeSent: (String verificationId, int? resendToken) {
+        debugPrint('Verification code sent. Verification ID: $verificationId');
+      },
+      codeAutoRetrievalTimeout: (String verificationId) {
+        // Auto-retrieval timeout
+        debugPrint('Code auto-retrieval timeout. Verification ID: $verificationId');
+      },
+    );
+  }
+
   @override
   AuthServiceState build() {
-    final dbService = ref.read(dBServiceProvider.notifier);
     final errorHandler = ref.read(errorHandlerProvider.notifier);
     final sharedPref = ref.read(sharedPrefProvider);
-    final toast = ref.read(toastProvider.notifier);
-    return AuthServiceState(
-        dbService: dbService,
-        errorHandler: errorHandler,
-        sharedPref: sharedPref,
-        toast: toast);
+    final account = ref.read(accountServiceProvider.notifier);
+    return AuthServiceState(errorHandler: errorHandler, sharedPref: sharedPref, account: account);
   }
 
   Future<String?> changeEmail(String email) async {
     try {
-      await FirebaseAuth.instance.currentUser!
-          .verifyBeforeUpdateEmail(email.trim());
+      await FirebaseAuth.instance.currentUser!.verifyBeforeUpdateEmail(email.trim());
       // state._toast.showToast('A verification has been sent to your new email.');
       return null;
     } catch (e) {
@@ -49,15 +67,16 @@ class AuthService extends _$AuthService {
     required String password,
     required String displayName,
     required String phoneNum,
+    required AccountType type,
   }) async {
     try {
       /// create account
-      await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(email: email, password: password);
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
+
+      await FirebaseAuth.instance.currentUser!.updateDisplayName(displayName);
 
       /// save phoneNum temporarily, if app data is cleared and signup was not completed
-      await state._dbService.updateUserAccount(
-          UserAccount(displayName: displayName, phoneNum: phoneNum));
+      await state._account.initFirestoreData(displayName: displayName, phoneNum: phoneNum, type: type);
       return null;
     } catch (e) {
       return state._errorHandler.call(e);
@@ -69,8 +88,7 @@ class AuthService extends _$AuthService {
       /// delete account in firebase _auth
       await FirebaseAuth.instance.currentUser!.delete();
 
-      /// display info about delayed deletion
-      // state._toast.showToast('Account Deleted');
+      state._account.deleteFirestoreData();
       return null;
     } catch (e) {
       return state._errorHandler.call(e);
@@ -91,7 +109,6 @@ class AuthService extends _$AuthService {
 
   /// user's email
   String getEmail() => state._auth.currentUser?.email ?? '';
-
   // user's uid
   String getUID() => state._auth.currentUser?.uid ?? '';
 
@@ -106,8 +123,7 @@ class AuthService extends _$AuthService {
     required String password,
   }) async {
     try {
-      await FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: email, password: password);
+      await state._auth.signInWithEmailAndPassword(email: email, password: password);
       return null;
     } catch (e) {
       return state._errorHandler.call(e);
@@ -117,18 +133,15 @@ class AuthService extends _$AuthService {
   /// logout
   Future<void> logout() async {
     await state._sharedPref.setBool('loginAlertSent', false);
-    await FirebaseAuth.instance.signOut();
-    //state._toast.showToast('Logged out, bye!');
+    await state._auth.signOut();
   }
 
   /// display when the user has to reauthenticate themselves
   Future<String?> reauth(String password) async {
-    AuthCredential userCred =
-        EmailAuthProvider.credential(email: getEmail(), password: password);
+    AuthCredential userCred = EmailAuthProvider.credential(email: getEmail(), password: password);
     try {
-      await FirebaseAuth.instance.currentUser
-          ?.reauthenticateWithCredential(userCred);
-      return 'success';
+      await state._auth.currentUser?.reauthenticateWithCredential(userCred);
+      return null;
     } catch (e) {
       return 'failed';
     }
@@ -139,8 +152,52 @@ class AuthService extends _$AuthService {
 
   Future<String?> sendEmailVerification({bool showNotif = true}) async {
     try {
-      await FirebaseAuth.instance.currentUser!.sendEmailVerification();
+      await state._auth.currentUser!.sendEmailVerification();
       return null;
+    } catch (e) {
+      return state._errorHandler.call(e);
+    }
+  }
+
+  Future<String?> verifyOTP({
+    required String verificationId,
+    String? otp,
+    required AccountType type,
+    String? phoneNum,
+  }) async {
+    try {
+      /// first time verifying
+      if (verificationId.isEmpty) {
+        await state._auth.verifyPhoneNumber(
+          phoneNumber: phoneNum,
+          verificationCompleted: (PhoneAuthCredential credential) async {
+            state._auth.currentUser!.linkWithCredential(credential);
+          },
+          verificationFailed: (FirebaseAuthException e) {
+            debugPrint('Verification failed: ${e.message}');
+          },
+          codeSent: (String verificationId, int? resendToken) {
+            /// update with new verification ID
+            if (type == AccountType.user) {
+              state._account.update(user: UserAccount(verificationID: verificationId));
+            } else {
+              state._account.update(admin: AdminAccount(verificationID: verificationId));
+            }
+          },
+          codeAutoRetrievalTimeout: (String verificationId) {},
+        );
+        return 'sent';
+      }
+
+      /// for 2nd ++ attempt
+      else {
+        PhoneAuthCredential credential = PhoneAuthProvider.credential(
+          verificationId: verificationId,
+          smsCode: otp!,
+        );
+        await state._auth.currentUser?.updatePhoneNumber(credential);
+        return 'done';
+      }
     } catch (e) {
       return state._errorHandler.call(e);
     }
@@ -148,16 +205,15 @@ class AuthService extends _$AuthService {
 }
 
 class AuthServiceState {
-  final DBService _dbService;
   final ErrorHandler _errorHandler;
   final SharedPreferences _sharedPref;
   final _auth = FirebaseAuth.instance;
-  AuthServiceState(
-      {required DBService dbService,
-      required ErrorHandler errorHandler,
-      required SharedPreferences sharedPref,
-      required Toast toast})
-      : _dbService = dbService,
-        _errorHandler = errorHandler,
+  final AccountService _account;
+  AuthServiceState({
+    required AccountService account,
+    required ErrorHandler errorHandler,
+    required SharedPreferences sharedPref,
+  })  : _errorHandler = errorHandler,
+        _account = account,
         _sharedPref = sharedPref;
 }

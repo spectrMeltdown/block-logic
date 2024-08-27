@@ -6,7 +6,7 @@ part of '../account_settings.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$settingsHash() => r'5cb267fbe4b249fb8f04630cba9242e53469d223';
+String _$settingsHash() => r'e1b23bc36765cfd14b202441b62df5c2bc75899d';
 
 /// Copied from Dart SDK
 class _SystemHash {

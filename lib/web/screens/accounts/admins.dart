@@ -1,0 +1,59 @@
+import 'package:block_logic/components/account/display_name.dart';
+import 'package:block_logic/components/profile_pic.dart';
+import 'package:block_logic/components/text/text.dart';
+import 'package:block_logic/components/util/provider_default.dart';
+import 'package:block_logic/logic/enums.dart';
+import 'package:block_logic/logic/firebase_providers/all_admin.dart';
+import 'package:block_logic/web/components/bl_table.dart';
+import 'package:block_logic/web/components/button.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
+
+class Admins extends ConsumerStatefulWidget {
+  final List<String> adminProps;
+  const Admins(this.adminProps, {super.key});
+
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() => _AdminsState();
+}
+
+class _AdminsState extends ConsumerState<Admins> {
+  @override
+  Widget build(BuildContext context) {
+    final admins = ref.watch(allAdminsProvider);
+    return admins.when(
+        data: (admins) {
+          /// admin cannot delete themself here. They must use Settings > Delete account instead.
+          admins.removeWhere((admin) => admin.id == FirebaseAuth.instance.currentUser!.uid);
+          if (admins.isEmpty) {
+            return const Center(
+              child: BLText('There are no other admins at the moment...'),
+            );
+          }
+          return BLTable(
+              columns: List.generate(widget.adminProps.length, (i) => DataColumn(label: BLText(widget.adminProps[i]))),
+              rows: List.generate(admins.length, (i) {
+                return DataRow(cells: [
+                  DataCell(BLProfilePic(type: AccountType.admin, admins[i].id ?? '')),
+                  DataCell(BLDisplayName(admins[i].displayName ?? '', AccountType.admin)),
+                  DataCell(BLText(
+                      admins[i].createdAt != null ? DateFormat('dd / mm / yyyy').format(admins[i].createdAt!) : '--')),
+                  DataCell(Wrap(
+                    children: [
+                      BLAdminButton(
+                          type: AdminBtnType.red,
+                          child: const BLText('Delete'),
+                          onPressed: () {
+                            // TODO: connect to firebase admin sdk
+                          })
+                    ],
+                  )),
+                ]);
+              }));
+        },
+        error: genericError,
+        loading: genericLoading);
+  }
+}

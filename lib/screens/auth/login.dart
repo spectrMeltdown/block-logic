@@ -9,6 +9,7 @@ import 'package:block_logic/components/text/title.dart';
 import 'package:block_logic/components/textbox.dart';
 import 'package:block_logic/constants.dart';
 import 'package:block_logic/logic/enums.dart';
+import 'package:block_logic/logic/firebase_models/account_settings.dart';
 import 'package:block_logic/logic/firebase_providers/account_settings.dart';
 import 'package:block_logic/logic/services/auth.dart';
 import 'package:block_logic/logic/services/login_alert.dart';
@@ -38,46 +39,16 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
   final TextEditingController passwordController = TextEditingController();
   final _loginFormKey = GlobalKey<FormState>();
   late Toast toast;
+  late final AuthService auth;
+  late final Future<AccountSettings?> settings;
+  late final CustomNavigation nav;
   bool processing = false;
 
   @override
   Widget build(BuildContext context) {
-    final validator = ref.read(textValidatorProvider);
-    final nav = ref.read(customNavigationProvider);
-    final auth = ref.read(authServiceProvider.notifier);
-    final settings = ref.watch(SettingsProvider(widget.accountType).future);
+    final validator = ref.read(textValidatorProvider.notifier);
     final mediaQ = MediaQuery.of(context);
     final width = mediaQ.size.width;
-
-    Future<void> submit() async {
-      if (_loginFormKey.currentState!.validate()) {
-        toast.showToast('Logging in', type: NotifType.info);
-        final error = await auth.login(
-            email: emailController.text.trim(),
-            password: passwordController.text.trim());
-        if (error == null) {
-          final awaitedSettings = await settings;
-          final loginAlert =
-              ref.read(LoginAlertProvider(awaitedSettings).notifier);
-          final result = await loginAlert.send();
-          if (result != null) {
-            if (!context.mounted) return;
-            toast.showToast(result, type: NotifType.error);
-          }
-          if (!context.mounted) return;
-          if (kIsWeb) {
-            context.go('/dashboard');
-          }
-          nav.pushReplace(context, const MainMenuScreen());
-        } else {
-          if (!context.mounted) return;
-          toast.showToast(
-            error,
-            type: NotifType.error,
-          );
-        }
-      }
-    }
 
     return PopScope(
       canPop: false,
@@ -99,15 +70,9 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
                   padding: EdgeInsets.only(bottom: mediaQ.viewInsets.bottom),
                   height: kIsWeb ? mediaQ.size.height : null,
                   child: Column(
-                    mainAxisAlignment: kIsWeb
-                        ? MainAxisAlignment.center
-                        : MainAxisAlignment.start,
+                    mainAxisAlignment: kIsWeb ? MainAxisAlignment.center : MainAxisAlignment.start,
                     children: [
-                      if (!kIsWeb)
-                        const Align(
-                            child: Align(
-                                alignment: Alignment.centerLeft,
-                                child: BLBackButton())),
+                      if (!kIsWeb) const Align(child: Align(alignment: Alignment.centerLeft, child: BLBackButton())),
                       Align(
                         alignment: Alignment.center,
                         child: Container(
@@ -129,9 +94,7 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
                                   children: [
                                     const SizedBox(height: 5),
                                     const BLTitle(
-                                      kIsWeb
-                                          ? 'Welcome!'
-                                          : 'Welcome back, dev!',
+                                      kIsWeb ? 'Welcome!' : 'Welcome back, dev!',
                                       bottomPadding: 10,
                                     ),
                                     const SizedBox(height: 30),
@@ -140,9 +103,9 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
                                       hintText: 'Email',
                                       onFieldSubmitted: (p0) async {
                                         if (processing == true) return;
-                                        processing = true;
-                                        await submit();
-                                        processing = false;
+                                        toggleProcessing(true);
+                                        await submit(context);
+                                        toggleProcessing(false);
                                       },
                                       prefixIcon: const Icon(
                                         FontAwesomeIcons.envelope,
@@ -150,8 +113,7 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
                                       ),
                                       keyboardType: TextInputType.emailAddress,
                                       validator: (email) {
-                                        return validator
-                                            .validateEmail(email?.trim());
+                                        return validator.validateEmail(email?.trim());
                                       },
                                     ),
                                     const SizedBox(height: 15),
@@ -160,20 +122,18 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
                                       hintText: 'Password',
                                       onFieldSubmitted: (p0) async {
                                         if (processing == true) return;
-                                        processing = true;
-                                        await submit();
-                                        processing = false;
+                                        toggleProcessing(true);
+                                        await submit(context);
+                                        toggleProcessing(false);
                                       },
                                       prefixIcon: const Icon(
                                         FontAwesomeIcons.lock,
                                         color: Colors.white,
                                       ),
                                       isObscure: true,
-                                      keyboardType:
-                                          TextInputType.visiblePassword,
+                                      keyboardType: TextInputType.visiblePassword,
                                       validator: (password) {
-                                        return validator
-                                            .validatePassword(password?.trim());
+                                        return validator.validatePassword(password?.trim());
                                       },
                                     ),
                                     Row(
@@ -181,17 +141,14 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
                                         BLTextButton(
                                             onPressed: () async {
                                               if (processing == true) return;
-                                              processing = true;
+                                              toggleProcessing(true);
                                               bool? result = await showDialog(
-                                                  context: context,
-                                                  builder: (context) =>
-                                                      const ForgotPasswordDialog());
+                                                  context: context, builder: (context) => const ForgotPasswordDialog());
                                               if (result != null) {
-                                                toast.showToast(
-                                                    'A reset link was sent to your email.',
+                                                toast.showToast('A reset link was sent to your email.',
                                                     type: NotifType.info);
                                               }
-                                              processing = false;
+                                              toggleProcessing(false);
                                             },
                                             child: const BLText(
                                               'Forgot password?',
@@ -203,13 +160,12 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
                                       height: 30,
                                     ),
                                     BLButton(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 50, vertical: 10),
+                                        padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 10),
                                         onPressed: () async {
                                           if (processing == true) return;
-                                          processing = true;
-                                          await submit();
-                                          processing = false;
+                                          toggleProcessing(true);
+                                          await submit(context);
+                                          toggleProcessing(false);
                                         },
                                         child: const BLText(
                                           'Login',
@@ -217,12 +173,10 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
                                         )),
                                     if (!kIsWeb)
                                       Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
+                                        mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
                                           BLTextButton(
-                                              onPressed: () => nav.pushReplace(
-                                                  context, const Signup()),
+                                              onPressed: () => nav.pushReplace(context, const Signup()),
                                               child: const BLText(
                                                 'Create an account instead',
                                                 underlined: true,
@@ -272,7 +226,43 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
 
   @override
   void initState() {
+    auth = ref.read(authServiceProvider.notifier);
+    settings = ref.read(SettingsProvider(widget.accountType).future);
     toast = ref.read(toastProvider.notifier);
+    nav = ref.read(customNavigationProvider);
     super.initState();
+  }
+
+  Future<void> submit(BuildContext context) async {
+    if (_loginFormKey.currentState!.validate()) {
+      // toast.showToast('Logging in', type: NotifType.info);
+      final error = await auth.login(email: emailController.text.trim(), password: passwordController.text.trim());
+      if (error == null) {
+        final awaitedSettings = await settings;
+        final loginAlert = ref.read(LoginAlertProvider(awaitedSettings).notifier);
+        final result = await loginAlert.send();
+        if (result != null) {
+          if (!context.mounted) return;
+          toast.showToast(result, type: NotifType.error);
+        }
+        if (!context.mounted) return;
+        if (kIsWeb) {
+          context.go('/dashboard');
+        }
+        nav.pushReplace(context, const MainMenuScreen());
+      } else {
+        if (!context.mounted) return;
+        toast.showToast(
+          error,
+          type: NotifType.error,
+        );
+      }
+    }
+  }
+
+  void toggleProcessing(bool newState) {
+    setState(() {
+      processing = newState;
+    });
   }
 }

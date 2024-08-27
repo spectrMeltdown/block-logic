@@ -15,8 +15,7 @@ class GameBlock extends ConsumerStatefulWidget {
   ConsumerState<ConsumerStatefulWidget> createState() => GameCodeBlockState();
 }
 
-class GameCodeBlockState extends ConsumerState<GameBlock>
-    with TickerProviderStateMixin {
+class GameCodeBlockState extends ConsumerState<GameBlock> with TickerProviderStateMixin {
   late final GameManager gameManager;
   late final BLUI blui;
   late final String id;
@@ -68,9 +67,7 @@ class GameCodeBlockState extends ConsumerState<GameBlock>
     switch (state) {
       case CodeBlockState.unselected:
         debugPrint('${widget.data.name} unselected');
-        return BlockDesignWrapper(
-            data: widget.data,
-            child: Center(child: BLText(widget.data.name, size: 14)));
+        return BlockDesignWrapper(data: widget.data, child: Center(child: BLText(widget.data.name, size: 14)));
       case CodeBlockState.faded:
 
         /// if still in the block selector
@@ -92,18 +89,14 @@ class GameCodeBlockState extends ConsumerState<GameBlock>
           case CodeBlockType.functionDefinition:
           case CodeBlockType.loops:
           case CodeBlockType.conditionals:
-            return BlockDesignWrapper(
-                data: widget.data,
-                child: GameBlockWithChild(data: widget.data));
+            return BlockDesignWrapper(data: widget.data, child: GameBlockWithChild(data: widget.data));
           case CodeBlockType.objects:
           case CodeBlockType.keyword:
           case CodeBlockType.functions:
           case CodeBlockType.operators:
           case CodeBlockType.literals:
           case CodeBlockType.variables:
-            return BlockDesignWrapper(
-                data: widget.data,
-                child: Center(child: BLText(widget.data.name, size: 14)));
+            return BlockDesignWrapper(data: widget.data, child: Center(child: BLText(widget.data.name, size: 14)));
         }
 
       case CodeBlockState.selected:
@@ -114,18 +107,14 @@ class GameCodeBlockState extends ConsumerState<GameBlock>
           case CodeBlockType.loops:
           case CodeBlockType.conditionals:
             debugPrint('selected');
-            return BlockDesignWrapper(
-                data: widget.data,
-                child: GameBlockWithChild(data: widget.data));
+            return BlockDesignWrapper(data: widget.data, child: GameBlockWithChild(data: widget.data));
           case CodeBlockType.objects:
           case CodeBlockType.keyword:
           case CodeBlockType.functions:
           case CodeBlockType.operators:
           case CodeBlockType.literals:
           case CodeBlockType.variables:
-            return BlockDesignWrapper(
-                data: widget.data,
-                child: Center(child: BLText(widget.data.name, size: 14)));
+            return BlockDesignWrapper(data: widget.data, child: Center(child: BLText(widget.data.name, size: 14)));
         }
     }
   }
@@ -137,7 +126,7 @@ class GameCodeBlockState extends ConsumerState<GameBlock>
   @override
   void initState() {
     gameManager = ref.read(gameManagerProvider.notifier);
-    blui = ref.read(bLUIProvider);
+    blui = ref.read(bLUIProvider.notifier);
 
     // _controller = AnimationController(
     //   duration: const Duration(milliseconds: 300),

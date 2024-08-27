@@ -48,55 +48,48 @@ class Challenge {
       name: data['name'] ?? '',
       shortDescription: data['shortDescription'] ?? '',
       additionalInfo: data['additionalInfo'] ?? '',
-      limitations: data['limitations'] == null
-          ? []
-          : (data['limitations'] as List<dynamic>)
-              .map((i) => i as String)
-              .toList(),
+      limitations:
+          data['limitations'] == null ? [] : (data['limitations'] as List<dynamic>).map((i) => i as String).toList(),
       blocks: data['blocks'] == null
           ? null
           : data.map<CodeBlockType, List<GameBlockData>>((key, value) {
               // Convert the key to CodeBlockType
-              CodeBlockType codeBlockType = CodeBlockType.values
-                  .firstWhere((e) => e.toString() == key.toString());
+              CodeBlockType codeBlockType = CodeBlockType.values.firstWhere((e) => e.toString() == key.toString());
 
               // Convert the value (List<dynamic>) to List<GameBlockData>
-              List<GameBlockData> gameBlockDataList =
-                  value.map((item) => GameBlockData.fromJson(item)).toList();
+              List<GameBlockData> gameBlockDataList = value.map((item) => GameBlockData.fromJson(item)).toList();
 
               return MapEntry(codeBlockType, gameBlockDataList);
             }),
       difficulty: difficultyFirestore,
-      tags: data['tags'] == null
-          ? []
-          : (data['tags'] as List<dynamic>).map((i) => i as String).toList(),
+      tags: data['tags'] == null ? [] : (data['tags'] as List<dynamic>).map((i) => i as String).toList(),
     );
   }
 
-  Map<String, dynamic> toFirestore(Challenge challenge) {
+  Map<String, dynamic> toFirestore() {
     Map<String, dynamic> toFirestoreMap = {};
-    if (challenge.additionalInfo != null) {
-      toFirestoreMap.addAll({'additionalInfo': challenge.additionalInfo});
+    if (additionalInfo != null) {
+      toFirestoreMap.addAll({'additionalInfo': additionalInfo});
     }
-    if (challenge.blocks != null) {
+    if (blocks != null) {
       toFirestoreMap.addAll({
         'blocks': {CodeBlockType.classes.name: []}
       });
     }
-    if (challenge.difficulty != null) {
-      toFirestoreMap.addAll({'difficulty': challenge.difficulty?.name});
+    if (difficulty != null) {
+      toFirestoreMap.addAll({'difficulty': difficulty?.name});
     }
-    if (challenge.limitations != null) {
-      toFirestoreMap.addAll({'limitations': challenge.limitations});
+    if (limitations != null) {
+      toFirestoreMap.addAll({'limitations': limitations});
     }
-    if (challenge.name != null) {
-      toFirestoreMap.addAll({'name': challenge.name});
+    if (name != null) {
+      toFirestoreMap.addAll({'name': name});
     }
-    if (challenge.shortDescription != null) {
-      toFirestoreMap.addAll({'shortDescription': challenge.shortDescription});
+    if (shortDescription != null) {
+      toFirestoreMap.addAll({'shortDescription': shortDescription});
     }
-    if (challenge.tags != null) {
-      toFirestoreMap.addAll({'tags': challenge.tags});
+    if (tags != null) {
+      toFirestoreMap.addAll({'tags': tags});
     }
     return toFirestoreMap;
   }

@@ -25,7 +25,7 @@ class TutorialItem extends ConsumerStatefulWidget {
 class _TutorialItemState extends ConsumerState<TutorialItem> {
   @override
   Widget build(BuildContext context) {
-    final blui = ref.read(bLUIProvider);
+    final blui = ref.read(bLUIProvider.notifier);
     final mediaQuery = MediaQuery.of(context);
     return BLCard(
       width: mediaQuery.size.width,
@@ -40,9 +40,7 @@ class _TutorialItemState extends ConsumerState<TutorialItem> {
             child: BLText(
               widget.childText,
               size: 23,
-              color: widget.type == TutorialType.keywords
-                  ? Colors.black
-                  : Colors.white,
+              color: widget.type == TutorialType.keywords ? Colors.black : Colors.white,
             ),
           ),
           const Icon(Icons.arrow_forward_ios)

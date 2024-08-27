@@ -72,10 +72,7 @@ class GameManager extends _$GameManager {
           roomID: state._room!.id,
           status: LeaderboardStatus.pending,
           dateCreated: DateTime.now());
-      state._db
-          .collection('leaderboards')
-          .doc(id)
-          .set(leaderboard.toFirestore(leaderboard), SetOptions(merge: true));
+      state._db.collection('leaderboards').doc(id).set(leaderboard.toFirestore(), SetOptions(merge: true));
       return true;
     } catch (e) {
       state._errorHandler.call(e);
