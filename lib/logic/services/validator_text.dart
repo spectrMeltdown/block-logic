@@ -34,10 +34,6 @@ class TextValidator extends _$TextValidator {
       return 'OTP is 6 digits.';
     }
 
-    if (!state._otpRegex.hasMatch(value)) {
-      return 'Only digits are allowed.';
-    }
-
     return null; // If the input passes validation
   }
 
@@ -243,7 +239,6 @@ class TextValidatorState {
       RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+"); // follow email format
 
   final _nameRegex = RegExp(r'^([a-zA-Z\.]+([.-]?[a-zA-Z]+)?(\s|$)){1,10}\.?$'); // no special symbols
-  final _otpRegex = RegExp(r'^\d{6}$');
   final _phoneNumRegex = RegExp(r'^[0-9]+$');
   final _maxPlayers = RegExp(r'^(?:[1-9]|1[0-9]|20)$'); // max 20
 }

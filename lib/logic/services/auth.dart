@@ -161,13 +161,13 @@ class AuthService extends _$AuthService {
 
   Future<String?> verifyOTP({
     required String verificationId,
-    String? otp,
     required AccountType type,
+    String otp = '',
     String? phoneNum,
   }) async {
     try {
       /// first time verifying
-      if (verificationId.isEmpty) {
+      if (verificationId.isEmpty && otp.isEmpty) {
         await state._auth.verifyPhoneNumber(
           phoneNumber: phoneNum,
           verificationCompleted: (PhoneAuthCredential credential) async {
@@ -193,7 +193,7 @@ class AuthService extends _$AuthService {
       else {
         PhoneAuthCredential credential = PhoneAuthProvider.credential(
           verificationId: verificationId,
-          smsCode: otp!,
+          smsCode: otp,
         );
         await state._auth.currentUser?.updatePhoneNumber(credential);
         return 'done';

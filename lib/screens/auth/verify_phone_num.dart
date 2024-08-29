@@ -18,6 +18,7 @@ import 'package:block_logic/logic/services/validator_text.dart';
 import 'package:block_logic/screens/checkpoint.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class VerifyPhoneNum extends ConsumerStatefulWidget {
@@ -41,9 +42,7 @@ class _VerifyPhoneNumState extends ConsumerState<VerifyPhoneNum> {
   late final CustomNavigation nav;
   @override
   Widget build(BuildContext context) {
-    auth = ref.read(authServiceProvider.notifier);
     account = ref.watch(SelectedUserProvider(auth.getUID()));
-    nav = ref.read(customNavigationProvider);
     final media = MediaQuery.of(context);
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -69,48 +68,54 @@ class _VerifyPhoneNumState extends ConsumerState<VerifyPhoneNum> {
                             padding: const EdgeInsets.symmetric(horizontal: 8.0),
                             child: Form(
                               key: formKey,
-                              child: Column(
+                              child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  const BLSmallTitle('Verify phone number'),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                                    child: BLText(
-                                      'We need to verify the phone number $phoneNum\n.',
-                                      alignCenter: true,
-                                      softWrap: true,
-                                      color: Colors.white,
-                                    ),
+                                  Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      const BLSmallTitle('Verify phone number'),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                                        child: BLText(
+                                          'We need to verify the phone number $phoneNum.\n',
+                                          alignCenter: true,
+                                          softWrap: true,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: 250,
+                                        child: BLTextBox(
+                                          controller: otpInput,
+                                          inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
+                                          onFieldSubmitted: (p0) => verifyOTP(context, account),
+                                          prefixIcon: const Icon(Icons.numbers),
+                                          labelText: '6-digit code',
+                                          keyboardType: TextInputType.number,
+                                          maxLength: 6,
+                                          validator: (otp) => validator.validateOtp(otp),
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        height: 20,
+                                      ),
+                                      BLTextButton(
+                                          onPressed: () {
+                                            if (processing) return;
+                                            processing = true;
+                                            processing = false;
+                                          },
+                                          child: const BLText('Send OTP')),
+                                      BLButton(
+                                          onPressed: () => verifyOTP(context, account),
+                                          child: const BLText(
+                                            'Submit',
+                                            size: 18,
+                                            color: Colors.white,
+                                          ))
+                                    ],
                                   ),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 50),
-                                    child: BLTextBox(
-                                      controller: otpInput,
-                                      onFieldSubmitted: (p0) => verifyOTP(context, account),
-                                      prefixIcon: const Icon(Icons.numbers),
-                                      labelText: '6-digit code',
-                                      keyboardType: TextInputType.number,
-                                      maxLength: 6,
-                                      validator: (otp) => validator.validateOtp(otp),
-                                    ),
-                                  ),
-                                  const SizedBox(
-                                    height: 20,
-                                  ),
-                                  BLTextButton(
-                                      onPressed: () {
-                                        if (processing) return;
-                                        processing = true;
-                                        processing = false;
-                                      },
-                                      child: const BLText('Send OTP')),
-                                  BLButton(
-                                      onPressed: () => verifyOTP(context, account),
-                                      child: const BLText(
-                                        'Submit',
-                                        size: 18,
-                                        color: Colors.white,
-                                      ))
                                 ],
                               ),
                             ),
@@ -130,6 +135,8 @@ class _VerifyPhoneNumState extends ConsumerState<VerifyPhoneNum> {
 
   @override
   void initState() {
+    auth = ref.read(authServiceProvider.notifier);
+    nav = ref.read(customNavigationProvider);
     toast = ref.read(toastProvider.notifier);
     sms = ref.read(smsServiceProvider.notifier);
     otp = ref.read(otpServiceProvider.notifier);

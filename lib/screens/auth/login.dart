@@ -235,21 +235,23 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
 
   Future<void> submit(BuildContext context) async {
     if (_loginFormKey.currentState!.validate()) {
-      // toast.showToast('Logging in', type: NotifType.info);
       final error = await auth.login(email: emailController.text.trim(), password: passwordController.text.trim());
       if (error == null) {
-        final awaitedSettings = await settings;
-        final loginAlert = ref.read(LoginAlertProvider(awaitedSettings).notifier);
-        final result = await loginAlert.send();
-        if (result != null) {
-          if (!context.mounted) return;
-          toast.showToast(result, type: NotifType.error);
-        }
-        if (!context.mounted) return;
+        // TODO: Skipping login alerts for now. If needed later, move to bottom
         if (kIsWeb) {
+          if (!context.mounted) return;
           context.go('/dashboard');
+        } else {
+          final awaitedSettings = await settings;
+          final loginAlert = ref.read(LoginAlertProvider(awaitedSettings).notifier);
+          final result = await loginAlert.send();
+          if (result != null) {
+            if (!context.mounted) return;
+            toast.showToast(result, type: NotifType.error);
+          }
+          if (!context.mounted) return;
+          nav.pushReplace(context, const MainMenuScreen());
         }
-        nav.pushReplace(context, const MainMenuScreen());
       } else {
         if (!context.mounted) return;
         toast.showToast(

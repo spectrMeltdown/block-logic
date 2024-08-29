@@ -6,23 +6,34 @@ import 'package:block_logic/components/panel/bordered.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/text/title.dart';
 import 'package:block_logic/components/util/provider_default.dart';
+import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_providers/selected_rooms.dart';
 import 'package:block_logic/logic/services/auth.dart';
 import 'package:block_logic/logic/services/bottom_sheet.dart';
+import 'package:block_logic/logic/services/toast.dart';
 import 'package:block_logic/screens/creator_mode/add_new_room.dart';
 import 'package:block_logic/screens/creator_mode/creator_room_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class CreatorMode extends ConsumerWidget {
+class CreatorMode extends ConsumerStatefulWidget {
   const CreatorMode({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<CreatorMode> createState() => _CreatorModeState();
+}
+
+class _CreatorModeState extends ConsumerState<CreatorMode> {
+  bool processing = false;
+  int roomsLength = 0;
+  late final BottomSheetService addBottomSheet;
+  late final Toast toast;
+
+  @override
+  Widget build(BuildContext context) {
     final auth = ref.watch(authServiceProvider.notifier);
     final ownRooms = ref.watch(SelectedRoomsProvider(auth.getUID()));
-    final addBottomSheet = ref.read(bottomSheetServiceStateProvider);
     debugPrint(IconTheme.of(context).color.toString());
     return Scaffold(
       body: Background(
@@ -39,7 +50,29 @@ class CreatorMode extends ConsumerWidget {
                     onPressed: () {
                       showDialog(
                           context: context,
-                          builder: (context) => const BLHelpDialog());
+                          builder: (context) => const BLHelpDialog(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    BLText(
+                                      'Creator mode is where you can manage your rooms, meaning you can create, delete, or edit any of your rooms.\n\n',
+                                      softWrap: true,
+                                    ),
+                                    BLText(
+                                      'Notes about creating rooms:',
+                                      softWrap: true,
+                                    ),
+                                    BLText(
+                                      '- Limited to 10 rooms per user.',
+                                      softWrap: true,
+                                    ),
+                                    BLText(
+                                      '- Can set desired password so only desired players may join.',
+                                      softWrap: true,
+                                    ),
+                                  ],
+                                ),
+                              ));
                     },
                     icon: const Icon(FontAwesomeIcons.circleQuestion))
               ],
@@ -50,7 +83,7 @@ class CreatorMode extends ConsumerWidget {
             bottomPadding: 10,
           ),
           const BLText(
-            'Select/create a room',
+            'Customize your rooms',
             size: 18,
           ),
           const SizedBox(
@@ -68,13 +101,15 @@ class CreatorMode extends ConsumerWidget {
                     ),
                   );
                 }
+                setState(() {
+                  roomsLength = rooms.length;
+                });
                 return ListView.builder(
                     padding: const EdgeInsets.symmetric(vertical: 15),
                     shrinkWrap: true,
-                    itemCount: rooms.length,
+                    itemCount: roomsLength,
                     itemBuilder: (context, i) {
-                      return CreatorRoomItem(
-                          room: rooms[i], hostID: rooms[i].hostID ?? '');
+                      return CreatorRoomItem(room: rooms[i], hostID: rooms[i].hostID ?? '');
                     });
               },
               error: genericError,
@@ -82,14 +117,27 @@ class CreatorMode extends ConsumerWidget {
             )),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 15),
+            padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
             child: BLButton(
-              onPressed: () => addBottomSheet.show(
-                  context, const AddRoomBottomSheet(),
-                  isScrollControlled: true),
-              paddingX: 110,
+              onPressed: () async {
+                if (processing) return;
+                processing = true;
+                if (roomsLength == 10) {
+                  toast.showToast(
+                      'You have reached the maximmum number of rooms.\nPlease delete a room to add another.',
+                      withTransparency: false,
+                      duration: const Duration(seconds: 6),
+                      alignment: Alignment.bottomCenter,
+                      margin: const EdgeInsets.only(bottom: 60, left: 20, right: 20),
+                      type: NotifType.error);
+                } else {
+                  await addBottomSheet.show(context, const AddRoomBottomSheet(), isScrollControlled: true);
+                }
+                processing = false;
+              },
               child: const Row(
-                mainAxisSize: MainAxisSize.min,
+                //mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(FontAwesomeIcons.plus, size: 16),
                   SizedBox(
@@ -107,5 +155,12 @@ class CreatorMode extends ConsumerWidget {
         ],
       )),
     );
+  }
+
+  @override
+  void initState() {
+    addBottomSheet = ref.read(bottomSheetServiceProvider.notifier);
+    toast = ref.read(toastProvider.notifier);
+    super.initState();
   }
 }

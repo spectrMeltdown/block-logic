@@ -6,13 +6,16 @@ import 'package:block_logic/constants.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_models/challenge.dart';
 import 'package:block_logic/logic/firebase_providers/selected_challenge.dart';
+import 'package:block_logic/logic/game/block_data.dart';
 import 'package:block_logic/logic/services/challenge_manager.dart';
+import 'package:block_logic/logic/services/dialog.dart';
 import 'package:block_logic/logic/services/toast.dart';
 import 'package:block_logic/web/components/bl_chip.dart';
 import 'package:block_logic/web/components/bl_segmented_button.dart';
 import 'package:block_logic/web/components/button.dart';
 import 'package:block_logic/web/components/card_simple.dart';
 import 'package:block_logic/web/components/header.dart';
+import 'package:block_logic/web/screens/challenges/block_selector_dialog.dart';
 import 'package:block_logic/web/screens/challenges/chip_strip.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -34,6 +37,8 @@ class _SelectedChallengeState extends ConsumerState<EditChallenge> {
   String? shortDescription;
   String? additionalInfo;
   String? name;
+  late final DialogService dialog;
+  Map<CodeBlockType, List<GameBlockData>>? blocks;
   bool processing = false;
   Difficulty? difficultySelection;
   final formKey = GlobalKey<FormState>();
@@ -41,7 +46,7 @@ class _SelectedChallengeState extends ConsumerState<EditChallenge> {
     'Name',
     'Short Description',
     'Additional Info',
-    'Limitations',
+    //'Limitations',
     'Blocks',
     'Difficulty',
     'Tags',
@@ -49,48 +54,48 @@ class _SelectedChallengeState extends ConsumerState<EditChallenge> {
 
   late final ChallengeManager challengeManager;
 
-  void addLimitationPop(BuildContext context) async {
-    if (processing) return;
-    processing = true;
-    final RenderBox button = limitationBtnKey.currentContext!.findRenderObject() as RenderBox;
-    final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
-    final RelativeRect position = RelativeRect.fromRect(
-      Rect.fromPoints(
-        button.localToGlobal(Offset.zero, ancestor: overlay),
-        button.localToGlobal(button.size.bottomRight(Offset.zero), ancestor: overlay),
-      ),
-      Offset.zero & overlay.size,
-    );
-    final limitationController = TextEditingController();
-    await showMenu(
-      context: context,
-      position: position,
-      items: [
-        PopupMenuItem<String>(
-          value: limitationController.text,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text('Add Limitation:'),
-              const SizedBox(height: 8),
-              BLTextBox(
-                controller: limitationController,
-              ),
-              BLAdminButton(
-                  type: AdminBtnType.green, child: const BLText('Save'), onPressed: () => Navigator.pop(context))
-            ],
-          ),
-        ),
-      ],
-      elevation: 8.0,
-    );
-    if (limitationController.text.trim().isNotEmpty) {
-      setState(() {
-        limitations.add(limitationController.text.trim());
-      });
-    }
-    processing = false;
-  }
+  // void addLimitationPop(BuildContext context) async {
+  //   if (processing) return;
+  //   processing = true;
+  //   final RenderBox button = limitationBtnKey.currentContext!.findRenderObject() as RenderBox;
+  //   final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
+  //   final RelativeRect position = RelativeRect.fromRect(
+  //     Rect.fromPoints(
+  //       button.localToGlobal(Offset.zero, ancestor: overlay),
+  //       button.localToGlobal(button.size.bottomRight(Offset.zero), ancestor: overlay),
+  //     ),
+  //     Offset.zero & overlay.size,
+  //   );
+  //   final limitationController = TextEditingController();
+  //   await showMenu(
+  //     context: context,
+  //     position: position,
+  //     items: [
+  //       PopupMenuItem<String>(
+  //         value: limitationController.text,
+  //         child: Column(
+  //           crossAxisAlignment: CrossAxisAlignment.start,
+  //           children: [
+  //             const Text('Add Limitation:'),
+  //             const SizedBox(height: 8),
+  //             BLTextBox(
+  //               controller: limitationController,
+  //             ),
+  //             BLAdminButton(
+  //                 type: AdminBtnType.green, child: const BLText('Save'), onPressed: () => Navigator.pop(context))
+  //           ],
+  //         ),
+  //       ),
+  //     ],
+  //     elevation: 8.0,
+  //   );
+  //   if (limitationController.text.trim().isNotEmpty) {
+  //     setState(() {
+  //       limitations.add(limitationController.text.trim());
+  //     });
+  //   }
+  //   processing = false;
+  // }
 
   void addTagPop(BuildContext context) async {
     if (processing) return;
@@ -157,7 +162,8 @@ class _SelectedChallengeState extends ConsumerState<EditChallenge> {
               }
               tags = challenge.tags ?? [];
               limitations = challenge.limitations ?? [];
-              difficultySelection = challenge.difficulty;
+              difficultySelection ??= challenge.difficulty;
+              blocks ??= challenge.blocks;
               return Padding(
                 padding: const EdgeInsets.all(15),
                 child: Center(
@@ -243,20 +249,20 @@ class _SelectedChallengeState extends ConsumerState<EditChallenge> {
           },
           maxLines: null,
         );
-      case 'Limitations':
-        return ChipStrip(
-            btnKey: limitationBtnKey,
-            onPressed: () => addLimitationPop(context),
-            children: List.generate(
-                limitations.length,
-                (i) => BlChip(
-                      label: BLText(limitations[i]),
-                      onDeleted: () {
-                        setState(() {
-                          limitations.removeWhere((j) => limitations[i] == j);
-                        });
-                      },
-                    )));
+      // case 'Limitations':
+      //   return ChipStrip(
+      //       btnKey: limitationBtnKey,
+      //       onPressed: () => addLimitationPop(context),
+      //       children: List.generate(
+      //           limitations.length,
+      //           (i) => BlChip(
+      //                 label: BLText(limitations[i]),
+      //                 onDeleted: () {
+      //                   setState(() {
+      //                     limitations.removeWhere((j) => limitations[i] == j);
+      //                   });
+      //                 },
+      //               )));
       case 'Tags':
         return ChipStrip(
             btnKey: tagBtnKey,
@@ -308,7 +314,12 @@ class _SelectedChallengeState extends ConsumerState<EditChallenge> {
       case 'Blocks':
         return BLAdminButton(
             type: AdminBtnType.orange,
-            onPressed: () {},
+            onPressed: () async {
+              if (processing) return;
+              processing = true;
+              final result = dialog.show(context, BlockSelectorDialog(blocks));
+              processing = false;
+            },
             child: const BLText(
               'Edit',
               color: Colors.white,
@@ -320,6 +331,7 @@ class _SelectedChallengeState extends ConsumerState<EditChallenge> {
 
   @override
   void initState() {
+    dialog = ref.read(dialogServiceProvider.notifier);
     challengeManager = ref.read(challengeManagerProvider.notifier);
     toast = ref.read(toastProvider.notifier);
     super.initState();

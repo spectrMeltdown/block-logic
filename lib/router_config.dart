@@ -1,3 +1,7 @@
+import 'dart:async';
+
+import 'package:block_logic/components/button/text.dart';
+import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/route_observer.dart';
 import 'package:block_logic/screens/auth/login.dart';
@@ -7,9 +11,10 @@ import 'package:block_logic/web/screens/accounts/accounts.dart';
 import 'package:block_logic/web/screens/accounts/create_admin.dart';
 import 'package:block_logic/web/screens/challenges/challenges.dart';
 import 'package:block_logic/web/screens/challenges/create_challenge.dart';
+import 'package:block_logic/web/screens/challenges/edit_challenge.dart';
 import 'package:block_logic/web/screens/dashboard/dashboard.dart';
 import 'package:block_logic/web/screens/feedback/feedback.dart';
-import 'package:block_logic/web/screens/feedback/view_feedback.dart';
+import 'package:block_logic/web/screens/feedback/view_feedback_dialog.dart';
 import 'package:block_logic/web/screens/other/not_found.dart';
 import 'package:block_logic/web/screens/other/unauthorized.dart';
 import 'package:block_logic/web/screens/reports/generate.dart';
@@ -19,6 +24,56 @@ import 'package:block_logic/web/screens/settings/settings.dart';
 import 'package:block_logic/web/screens/web_scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+
+FutureOr<bool> onExitCreate(BuildContext context, GoRouterState state) async {
+  final bool? confirmed = await showDialog<bool>(
+    context: context,
+    builder: (_) {
+      return AlertDialog(
+        content: const BLText('Are you sure to leave this page?\nThis will not be saved.', color: Colors.white),
+        actions: <Widget>[
+          BLTextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
+          BLTextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Confirm'),
+          ),
+        ],
+      );
+    },
+  );
+  return confirmed ?? false;
+}
+
+FutureOr<bool> onExitEdit(BuildContext context, GoRouterState state) async {
+  final bool? confirmed = await showDialog<bool>(
+    context: context,
+    builder: (_) {
+      return AlertDialog(
+        content: const BLText('Are you sure to leave this page?\nYour changes will not be saved.', color: Colors.white),
+        actions: <Widget>[
+          BLTextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const BLText(
+              'Cancel',
+              color: Colors.red,
+            ),
+          ),
+          BLTextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const BLText(
+              'Confirm',
+              color: Colors.blue,
+            ),
+          ),
+        ],
+      );
+    },
+  );
+  return confirmed ?? false;
+}
 
 GoRouter router(Future<String?> redirect) {
   final parentKey = GlobalKey<NavigatorState>();
@@ -84,9 +139,16 @@ GoRouter router(Future<String?> redirect) {
                 builder: (context, state) => shellRoutes['challenges']![1],
                 routes: [
                   GoRoute(
+                    path: 'edit/:id',
+                    builder: (context, state) => EditChallenge(state.pathParameters['id']!),
+
+                    // onExit: onExitEdit,
+                  ),
+                  GoRoute(
                     path: 'create',
                     builder: (context, state) => const CreateChallenge(),
-                  )
+                    // onExit: onExitCreate,
+                  ),
                 ]),
             GoRoute(
               path: shellRoutes['settings']![0],

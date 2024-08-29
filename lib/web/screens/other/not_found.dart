@@ -18,8 +18,16 @@ class NotFound extends ConsumerWidget {
             children: [
               BLTitle('404'),
               BLSmallTitle('Page not found'),
-              BLText(
-                  'The page you are looking for doesn\'t exist or another error occurred.')
+              BLText('The page you are looking for doesn\'t exist or another error occurred.'),
+              SizedBox(
+                height: 15,
+              ),
+              // BLAdminButton(
+              //     type: AdminBtnType.red,
+              //     onPressed: () {
+              //       context.pop();
+              //     },
+              //     child: const BLText('Back'))
             ],
           ),
         ),

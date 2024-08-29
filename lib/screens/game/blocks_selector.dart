@@ -18,12 +18,10 @@ class GameBlocks extends ConsumerStatefulWidget {
   ConsumerState<GameBlocks> createState() => _GameBlocksState();
 }
 
-class _GameBlocksState extends ConsumerState<GameBlocks>
-    with TickerProviderStateMixin {
+class _GameBlocksState extends ConsumerState<GameBlocks> with TickerProviderStateMixin {
   late TabController blocksTabController;
   late GameManager gameManager;
-  List<String> blocksTabList =
-      List.generate(CodeBlockType.values.length, (index) {
+  List<String> blocksTabList = List.generate(CodeBlockType.values.length, (index) {
     final name = CodeBlockType.values[index].name;
     final firstLetter = name[0].toUpperCase();
     return firstLetter + name.substring(1, name.length);
@@ -74,8 +72,7 @@ class _GameBlocksState extends ConsumerState<GameBlocks>
                 children: List.generate(
                     blocksTabList.length,
                     (index) => BlockSelectorView(
-                            blocks: widget.blocks[CodeBlockType.values[index]]!
-                                .map((data) {
+                            blocks: widget.blocks[CodeBlockType.values[index]]!.map((data) {
                           return GameBlock(data: data);
                         }).toList()))),
           ),
@@ -94,10 +91,9 @@ class _GameBlocksState extends ConsumerState<GameBlocks>
   void initState() {
     gameManager = ref.read(gameManagerProvider.notifier);
     // TODO: get Map<CodeBlockType[], List<GameBlockData>> from challenge data
-    blocks = AllBlocks.get();
+    blocks = AllBlocks.getAll();
     blocksTabList.remove('FunctionDefinition');
-    blocksTabController =
-        TabController(length: blocksTabList.length, vsync: this);
+    blocksTabController = TabController(length: blocksTabList.length, vsync: this);
     blocksTabController.addListener(() {
       setState(() {});
     });

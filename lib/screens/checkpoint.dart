@@ -6,7 +6,6 @@ import 'package:block_logic/logic/services/assets.dart';
 import 'package:block_logic/logic/services/auth.dart';
 import 'package:block_logic/logic/services/shared_pref.dart';
 import 'package:block_logic/screens/auth/verify_email.dart';
-import 'package:block_logic/screens/auth/verify_phone_num.dart';
 import 'package:block_logic/screens/main_menu.dart';
 import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/material.dart';
@@ -27,41 +26,46 @@ class _CheckpointState extends ConsumerState<Checkpoint> {
     final accountService = ref.read(accountServiceProvider.notifier);
     final userFirestore = ref.watch(SelectedUserProvider(auth.getUID()));
     return user.when(
-        data: (user) {
-          /// check if logged in
-          if (auth.isLoggedIn()) {
-            /// check if email is not verified
-            if (!auth.isEmailVerified()) {
-              /// go to email verification screen (after main menu finish building)
-              return const VerifyEmail();
-            }
-
-            /// check if user is initialized in firestore
-            return userFirestore.when(
-                data: (userAccount) {
-                  /// if not initialized
-                  if (userAccount == null) {
-                    debugPrint('account not initialized');
-
-                    /// initialize user details in firestore
-                    accountService.initFirestoreData();
-                  }
-
-                  if (userAccount?.verificationID != null) {
-                    return const VerifyPhoneNum();
-                  }
-                  return const MainMenuScreen();
-                },
-                error: genericError,
-                loading: () {
-                  debugPrint('Loading in checkpoint');
-                  return genericLoading();
-                });
+      data: (user) {
+        /// check if logged in
+        if (auth.isLoggedIn()) {
+          /// check if email is not verified
+          if (!auth.isEmailVerified()) {
+            /// go to email verification screen (after main menu finish building)
+            return const VerifyEmail();
           }
-          return const MainMenuScreen();
-        },
-        error: genericError,
-        loading: genericLoading);
+
+          /// check if user is initialized in firestore
+          return userFirestore.when(
+              data: (userAccount) {
+                /// if not initialized
+                if (userAccount == null) {
+                  debugPrint('account not initialized');
+
+                  /// initialize user details in firestore
+                  accountService.initFirestoreData();
+                }
+
+                // TODO: disabled because unclear what SMS is for
+                // if (userAccount?.verificationID != null) {
+                //   return const VerifyPhoneNum();
+                // }
+                return const MainMenuScreen();
+              },
+              error: genericError,
+              loading: () {
+                debugPrint('Loading in checkpoint');
+                return genericLoading();
+              });
+        }
+        return const MainMenuScreen();
+      },
+      error: genericError,
+      loading: () {
+        debugPrint('Loading in checkpoint');
+        return genericLoading();
+      },
+    );
   }
 
   @override

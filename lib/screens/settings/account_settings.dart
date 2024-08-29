@@ -1,5 +1,6 @@
 import 'package:block_logic/components/account/display_name.dart';
 import 'package:block_logic/components/account/email.dart';
+import 'package:block_logic/components/account/phone_num.dart';
 import 'package:block_logic/components/button/button.dart';
 import 'package:block_logic/components/button/login_signup.dart';
 import 'package:block_logic/components/button/text.dart';
@@ -123,6 +124,20 @@ class _AccountSettingsWidgetState extends ConsumerState<AccountSettingsWidget> {
                               const Icon(FontAwesomeIcons.envelope, color: Colors.white),
                               const SizedBox(width: 15),
                               const Flexible(child: BLEmail()),
+                              const SizedBox(width: 5),
+                              widget.editIcon
+                            ],
+                          )),
+                      BLTextButton(
+                          onPressed: () {
+                            changePhoneNum(context);
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(Icons.numbers, color: Colors.white),
+                              const SizedBox(width: 15),
+                              const Flexible(child: BLPhoneNum()),
                               const SizedBox(width: 5),
                               widget.editIcon
                             ],
@@ -257,6 +272,10 @@ class _AccountSettingsWidgetState extends ConsumerState<AccountSettingsWidget> {
       toast.showToast('Too many attempts, try again later', type: NotifType.error);
     }
     widget.toggleProcessing.call(false);
+  }
+
+  void changePhoneNum(BuildContext context) {
+    // TODO: implement change phone number
   }
 
   @override

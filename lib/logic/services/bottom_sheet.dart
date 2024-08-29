@@ -4,14 +4,11 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'generated/bottom_sheet.g.dart';
 
-// had a problem with riverpod, so I just made this a class even though it doesn't hold state
 @riverpod
-class BottomSheetServiceState extends _$BottomSheetServiceState {
+class BottomSheetService extends _$BottomSheetService {
   @override
-  BottomSheet build() => BottomSheet();
-}
+  void build() {}
 
-class BottomSheet {
   Future<Object> show(
     BuildContext context,
     Widget bottomSheet, {

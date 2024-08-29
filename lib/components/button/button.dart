@@ -87,6 +87,10 @@ class _BtnState extends ConsumerState<BLButton> {
         btnPressedColor = [Colors.greenAccent.shade700, darkerShade];
         btnColor = [Colors.green.shade800, darkerShade];
         break;
+      case BtnType.grey:
+        btnPressedColor = [Colors.grey.shade300, darkerShade];
+        btnColor = [Colors.grey.shade800, darkerShade];
+        break;
     }
   }
 

@@ -26,30 +26,29 @@ class AddRoomBottomSheet extends ConsumerStatefulWidget {
 }
 
 class _AddRoomBottomSheetState extends ConsumerState<AddRoomBottomSheet> {
-  final roomNameController = TextEditingController();
-  final roomPassController = TextEditingController();
-  final maxPlayersController = TextEditingController();
-  final passwordController = TextEditingController();
-  final List<Challenge> challenges = [];
-  bool includesPassword = false;
+  late final roomNameController = TextEditingController();
+  late final roomPassController = TextEditingController();
+  late final maxPlayersController = TextEditingController();
+  late final passwordController = TextEditingController();
+  late final List<Challenge> challenges = [];
+  late bool includesPassword;
   bool processing = false;
   Widget errorMsg = const BlankWidget();
   final newRoomFormKey = GlobalKey<FormState>();
+  late final TextValidator textValidator;
+  late final CreatorMode creatorMode;
+  late final CustomNavigation nav;
 
   @override
   Widget build(BuildContext context) {
     final ownRooms = ref.watch(SelectedRoomsProvider(FirebaseAuth.instance.currentUser?.uid ?? ''));
-    final textValidator = ref.read(textValidatorProvider.notifier);
-    final creatorMode = ref.read(creatorModeProvider.notifier);
-    final nav = ref.read(customNavigationProvider);
-
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 30),
       child: Padding(
           padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
           child: ownRooms.when(
               data: (rooms) {
-                final roomNamesProvider = ref.watch(SelectedRoomNamesProvider(rooms));
+                final roomNamesProvider = ref.read(SelectedRoomNamesProvider(rooms));
                 return roomNamesProvider.when(
                     data: (roomNames) {
                       return Form(
@@ -71,6 +70,7 @@ class _AddRoomBottomSheetState extends ConsumerState<AddRoomBottomSheet> {
                                     Icons.abc,
                                   ),
                                   labelText: 'My room',
+                                  keyboardType: TextInputType.name,
                                   controller: roomNameController,
                                   maxLength: 100,
                                   validator: (roomName) => textValidator.validateRoomName(roomName),
@@ -86,6 +86,7 @@ class _AddRoomBottomSheetState extends ConsumerState<AddRoomBottomSheet> {
                                     Icons.numbers,
                                   ),
                                   labelText: '10',
+                                  keyboardType: TextInputType.number,
                                   controller: maxPlayersController,
                                   validator: (maxPlayers) => textValidator.validateMaxPlayers(maxPlayers),
                                 ),
@@ -136,12 +137,14 @@ class _AddRoomBottomSheetState extends ConsumerState<AddRoomBottomSheet> {
                                 child: BLButton(
                                   onPressed: () async {
                                     if (newRoomFormKey.currentState!.validate()) {
-                                      if (processing == true) {
-                                        return;
-                                      }
+                                      if (processing == true) return;
                                       processing = true;
                                       if (roomNames.contains(roomNameController.text.trim())) {
                                         processing = false;
+                                        setState(() {
+                                          errorMsg = const BLText('A room with this name already exists. Try another.');
+                                        });
+                                        return;
                                       }
                                       final success = await creatorMode.addRoom(
                                           roomName: roomNameController.text.trim(),
@@ -186,5 +189,13 @@ class _AddRoomBottomSheetState extends ConsumerState<AddRoomBottomSheet> {
               error: genericError,
               loading: genericLoading)),
     );
+  }
+
+  @override
+  void initState() {
+    textValidator = ref.read(textValidatorProvider.notifier);
+    creatorMode = ref.read(creatorModeProvider.notifier);
+    nav = ref.read(customNavigationProvider);
+    super.initState();
   }
 }

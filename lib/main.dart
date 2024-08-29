@@ -79,10 +79,10 @@ class BlockLogic extends ConsumerWidget {
         if (adminFirestore == null) {
           return '/unauthorized';
         }
-        if ((adminFirestore.phoneNum != null || adminFirestore.phoneNum!.isNotEmpty) &&
-            (adminFirestore.verificationID == null || adminFirestore.verificationID!.isNotEmpty)) {
-          return '/verify-phone-num';
-        }
+        // if ((adminFirestore.phoneNum != null || adminFirestore.phoneNum!.isNotEmpty) &&
+        //     (adminFirestore.verificationID == null || adminFirestore.verificationID!.isNotEmpty)) {
+        //   return '/verify-phone-num';
+        // }
         return null;
       } else {
         return '/login';

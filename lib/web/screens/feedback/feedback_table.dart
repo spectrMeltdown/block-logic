@@ -5,12 +5,13 @@ import 'package:block_logic/constants.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_models/feedback.dart';
 import 'package:block_logic/logic/firebase_providers/all_feedback.dart';
+import 'package:block_logic/logic/services/dialog.dart';
 import 'package:block_logic/web/components/bl_table.dart';
 import 'package:block_logic/web/components/card_simple.dart';
 import 'package:block_logic/web/screens/feedback/feedback.dart';
+import 'package:block_logic/web/screens/feedback/view_feedback_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 class FeedbackTable extends ConsumerStatefulWidget {
@@ -24,6 +25,7 @@ class FeedbackTable extends ConsumerStatefulWidget {
 class _FeedbackTableState extends ConsumerState<FeedbackTable> {
   bool processing = false;
   late List<FeedbackData> feedbacksList;
+  late final DialogService dialog;
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
@@ -43,7 +45,7 @@ class _FeedbackTableState extends ConsumerState<FeedbackTable> {
               }
               if (feedbacks.isEmpty) {
                 return ConstrainedBox(
-                  constraints: BoxConstraints(maxWidth: width >= mobileMax ? width * 0.4 : width * 0.3),
+                  constraints: const BoxConstraints(maxWidth: 700, minHeight: 250),
                   child: const Center(
                     child: BLText('There are no messages at the moment ...'),
                   ),
@@ -56,16 +58,19 @@ class _FeedbackTableState extends ConsumerState<FeedbackTable> {
                   }),
                   rows: List.generate(feedbacksList.length, (i) {
                     return DataRow(
-                        onSelectChanged: (value) {
-                          context.go(
-                            '/feedback/${feedbacksList[i].id}',
-                          );
+                        onSelectChanged: (value) async {
+                          if (processing) return;
+                          processing = true;
+                          await dialog.show(context, ViewFeedback(feedbacksList[i].id!));
+                          processing = false;
                         },
                         cells: [
                           DataCell(BLText(feedbacksList[i].title ?? '--')),
                           DataCell(ConstrainedBox(
                             constraints: BoxConstraints(maxWidth: width >= mobileMax ? width * 0.4 : width * 0.3),
-                            child: BLText(feedbacksList[i].message ?? '--'),
+                            child: BLText(
+                              feedbacksList[i].message ?? '--',
+                            ),
                           )),
                           DataCell(BLDisplayName(feedbacksList[i].userID ?? '', AccountType.user)),
                           DataCell(BLText(feedbacksList[i].createdAt != null
@@ -76,5 +81,11 @@ class _FeedbackTableState extends ConsumerState<FeedbackTable> {
             },
             error: genericError,
             loading: genericLoading));
+  }
+
+  @override
+  void initState() {
+    dialog = ref.read(dialogServiceProvider.notifier);
+    super.initState();
   }
 }

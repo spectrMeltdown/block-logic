@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class Room {
   final String? id;
   final String? hostID;
-  final String? icon;
+  //final String? icon;
   final String? name;
   final String? password;
   final List<String>? players;
@@ -16,7 +16,7 @@ class Room {
     this.adminLocked,
     this.id,
     this.players,
-    this.icon,
+    //this.icon,
     this.hostID,
     this.challengeIDs,
     this.name,
@@ -44,7 +44,7 @@ class Room {
         id: doc.id,
         players: data['players'] == null ? null : (data['players'] as List).map((item) => item as String).toList(),
         status: status,
-        icon: data['icon'],
+        // icon: data['icon'],
         hostID: data['hostID'],
         challengeIDs:
             data['challengeIDs'] == null ? null : (data['challengeIDs'] as List).map((item) => item as String).toList(),
@@ -65,9 +65,9 @@ class Room {
     if (hostID != null) {
       toFirestoreMap.addAll({'hostID': hostID});
     }
-    if (icon != null) {
-      toFirestoreMap.addAll({'icon': icon});
-    }
+    // if (icon != null) {
+    //   toFirestoreMap.addAll({'icon': icon});
+    // }
     if (name != null) {
       toFirestoreMap.addAll({'name': name});
     }

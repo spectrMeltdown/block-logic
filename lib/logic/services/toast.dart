@@ -21,11 +21,14 @@ class Toast extends _$Toast {
     String? description,
     Duration duration = const Duration(seconds: 5),
     double paddingX = 20,
+    bool withTransparency = true,
+    Alignment alignment = Alignment.topCenter,
+    EdgeInsets margin = const EdgeInsets.only(top: 30, left: 10, right: 10),
   }) {
     toastification.dismissAll();
     toastification.showCustom(
         autoCloseDuration: duration,
-        alignment: Alignment.topCenter,
+        alignment: alignment,
         animationBuilder: (context, animation, alignment, child) {
           return FadeTransition(
             opacity: animation,
@@ -34,14 +37,14 @@ class Toast extends _$Toast {
         },
         builder: (context, item) {
           return Container(
-            alignment: Alignment.topCenter,
-            margin: const EdgeInsets.only(top: 30),
+            alignment: alignment,
+            margin: margin,
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: paddingX, vertical: 10),
               decoration: BoxDecoration(
                   borderRadius: const BorderRadius.all(Radius.circular(10)),
                   border: Border.all(color: _getColor(type)),
-                  color: _getColor(type, true)),
+                  color: _getColor(type, withTransparency)),
               child: LayoutBuilder(builder: (context, constraints) {
                 final icon = Icon(
                   _getIcon(type),
@@ -64,12 +67,13 @@ class Toast extends _$Toast {
                     children: [
                       icon,
                       space,
-                      Expanded(
-                          child: BLText(
-                        title,
-                        color: Colors.white,
-                        softWrap: true,
-                      ))
+                      Flexible(
+                        child: BLText(
+                          title,
+                          color: Colors.white,
+                          softWrap: true,
+                        ),
+                      )
                     ],
                   );
                 }
@@ -111,7 +115,7 @@ class Toast extends _$Toast {
     // );
   }
 
-  Color _getColor(NotifType type, [bool withOpacity = false]) {
+  Color _getColor(NotifType type, [bool withTransparency = false]) {
     late Color color;
     switch (type) {
       case NotifType.info:
@@ -127,7 +131,7 @@ class Toast extends _$Toast {
         color = Colors.red.shade800;
         break;
     }
-    return withOpacity ? color.withOpacity(0.3) : color;
+    return withTransparency ? color.withOpacity(0.3) : color;
   }
 
   IconData? _getIcon(NotifType type) {

@@ -1,6 +1,7 @@
 import 'package:block_logic/components/util/blank_widget.dart';
 import 'package:block_logic/logic/services/ui.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class BLTextBox extends StatefulWidget {
   final int? maxLength;
@@ -24,8 +25,10 @@ class BLTextBox extends StatefulWidget {
   final BoxConstraints? constraints;
   final void Function(String?)? onSaved;
   final void Function(String)? onFieldSubmitted;
+  final List<TextInputFormatter>? inputFormatters;
   const BLTextBox({
     required this.controller,
+    this.inputFormatters,
     this.onFieldSubmitted,
     this.onSaved,
     this.constraints,
@@ -76,14 +79,12 @@ class _BLInputState extends State<BLTextBox> {
         cursorColor: Colors.white,
         cursorErrorColor: Colors.amber,
         onFieldSubmitted: widget.onFieldSubmitted,
+        inputFormatters: widget.inputFormatters,
         decoration: InputDecoration(
             hintText: widget.hintText,
-            hintStyle: const TextStyle(
-                color: Colors.white, fontStyle: FontStyle.italic),
-            labelStyle: const TextStyle(
-                color: Colors.white38, fontStyle: FontStyle.italic),
-            floatingLabelBehavior: FloatingLabelBehavior
-                .never, // when the placeholder animates to the top portion
+            hintStyle: const TextStyle(color: Colors.white, fontStyle: FontStyle.italic),
+            labelStyle: const TextStyle(color: Colors.white38, fontStyle: FontStyle.italic),
+            floatingLabelBehavior: FloatingLabelBehavior.never, // when the placeholder animates to the top portion
             helperText: helperText,
             enabledBorder: const OutlineInputBorder(
               borderSide: BorderSide(color: Colors.grey, width: 1),
@@ -92,21 +93,14 @@ class _BLInputState extends State<BLTextBox> {
             fillColor: Colors.teal.shade900.withAlpha(200),
             // error: widget.error,
             errorStyle: const TextStyle(color: Colors.amber),
-            focusedErrorBorder: const OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.deepOrange, width: 2)),
-            errorBorder: const OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.amber, width: 2)),
+            focusedErrorBorder: const OutlineInputBorder(borderSide: BorderSide(color: Colors.deepOrange, width: 2)),
+            errorBorder: const OutlineInputBorder(borderSide: BorderSide(color: Colors.amber, width: 2)),
             border: widget.border ??
-                OutlineInputBorder(
-                    borderSide: BorderSide(
-                        color: BLUI().getAppColor('lightBlue'), width: 2)),
+                OutlineInputBorder(borderSide: BorderSide(color: BLUI().getAppColor('lightBlue'), width: 2)),
             focusedBorder: widget.border ??
-                OutlineInputBorder(
-                    borderSide: BorderSide(
-                        color: BLUI().getAppColor('lightBlue'), width: 2)),
+                OutlineInputBorder(borderSide: BorderSide(color: BLUI().getAppColor('lightBlue'), width: 2)),
             //Colors.lightBlue.shade200
-            counter:
-                const BlankWidget(), // blank counter to prevent it from displaying when provider maxLength
+            counter: const BlankWidget(), // blank counter to prevent it from displaying when provider maxLength
             prefixIcon: widget.prefixIcon != null
                 ? Padding(
                     padding: const EdgeInsets.all(10),

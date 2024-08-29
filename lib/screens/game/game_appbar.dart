@@ -21,8 +21,7 @@ import 'package:marquee/marquee.dart';
 class GameAppbar extends ConsumerStatefulWidget {
   final String roomName;
   final Challenge challenge;
-  const GameAppbar(
-      {required this.roomName, required this.challenge, super.key});
+  const GameAppbar({required this.roomName, required this.challenge, super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _GameAppbarState();
@@ -49,8 +48,7 @@ class _GameAppbarState extends ConsumerState<GameAppbar> {
             await showGeneralDialog(
                 context: context,
                 transitionDuration: const Duration(milliseconds: 500),
-                transitionBuilder:
-                    (context, animation, secondaryAnimation, child) {
+                transitionBuilder: (context, animation, secondaryAnimation, child) {
                   final primaryCurve = CurvedAnimation(
                     parent: animation,
                     //     begin: const Offset(0, 1),
@@ -164,7 +162,7 @@ class _GameAppbarState extends ConsumerState<GameAppbar> {
 
   @override
   void initState() {
-    pauseDialog = ref.read(dialogServiceStateProvider);
+    pauseDialog = ref.read(dialogServiceProvider.notifier);
     audio = ref.read(bLAudioStateProvider.notifier);
     super.initState();
   }

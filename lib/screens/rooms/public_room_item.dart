@@ -25,7 +25,7 @@ class PublicRoomItem extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final hostData = ref.watch(SelectedUserProvider(room.hostID!));
     final nav = ref.read(customNavigationProvider);
-    final dialog = ref.read(dialogServiceStateProvider);
+    final dialog = ref.read(dialogServiceProvider.notifier);
     final roomManager = ref.read(roomManagerProvider.notifier);
     return hostData.when(
         data: (hostData) {
@@ -39,10 +39,8 @@ class PublicRoomItem extends ConsumerWidget {
                   nav.push(context, WaitingRoom(room.id!));
                 }
               } else {
-                final result = await dialog.show(
-                    context,
-                    RoomPasswordDialog(
-                        pass: room.password ?? '', hostID: room.hostID!));
+                final result =
+                    await dialog.show(context, RoomPasswordDialog(pass: room.password ?? '', hostID: room.hostID!));
                 if (result is bool && result) {
                   if (!context.mounted) return;
                   nav.push(context, WaitingRoom(room.id!));
@@ -51,7 +49,7 @@ class PublicRoomItem extends ConsumerWidget {
             },
             hasPass: room.password?.isNotEmpty,
             color: Colors.black,
-            icon: room.icon ?? '',
+            //icon: room.icon ?? '',
             title: room.name ?? '',
             subTitle: hostData?.displayName ?? '',
             bottomRowStart: BLRoomState(room.status),

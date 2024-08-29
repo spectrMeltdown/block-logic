@@ -8,7 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class BLTranslucentCard extends ConsumerStatefulWidget {
   final VoidCallback onPressed;
-  final String icon;
+  final String? icon;
   final String title;
   final String subTitle;
   final Widget? bottomRowStart;
@@ -24,7 +24,7 @@ class BLTranslucentCard extends ConsumerStatefulWidget {
     this.padding,
     this.color,
     this.hasPass,
-    required this.icon,
+    this.icon,
     required this.title,
     this.subTitle = '',
     this.bottomRowStart,

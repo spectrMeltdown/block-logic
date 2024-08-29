@@ -51,17 +51,17 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions web = FirebaseOptions(
     apiKey: 'AIzaSyCIiFKEjbeOWrGRCeS3ZAKE8trCmQfpnF4',
-    appId: '1:1095252928508:web:3f99135b106064f566b479',
+    appId: '1:1095252928508:web:3240a95665e9bd4b66b479',
     messagingSenderId: '1095252928508',
     projectId: 'block-logic-1d051',
     authDomain: 'block-logic-1d051.firebaseapp.com',
     storageBucket: 'block-logic-1d051.appspot.com',
-    measurementId: 'G-9K1DSHDJ7X',
+    measurementId: 'G-BDY9NKSX9R',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyB9fTkFqoVfktsqU5HirVOdmp7FfihlQs0',
-    appId: '1:1095252928508:android:8c3a7f55c2bca0c666b479',
+    appId: '1:1095252928508:android:c4a3007c89bb450a66b479',
     messagingSenderId: '1095252928508',
     projectId: 'block-logic-1d051',
     storageBucket: 'block-logic-1d051.appspot.com',

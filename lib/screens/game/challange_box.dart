@@ -18,17 +18,15 @@ class ChallengeBox extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final gameManager = ref.read(gameManagerProvider.notifier);
-    final challengeDialog = ref.read(dialogServiceStateProvider);
+    final challengeDialog = ref.read(dialogServiceProvider.notifier);
     return GestureDetector(
       onTapUp: (details) async {
         gameManager.pauseTimer();
-        await challengeDialog.show(
-            context, DialogChallengeInfo(challenge: challenge));
+        await challengeDialog.show(context, DialogChallengeInfo(challenge: challenge));
         gameManager.resumeTimer();
       },
       child: Container(
-        constraints:
-            BoxConstraints(maxWidth: MediaQuery.of(context).size.width / 1.9),
+        constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width / 1.9),
         child: BLPanel(
           child: SingleChildScrollView(
             child: Padding(
@@ -56,8 +54,7 @@ class ChallengeBox extends ConsumerWidget {
                               shrinkWrap: true,
                               itemCount: challenge.limitations!.length,
                               itemBuilder: (context, i) {
-                                return BLText('• ${challenge.limitations![i]}',
-                                    size: 14);
+                                return BLText('• ${challenge.limitations![i]}', size: 14);
                               })
                     ],
                   ),

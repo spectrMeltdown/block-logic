@@ -7,7 +7,8 @@ class BLSmallTitle extends StatefulWidget {
   final String text;
   final double? size;
   final Color? color;
-  const BLSmallTitle(this.text, {super.key, this.size, this.color});
+  final double bottomPadding;
+  const BLSmallTitle(this.text, {super.key, this.size, this.bottomPadding = 10, this.color});
 
   @override
   State<BLSmallTitle> createState() => _BLSmallTitleState();
@@ -18,7 +19,7 @@ class _BLSmallTitleState extends State<BLSmallTitle> {
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
+      padding: EdgeInsets.only(bottom: widget.bottomPadding),
       child: Text(
         widget.text,
         textAlign: TextAlign.center,

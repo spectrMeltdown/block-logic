@@ -1,0 +1,110 @@
+import 'package:block_logic/components/account/display_name.dart';
+import 'package:block_logic/components/button/text.dart';
+import 'package:block_logic/components/dialog/dialog.dart';
+import 'package:block_logic/components/text/text.dart';
+import 'package:block_logic/components/text/title_small.dart';
+import 'package:block_logic/components/util/provider_default.dart';
+import 'package:block_logic/logic/enums.dart';
+import 'package:block_logic/logic/firebase_providers/selected_feedback.dart';
+import 'package:block_logic/logic/services/feedback_manager.dart';
+import 'package:block_logic/web/components/back_btn.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
+
+class ViewFeedback extends ConsumerStatefulWidget {
+  final String feedbackID;
+  const ViewFeedback(this.feedbackID, {super.key});
+
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() => _SelectedFeedbackState();
+}
+
+class _SelectedFeedbackState extends ConsumerState<ViewFeedback> {
+  late final FeedbackManager feedbackManager;
+  bool processing = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final feedback = ref.watch(SelectedFeedbackProvider(widget.feedbackID));
+    return BLDialog(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 800),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(15),
+              child: feedback.when(
+                  data: (feedback) {
+                    if (feedback == null) {
+                      return const Column(
+                        children: [BLText('Couldn\'t get this feedback..'), AdminBackBtn()],
+                      );
+                    }
+                    return Padding(
+                      padding: const EdgeInsets.all(15),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          BLSmallTitle(feedback.title ?? '--'),
+                          BLText(feedback.message ?? '--', softWrap: true, size: 16),
+                          const SizedBox(height: 15),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const BLText('Created at: '),
+                              BLText(feedback.createdAt == null
+                                  ? '--'
+                                  : DateFormat('dd/mm/yyyy').format(feedback.createdAt!)),
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              const BLText('Sender: '),
+                              BLDisplayName(feedback.userID ?? '', AccountType.user),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 15,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              BLTextButton(
+                                  child: const BLText(
+                                    'Delete',
+                                    color: Colors.red,
+                                    size: 18,
+                                  ),
+                                  onPressed: () async {
+                                    if (processing) return;
+                                    processing = true;
+                                    context.pop();
+                                    await feedbackManager.delete(feedback.id!);
+                                    processing = false;
+                                  }),
+                              const AdminBackBtn()
+                            ],
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                  error: genericError,
+                  loading: genericLoading),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  @override
+  void initState() {
+    feedbackManager = ref.read(feedbackManagerProvider.notifier);
+    super.initState();
+  }
+}

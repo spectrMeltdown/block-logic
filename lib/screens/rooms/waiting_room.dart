@@ -33,7 +33,7 @@ class _WaitingRoomState extends ConsumerState<WaitingRoom> {
   Widget build(BuildContext context) {
     final room = ref.watch(SelectedRoomProvider(widget.roomID));
     final nav = ref.read(customNavigationProvider);
-    final dialog = ref.read(dialogServiceStateProvider);
+    final dialog = ref.read(dialogServiceProvider.notifier);
     final roomManger = ref.read(roomManagerProvider.notifier);
 
     void exit() async {

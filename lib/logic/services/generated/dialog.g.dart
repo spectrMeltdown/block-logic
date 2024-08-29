@@ -6,22 +6,21 @@ part of '../dialog.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$dialogServiceStateHash() =>
-    r'd5cb13f5870fb9050c1249ea52390438380cf239';
+String _$dialogServiceHash() => r'80dbdb9c89bf6c30b6514e071c4833c9ca0b97ab';
 
-/// See also [DialogServiceState].
-@ProviderFor(DialogServiceState)
-final dialogServiceStateProvider =
-    AutoDisposeNotifierProvider<DialogServiceState, DialogService>.internal(
-  DialogServiceState.new,
-  name: r'dialogServiceStateProvider',
+/// See also [DialogService].
+@ProviderFor(DialogService)
+final dialogServiceProvider =
+    AutoDisposeNotifierProvider<DialogService, void>.internal(
+  DialogService.new,
+  name: r'dialogServiceProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
-      : _$dialogServiceStateHash,
+      : _$dialogServiceHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef _$DialogServiceState = AutoDisposeNotifier<DialogService>;
+typedef _$DialogService = AutoDisposeNotifier<void>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

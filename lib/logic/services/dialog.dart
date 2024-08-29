@@ -4,7 +4,10 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'generated/dialog.g.dart';
 
-class DialogService {
+@riverpod
+class DialogService extends _$DialogService {
+  @override
+  void build() {}
   Future<Object?> show(
     BuildContext context,
     Widget dialog, {
@@ -38,14 +41,5 @@ class DialogService {
         pageBuilder: (context, animation1, animation2) {
           return dialog;
         });
-  }
-}
-
-// had a problem with riverpod, so I just made this a class even though it doesn't hold state
-@riverpod
-class DialogServiceState extends _$DialogServiceState {
-  @override
-  DialogService build() {
-    return DialogService();
   }
 }

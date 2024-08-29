@@ -6,15 +6,16 @@ import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_models/room.dart';
 import 'package:block_logic/logic/firebase_providers/all_rooms.dart';
 import 'package:block_logic/logic/services/admin_room_manager.dart';
+import 'package:block_logic/logic/services/dialog.dart';
 import 'package:block_logic/logic/services/toast.dart';
 import 'package:block_logic/web/components/bl_table.dart';
 import 'package:block_logic/web/components/button.dart';
 import 'package:block_logic/web/components/card_simple.dart';
 import 'package:block_logic/web/components/header.dart';
 import 'package:block_logic/web/components/search.dart';
+import 'package:block_logic/web/screens/rooms/view_room_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 class RoomsManager extends ConsumerStatefulWidget {
   const RoomsManager({super.key});
@@ -37,6 +38,7 @@ class _RoomsManagerState extends ConsumerState<RoomsManager> {
     final rooms = ref.watch(RoomsProvider(searchQuery));
     final toast = ref.read(toastProvider.notifier);
     final roomManager = ref.read(adminRoomManagerProvider.notifier);
+    final dialog = ref.read(dialogServiceProvider.notifier);
     return ListView(
       controller: pageScrollController,
       padding: EdgeInsets.zero,
@@ -66,8 +68,11 @@ class _RoomsManagerState extends ConsumerState<RoomsManager> {
                             rows: List.generate(
                                 roomsList.length,
                                 (i) => DataRow(
-                                        onSelectChanged: (value) {
-                                          context.go('/rooms/${roomsList[i].id}');
+                                        onSelectChanged: (value) async {
+                                          if (processing) return;
+                                          processing = true;
+                                          await dialog.show(context, ViewRoomDialog(roomsList[i].id!));
+                                          processing = false;
                                         },
                                         cells: [
                                           DataCell(BLText(roomsList[i].name ?? '--')),

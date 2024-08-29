@@ -11,16 +11,16 @@ class BLPhoneNum extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final authData = ref.watch(authInfoChangesProvider);
+    final authData = ref.watch(authInfoChangesProvider); // phone number from FirebaseAuth
     return authData.when(
         data: (authData) {
           final user = ref.watch(SelectedUserProvider(authData?.uid ?? ''));
           return user.when(
               data: (user) {
                 if (user != null) {
-                  return BLText(user.phoneNum ?? '');
+                  return BLText(user.phoneNum == null ? '' : '+63 ${user.phoneNum}');
                 }
-                return BLText(authData?.phoneNumber ?? '');
+                return BLText(authData?.phoneNumber == null ? '' : '+63 ${authData!.phoneNumber}');
               },
               error: blankError,
               loading: blankLoading);

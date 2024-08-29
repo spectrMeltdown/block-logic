@@ -29,10 +29,9 @@ class _GameRoomState extends ConsumerState<GameRoom> {
     //final gameHost = ref.watch(gameHostProvider);
     final gameState = ref.watch(gameManagerProvider);
     //final room = ref.read(GameRoomProvider(widget.roomID));
-    final challenges =
-        ref.read(SelectedChallengesProvider(widget.room.challengeIDs!));
+    final challenges = ref.read(SelectedChallengesProvider(widget.room.challengeIDs!));
     gameManager.assignRoom(widget.room);
-    final dialog = ref.read(dialogServiceStateProvider);
+    final dialog = ref.read(dialogServiceProvider.notifier);
     return PopScope(
       canPop: false,
       onPopInvoked: (didPop) async {

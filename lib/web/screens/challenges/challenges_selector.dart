@@ -38,7 +38,7 @@ class _ChallengesSelectorState extends ConsumerState<ChallengesSelector> {
               rows: List.generate(challenges.length, (i) {
                 return DataRow(
                     onSelectChanged: (value) {
-                      context.go('/challenges/${challenges[i].id}');
+                      context.go('/challenges/edit/${challenges[i].id}');
                     },
                     cells: [
                       DataCell(BLText(challenges[i].name ?? '--')),

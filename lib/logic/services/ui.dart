@@ -73,6 +73,8 @@ class BLUI extends _$BLUI {
         return Colors.red;
       case BtnType.orange:
         return Colors.orange;
+      case BtnType.grey:
+        return Colors.grey;
     }
   }
 

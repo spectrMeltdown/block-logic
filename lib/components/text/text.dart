@@ -15,6 +15,7 @@ class BLText extends ConsumerStatefulWidget {
   final Color? color;
   final bool alignCenter;
   final Duration duration;
+  final bool overflow;
   const BLText(this.text,
       {super.key,
       this.size = 14,
@@ -25,6 +26,7 @@ class BLText extends ConsumerStatefulWidget {
       this.alignCenter = false,
       this.animated = false,
       this.softWrap = false,
+      this.overflow = false,
       this.maxLines,
       this.duration = const Duration(milliseconds: 500)});
 
@@ -32,8 +34,7 @@ class BLText extends ConsumerStatefulWidget {
   ConsumerState<BLText> createState() => _BLTextState();
 }
 
-class _BLTextState extends ConsumerState<BLText>
-    with SingleTickerProviderStateMixin {
+class _BLTextState extends ConsumerState<BLText> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<int> _characterCount;
 
@@ -42,15 +43,15 @@ class _BLTextState extends ConsumerState<BLText>
     double width = MediaQuery.of(context).size.width;
     final responsive = ref.read(responsiveManagerProvider.notifier);
     return Text(
-      widget.animated
-          ? widget.text.substring(0, _characterCount.value)
-          : widget.text,
+      widget.animated ? widget.text.substring(0, _characterCount.value) : widget.text,
       textAlign: widget.alignCenter == true ? TextAlign.center : null,
       softWrap: widget.softWrap,
       maxLines: widget.maxLines,
-      overflow: widget.softWrap == true
+      overflow: widget.overflow
           ? TextOverflow.visible
-          : TextOverflow.ellipsis,
+          : widget.softWrap == true
+              ? TextOverflow.visible
+              : TextOverflow.ellipsis,
       style: TextStyle(
         color: widget.color ?? BLUI().getAppColor('lightBlue'),
         fontSize: widget.size ?? responsive.getTextSize(width),
@@ -74,11 +75,10 @@ class _BLTextState extends ConsumerState<BLText>
       vsync: this,
     );
 
-    _characterCount =
-        StepTween(begin: 0, end: widget.text.length).animate(_controller)
-          ..addListener(() {
-            setState(() {});
-          });
+    _characterCount = StepTween(begin: 0, end: widget.text.length).animate(_controller)
+      ..addListener(() {
+        setState(() {});
+      });
 
     _controller.forward();
     super.initState();

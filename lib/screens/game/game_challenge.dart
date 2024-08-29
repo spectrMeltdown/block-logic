@@ -10,11 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class GameChallenge extends ConsumerWidget {
-  const GameChallenge(
-      {required this.roomName,
-      required this.challenge,
-      required this.challengeCount,
-      super.key});
+  const GameChallenge({required this.roomName, required this.challenge, required this.challengeCount, super.key});
   final String roomName;
   final Challenge challenge;
   final int challengeCount;
@@ -41,8 +37,7 @@ class GameChallenge extends ConsumerWidget {
               ),
               const SizedBox(width: 10),
               Container(
-                constraints: BoxConstraints(
-                    maxWidth: MediaQuery.of(context).size.width / 2.9),
+                constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width / 2.9),
                 child: const Column(
                   children: [
                     GameSubmitButton(),
@@ -57,9 +52,7 @@ class GameChallenge extends ConsumerWidget {
         const SizedBox(height: 10),
         const Editor(),
         // TODO: get blocks from challenge, save to gameManager, load into gameManager
-        Padding(
-            padding: const EdgeInsets.only(bottom: 20),
-            child: GameBlocks(AllBlocks.get())),
+        Padding(padding: const EdgeInsets.only(bottom: 20), child: GameBlocks(AllBlocks.getAll())),
       ],
     );
   }

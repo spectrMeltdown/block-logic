@@ -27,7 +27,7 @@ class _UserRoomItemState extends ConsumerState<UserRoomItem> {
       onPressed: () {
         // TODO: Implement game config for host
       },
-      icon: widget.room.icon ?? '',
+      //icon: widget.room.icon ?? '',
       title: widget.room.name ?? 'Loading ...',
       subTitle: getLeaderboard(widget.room.id!),
       bottomRowStart: BLRoomState(widget.room.status),
