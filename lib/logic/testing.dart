@@ -11,18 +11,12 @@ class AllBlocks {
   static Map<CodeBlockType, List<GameBlockData>> getAll() {
     /// DONT CHANGE ORDER OF KEYS. THEY MATTER
     return {
-      CodeBlockType.classes: [
-        GameBlockData.createClass(name: 'MyClass'),
-      ],
       CodeBlockType.objects: [],
       CodeBlockType.functions: [
         /// when calling functions, they must exist in the body before doing so
         GameBlockData.createFunction(name: 'myFunction'),
       ],
-      CodeBlockType.functionDefinition: [
-        GameBlockData.createFunctionDefinition(name: 'myFunction', return_: PyLiteral.string('testing'))
-      ],
-      CodeBlockType.keyword: [],
+      CodeBlockType.keywords: [],
       CodeBlockType.loops: [
         GameBlockData.createLoop(loop: PyLoop.for_),
         GameBlockData.createLoop(loop: PyLoop.while_),
@@ -58,18 +52,12 @@ class AllBlocks {
 
   static Map<CodeBlockType, List<GameBlockData>> getExample() {
     return {
-      CodeBlockType.classes: [
-        GameBlockData.createClass(name: 'MyClass'),
-      ],
       CodeBlockType.objects: [],
       CodeBlockType.functions: [
         /// when calling functions, they must exist in the body before doing so
         GameBlockData.createFunction(name: 'myFunction'),
       ],
-      CodeBlockType.functionDefinition: [
-        GameBlockData.createFunctionDefinition(name: 'myFunction', return_: PyLiteral.string('testing'))
-      ],
-      CodeBlockType.keyword: [],
+      CodeBlockType.keywords: [],
       CodeBlockType.loops: [
         GameBlockData.createLoop(loop: PyLoop.for_),
         GameBlockData.createLoop(loop: PyLoop.while_),

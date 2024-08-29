@@ -48,15 +48,15 @@ class BLUI extends _$BLUI {
         return blockColors.literals;
       case CodeBlockType.conditionals || CodeBlockType.loops:
         return blockColors.condLoops;
-      case CodeBlockType.functions || CodeBlockType.functionDefinition:
+      case CodeBlockType.functions:
         return blockColors.functions;
-      case CodeBlockType.classes || CodeBlockType.objects:
+      case CodeBlockType.objects:
         return blockColors.classes;
       case CodeBlockType.variables:
         return blockColors.variables;
       case CodeBlockType.operators:
         return blockColors.operators;
-      case CodeBlockType.keyword:
+      case CodeBlockType.keywords:
         return blockColors.keywords;
       case null:
         return Colors.white;

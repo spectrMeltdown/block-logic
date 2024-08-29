@@ -30,16 +30,6 @@ class BlockValidator {
   }) {
     /// data = data that called this function
     switch (data.type) {
-      case CodeBlockType.classes:
-        if (dataToAccept.type == CodeBlockType.classes) {
-          return false;
-        }
-        return true;
-      case CodeBlockType.functionDefinition:
-        if (dataToAccept.type == CodeBlockType.functionDefinition) {
-          return false;
-        }
-        return true;
       case CodeBlockType.loops:
       case CodeBlockType.conditionals:
         return true;
@@ -52,9 +42,6 @@ class BlockValidator {
     required GameBlockData data,
     required GameBlockData dataToAccept,
   }) {
-    if (data.type == CodeBlockType.functionDefinition) {
-      return false;
-    }
     return true;
   }
 
@@ -87,7 +74,7 @@ class BlockValidator {
     switch (data.type) {
       case CodeBlockType.objects:
       case CodeBlockType.functions:
-      case CodeBlockType.keyword:
+      case CodeBlockType.keywords:
       case CodeBlockType.operators:
       case CodeBlockType.literals:
       case CodeBlockType.variables:
@@ -104,7 +91,7 @@ class BlockValidator {
     switch (data.type) {
       case CodeBlockType.objects:
       case CodeBlockType.functions:
-      case CodeBlockType.keyword:
+      case CodeBlockType.keywords:
       case CodeBlockType.operators:
       case CodeBlockType.literals:
       case CodeBlockType.variables:

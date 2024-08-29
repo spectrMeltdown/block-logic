@@ -2,10 +2,13 @@ import 'package:block_logic/components/dialog/dialog.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/game/block_data.dart';
+import 'package:block_logic/logic/services/dialog.dart';
 import 'package:block_logic/logic/testing.dart';
 import 'package:block_logic/screens/game/wrapper_block_design.dart';
 import 'package:block_logic/web/components/back_btn.dart';
 import 'package:block_logic/web/components/button.dart';
+import 'package:block_logic/web/screens/challenges/add_custom_block.dart';
+import 'package:block_logic/web/screens/challenges/block_selector_add_btn.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -22,7 +25,11 @@ class _BlockSelectorDialogState extends ConsumerState<BlockSelectorDialog> with 
   late final List<Tab> tabs;
   late TabController tabController;
   bool processing = false;
-  bool selected = false;
+  late final DialogService dialog;
+  void addObj() async {
+    final result = await dialog.show(context, const CustomBlockDialog());
+  }
+
   @override
   Widget build(BuildContext context) {
     return BLDialog(
@@ -50,31 +57,25 @@ class _BlockSelectorDialogState extends ConsumerState<BlockSelectorDialog> with 
           child: TabBarView(
               controller: tabController,
               children: List.generate(tabs.length, (i) {
-                final blockCategory = allBlocks.values.elementAt(i);
+                final blockCategories = allBlocks.values.elementAt(i);
                 return Padding(
                   padding: const EdgeInsets.all(15),
                   child: Column(
                     children: [
                       Wrap(
-                          children: List.generate(blockCategory.length, (j) {
+                          children: List.generate(blockCategories.length, (j) {
                         return GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              selected = !selected;
-                            });
-                          },
+                          onTap: () {},
                           child: Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
                             child: BlockDesignWrapper(
-                                selected: selected,
-                                data: blockCategory[j],
-                                child: SizedBox(
-                                    height: 50,
-                                    width: 70,
-                                    child: Center(
-                                        child: BLText(
-                                      blockCategory[j].name,
-                                    )))),
+                              updateSelection: () {},
+                              data: blockCategories[j],
+                              child: const SizedBox(
+                                height: 50,
+                                width: 70,
+                              ),
+                            ),
                           ),
                         );
                         // return SizedBox(
@@ -82,6 +83,7 @@ class _BlockSelectorDialogState extends ConsumerState<BlockSelectorDialog> with 
                         //   child: BLText(blockCategory[j].name),
                         // );
                       })),
+                      BlockSelectorAddBtn(type: allBlocks.keys.toList()[i], addObj: addObj)
                     ],
                   ),
                 );
@@ -110,6 +112,7 @@ class _BlockSelectorDialogState extends ConsumerState<BlockSelectorDialog> with 
 
   @override
   void initState() {
+    dialog = ref.read(dialogServiceProvider.notifier);
     tabController = TabController(vsync: this, length: allBlocks.keys.length);
     tabs = List.generate(allBlocks.keys.length, (i) {
       return Tab(

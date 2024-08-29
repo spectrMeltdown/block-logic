@@ -85,13 +85,11 @@ class GameCodeBlockState extends ConsumerState<GameBlock> with TickerProviderSta
 
         /// if from inside the editor
         switch (widget.data.type) {
-          case CodeBlockType.classes:
-          case CodeBlockType.functionDefinition:
           case CodeBlockType.loops:
           case CodeBlockType.conditionals:
             return BlockDesignWrapper(data: widget.data, child: GameBlockWithChild(data: widget.data));
           case CodeBlockType.objects:
-          case CodeBlockType.keyword:
+          case CodeBlockType.keywords:
           case CodeBlockType.functions:
           case CodeBlockType.operators:
           case CodeBlockType.literals:
@@ -102,14 +100,12 @@ class GameCodeBlockState extends ConsumerState<GameBlock> with TickerProviderSta
       case CodeBlockState.selected:
         debugPrint('${widget.data.name} selected');
         switch (widget.data.type) {
-          case CodeBlockType.classes:
-          case CodeBlockType.functionDefinition:
           case CodeBlockType.loops:
           case CodeBlockType.conditionals:
             debugPrint('selected');
             return BlockDesignWrapper(data: widget.data, child: GameBlockWithChild(data: widget.data));
           case CodeBlockType.objects:
-          case CodeBlockType.keyword:
+          case CodeBlockType.keywords:
           case CodeBlockType.functions:
           case CodeBlockType.operators:
           case CodeBlockType.literals:

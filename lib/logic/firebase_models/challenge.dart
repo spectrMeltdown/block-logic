@@ -72,9 +72,7 @@ class Challenge {
       toFirestoreMap.addAll({'additionalInfo': additionalInfo});
     }
     if (blocks != null) {
-      toFirestoreMap.addAll({
-        'blocks': {CodeBlockType.classes.name: []}
-      });
+      toFirestoreMap.addAll({'blocks': {}});
     }
     if (difficulty != null) {
       toFirestoreMap.addAll({'difficulty': difficulty?.name});

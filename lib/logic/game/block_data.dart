@@ -36,20 +36,6 @@ class GameBlockData {
     this.value,
   });
 
-  factory GameBlockData.createClass({
-    // required String id,
-    required String name,
-    PyInitFunction? init,
-  }) {
-    const type = CodeBlockType.classes;
-    return GameBlockData(
-      // id: id,
-      type: type,
-      name: name,
-      init: init,
-    );
-  }
-
   factory GameBlockData.createConditional({
     required PyConditional conditional,
     // required String id,
@@ -94,22 +80,6 @@ class GameBlockData {
       name: name,
       arguments: [],
       functionDefinition: functionDefinition,
-    );
-  }
-
-  factory GameBlockData.createFunctionDefinition({
-    // required String id,
-    required String name,
-    required PyLiteral return_,
-  }) {
-    const type = CodeBlockType.functionDefinition;
-    return GameBlockData(
-      // id: id,
-      type: type,
-      name: name,
-      return_: return_,
-      parameters: [],
-      body: [],
     );
   }
 
@@ -292,41 +262,27 @@ class GameBlockData {
   // fromJson factory method
   factory GameBlockData.fromJson(Map<String, dynamic> json) {
     return GameBlockData(
-      type:
-          CodeBlockType.values.firstWhere((e) => e.toString() == json['type']),
+      type: CodeBlockType.values.firstWhere((e) => e.toString() == json['type']),
       name: json['name'] as String,
-      state: CodeBlockState.values.firstWhere(
-          (e) => e.toString() == json['state'],
-          orElse: () => CodeBlockState.unselected),
+      state: CodeBlockState.values
+          .firstWhere((e) => e.toString() == json['state'], orElse: () => CodeBlockState.unselected),
       //init: json['init'] != null ? PyInitFunction.fromJson(json['init']) : null,
-      return_:
-          json['return'] != null ? PyLiteral.fromJson(json['return']) : null,
+      return_: json['return'] != null ? PyLiteral.fromJson(json['return']) : null,
       parameters: json['parameters'] != null
-          ? (json['parameters'] as List<dynamic>)
-              .map((item) => GameBlockData.fromJson(item))
-              .toList()
+          ? (json['parameters'] as List<dynamic>).map((item) => GameBlockData.fromJson(item)).toList()
           : null,
       arguments: json['arguments'] != null
-          ? (json['arguments'] as List<dynamic>)
-              .map((item) => GameBlockData.fromJson(item))
-              .toList()
+          ? (json['arguments'] as List<dynamic>).map((item) => GameBlockData.fromJson(item)).toList()
           : null,
       condition: json['condition'] != null
-          ? (json['condition'] as List<dynamic>)
-              .map((item) => GameBlockData.fromJson(item))
-              .toList()
+          ? (json['condition'] as List<dynamic>).map((item) => GameBlockData.fromJson(item)).toList()
           : null,
       body: json['body'] != null
-          ? (json['body'] as List<dynamic>)
-              .map((item) => GameBlockData.fromJson(item))
-              .toList()
+          ? (json['body'] as List<dynamic>).map((item) => GameBlockData.fromJson(item)).toList()
           : null,
-      functionDefinition: json['functionDefinition'] != null
-          ? GameBlockData.fromJson(json['functionDefinition'])
-          : null,
-      classDefinition: json['classDefinition'] != null
-          ? GameBlockData.fromJson(json['classDefinition'])
-          : null,
+      functionDefinition:
+          json['functionDefinition'] != null ? GameBlockData.fromJson(json['functionDefinition']) : null,
+      classDefinition: json['classDefinition'] != null ? GameBlockData.fromJson(json['classDefinition']) : null,
       value: json['value'] != null ? PyLiteral.fromJson(json['value']) : null,
     );
   }
