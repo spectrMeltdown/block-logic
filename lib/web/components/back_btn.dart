@@ -7,7 +7,7 @@ import 'package:go_router/go_router.dart';
 
 class AdminBackBtn extends ConsumerWidget {
   final bool useContext;
-  const AdminBackBtn({this.useContext = true, super.key});
+  const AdminBackBtn({this.useContext = false, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

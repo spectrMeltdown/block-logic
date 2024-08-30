@@ -104,6 +104,7 @@ class AccountService extends _$AccountService {
   }
 
   Future<String?> initFirestoreData({
+    String? createdID,
     String? displayName,
     String? phoneNum,
     AccountType? type,
@@ -113,7 +114,7 @@ class AccountService extends _$AccountService {
       if (type == AccountType.user) {
         result = await update(
             user: UserAccount(
-                id: state._auth!.uid,
+                id: createdID ?? state._auth!.uid,
                 createdAt: DateTime.now(),
                 displayName: state._auth!.displayName,
                 phoneNum: phoneNum,
@@ -135,13 +136,13 @@ class AccountService extends _$AccountService {
       } else {
         result = await update(
             admin: AdminAccount(
-          id: state._auth!.uid,
+          id: createdID ?? state._auth!.uid,
           createdAt: DateTime.now(),
           displayName: state._auth!.displayName,
           phoneNum: phoneNum,
           profilePicLink: 'default',
           verificationID: (phoneNum == null || phoneNum.isEmpty) ? null : '',
-          isApproved: false,
+          //isApproved: false,
         ));
         if (result != null) {
           return result;

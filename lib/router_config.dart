@@ -17,7 +17,6 @@ import 'package:block_logic/web/screens/feedback/feedback.dart';
 import 'package:block_logic/web/screens/feedback/view_feedback_dialog.dart';
 import 'package:block_logic/web/screens/other/not_found.dart';
 import 'package:block_logic/web/screens/other/unauthorized.dart';
-import 'package:block_logic/web/screens/reports/generate.dart';
 import 'package:block_logic/web/screens/reports/reports.dart';
 import 'package:block_logic/web/screens/rooms/rooms.dart';
 import 'package:block_logic/web/screens/settings/settings.dart';
@@ -119,12 +118,7 @@ GoRouter router(Future<String?> redirect) {
               path: shellRoutes['dashboard']![0],
               builder: (context, state) => shellRoutes['dashboard']![1],
             ),
-            GoRoute(path: shellRoutes['reports']![0], builder: (context, state) => shellRoutes['reports']![1], routes: [
-              GoRoute(
-                path: 'generate',
-                builder: (context, state) => const GenerateReport(),
-              )
-            ]),
+            GoRoute(path: shellRoutes['reports']![0], builder: (context, state) => shellRoutes['reports']![1]),
             GoRoute(
                 path: shellRoutes['feedback']![0],
                 builder: (context, state) => shellRoutes['feedback']![1],
@@ -141,7 +135,6 @@ GoRouter router(Future<String?> redirect) {
                   GoRoute(
                     path: 'edit/:id',
                     builder: (context, state) => EditChallenge(state.pathParameters['id']!),
-
                     // onExit: onExitEdit,
                   ),
                   GoRoute(

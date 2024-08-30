@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:block_logic/logic/enums.dart';
+import 'package:block_logic/logic/services/account.dart';
 import 'package:block_logic/logic/services/error_handler.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -9,12 +10,22 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'generated/accounts_manager.g.dart';
 
+class AccountManagerState {
+  final ErrorHandler _errorHandler;
+  final AccountService _accountService;
+
+  AccountManagerState({required ErrorHandler errorHandler, required AccountService accountService})
+      : _errorHandler = errorHandler,
+        _accountService = accountService;
+}
+
 @riverpod
 class AccountsManager extends _$AccountsManager {
-  ErrorHandler? _errorHandler;
   @override
-  void build() {
-    _errorHandler = ref.read(errorHandlerProvider.notifier);
+  AccountManagerState build() {
+    final errorHandler = ref.read(errorHandlerProvider.notifier);
+    final accountService = ref.read(accountServiceProvider.notifier);
+    return AccountManagerState(errorHandler: errorHandler, accountService: accountService);
   }
 
   Future<String?> createAdmin({
@@ -36,16 +47,20 @@ class AccountsManager extends _$AccountsManager {
         },
         body: jsonEncode({'email': email, 'name': name, 'password': password}),
       );
-
       if (response.statusCode == 200) {
-        debugPrint('Created successfully');
+        final Map<String, dynamic> decodedResponse = jsonDecode(response.body);
+        await state._accountService.initFirestoreData(
+          createdID: decodedResponse['uid'],
+          displayName: name,
+          type: AccountType.admin,
+        );
         return null;
       } else {
-        debugPrint('Failed to create user: ${response.body}');
-        return 'Failed to create account';
+        debugPrint(response.body);
+        return response.body;
       }
     } catch (e) {
-      return _errorHandler?.call(e);
+      return state._errorHandler.call(e);
     }
   }
 
@@ -70,10 +85,10 @@ class AccountsManager extends _$AccountsManager {
         return null;
       } else {
         debugPrint('Failed to delete user: ${response.body}');
-        return 'Failed to delete user: ${response.body}';
+        return response.body;
       }
     } catch (e) {
-      return _errorHandler?.call(e);
+      return state._errorHandler.call(e);
     }
   }
 

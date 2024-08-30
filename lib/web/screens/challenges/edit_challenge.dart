@@ -10,6 +10,7 @@ import 'package:block_logic/logic/game/block_data.dart';
 import 'package:block_logic/logic/services/challenge_manager.dart';
 import 'package:block_logic/logic/services/dialog.dart';
 import 'package:block_logic/logic/services/toast.dart';
+import 'package:block_logic/web/components/back_btn.dart';
 import 'package:block_logic/web/components/bl_chip.dart';
 import 'package:block_logic/web/components/bl_segmented_button.dart';
 import 'package:block_logic/web/components/button.dart';
@@ -153,8 +154,7 @@ class _SelectedChallengeState extends ConsumerState<EditChallenge> {
             data: (challenge) {
               if (challenge == null) {
                 return ConstrainedBox(
-                  constraints: BoxConstraints(
-                      maxWidth: width <= desktopMin ? width * 0.8 : width * 0.4, maxHeight: height * 0.5),
+                  constraints: const BoxConstraints(maxWidth: 600, maxHeight: 500),
                   child: const Center(
                     child: BLText('Couldn\'t load that challenge..'),
                   ),
@@ -164,43 +164,54 @@ class _SelectedChallengeState extends ConsumerState<EditChallenge> {
               limitations = challenge.limitations ?? [];
               difficultySelection ??= challenge.difficulty;
               blocks ??= challenge.blocks;
-              return Padding(
-                padding: const EdgeInsets.all(15),
-                child: Center(
-                  child: BLCardSimple(
-                    child: Padding(
-                      padding: const EdgeInsets.all(15),
-                      child: Form(
-                        key: formKey,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const SizedBox(height: 10),
-                            ...List.generate(challengeProps.length, (i) {
-                              return Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                // spacing: 15,
-                                // runSpacing: 15,
+              return ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 600),
+                child: Padding(
+                  padding: const EdgeInsets.all(15),
+                  child: Center(
+                    child: BLCardSimple(
+                      child: Padding(
+                        padding: const EdgeInsets.all(15),
+                        child: Form(
+                          key: formKey,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const SizedBox(height: 10),
+                              ...List.generate(challengeProps.length, (i) {
+                                return Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  // spacing: 15,
+                                  // runSpacing: 15,
+                                  children: [
+                                    const SizedBox(height: 10),
+                                    BLText('${challengeProps[i]} : '),
+                                    const SizedBox(height: 5),
+                                    ConstrainedBox(
+                                      constraints: const BoxConstraints(maxWidth: 700),
+                                      child: getInputWidget(challengeProps[i], challenge),
+                                    ),
+                                  ],
+                                );
+                              }),
+                              const SizedBox(height: 20),
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  const SizedBox(height: 10),
-                                  BLText('${challengeProps[i]} : '),
-                                  const SizedBox(height: 5),
-                                  ConstrainedBox(
-                                    constraints:
-                                        BoxConstraints(maxWidth: width <= desktopMin ? width * 0.8 : width * 0.3),
-                                    child: getInputWidget(challengeProps[i], challenge),
+                                  const AdminBackBtn(
+                                    useContext: true,
                                   ),
+                                  const SizedBox(width: 10),
+                                  BLAdminButton(
+                                      type: AdminBtnType.green,
+                                      onPressed: () {
+                                        save();
+                                      },
+                                      child: const BLText('Save changes', color: Colors.white))
                                 ],
-                              );
-                            }),
-                            const SizedBox(height: 20),
-                            BLAdminButton(
-                                type: AdminBtnType.green,
-                                onPressed: () {
-                                  save();
-                                },
-                                child: const BLText('Save changes', color: Colors.white, size: 18))
-                          ],
+                              )
+                            ],
+                          ),
                         ),
                       ),
                     ),

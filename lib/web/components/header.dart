@@ -20,45 +20,51 @@ class _HeaderState extends ConsumerState<Header> {
     final assets = ref.read(assetsProvider);
     return Stack(
       children: [
-        Row(
-          children: [
-            Flexible(
-              child: ClipRRect(
-                child: SizedBox(
-                  height: height * .2,
-                  width: width * .9,
-                  child: Image.asset(
-                    assets.headerWeb,
-                    fit: BoxFit.fitHeight,
+        Container(
+          decoration: BoxDecoration(boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.6),
+              spreadRadius: 2,
+              blurRadius: 20,
+              offset: const Offset(0, 0),
+            )
+          ]),
+          child: Row(
+            children: [
+              Flexible(
+                child: ClipRRect(
+                  child: SizedBox(
+                    height: height * .2,
+                    width: width * .9,
+                    child: Image.asset(
+                      assets.headerWeb,
+                      fit: BoxFit.fitHeight,
+                    ),
                   ),
                 ),
               ),
-            ),
-            Flexible(
-              child: ClipRRect(
-                child: SizedBox(
-                  height: height * .2,
-                  width: width * .6,
-                  child: Image.asset(
-                    assets.headerWeb,
-                    fit: BoxFit.fitHeight,
+              Flexible(
+                child: ClipRRect(
+                  child: SizedBox(
+                    height: height * .2,
+                    width: width * .6,
+                    child: Image.asset(
+                      assets.headerWeb,
+                      fit: BoxFit.fitHeight,
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
         Padding(
-          padding: width <= mobileMax
-              ? const EdgeInsets.only(left: 50)
-              : EdgeInsets.zero,
+          padding: width <= mobileMax ? const EdgeInsets.only(left: 50) : EdgeInsets.zero,
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10),
             child: Column(
               children: [
-                Padding(
-                    padding: const EdgeInsets.only(top: 30, left: 20),
-                    child: BLTitle(widget.title, allCaps: false))
+                Padding(padding: const EdgeInsets.only(top: 30, left: 20), child: BLTitle(widget.title, allCaps: false))
               ],
             ),
           ),

@@ -92,7 +92,7 @@ class _BlockSelectorDialogState extends ConsumerState<BlockSelectorDialog> with 
         Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            const AdminBackBtn(useContext: false),
+            const AdminBackBtn(),
             const SizedBox(
               width: 15,
             ),
@@ -102,6 +102,7 @@ class _BlockSelectorDialogState extends ConsumerState<BlockSelectorDialog> with 
                 onPressed: () async {
                   if (processing) return;
                   processing = true;
+
                   processing = false;
                 })
           ],

@@ -192,6 +192,12 @@ class _AccountSettingsWidgetState extends ConsumerState<AccountSettingsWidget> {
                               onPressed: () async {
                                 if (widget.processing) return;
                                 widget.toggleProcessing.call(true);
+                                // TODO: Temporarily changed firebase rules to public because providers need to die when logging out.
+                                // - tried using ref.invalidate after logging out, but exception still happens
+                                // - must try doing:
+                                // 1. nav to a logging out screen using nav.pushAndRemove
+                                // 2. invalidate all firebase providers
+                                // 3. log out the user
                                 await auth.logout();
                                 widget.toggleProcessing.call(false);
                                 if (!context.mounted) return;

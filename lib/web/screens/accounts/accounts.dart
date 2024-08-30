@@ -1,9 +1,11 @@
 import 'package:block_logic/components/text/text.dart';
+import 'package:block_logic/logic/services/dialog.dart';
 import 'package:block_logic/web/components/button.dart';
 import 'package:block_logic/web/components/card_simple.dart';
 import 'package:block_logic/web/components/header.dart';
 import 'package:block_logic/web/components/search.dart';
 import 'package:block_logic/web/screens/accounts/admins.dart';
+import 'package:block_logic/web/screens/accounts/create_admin.dart';
 import 'package:block_logic/web/screens/accounts/users.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -16,6 +18,7 @@ class Accounts extends ConsumerStatefulWidget {
 }
 
 class _AccountsState extends ConsumerState<Accounts> {
+  late final DialogService dialog;
   final pageScrollController = ScrollController();
   late String selectedAccType;
   String searchQuery = '';
@@ -71,11 +74,13 @@ class _AccountsState extends ConsumerState<Accounts> {
                                 hint: const BLText('Select a option'),
                               ),
                             ),
-                            AdminSearchBar((newQuery) {
-                              setState(() {
-                                searchQuery = newQuery;
-                              });
-                            }),
+                            Flexible(
+                              child: AdminSearchBar((newQuery) {
+                                setState(() {
+                                  searchQuery = newQuery;
+                                });
+                              }),
+                            ),
                           ],
                         ),
                         ConstrainedBox(
@@ -89,20 +94,27 @@ class _AccountsState extends ConsumerState<Accounts> {
                                   SizedBox(
                                     height: height * 0.1,
                                   ),
-                                  BLAdminButton(
-                                      type: AdminBtnType.teal,
-                                      onPressed: () {},
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          const Icon(
-                                            Icons.add,
-                                            color: Colors.white,
-                                          ),
-                                          const SizedBox(width: 5),
-                                          BLText(selectedAccType == accTypes[0] ? 'Add user' : 'Add admin')
-                                        ],
-                                      ))
+                                  if (selectedAccType == accTypes[1])
+                                    BLAdminButton(
+                                        type: AdminBtnType.teal,
+                                        onPressed: () async {
+                                          if (processing) return;
+                                          processing = true;
+                                          await dialog.show(context, const CreateAdmin());
+                                          processing = false;
+                                        },
+                                        child: const Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Icon(
+                                              Icons.add,
+                                              color: Colors.white,
+                                            ),
+                                            SizedBox(width: 5),
+                                            BLText('Add admin')
+                                            // BLText(selectedAccType == accTypes[0] ? 'Add user' : 'Add admin')
+                                          ],
+                                        ))
                                 ],
                               ),
                             ),
@@ -124,6 +136,7 @@ class _AccountsState extends ConsumerState<Accounts> {
   void initState() {
     selectedAccType = accTypes.first;
     adminProps = [...userProps];
+    dialog = ref.read(dialogServiceProvider.notifier);
     super.initState();
   }
 }

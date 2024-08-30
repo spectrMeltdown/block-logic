@@ -3,6 +3,7 @@ import 'package:block_logic/components/util/animation_player.dart';
 import 'package:block_logic/components/util/blank_widget.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/services/assets.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -31,9 +32,8 @@ class BLLoading extends ConsumerStatefulWidget {
   ConsumerState<BLLoading> createState() => _BLLoadingState();
 }
 
-class _BLLoadingState extends ConsumerState<BLLoading>
-    with TickerProviderStateMixin {
-  late final AnimationController _controller;
+class _BLLoadingState extends ConsumerState<BLLoading> with TickerProviderStateMixin {
+  late AnimationController _controller;
   @override
   Widget build(BuildContext context) {
     final assets = ref.watch(assetsProvider);
@@ -64,7 +64,7 @@ class _BLLoadingState extends ConsumerState<BLLoading>
 
   @override
   void dispose() {
-    _controller.dispose();
+    if (!kIsWeb) _controller.dispose();
     super.dispose();
   }
 

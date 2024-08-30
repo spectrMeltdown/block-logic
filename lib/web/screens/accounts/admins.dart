@@ -4,6 +4,8 @@ import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/util/provider_default.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_providers/all_admin.dart';
+import 'package:block_logic/logic/services/accounts_manager.dart';
+import 'package:block_logic/logic/services/toast.dart';
 import 'package:block_logic/web/components/bl_table.dart';
 import 'package:block_logic/web/components/button.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -20,6 +22,9 @@ class Admins extends ConsumerStatefulWidget {
 }
 
 class _AdminsState extends ConsumerState<Admins> {
+  bool processing = false;
+  late final AccountsManager accountsManager;
+  late final Toast toast;
   @override
   Widget build(BuildContext context) {
     final admins = ref.watch(allAdminsProvider);
@@ -45,8 +50,20 @@ class _AdminsState extends ConsumerState<Admins> {
                       BLAdminButton(
                           type: AdminBtnType.red,
                           child: const BLText('Delete'),
-                          onPressed: () {
-                            // TODO: connect to firebase admin sdk
+                          onPressed: () async {
+                            if (processing) return;
+                            setState(() {
+                              processing = true;
+                            });
+                            final result = await accountsManager.deleteAccount(admins[i].id!, AccountType.admin);
+                            if (result == null) {
+                              toast.showToast('Delete success.', type: NotifType.success);
+                            } else {
+                              toast.showToast(result, type: NotifType.error);
+                            }
+                            setState(() {
+                              processing = false;
+                            });
                           })
                     ],
                   )),
@@ -55,5 +72,12 @@ class _AdminsState extends ConsumerState<Admins> {
         },
         error: genericError,
         loading: genericLoading);
+  }
+
+  @override
+  void initState() {
+    accountsManager = ref.read(accountsManagerProvider.notifier);
+    toast = ref.read(toastProvider.notifier);
+    super.initState();
   }
 }

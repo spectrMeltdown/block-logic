@@ -4,6 +4,8 @@ import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/util/provider_default.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_providers/all_user.dart';
+import 'package:block_logic/logic/services/accounts_manager.dart';
+import 'package:block_logic/logic/services/toast.dart';
 import 'package:block_logic/web/components/bl_table.dart';
 import 'package:block_logic/web/components/button.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +21,9 @@ class Users extends ConsumerStatefulWidget {
 }
 
 class _UsersState extends ConsumerState<Users> {
+  bool processing = false;
+  late final AccountsManager accountsManager;
+  late final Toast toast;
   @override
   Widget build(BuildContext context) {
     final users = ref.watch(allUsersProvider);
@@ -45,10 +50,22 @@ class _UsersState extends ConsumerState<Users> {
                   DataCell(Wrap(
                     children: [
                       BLAdminButton(
-                          type: AdminBtnType.red,
+                          type: processing ? AdminBtnType.grey : AdminBtnType.red,
                           child: const BLText('Delete'),
-                          onPressed: () {
-                            // TODO: connect to firebase admin sdk
+                          onPressed: () async {
+                            if (processing) return;
+                            setState(() {
+                              processing = true;
+                            });
+                            final result = await accountsManager.deleteAccount(users[i].id!, AccountType.user);
+                            if (result == null) {
+                              toast.showToast('Delete success.', type: NotifType.success);
+                            } else {
+                              toast.showToast(result, type: NotifType.error);
+                            }
+                            setState(() {
+                              processing = false;
+                            });
                           })
                     ],
                   )),
@@ -57,5 +74,12 @@ class _UsersState extends ConsumerState<Users> {
         },
         error: genericError,
         loading: genericLoading);
+  }
+
+  @override
+  void initState() {
+    accountsManager = ref.read(accountsManagerProvider.notifier);
+    toast = ref.read(toastProvider.notifier);
+    super.initState();
   }
 }
