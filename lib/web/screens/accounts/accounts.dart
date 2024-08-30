@@ -23,7 +23,12 @@ class _AccountsState extends ConsumerState<Accounts> {
     'Users',
     'Admins',
   ];
-  final List<String> userProps = ['Profile Pic', 'Display Name', 'Created At', 'Actions'];
+  final List<String> userProps = [
+    'Profile Pic',
+    'Display Name',
+    'Created At',
+    'Actions',
+  ];
   late final List<String> adminProps;
   bool processing = false;
   @override
