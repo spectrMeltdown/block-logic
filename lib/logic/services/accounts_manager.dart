@@ -17,6 +17,38 @@ class AccountsManager extends _$AccountsManager {
     _errorHandler = ref.read(errorHandlerProvider.notifier);
   }
 
+  Future<String?> createAdmin({
+    required String name,
+    required String email,
+    required String password,
+  }) async {
+    try {
+      String? authToken = await getAuthToken();
+      if (authToken == null) {
+        throw Exception('Failed to retrieve auth token');
+      }
+
+      final response = await http.post(
+        Uri.parse('https://block-logic-admin.onrender.com/create-admin'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $authToken',
+        },
+        body: jsonEncode({'email': email, 'name': name, 'password': password}),
+      );
+
+      if (response.statusCode == 200) {
+        debugPrint('Created successfully');
+        return null;
+      } else {
+        debugPrint('Failed to create user: ${response.body}');
+        return 'Failed to create account';
+      }
+    } catch (e) {
+      return _errorHandler?.call(e);
+    }
+  }
+
   Future<String?> deleteAccount(String uid, AccountType type) async {
     try {
       String? authToken = await getAuthToken();
@@ -25,7 +57,7 @@ class AccountsManager extends _$AccountsManager {
       }
 
       final response = await http.post(
-        Uri.parse('https://block-logic-admin.onrender.com'),
+        Uri.parse('https://block-logic-admin.onrender.com/delete-account'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $authToken',
@@ -35,10 +67,11 @@ class AccountsManager extends _$AccountsManager {
 
       if (response.statusCode == 200) {
         debugPrint('User deleted successfully');
+        return null;
       } else {
         debugPrint('Failed to delete user: ${response.body}');
+        return 'Failed to delete user: ${response.body}';
       }
-      return null;
     } catch (e) {
       return _errorHandler?.call(e);
     }
