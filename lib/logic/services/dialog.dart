@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_build_context_in_providers
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'generated/dialog.g.dart';
@@ -13,6 +14,9 @@ class DialogService extends _$DialogService {
     Widget dialog, {
     bool barrierDismissable = false,
   }) async {
+    if (kIsWeb) {
+      return showDialog(context: context, builder: (context) => dialog);
+    }
     return showGeneralDialog(
         context: context,
         barrierDismissible: barrierDismissable,

@@ -110,8 +110,7 @@ class _DashboardState extends ConsumerState<Dashboard> {
                         DataRow(cells: [
                           const DataCell(Text('Admin approval')),
                           const DataCell(Text('john doe requested approval')),
-                          DataCell(Text(DateFormat('dd/mm/yyyy - hh:mm a')
-                              .format(DateTime.now()))),
+                          DataCell(Text(DateFormat('dd/MM/yyyy - hh:mm a').format(DateTime.now()))),
                           const DataCell(Text('Data 2')),
                         ]),
                       ])

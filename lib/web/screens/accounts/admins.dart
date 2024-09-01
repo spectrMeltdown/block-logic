@@ -42,9 +42,9 @@ class _AdminsState extends ConsumerState<Admins> {
               rows: List.generate(admins.length, (i) {
                 return DataRow(cells: [
                   DataCell(BLProfilePic(type: AccountType.admin, admins[i].id ?? '')),
-                  DataCell(BLDisplayName(admins[i].displayName ?? '', AccountType.admin)),
+                  DataCell(BLDisplayName(admins[i].id ?? '', AccountType.admin)),
                   DataCell(BLText(
-                      admins[i].createdAt != null ? DateFormat('dd / mm / yyyy').format(admins[i].createdAt!) : '--')),
+                      admins[i].createdAt != null ? DateFormat('dd / MM / yyyy').format(admins[i].createdAt!) : '--')),
                   DataCell(Wrap(
                     children: [
                       BLAdminButton(

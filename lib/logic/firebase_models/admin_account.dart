@@ -32,7 +32,7 @@ class AdminAccount extends AccountModel {
   Map<String, dynamic> toFirestore() {
     Map<String, dynamic> toFirestoreMap = {};
     if (createdAt != null) {
-      toFirestoreMap.addAll({'createdAt': createdAt});
+      toFirestoreMap.addAll({'createdAt': Timestamp.fromDate(createdAt!)});
     }
     if (displayName != null) {
       toFirestoreMap.addAll({'displayName': displayName});

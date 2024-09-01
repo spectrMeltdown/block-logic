@@ -1,13 +1,13 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of '../leaderboard_selected.dart';
+part of '../selected_leaderboard.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
 String _$selectedLeaderboardHash() =>
-    r'9bd76bcf45e23f5ca0eacf7d2cd5a990b6e6d29d';
+    r'09201efe75936e37367b2ad452911b14f3f58e0e';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -35,16 +35,16 @@ class _SystemHash {
 const selectedLeaderboardProvider = SelectedLeaderboardFamily();
 
 /// See also [selectedLeaderboard].
-class SelectedLeaderboardFamily extends Family<AsyncValue<List<Leaderboard>?>> {
+class SelectedLeaderboardFamily extends Family<AsyncValue<Leaderboard?>> {
   /// See also [selectedLeaderboard].
   const SelectedLeaderboardFamily();
 
   /// See also [selectedLeaderboard].
   SelectedLeaderboardProvider call(
-    String roomID,
+    String leaderboardID,
   ) {
     return SelectedLeaderboardProvider(
-      roomID,
+      leaderboardID,
     );
   }
 
@@ -53,7 +53,7 @@ class SelectedLeaderboardFamily extends Family<AsyncValue<List<Leaderboard>?>> {
     covariant SelectedLeaderboardProvider provider,
   ) {
     return call(
-      provider.roomID,
+      provider.leaderboardID,
     );
   }
 
@@ -74,14 +74,14 @@ class SelectedLeaderboardFamily extends Family<AsyncValue<List<Leaderboard>?>> {
 
 /// See also [selectedLeaderboard].
 class SelectedLeaderboardProvider
-    extends AutoDisposeStreamProvider<List<Leaderboard>?> {
+    extends AutoDisposeStreamProvider<Leaderboard?> {
   /// See also [selectedLeaderboard].
   SelectedLeaderboardProvider(
-    String roomID,
+    String leaderboardID,
   ) : this._internal(
           (ref) => selectedLeaderboard(
             ref as SelectedLeaderboardRef,
-            roomID,
+            leaderboardID,
           ),
           from: selectedLeaderboardProvider,
           name: r'selectedLeaderboardProvider',
@@ -92,7 +92,7 @@ class SelectedLeaderboardProvider
           dependencies: SelectedLeaderboardFamily._dependencies,
           allTransitiveDependencies:
               SelectedLeaderboardFamily._allTransitiveDependencies,
-          roomID: roomID,
+          leaderboardID: leaderboardID,
         );
 
   SelectedLeaderboardProvider._internal(
@@ -102,14 +102,14 @@ class SelectedLeaderboardProvider
     required super.allTransitiveDependencies,
     required super.debugGetCreateSourceHash,
     required super.from,
-    required this.roomID,
+    required this.leaderboardID,
   }) : super.internal();
 
-  final String roomID;
+  final String leaderboardID;
 
   @override
   Override overrideWith(
-    Stream<List<Leaderboard>?> Function(SelectedLeaderboardRef provider) create,
+    Stream<Leaderboard?> Function(SelectedLeaderboardRef provider) create,
   ) {
     return ProviderOverride(
       origin: this,
@@ -120,43 +120,44 @@ class SelectedLeaderboardProvider
         dependencies: null,
         allTransitiveDependencies: null,
         debugGetCreateSourceHash: null,
-        roomID: roomID,
+        leaderboardID: leaderboardID,
       ),
     );
   }
 
   @override
-  AutoDisposeStreamProviderElement<List<Leaderboard>?> createElement() {
+  AutoDisposeStreamProviderElement<Leaderboard?> createElement() {
     return _SelectedLeaderboardProviderElement(this);
   }
 
   @override
   bool operator ==(Object other) {
-    return other is SelectedLeaderboardProvider && other.roomID == roomID;
+    return other is SelectedLeaderboardProvider &&
+        other.leaderboardID == leaderboardID;
   }
 
   @override
   int get hashCode {
     var hash = _SystemHash.combine(0, runtimeType.hashCode);
-    hash = _SystemHash.combine(hash, roomID.hashCode);
+    hash = _SystemHash.combine(hash, leaderboardID.hashCode);
 
     return _SystemHash.finish(hash);
   }
 }
 
-mixin SelectedLeaderboardRef
-    on AutoDisposeStreamProviderRef<List<Leaderboard>?> {
-  /// The parameter `roomID` of this provider.
-  String get roomID;
+mixin SelectedLeaderboardRef on AutoDisposeStreamProviderRef<Leaderboard?> {
+  /// The parameter `leaderboardID` of this provider.
+  String get leaderboardID;
 }
 
 class _SelectedLeaderboardProviderElement
-    extends AutoDisposeStreamProviderElement<List<Leaderboard>?>
+    extends AutoDisposeStreamProviderElement<Leaderboard?>
     with SelectedLeaderboardRef {
   _SelectedLeaderboardProviderElement(super.provider);
 
   @override
-  String get roomID => (origin as SelectedLeaderboardProvider).roomID;
+  String get leaderboardID =>
+      (origin as SelectedLeaderboardProvider).leaderboardID;
 }
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

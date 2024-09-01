@@ -33,6 +33,7 @@ class AccountsManager extends _$AccountsManager {
     required String email,
     required String password,
   }) async {
+    String? responseBody;
     try {
       String? authToken = await getAuthToken();
       if (authToken == null) {
@@ -47,24 +48,34 @@ class AccountsManager extends _$AccountsManager {
         },
         body: jsonEncode({'email': email, 'name': name, 'password': password}),
       );
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> decodedResponse = jsonDecode(response.body);
-        await state._accountService.initFirestoreData(
+      responseBody = response.body;
+      debugPrint(response.statusCode.toString());
+      final decodedResponse = jsonDecode(response.body);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final result = await state._accountService.initFirestoreData(
           createdID: decodedResponse['uid'],
           displayName: name,
           type: AccountType.admin,
         );
+        if (result != null) {
+          return result;
+        }
         return null;
       } else {
-        debugPrint(response.body);
-        return response.body;
+        return decodedResponse['message'];
       }
     } catch (e) {
-      return state._errorHandler.call(e);
+      debugPrint(responseBody);
+      debugPrint(state._errorHandler.call(e));
+      return 'Error: $responseBody';
     }
   }
 
   Future<String?> deleteAccount(String uid, AccountType type) async {
+    if (uid.isEmpty) {
+      throw (ArgumentError('Uid cannot be empty!!'));
+    }
+    debugPrint('uid to delete: $uid');
     try {
       String? authToken = await getAuthToken();
       if (authToken == null) {
@@ -82,6 +93,10 @@ class AccountsManager extends _$AccountsManager {
 
       if (response.statusCode == 200) {
         debugPrint('User deleted successfully');
+        final result = await state._accountService.deleteFirestoreData(uid, type);
+        if (result != null) {
+          return result;
+        }
         return null;
       } else {
         debugPrint('Failed to delete user: ${response.body}');

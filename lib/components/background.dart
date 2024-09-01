@@ -11,9 +11,11 @@ class Background extends ConsumerStatefulWidget {
   final VideoPlayerController? controller;
   final bool grid;
   final String? asset;
+  final StackFit fit;
   const Background({
     required this.child,
     this.grid = true,
+    this.fit = StackFit.loose,
     this.controller,
     this.asset,
     super.key,
@@ -32,6 +34,7 @@ class _BackgroundState extends ConsumerState<Background> {
   Widget build(BuildContext context) {
     final blui = ref.read(bLUIProvider.notifier);
     return Stack(
+      fit: widget.fit,
       children: [
         // (asset != null)
         //     ? BLAnimationPlayer(

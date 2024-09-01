@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class Score {
   final String? id;
   final String? accountID;
-  final int? playerScore;
+  final int? playerScore; // refers to how many challenges they got correct
   final int? timeElapsed;
   final int? rank;
   final ScoreStatus? status;
@@ -23,13 +23,29 @@ class Score {
       data = doc.data() as Map<String, dynamic>;
     }
 
+    ScoreStatus? status;
+    if (data['status'] != null) {
+      switch (data['status']) {
+        case 'pending':
+          status = ScoreStatus.pending;
+          break;
+        case 'incomplete':
+          status = ScoreStatus.incomplete;
+          break;
+        case 'complete':
+          status = ScoreStatus.complete;
+          break;
+        default:
+      }
+    }
+
     return Score(
       id: doc.id,
       accountID: data['accountID'],
       playerScore: data['playerScore'],
       timeElapsed: data['timeElapsed'],
       rank: data['rank'],
-      status: data['status'],
+      status: status,
     );
   }
   Map<String, dynamic> toFirestore() {
@@ -44,7 +60,7 @@ class Score {
       toFirestoreMap.addAll({'rank': rank});
     }
     if (status != null) {
-      toFirestoreMap.addAll({'status': status});
+      toFirestoreMap.addAll({'status': status!.name});
     }
     if (timeElapsed != null) {
       toFirestoreMap.addAll({'timeElapsed': timeElapsed});

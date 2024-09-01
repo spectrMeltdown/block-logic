@@ -58,7 +58,7 @@ class _SelectedFeedbackState extends ConsumerState<ViewFeedback> {
                               const BLText('Created at: '),
                               BLText(feedback.createdAt == null
                                   ? '--'
-                                  : DateFormat('dd/mm/yyyy').format(feedback.createdAt!)),
+                                  : DateFormat('dd/MM/yyyy').format(feedback.createdAt!)),
                             ],
                           ),
                           Row(

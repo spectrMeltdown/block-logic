@@ -7,6 +7,7 @@ import 'package:block_logic/components/util/spaced_col.dart';
 import 'package:block_logic/components/util/spaced_row.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/services/accounts_manager.dart';
+import 'package:block_logic/logic/services/navigation.dart';
 import 'package:block_logic/logic/services/toast.dart';
 import 'package:block_logic/logic/services/validator_text.dart';
 import 'package:block_logic/web/components/back_btn.dart';
@@ -26,6 +27,7 @@ class _CreateAdminState extends ConsumerState<CreateAdmin> {
   final passController = TextEditingController();
   final emailController = TextEditingController();
   final formKey = GlobalKey<FormState>();
+  late final CustomNavigation nav;
   late final TextValidator validator;
   late final AccountsManager account;
   late final Toast toast;
@@ -125,6 +127,7 @@ class _CreateAdminState extends ConsumerState<CreateAdmin> {
     validator = ref.read(textValidatorProvider.notifier);
     account = ref.read(accountsManagerProvider.notifier);
     toast = ref.read(toastProvider.notifier);
+    nav = ref.read(customNavigationProvider);
     super.initState();
   }
 
@@ -137,11 +140,15 @@ class _CreateAdminState extends ConsumerState<CreateAdmin> {
       final result = await account.createAdmin(
           name: nameController.text.trim(), email: emailController.text.trim(), password: passController.text.trim());
       if (result == null) {
-        toast.showToast('Admin created successfully.', type: NotifType.success);
+        if (mounted) {
+          nav.pop(context);
+          toast.showToast('Admin created successfully.', type: NotifType.success);
+        }
       } else {
         toast.showToast(result, type: NotifType.error);
       }
     }
+    if (!mounted) return;
     setState(() {
       processing = false;
     });

@@ -46,7 +46,7 @@ class _UsersState extends ConsumerState<Users> {
                   )),
                   DataCell(BLDisplayName(users[i].id ?? '', AccountType.user)),
                   DataCell(BLText(
-                      users[i].createdAt != null ? DateFormat('dd / mm / yyyy').format(users[i].createdAt!) : '--')),
+                      users[i].createdAt != null ? DateFormat('dd / MM / yyyy').format(users[i].createdAt!) : '--')),
                   DataCell(Wrap(
                     children: [
                       BLAdminButton(

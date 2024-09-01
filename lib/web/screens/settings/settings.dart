@@ -26,7 +26,7 @@ class _AdminSettingsState extends ConsumerState<AdminSettings> {
   late final AuthService auth;
   late TextEditingController nameController;
   late TextEditingController emailController;
-  late TextEditingController phoneNumController;
+  // late TextEditingController phoneNumController;
   final passController = TextEditingController();
   final confirmPassController = TextEditingController();
   bool processing = false;
@@ -74,7 +74,7 @@ class _AdminSettingsState extends ConsumerState<AdminSettings> {
                                 );
                               }
                               nameController = TextEditingController(text: account.displayName);
-                              phoneNumController = TextEditingController(text: account.phoneNum);
+                              // phoneNumController = TextEditingController(text: account.phoneNum);
                               return Padding(
                                 padding: const EdgeInsets.only(top: 20),
                                 child: Column(
@@ -132,12 +132,12 @@ class _AdminSettingsState extends ConsumerState<AdminSettings> {
                                         )
                                       ],
                                     ),
-                                    const BLText('Phone Number:'),
-                                    ConstrainedBox(
-                                        constraints: BoxConstraints(maxWidth: width * 0.3),
-                                        child: BLTextBox(
-                                          controller: phoneNumController,
-                                        )),
+                                    // const BLText('Phone Number:'),
+                                    // ConstrainedBox(
+                                    //     constraints: BoxConstraints(maxWidth: width * 0.3),
+                                    //     child: BLTextBox(
+                                    //       controller: phoneNumController,
+                                    //     )),
                                   ],
                                 ),
                               );

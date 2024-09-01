@@ -30,7 +30,7 @@
 // Map<String, dynamic> toFirestore() {
 //     Map<String, dynamic> toFirestoreMap = {};
 //     if (createdAt != null) {
-//       toFirestoreMap.addAll({'backgroundMusic': createdAt});
+//       toFirestoreMap.addAll({'backgroundMusic': Timestamp.fromDate(createdAt!)});
 //     }
 //     if (displayName != null) {
 //       toFirestoreMap.addAll({'backgroundMusic': displayName});

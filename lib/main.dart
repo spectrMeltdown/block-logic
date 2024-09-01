@@ -8,12 +8,13 @@ import 'package:block_logic/logic/services/auth.dart';
 import 'package:block_logic/logic/services/shared_pref.dart';
 import 'package:block_logic/route_observer.dart';
 import 'package:block_logic/router_config.dart';
-import 'package:block_logic/screens/checkpoint.dart';
+import 'package:block_logic/screens/leaderboards/leaderboards_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toastification/toastification.dart';
 
@@ -56,12 +57,14 @@ class BlockLogic extends ConsumerWidget {
       //ref.watch(internetStatusProvider);
       return ToastificationWrapper(
         child: MaterialApp(
-            title: 'Block-Logic',
-            navigatorObservers: [routeObserver],
-            debugShowCheckedModeBanner: false,
-            theme: appTheme.theme(),
-            darkTheme: appTheme.theme(),
-            home: const Checkpoint()),
+          title: 'Block-Logic',
+          navigatorObservers: [routeObserver],
+          debugShowCheckedModeBanner: false,
+          theme: appTheme.theme(),
+          darkTheme: appTheme.theme(),
+          //home: const Checkpoint(),
+          home: const LeaderboardsPage(),
+        ),
       );
     }
 
@@ -89,23 +92,22 @@ class BlockLogic extends ConsumerWidget {
       }
     }
 
-    return ToastificationWrapper(
-      child: MaterialApp.router(
-        // builder: (context, child) => ResponsiveBreakpoints.builder(
-        //   child: child!,
-        //   breakpoints: [
-        //     const Breakpoint(start: 0, end: 450, name: MOBILE),
-        //     const Breakpoint(start: 451, end: 800, name: TABLET),
-        //     const Breakpoint(start: 801, end: 1920, name: DESKTOP),
-        //     const Breakpoint(start: 1921, end: double.infinity, name: '4K'),
-        //   ],
-        // ),
-        routerConfig: router(redirect()),
-        title: 'Block-Logic',
-        debugShowCheckedModeBanner: false,
-        theme: appTheme.theme(),
-        darkTheme: appTheme.theme(),
-      ),
+    return MaterialApp.router(
+      // builder: (context, child) => ResponsiveBreakpoints.builder(
+      //   child: child!,
+      //   breakpoints: [
+      //     const Breakpoint(start: 0, end: 450, name: MOBILE),
+      //     const Breakpoint(start: 451, end: 800, name: TABLET),
+      //     const Breakpoint(start: 801, end: 1920, name: DESKTOP),
+      //     const Breakpoint(start: 1921, end: double.infinity, name: '4K'),
+      //   ],
+      // ),
+      builder: FToastBuilder(),
+      routerConfig: router(redirect()),
+      title: 'Block-Logic',
+      debugShowCheckedModeBanner: false,
+      theme: appTheme.theme(),
+      darkTheme: appTheme.theme(),
     );
   }
 }

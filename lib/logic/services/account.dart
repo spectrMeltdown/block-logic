@@ -95,11 +95,16 @@ class AccountService extends _$AccountService {
     /// get and delete
   }
 
-  Future<void> deleteFirestoreData() async {
+  Future<String?> deleteFirestoreData(String uid, AccountType type) async {
     try {
-      await state._db.collection('users').doc(state._auth!.uid).delete();
+      if (type == AccountType.admin) {
+        await state._db.collection('users').doc(uid).delete();
+      } else {
+        await state._db.collection('admins').doc(uid).delete();
+      }
+      return null;
     } catch (e) {
-      state._errorHandler.call(e);
+      return state._errorHandler.call(e);
     }
   }
 
@@ -109,6 +114,7 @@ class AccountService extends _$AccountService {
     String? phoneNum,
     AccountType? type,
   }) async {
+    if (createdID != null) debugPrint('Created id: $createdID');
     try {
       String? result;
       if (type == AccountType.user) {
@@ -116,7 +122,7 @@ class AccountService extends _$AccountService {
             user: UserAccount(
                 id: createdID ?? state._auth!.uid,
                 createdAt: DateTime.now(),
-                displayName: state._auth!.displayName,
+                displayName: displayName ?? state._auth!.displayName,
                 phoneNum: phoneNum,
                 profilePicLink: 'default',
                 verificationID: (phoneNum == null || phoneNum.isEmpty) ? null : ''));
@@ -138,7 +144,7 @@ class AccountService extends _$AccountService {
             admin: AdminAccount(
           id: createdID ?? state._auth!.uid,
           createdAt: DateTime.now(),
-          displayName: state._auth!.displayName,
+          displayName: displayName ?? state._auth!.displayName,
           phoneNum: phoneNum,
           profilePicLink: 'default',
           verificationID: (phoneNum == null || phoneNum.isEmpty) ? null : '',
@@ -155,11 +161,14 @@ class AccountService extends _$AccountService {
   }
 
   Future<String?> update({UserAccount? user, AdminAccount? admin}) async {
+    if (user != null && admin != null) {
+      throw (ArgumentError('You cannot provide both user and admin!'));
+    }
     try {
       if (admin != null) {
-        await state._db.collection('admins').doc(state._auth!.uid).set(admin.toFirestore(), SetOptions(merge: true));
+        await state._db.collection('admins').doc(admin.id).set(admin.toFirestore(), SetOptions(merge: true));
       } else if (user != null) {
-        await state._db.collection('users').doc(state._auth!.uid).set(user.toFirestore(), SetOptions(merge: true));
+        await state._db.collection('users').doc(user.id).set(user.toFirestore(), SetOptions(merge: true));
       } else {
         throw ('Either user or admin not provided!!');
       }

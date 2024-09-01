@@ -4,14 +4,16 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class Leaderboard {
   final String? id;
   final String? roomID;
-  final DateTime? dateCreated;
+  final DateTime? date;
   final int? totalScore; // refers to num of challenges
   final LeaderboardStatus? status;
+  final List<String>? players;
   Leaderboard({
     this.id,
+    this.players,
     this.roomID,
     this.status,
-    this.dateCreated,
+    this.date,
     this.totalScore,
   });
 
@@ -34,13 +36,14 @@ class Leaderboard {
       roomID: data['roomID'] ?? '',
       totalScore: data['totalScore'] ?? '',
       status: status,
-      dateCreated: data['dateCreated'] == null ? null : (data['dateCreated'] as Timestamp).toDate(),
+      players: data['players'] ?? [],
+      date: data['date'] == null ? null : (data['date'] as Timestamp).toDate(),
     );
   }
   Map<String, dynamic> toFirestore() {
     Map<String, dynamic> toFirestoreMap = {};
-    if (dateCreated != null) {
-      toFirestoreMap.addAll({'dateCreated': Timestamp.fromDate(dateCreated!)});
+    if (date != null) {
+      toFirestoreMap.addAll({'dateCreated': Timestamp.fromDate(date!)});
     }
     if (roomID != null) {
       toFirestoreMap.addAll({'roomID': roomID});
@@ -50,6 +53,9 @@ class Leaderboard {
     }
     if (status != null) {
       toFirestoreMap.addAll({'totalScore': status!.name});
+    }
+    if (players != null) {
+      toFirestoreMap.addAll({'players': players});
     }
     return toFirestoreMap;
   }

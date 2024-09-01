@@ -31,7 +31,7 @@ class FeedbackData {
   Map<String, dynamic> toFirestore() {
     Map<String, dynamic> toFirestoreMap = {};
     if (createdAt != null) {
-      toFirestoreMap.addAll({'createdAt': createdAt});
+      toFirestoreMap.addAll({'createdAt': Timestamp.fromDate(createdAt!)});
     }
     if (message != null) {
       toFirestoreMap.addAll({'message': message});

@@ -7,7 +7,7 @@ part of '../selected_leaderboards.dart';
 // **************************************************************************
 
 String _$selectedLeaderboardsHash() =>
-    r'a112813530d5e28b88d23971a74cc2b4ac0e93a5';
+    r'623daca07075fbfb07620561d66b3117e65b4285';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -30,17 +30,25 @@ class _SystemHash {
   }
 }
 
-/// See also [selectedLeaderboards].
+/// returns leaderboard under a given room
+///
+/// Copied from [selectedLeaderboards].
 @ProviderFor(selectedLeaderboards)
 const selectedLeaderboardsProvider = SelectedLeaderboardsFamily();
 
-/// See also [selectedLeaderboards].
+/// returns leaderboard under a given room
+///
+/// Copied from [selectedLeaderboards].
 class SelectedLeaderboardsFamily
     extends Family<AsyncValue<List<Leaderboard>?>> {
-  /// See also [selectedLeaderboards].
+  /// returns leaderboard under a given room
+  ///
+  /// Copied from [selectedLeaderboards].
   const SelectedLeaderboardsFamily();
 
-  /// See also [selectedLeaderboards].
+  /// returns leaderboard under a given room
+  ///
+  /// Copied from [selectedLeaderboards].
   SelectedLeaderboardsProvider call(
     String roomID,
   ) {
@@ -73,10 +81,14 @@ class SelectedLeaderboardsFamily
   String? get name => r'selectedLeaderboardsProvider';
 }
 
-/// See also [selectedLeaderboards].
+/// returns leaderboard under a given room
+///
+/// Copied from [selectedLeaderboards].
 class SelectedLeaderboardsProvider
     extends AutoDisposeStreamProvider<List<Leaderboard>?> {
-  /// See also [selectedLeaderboards].
+  /// returns leaderboard under a given room
+  ///
+  /// Copied from [selectedLeaderboards].
   SelectedLeaderboardsProvider(
     String roomID,
   ) : this._internal(

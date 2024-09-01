@@ -88,7 +88,17 @@ class AuthService extends _$AuthService {
       /// delete account in firebase _auth
       await FirebaseAuth.instance.currentUser!.delete();
 
-      state._account.deleteFirestoreData();
+      final idTokenResult = await FirebaseAuth.instance.currentUser?.getIdTokenResult(true);
+
+      final Object isAdmin = idTokenResult?.claims?['admin'];
+      debugPrint('Role of account being deleted, is admin? : $isAdmin');
+
+      if (isAdmin is bool && isAdmin == true) {
+        await state._account.deleteFirestoreData(state._auth.currentUser!.uid, AccountType.admin);
+      } else {
+        /// do not await, this could take some time (especially if user has lots of data)
+        state._account.deleteFirestoreData(state._auth.currentUser!.uid, AccountType.user);
+      }
       return null;
     } catch (e) {
       return state._errorHandler.call(e);

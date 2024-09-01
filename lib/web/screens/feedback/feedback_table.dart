@@ -74,7 +74,7 @@ class _FeedbackTableState extends ConsumerState<FeedbackTable> {
                           )),
                           DataCell(BLDisplayName(feedbacksList[i].userID ?? '', AccountType.user)),
                           DataCell(BLText(feedbacksList[i].createdAt != null
-                              ? DateFormat('dd / mm / yyyy').format(feedbacksList[i].createdAt!)
+                              ? DateFormat('dd / MM / yyyy').format(feedbacksList[i].createdAt!)
                               : '--')),
                         ]);
                   }));

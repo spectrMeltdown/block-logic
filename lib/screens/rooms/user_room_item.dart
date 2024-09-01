@@ -2,7 +2,7 @@ import 'package:block_logic/components/card/card_translucent.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/util/provider_default.dart';
 import 'package:block_logic/logic/firebase_models/room.dart';
-import 'package:block_logic/logic/firebase_providers/leaderboard_selected.dart';
+import 'package:block_logic/logic/firebase_providers/selected_leaderboard.dart';
 import 'package:block_logic/screens/rooms/room_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

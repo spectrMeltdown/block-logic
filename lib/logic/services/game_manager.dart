@@ -71,7 +71,7 @@ class GameManager extends _$GameManager {
           totalScore: state._room?.challengeIDs!.length,
           roomID: state._room!.id,
           status: LeaderboardStatus.pending,
-          dateCreated: DateTime.now());
+          date: DateTime.now());
       state._db.collection('leaderboards').doc(id).set(leaderboard.toFirestore(), SetOptions(merge: true));
       return true;
     } catch (e) {

@@ -33,7 +33,7 @@ class BLLoading extends ConsumerStatefulWidget {
 }
 
 class _BLLoadingState extends ConsumerState<BLLoading> with TickerProviderStateMixin {
-  late AnimationController _controller;
+  AnimationController? _controller;
   @override
   Widget build(BuildContext context) {
     final assets = ref.watch(assetsProvider);
@@ -64,13 +64,13 @@ class _BLLoadingState extends ConsumerState<BLLoading> with TickerProviderStateM
 
   @override
   void dispose() {
-    if (!kIsWeb) _controller.dispose();
+    _controller?.dispose();
     super.dispose();
   }
 
   @override
   void initState() {
-    _controller = AnimationController(vsync: this);
+    if (!kIsWeb) _controller = AnimationController(vsync: this);
     super.initState();
   }
 }
