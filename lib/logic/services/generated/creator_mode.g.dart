@@ -6,20 +6,22 @@ part of '../creator_mode.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$creatorModeHash() => r'08949f66cd791d5f332cf4ce4e7b225bb4e773ed';
+String _$creatorModeManagerHash() =>
+    r'd0c52467b5885ea9c14dcbbc0e082f2b74afeb8c';
 
-/// See also [CreatorMode].
-@ProviderFor(CreatorMode)
-final creatorModeProvider =
-    AutoDisposeNotifierProvider<CreatorMode, CreatorModeState>.internal(
-  CreatorMode.new,
-  name: r'creatorModeProvider',
-  debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product') ? null : _$creatorModeHash,
+/// See also [CreatorModeManager].
+@ProviderFor(CreatorModeManager)
+final creatorModeManagerProvider =
+    AutoDisposeNotifierProvider<CreatorModeManager, CreatorModeState>.internal(
+  CreatorModeManager.new,
+  name: r'creatorModeManagerProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$creatorModeManagerHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef _$CreatorMode = AutoDisposeNotifier<CreatorModeState>;
+typedef _$CreatorModeManager = AutoDisposeNotifier<CreatorModeState>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

@@ -6,7 +6,7 @@ part of '../selected_room_names.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$selectedRoomNamesHash() => r'a317325d708f5057d8ac2e56a633fbe140e41d3a';
+String _$selectedRoomNamesHash() => r'190a47dec5874f60115ce25d9e8d7d768dd6721c';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -34,7 +34,7 @@ class _SystemHash {
 const selectedRoomNamesProvider = SelectedRoomNamesFamily();
 
 /// See also [selectedRoomNames].
-class SelectedRoomNamesFamily extends Family<AsyncValue<List<String>>> {
+class SelectedRoomNamesFamily extends Family<List<String>> {
   /// See also [selectedRoomNames].
   const SelectedRoomNamesFamily();
 
@@ -72,8 +72,7 @@ class SelectedRoomNamesFamily extends Family<AsyncValue<List<String>>> {
 }
 
 /// See also [selectedRoomNames].
-class SelectedRoomNamesProvider
-    extends AutoDisposeFutureProvider<List<String>> {
+class SelectedRoomNamesProvider extends AutoDisposeProvider<List<String>> {
   /// See also [selectedRoomNames].
   SelectedRoomNamesProvider(
     List<Room> rooms,
@@ -108,7 +107,7 @@ class SelectedRoomNamesProvider
 
   @override
   Override overrideWith(
-    FutureOr<List<String>> Function(SelectedRoomNamesRef provider) create,
+    List<String> Function(SelectedRoomNamesRef provider) create,
   ) {
     return ProviderOverride(
       origin: this,
@@ -125,7 +124,7 @@ class SelectedRoomNamesProvider
   }
 
   @override
-  AutoDisposeFutureProviderElement<List<String>> createElement() {
+  AutoDisposeProviderElement<List<String>> createElement() {
     return _SelectedRoomNamesProviderElement(this);
   }
 
@@ -143,14 +142,13 @@ class SelectedRoomNamesProvider
   }
 }
 
-mixin SelectedRoomNamesRef on AutoDisposeFutureProviderRef<List<String>> {
+mixin SelectedRoomNamesRef on AutoDisposeProviderRef<List<String>> {
   /// The parameter `rooms` of this provider.
   List<Room> get rooms;
 }
 
 class _SelectedRoomNamesProviderElement
-    extends AutoDisposeFutureProviderElement<List<String>>
-    with SelectedRoomNamesRef {
+    extends AutoDisposeProviderElement<List<String>> with SelectedRoomNamesRef {
   _SelectedRoomNamesProviderElement(super.provider);
 
   @override

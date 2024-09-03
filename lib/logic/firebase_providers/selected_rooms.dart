@@ -26,5 +26,7 @@ Stream<List<Room>> selectedRooms(
       });
       yield result;
     }
+  } else {
+    throw ('You did not provide accountID.');
   }
 }

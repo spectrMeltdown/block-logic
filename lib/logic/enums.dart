@@ -45,6 +45,15 @@ enum LoadingType { full, normal }
 
 enum NotifType { info, warning, error, success }
 
+enum ReportType {
+  users,
+  rooms,
+  challengesPlayed,
+  roomsPlayed,
+  premiumUsers,
+  freeUsers,
+}
+
 /// - ongoing, self explanatory
 /// - incomplete, when one of the following occurs:
 ///   - all players left the room

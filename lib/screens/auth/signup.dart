@@ -13,6 +13,7 @@ import 'package:block_logic/components/util/blank_widget.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/services/auth.dart';
 import 'package:block_logic/logic/services/navigation.dart';
+import 'package:block_logic/logic/services/reports_manager.dart';
 import 'package:block_logic/logic/services/toast.dart';
 import 'package:block_logic/logic/services/validator_text.dart';
 import 'package:block_logic/route_observer.dart';
@@ -39,14 +40,15 @@ class _SignupState extends ConsumerState<Signup> with RouteAware {
   final _signupFormKey = GlobalKey<FormState>();
   late Widget msg;
   late Toast toast;
+  late final TextValidator validator;
+  late final CustomNavigation nav;
+  late final AuthService auth;
+  late final ReportsManager reportsManager;
   bool processing = false;
   bool checkedTerms = false;
 
   @override
   Widget build(BuildContext context) {
-    final validator = ref.read(textValidatorProvider.notifier);
-    final nav = ref.read(customNavigationProvider);
-    final auth = ref.read(authServiceProvider.notifier);
     return PopScope(
       canPop: false,
       onPopInvoked: (didPop) {
@@ -194,6 +196,7 @@ class _SignupState extends ConsumerState<Signup> with RouteAware {
                                                 phoneNum: phoneNumController.text.trim(),
                                                 displayName: displayNameController.text.trim());
                                             if (error == null) {
+                                              await reportsManager.add(ReportType.users);
                                               if (!context.mounted) return;
                                               nav.pushReplace(context, const Checkpoint());
                                             } else {
@@ -271,6 +274,10 @@ class _SignupState extends ConsumerState<Signup> with RouteAware {
   @override
   void initState() {
     toast = ref.read(toastProvider.notifier);
+    validator = ref.read(textValidatorProvider.notifier);
+    nav = ref.read(customNavigationProvider);
+    auth = ref.read(authServiceProvider.notifier);
+    reportsManager = ref.read(reportsManagerProvider.notifier);
     msg = const BlankWidget();
     super.initState();
   }
