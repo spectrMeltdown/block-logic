@@ -52,13 +52,14 @@ class TextValidator extends _$TextValidator {
     return null;
   }
 
-  String? validatePhoneNum(String? value) {
+  String? validatePhoneNum(String? value, [bool required = false]) {
     if (value == null || value.isEmpty) {
-      return 'Please enter the OTP.';
+      if (required) return 'Cannot be empty.';
+      return null;
     }
 
-    if (value.length != 9) {
-      return 'Phone # is 9 digits, excluding the zero.';
+    if (value.length < 10) {
+      return 'Phone # is 10 digits, excluding the zero.';
     }
 
     if (!state._phoneNumRegex.hasMatch(value)) {

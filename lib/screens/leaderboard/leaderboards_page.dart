@@ -1,10 +1,9 @@
 import 'package:block_logic/components/background.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/util/provider_default.dart';
-import 'package:block_logic/logic/firebase_providers/selected_leaderboard.dart';
-import 'package:block_logic/logic/firebase_providers/selected_rooms.dart';
 import 'package:block_logic/logic/firebase_providers/selected_user_leaderboards.dart';
 import 'package:block_logic/logic/services/auth.dart';
+import 'package:block_logic/screens/leaderboard/leaderboard_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -26,14 +25,15 @@ class _LeaderboardsPageState extends ConsumerState<LeaderboardsPage> {
           child: userLeaderboards.when(
               data: (leaderboards) {
                 if (leaderboards.isEmpty) {
-                  return Center(
+                  return const Center(
                     child: BLText('No leaderboards found.'),
                   );
                 }
-                return Column(
-                  children: List.generate(leaderboards.length, (i) {
-                    return LeaderboardITem
-                  }),
+                return ListView.builder(
+                  itemCount: leaderboards.length,
+                  itemBuilder: (context, i) {
+                    return LeaderboardItem(leaderboards[i]);
+                  },
                 );
               },
               error: genericError,

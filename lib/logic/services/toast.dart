@@ -1,9 +1,7 @@
 // ignore_for_file: avoid_build_context_in_providers
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/logic/enums.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:toastification/toastification.dart';
@@ -23,25 +21,26 @@ class Toast extends _$Toast {
     String? description,
     Duration duration = const Duration(seconds: 5),
     double paddingX = 20,
-    bool withTransparency = true,
+    bool withTransparency = false,
     Alignment alignment = Alignment.topCenter,
-    EdgeInsets margin = const EdgeInsets.only(top: 30, left: 10, right: 10),
+    EdgeInsets margin = const EdgeInsets.only(top: 5, left: 10, right: 10),
   }) {
-    if (kIsWeb) {
-      final toast = FToast();
-      toast.removeQueuedCustomToasts();
-      toast.showToast(child: BLText(title));
-      // Fluttertoast.cancel();
-      // Fluttertoast.showToast(
-      //     msg: title,
-      //     gravity: kIsWeb ? ToastGravity.TOP : ToastGravity.CENTER,
-      //     timeInSecForIosWeb: 3,
-      //     webPosition: 'center',
-      //     backgroundColor: _getColor(type),
-      //     textColor: Colors.white,
-      //     fontSize: 16.0);
-      return;
-    }
+    // if (kIsWeb) {
+    //   debugPrint(title);
+    //   final toast = FToast();
+    //   toast.removeQueuedCustomToasts();
+    //   toast.showToast(child: BLText(title));
+    //   // Fluttertoast.cancel();
+    //   // Fluttertoast.showToast(
+    //   //     msg: title,
+    //   //     gravity: kIsWeb ? ToastGravity.TOP : ToastGravity.CENTER,
+    //   //     timeInSecForIosWeb: 3,
+    //   //     webPosition: 'center',
+    //   //     backgroundColor: _getColor(type),
+    //   //     textColor: Colors.white,
+    //   //     fontSize: 16.0);
+    //   return;
+    // }
     toastification.dismissAll();
     toastification.showCustom(
         autoCloseDuration: duration,
@@ -65,7 +64,7 @@ class Toast extends _$Toast {
               child: LayoutBuilder(builder: (context, constraints) {
                 final icon = Icon(
                   _getIcon(type),
-                  color: _getColor(type),
+                  color: withTransparency ? _getColor(type) : Colors.white,
                   size: 16,
                 );
                 const space = SizedBox(width: 10);

@@ -35,7 +35,7 @@ class ChallengeManager extends _$ChallengeManager {
 
   Future<String?> update(Challenge challenge) async {
     try {
-      await _db!.collection('challenges').doc(challenge.id).set(challenge.toFirestore(), SetOptions(merge: true));
+      await _db!.collection('challenges').doc(challenge.id).update(challenge.toFirestore());
       return null;
     } catch (e) {
       return _errorHandler?.call(e);

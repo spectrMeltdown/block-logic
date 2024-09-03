@@ -9,8 +9,6 @@ import 'package:block_logic/components/text/title.dart';
 import 'package:block_logic/components/textbox.dart';
 import 'package:block_logic/constants.dart';
 import 'package:block_logic/logic/enums.dart';
-import 'package:block_logic/logic/firebase_models/account_settings.dart';
-import 'package:block_logic/logic/firebase_providers/account_settings.dart';
 import 'package:block_logic/logic/services/auth.dart';
 import 'package:block_logic/logic/services/login_alert.dart';
 import 'package:block_logic/logic/services/navigation.dart';
@@ -19,7 +17,7 @@ import 'package:block_logic/logic/services/validator_text.dart';
 import 'package:block_logic/route_observer.dart';
 import 'package:block_logic/screens/auth/forgot_password.dart';
 import 'package:block_logic/screens/auth/signup.dart';
-import 'package:block_logic/screens/main_menu.dart';
+import 'package:block_logic/screens/checkpoint.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -40,7 +38,6 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
   final _loginFormKey = GlobalKey<FormState>();
   late Toast toast;
   late final AuthService auth;
-  late final Future<AccountSettings?> settings;
   late final CustomNavigation nav;
   bool processing = false;
 
@@ -101,12 +98,7 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
                                     BLTextBox(
                                       controller: emailController,
                                       hintText: 'Email',
-                                      onFieldSubmitted: (p0) async {
-                                        if (processing == true) return;
-                                        toggleProcessing(true);
-                                        await submit(context);
-                                        toggleProcessing(false);
-                                      },
+                                      onFieldSubmitted: (p0) => submit(context),
                                       prefixIcon: const Icon(
                                         FontAwesomeIcons.envelope,
                                         color: Colors.white,
@@ -120,12 +112,7 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
                                     BLTextBox(
                                       controller: passwordController,
                                       hintText: 'Password',
-                                      onFieldSubmitted: (p0) async {
-                                        if (processing == true) return;
-                                        toggleProcessing(true);
-                                        await submit(context);
-                                        toggleProcessing(false);
-                                      },
+                                      onFieldSubmitted: (p0) => submit(context),
                                       prefixIcon: const Icon(
                                         FontAwesomeIcons.lock,
                                         color: Colors.white,
@@ -161,12 +148,7 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
                                     ),
                                     BLButton(
                                         padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 10),
-                                        onPressed: () async {
-                                          if (processing == true) return;
-                                          toggleProcessing(true);
-                                          await submit(context);
-                                          toggleProcessing(false);
-                                        },
+                                        onPressed: () => submit(context),
                                         child: const BLText(
                                           'Login',
                                           color: Colors.white,
@@ -214,43 +196,48 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
 
   @override
   void didPopNext() {
-    toast.dismissAllToast();
+    if (context.mounted) {
+      toast.dismissAllToast();
+    }
     super.didPop();
   }
 
   @override
   void didPushNext() {
-    toast.dismissAllToast();
+    if (context.mounted) {
+      toast.dismissAllToast();
+    }
     super.didPushNext();
   }
 
   @override
   void initState() {
     auth = ref.read(authServiceProvider.notifier);
-    settings = ref.read(SettingsProvider(widget.accountType).future);
     toast = ref.read(toastProvider.notifier);
     nav = ref.read(customNavigationProvider);
     super.initState();
   }
 
   Future<void> submit(BuildContext context) async {
+    if (processing) return;
+    toggleProcessing(true);
     if (_loginFormKey.currentState!.validate()) {
       final error = await auth.login(email: emailController.text.trim(), password: passwordController.text.trim());
       if (error == null) {
-        // TODO: Skipping login alerts for now. If needed later, move to bottom
+        final loginAlert = ref.read(loginAlertProvider.notifier);
+        final result = await loginAlert.send();
+        if (result != null) {
+          if (!context.mounted) return;
+          toast.showToast(result, type: NotifType.error);
+        }
         if (kIsWeb) {
           if (!context.mounted) return;
           context.go('/dashboard');
         } else {
-          final awaitedSettings = await settings;
-          final loginAlert = ref.read(LoginAlertProvider(awaitedSettings).notifier);
-          final result = await loginAlert.send();
-          if (result != null) {
-            if (!context.mounted) return;
-            toast.showToast(result, type: NotifType.error);
-          }
+          // final settings = await ref.read(SettingsProvider(widget.accountType).future);
+
           if (!context.mounted) return;
-          nav.pushReplace(context, const MainMenuScreen());
+          nav.pushAndRemove(context, const Checkpoint());
         }
       } else {
         if (!context.mounted) return;
@@ -260,6 +247,7 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
         );
       }
     }
+    toggleProcessing(false);
   }
 
   void toggleProcessing(bool newState) {

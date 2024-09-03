@@ -1,19 +1,16 @@
 import 'package:block_logic/components/button/button.dart';
 import 'package:block_logic/components/text/text.dart';
-import 'package:block_logic/logic/services/game_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class GameSubmitButton extends ConsumerWidget {
-  const GameSubmitButton({super.key});
+  final void Function() updateChallenge;
+  const GameSubmitButton(this.updateChallenge, {super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final gameManager = ref.read(gameManagerProvider.notifier);
     return BLButton(
-        onPressed: () {
-          gameManager.nextChallenge();
-        },
+        onPressed: () => updateChallenge(),
         padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
         child: const Row(
           mainAxisAlignment: MainAxisAlignment.center,

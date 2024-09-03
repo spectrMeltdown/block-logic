@@ -2,9 +2,9 @@ import 'package:block_logic/components/background.dart';
 import 'package:block_logic/components/button/back.dart';
 import 'package:block_logic/components/dialog/help.dart';
 import 'package:block_logic/components/panel/bordered.dart';
+import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/text/title.dart';
 import 'package:block_logic/components/textbox.dart';
-import 'package:block_logic/components/util/blank_widget.dart';
 import 'package:block_logic/logic/services/ui.dart';
 import 'package:block_logic/screens/rooms/public_rooms.dart';
 import 'package:block_logic/screens/rooms/user_rooms.dart';
@@ -41,7 +41,21 @@ class _RoomSelectorState extends ConsumerState<RoomSelector> with TickerProvider
                     showDialog(
                         context: context,
                         builder: (context) => const BLHelpDialog(
-                              child: BlankWidget(),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  BLText(
+                                    'Can\'t find your room?',
+                                    bold: true,
+                                  ),
+                                  BLText(
+                                    '- It is possible that your room has been locked by the admin.\nPlease message the admin through feedback in the main menu screen if you think this is a mistake.',
+                                    softWrap: true,
+                                    color: Colors.white,
+                                  )
+                                ],
+                              ),
                             ));
                   },
                   icon: const Icon(FontAwesomeIcons.circleQuestion))

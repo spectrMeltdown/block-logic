@@ -10,17 +10,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class GameChallenge extends ConsumerWidget {
-  const GameChallenge({required this.roomName, required this.challenge, required this.challengeCount, super.key});
   final String roomName;
+  final void Function() updateChallenge;
   final Challenge challenge;
   final int challengeCount;
+  const GameChallenge({
+    required this.updateChallenge,
+    required this.roomName,
+    required this.challenge,
+    required this.challengeCount,
+    super.key,
+  });
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         const SizedBox(height: 25),
-        // TODO: change to intercept challenges & room from firestore
         GameAppbar(
           roomName: roomName,
           challenge: challenge,
@@ -38,11 +44,11 @@ class GameChallenge extends ConsumerWidget {
               const SizedBox(width: 10),
               Container(
                 constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width / 2.9),
-                child: const Column(
+                child: Column(
                   children: [
-                    GameSubmitButton(),
-                    SizedBox(height: 10),
-                    GameRunButton(),
+                    GameSubmitButton(updateChallenge),
+                    const SizedBox(height: 10),
+                    const GameRunButton(),
                   ],
                 ),
               )

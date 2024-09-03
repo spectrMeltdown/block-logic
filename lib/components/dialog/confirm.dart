@@ -7,7 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ConfirmDialog extends ConsumerWidget {
-  const ConfirmDialog({super.key});
+  final String? message;
+  const ConfirmDialog({this.message, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -17,6 +18,7 @@ class ConfirmDialog extends ConsumerWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           const BLSmallTitle('Are you sure you want to leave?'),
+          if (message != null) BLText(message!),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [

@@ -109,8 +109,7 @@ class _SignupState extends ConsumerState<Signup> with RouteAware {
                                         ),
                                       ),
                                       controller: phoneNumController,
-                                      maxLength: 9,
-                                      helperText: 'Start with number 9.., not 09..',
+                                      maxLength: 10,
                                       hintText: 'Phone number (optional)',
                                       keyboardType: TextInputType.phone,
                                       validator: (phoneNum) => validator.validatePhoneNum(phoneNum),
@@ -175,7 +174,7 @@ class _SignupState extends ConsumerState<Signup> with RouteAware {
                                               setState(() {
                                                 msg = const BLText(
                                                   'You must agree to terms and conditions.',
-                                                  color: Colors.red,
+                                                  color: Colors.deepOrange,
                                                 );
                                               });
                                               setState(() {

@@ -2,15 +2,15 @@ import 'package:block_logic/logic/firebase_models/account_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AdminAccount extends AccountModel {
-  final bool? isApproved;
+  //final bool? isApproved;
   AdminAccount({
     super.id,
-    this.isApproved,
+    //this.isApproved,
     super.displayName,
     super.phoneNum,
     super.profilePicLink,
     super.createdAt,
-    super.verificationID,
+    super.phoneVerified,
   });
 
   factory AdminAccount.fromFirestore(DocumentSnapshot doc) {
@@ -20,13 +20,14 @@ class AdminAccount extends AccountModel {
     }
 
     return AdminAccount(
-        id: doc.id,
-        createdAt: data['createdAt'] == null ? null : (data['createdAt'] as Timestamp).toDate(),
-        displayName: data['displayName'] ?? '',
-        profilePicLink: data['profilePicLink'] ?? '',
-        phoneNum: data['phoneNum'],
-        verificationID: data['verificationID'],
-        isApproved: data['isApproved']);
+      id: doc.id,
+      createdAt: data['createdAt'] == null ? null : (data['createdAt'] as Timestamp).toDate(),
+      displayName: data['displayName'] ?? '',
+      profilePicLink: data['profilePicLink'] ?? '',
+      phoneNum: data['phoneNum'],
+      phoneVerified: data['phoneVerified'],
+      // isApproved: data['isApproved'],
+    );
   }
 
   Map<String, dynamic> toFirestore() {
@@ -43,12 +44,12 @@ class AdminAccount extends AccountModel {
     if (profilePicLink != null) {
       toFirestoreMap.addAll({'profilePicLink': profilePicLink});
     }
-    if (verificationID != null) {
-      toFirestoreMap.addAll({'verificationID': verificationID});
+    if (phoneVerified != null) {
+      toFirestoreMap.addAll({'phoneVerified': phoneVerified});
     }
-    if (isApproved != null) {
-      toFirestoreMap.addAll({'isApproved': isApproved});
-    }
+    // if (isApproved != null) {
+    //   toFirestoreMap.addAll({'isApproved': isApproved});
+    // }
     return toFirestoreMap;
   }
 }

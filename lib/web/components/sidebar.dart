@@ -1,5 +1,5 @@
 import 'package:block_logic/components/account/display_name.dart';
-import 'package:block_logic/components/profile_pic.dart';
+import 'package:block_logic/components/account/profile_pic.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/constants.dart';
 import 'package:block_logic/logic/enums.dart';

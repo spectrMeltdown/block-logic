@@ -2,13 +2,15 @@ import 'package:block_logic/logic/enums.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Leaderboard {
-  final String? id;
+  final String? id; // the doc id. Should be auto generated
   final String? roomID;
+  final String? roomName; // needs to be saved in leaderboard in case room gets deleted
   final DateTime? date;
   final int? totalScore; // refers to num of challenges
   final LeaderboardStatus? status;
   final List<String>? players;
   Leaderboard({
+    this.roomName,
     this.id,
     this.players,
     this.roomID,
@@ -33,6 +35,7 @@ class Leaderboard {
 
     return Leaderboard(
       id: doc.id,
+      roomName: data['roomName'] ?? '',
       roomID: data['roomID'] ?? '',
       totalScore: data['totalScore'] ?? '',
       status: status,
@@ -47,6 +50,9 @@ class Leaderboard {
     }
     if (roomID != null) {
       toFirestoreMap.addAll({'roomID': roomID});
+    }
+    if (roomName != null) {
+      toFirestoreMap.addAll({'roomName': roomName});
     }
     if (totalScore != null) {
       toFirestoreMap.addAll({'totalScore': totalScore});

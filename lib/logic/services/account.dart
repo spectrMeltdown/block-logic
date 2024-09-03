@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:block_logic/logic/enums.dart';
-import 'package:block_logic/logic/firebase_models/account_settings.dart';
 import 'package:block_logic/logic/firebase_models/admin_account.dart';
 import 'package:block_logic/logic/firebase_models/user_account.dart';
 import 'package:block_logic/logic/services/error_handler.dart';
@@ -9,7 +8,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:mime/mime.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -28,10 +26,7 @@ class AccountService extends _$AccountService {
 
   Future<String?> changeDisplayName(String displayName, FirestoreCollections collection) async {
     try {
-      await state._db
-          .collection(collection.name)
-          .doc(state._auth!.uid)
-          .set({'displayName': displayName}, SetOptions(merge: true));
+      await state._db.collection(collection.name).doc(state._auth!.uid).update({'displayName': displayName});
       return null;
     } catch (e) {
       return state._errorHandler.call(e);
@@ -67,7 +62,7 @@ class AccountService extends _$AccountService {
                 contentType: mimeType,
               ));
         } else {
-          final image = File.fromRawPath(file.bytes!);
+          final image = File(file.path!);
           await profilePicRef.putFile(
               image,
               SettableMetadata(
@@ -125,20 +120,20 @@ class AccountService extends _$AccountService {
                 displayName: displayName ?? state._auth!.displayName,
                 phoneNum: phoneNum,
                 profilePicLink: 'default',
-                verificationID: (phoneNum == null || phoneNum.isEmpty) ? null : ''));
+                phoneVerified: (phoneNum == null || phoneNum.isEmpty) ? null : false));
         if (result != null) {
           return result;
         }
 
         /// initialize user settings
-        result = await updateUserSettings(AccountSettings(
-          backgroundMusic: FlameAudio.bgm.isPlaying,
-          soundEffects: false,
-          loginAlerts: true,
-        ));
-        if (result != null) {
-          return result;
-        }
+        // result = await updateUserSettings(AccountSettings(
+        //   backgroundMusic: FlameAudio.bgm.isPlaying,
+        //   soundEffects: false,
+        //   loginAlerts: true,
+        // ));
+        // if (result != null) {
+        //   return result;
+        // }
       } else {
         result = await update(
             admin: AdminAccount(
@@ -147,7 +142,7 @@ class AccountService extends _$AccountService {
           displayName: displayName ?? state._auth!.displayName,
           phoneNum: phoneNum,
           profilePicLink: 'default',
-          verificationID: (phoneNum == null || phoneNum.isEmpty) ? null : '',
+          phoneVerified: (phoneNum == null || phoneNum.isEmpty) ? null : false,
           //isApproved: false,
         ));
         if (result != null) {
@@ -166,9 +161,9 @@ class AccountService extends _$AccountService {
     }
     try {
       if (admin != null) {
-        await state._db.collection('admins').doc(admin.id).set(admin.toFirestore(), SetOptions(merge: true));
+        await state._db.collection('admins').doc(admin.id).update(admin.toFirestore());
       } else if (user != null) {
-        await state._db.collection('users').doc(user.id).set(user.toFirestore(), SetOptions(merge: true));
+        await state._db.collection('users').doc(user.id).update(user.toFirestore());
       } else {
         throw ('Either user or admin not provided!!');
       }
@@ -180,27 +175,24 @@ class AccountService extends _$AccountService {
 
   Future<String?> updateProfilePicLink(String link, FirestoreCollections collection) async {
     try {
-      await state._db
-          .collection(collection.name)
-          .doc(state._auth!.uid)
-          .set({'profilePicLink': link}, SetOptions(merge: true));
+      await state._db.collection(collection.name).doc(state._auth!.uid).update({'profilePicLink': link});
       return null;
     } catch (e) {
       return state._errorHandler.call(e);
     }
   }
 
-  Future<String?> updateUserSettings(AccountSettings userSettings) async {
-    try {
-      await state._db
-          .collection('users')
-          .doc(state._auth!.uid)
-          .set(userSettings.toFirestore(), SetOptions(merge: true));
-      return null;
-    } catch (e) {
-      return state._errorHandler.call(e);
-    }
-  }
+//   Future<String?> updateUserSettings(AccountSettings userSettings) async {
+//     try {
+//       await state._db
+//           .collection('users')
+//           .doc(state._auth!.uid)
+//           .update(userSettings.toFirestore());
+//       return null;
+//     } catch (e) {
+//       return state._errorHandler.call(e);
+//     }
+//   }
 }
 
 /// don't add AuthService, will cause circular dependency

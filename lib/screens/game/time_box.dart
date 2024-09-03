@@ -2,23 +2,26 @@ import 'dart:async';
 
 import 'package:block_logic/components/panel/bordered.dart';
 import 'package:block_logic/components/text/text.dart';
+import 'package:block_logic/logic/services/game_manager.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:widget_and_text_animator/widget_and_text_animator.dart';
 
-class TimeBox extends StatefulWidget {
+class TimeBox extends ConsumerStatefulWidget {
   final bool pauseTimer;
   const TimeBox(this.pauseTimer, {super.key});
 
   @override
-  State<TimeBox> createState() => _TimeBoxState();
+  ConsumerState<TimeBox> createState() => _TimeBoxState();
 }
 
-class _TimeBoxState extends State<TimeBox> {
+class _TimeBoxState extends ConsumerState<TimeBox> {
   int seconds = 0;
   late bool shouldPauseTimer;
   late String timeString;
   late Timer timer;
+  late final GameManager gameManager;
 
   @override
   Widget build(BuildContext context) {
@@ -35,8 +38,7 @@ class _TimeBoxState extends State<TimeBox> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           WidgetAnimator(
-            atRestEffect: WidgetRestingEffects.size(
-                effectStrength: 1, delay: Durations.extralong1),
+            atRestEffect: WidgetRestingEffects.size(effectStrength: 1, delay: Durations.extralong1),
             child: const Icon(
               FontAwesomeIcons.clock,
               size: 18,
@@ -55,8 +57,10 @@ class _TimeBoxState extends State<TimeBox> {
 
   Timer createTimer() {
     return Timer.periodic(const Duration(seconds: 1), (Timer t) {
-      seconds++;
-      setState(() {});
+      setState(() {
+        seconds++;
+      });
+      gameManager.updateTimeElapsed(seconds);
     });
   }
 
@@ -77,6 +81,7 @@ class _TimeBoxState extends State<TimeBox> {
   @override
   void initState() {
     shouldPauseTimer = widget.pauseTimer;
+    gameManager = ref.read(gameManagerProvider.notifier);
     timer = createTimer();
     super.initState();
   }

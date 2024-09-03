@@ -81,6 +81,7 @@ class _BLInputState extends State<BLTextBox> {
         onFieldSubmitted: widget.onFieldSubmitted,
         inputFormatters: widget.inputFormatters,
         decoration: InputDecoration(
+            helperStyle: const TextStyle(color: Colors.white, fontStyle: FontStyle.italic),
             hintText: widget.hintText,
             hintStyle: const TextStyle(color: Colors.white, fontStyle: FontStyle.italic),
             labelStyle: const TextStyle(color: Colors.white38, fontStyle: FontStyle.italic),

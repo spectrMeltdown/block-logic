@@ -16,6 +16,7 @@ import 'package:block_logic/web/screens/dashboard/dashboard.dart';
 import 'package:block_logic/web/screens/feedback/feedback.dart';
 import 'package:block_logic/web/screens/feedback/view_feedback_dialog.dart';
 import 'package:block_logic/web/screens/other/not_found.dart';
+import 'package:block_logic/web/screens/other/redirecting.dart';
 import 'package:block_logic/web/screens/other/unauthorized.dart';
 import 'package:block_logic/web/screens/reports/reports.dart';
 import 'package:block_logic/web/screens/rooms/rooms.dart';
@@ -95,10 +96,11 @@ GoRouter router(Future<String?> redirect) {
     ],
     ['/verify-email', const VerifyEmail()],
     ['/verify-phone-num', const VerifyPhoneNum()],
+    ['/redirecting', const RedirectingWebPage()],
   ];
   return GoRouter(
     navigatorKey: parentKey,
-    //debugLogDiagnostics: true,
+    debugLogDiagnostics: true,
     initialLocation: '/dashboard',
     routes: [
       ...List.generate(routes.length, (i) {

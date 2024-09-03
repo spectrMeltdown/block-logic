@@ -19,4 +19,5 @@ Stream<UserAccount?> selectedUser(SelectedUserRef ref, String id) async* {
       }
     }
   }
+  yield null;
 }

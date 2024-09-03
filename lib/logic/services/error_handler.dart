@@ -17,9 +17,9 @@ class ErrorHandler extends _$ErrorHandler {
   }
 
   String? call(Object e, {BuildContext? context, bool handleOverlay = true}) {
+    debugPrint('BLERROR: $e');
     if (e is! FirebaseException) {
       debugPrint('Was not a FirebaseException!');
-      debugPrint(e.toString());
       if (context?.mounted != null && !context!.mounted) return null;
       debugPrint('Exception from: ${context?.widget.runtimeType}');
       return null;

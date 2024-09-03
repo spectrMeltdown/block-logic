@@ -1,5 +1,5 @@
 import 'package:block_logic/components/button/text.dart';
-import 'package:block_logic/components/profile_pic.dart';
+import 'package:block_logic/components/account/profile_pic.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/textbox.dart';
 import 'package:block_logic/components/util/blank_widget.dart';

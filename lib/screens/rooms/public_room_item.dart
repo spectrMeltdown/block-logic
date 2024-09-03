@@ -1,18 +1,20 @@
 import 'package:block_logic/components/card/card_translucent.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/util/provider_default.dart';
+import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_models/room.dart';
 import 'package:block_logic/logic/firebase_providers/selected_user.dart';
 import 'package:block_logic/logic/services/dialog.dart';
 import 'package:block_logic/logic/services/navigation.dart';
 import 'package:block_logic/logic/services/room_manager.dart';
+import 'package:block_logic/logic/services/toast.dart';
 import 'package:block_logic/screens/rooms/room_password_dialog.dart';
 import 'package:block_logic/screens/rooms/room_state.dart';
 import 'package:block_logic/screens/rooms/waiting_room.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class PublicRoomItem extends ConsumerWidget {
+class PublicRoomItem extends ConsumerStatefulWidget {
   final Room room;
   final VoidCallback toggleProcessing;
   const PublicRoomItem({
@@ -22,43 +24,52 @@ class PublicRoomItem extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final hostData = ref.watch(SelectedUserProvider(room.hostID!));
-    final nav = ref.read(customNavigationProvider);
-    final dialog = ref.read(dialogServiceProvider.notifier);
-    final roomManager = ref.read(roomManagerProvider.notifier);
+  ConsumerState<PublicRoomItem> createState() => _PublicRoomItemState();
+}
+
+class _PublicRoomItemState extends ConsumerState<PublicRoomItem> {
+  late final CustomNavigation nav;
+  late final DialogService dialog;
+  late final RoomManager roomManager;
+  late final Toast toast;
+  @override
+  Widget build(BuildContext context) {
+    final hostData = ref.watch(SelectedUserProvider(widget.room.hostID!));
     return hostData.when(
         data: (hostData) {
           return BLTranslucentCard(
             onPressed: () async {
-              if (room.password == null || room.password!.isEmpty) {
-                toggleProcessing();
-                await roomManager.joinRoom(room.id!);
-                toggleProcessing();
+              if (widget.room.status != null && widget.room.status == RoomStatus.inGame) {
+                return;
+              }
+              widget.toggleProcessing();
+              if (widget.room.password == null || widget.room.password!.isEmpty) {
+                await roomManager.joinRoom(widget.room.id!);
                 if (context.mounted) {
-                  nav.push(context, WaitingRoom(room.id!));
+                  nav.push(context, WaitingRoom(widget.room.id!));
                 }
               } else {
-                final result =
-                    await dialog.show(context, RoomPasswordDialog(pass: room.password ?? '', hostID: room.hostID!));
+                final result = await dialog.show(
+                    context, RoomPasswordDialog(pass: widget.room.password ?? '', hostID: widget.room.hostID!));
                 if (result is bool && result) {
                   if (!context.mounted) return;
-                  nav.push(context, WaitingRoom(room.id!));
+                  nav.push(context, WaitingRoom(widget.room.id!));
                 }
               }
+              widget.toggleProcessing();
             },
-            hasPass: room.password?.isNotEmpty,
+            hasPass: widget.room.password?.isNotEmpty,
             color: Colors.black,
             //icon: room.icon ?? '',
-            title: room.name ?? '',
+            title: widget.room.name ?? '',
             subTitle: hostData?.displayName ?? '',
-            bottomRowStart: BLRoomState(room.status),
+            bottomRowStart: BLRoomState(widget.room.status),
             bottomRowEnd: BLText(
-              '${room.players?.length ?? '--'}/${room.maxPlayers ?? '--'}',
+              '${widget.room.players?.length ?? '--'}/${widget.room.maxPlayers ?? '--'}',
               bold: true,
-              color: room.maxPlayers == null
+              color: widget.room.maxPlayers == null
                   ? Colors.grey
-                  : room.players!.length == room.maxPlayers
+                  : widget.room.players!.length == widget.room.maxPlayers
                       ? Colors.red
                       : Colors.green,
             ),
@@ -66,5 +77,14 @@ class PublicRoomItem extends ConsumerWidget {
         },
         error: genericError,
         loading: genericLoading);
+  }
+
+  @override
+  void initState() {
+    nav = ref.read(customNavigationProvider);
+    dialog = ref.read(dialogServiceProvider.notifier);
+    roomManager = ref.read(roomManagerProvider.notifier);
+    toast = ref.read(toastProvider.notifier);
+    super.initState();
   }
 }

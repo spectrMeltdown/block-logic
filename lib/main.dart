@@ -1,14 +1,16 @@
 import 'dart:async';
 
 import 'package:block_logic/app_theme.dart';
-import 'package:block_logic/logic/firebase_providers/auth_changes.dart';
+import 'package:block_logic/logic/firebase_providers/auth.dart';
 import 'package:block_logic/logic/firebase_providers/selected_admin.dart';
 import 'package:block_logic/logic/services/audio.dart';
 import 'package:block_logic/logic/services/auth.dart';
 import 'package:block_logic/logic/services/shared_pref.dart';
 import 'package:block_logic/route_observer.dart';
 import 'package:block_logic/router_config.dart';
-import 'package:block_logic/screens/leaderboards/leaderboards_page.dart';
+import 'package:block_logic/screens/checkpoint.dart';
+import 'package:firebase_app_check/firebase_app_check.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -25,6 +27,7 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await FirebaseAppCheck.instance.activate();
   if (!kIsWeb) {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
     SystemChrome.setPreferredOrientations(
@@ -63,17 +66,17 @@ class BlockLogic extends ConsumerWidget {
           theme: appTheme.theme(),
           darkTheme: appTheme.theme(),
           //home: const Checkpoint(),
-          home: const LeaderboardsPage(),
+          home: const Checkpoint(),
         ),
       );
     }
-
-    final auth = ref.read(authServiceProvider.notifier);
-    final user = ref.watch(authInfoChangesProvider);
+    ref.watch(authChangesProvider);
     Future<String?> redirect() async {
-      if (user.isLoading || user.hasError) return '/loading';
-      if (auth.isLoggedIn()) {
-        if (!auth.isEmailVerified()) {
+      final auth = ref.read(authServiceProvider.notifier);
+      //if (user.isLoading || user.hasError) return '/loading';
+      if (FirebaseAuth.instance.currentUser != null) {
+        if (FirebaseAuth.instance.currentUser?.emailVerified == null ||
+            FirebaseAuth.instance.currentUser!.emailVerified == false) {
           /// go to email verification screen (after main menu finish building)
           return '/verify-email';
         }
@@ -82,32 +85,33 @@ class BlockLogic extends ConsumerWidget {
         if (adminFirestore == null) {
           return '/unauthorized';
         }
-        // if ((adminFirestore.phoneNum != null || adminFirestore.phoneNum!.isNotEmpty) &&
-        //     (adminFirestore.verificationID == null || adminFirestore.verificationID!.isNotEmpty)) {
-        //   return '/verify-phone-num';
-        // }
+        if (adminFirestore.phoneVerified != null && adminFirestore.phoneVerified == false) {
+          return '/verify-phone-num';
+        }
         return null;
       } else {
         return '/login';
       }
     }
 
-    return MaterialApp.router(
-      // builder: (context, child) => ResponsiveBreakpoints.builder(
-      //   child: child!,
-      //   breakpoints: [
-      //     const Breakpoint(start: 0, end: 450, name: MOBILE),
-      //     const Breakpoint(start: 451, end: 800, name: TABLET),
-      //     const Breakpoint(start: 801, end: 1920, name: DESKTOP),
-      //     const Breakpoint(start: 1921, end: double.infinity, name: '4K'),
-      //   ],
-      // ),
-      builder: FToastBuilder(),
-      routerConfig: router(redirect()),
-      title: 'Block-Logic',
-      debugShowCheckedModeBanner: false,
-      theme: appTheme.theme(),
-      darkTheme: appTheme.theme(),
+    return ToastificationWrapper(
+      child: MaterialApp.router(
+        // builder: (context, child) => ResponsiveBreakpoints.builder(
+        //   child: child!,
+        //   breakpoints: [
+        //     const Breakpoint(start: 0, end: 450, name: MOBILE),
+        //     const Breakpoint(start: 451, end: 800, name: TABLET),
+        //     const Breakpoint(start: 801, end: 1920, name: DESKTOP),
+        //     const Breakpoint(start: 1921, end: double.infinity, name: '4K'),
+        //   ],
+        // ),
+        builder: FToastBuilder(),
+        routerConfig: router(redirect()),
+        title: 'Block-Logic',
+        debugShowCheckedModeBanner: false,
+        theme: appTheme.theme(),
+        darkTheme: appTheme.theme(),
+      ),
     );
   }
 }

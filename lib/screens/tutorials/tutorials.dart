@@ -8,6 +8,7 @@ import 'package:block_logic/screens/tutorials/classes_and_objects.dart';
 import 'package:block_logic/screens/tutorials/conditionals_and_loops.dart';
 import 'package:block_logic/screens/tutorials/data_type_and_literals.dart';
 import 'package:block_logic/screens/tutorials/functions.dart';
+import 'package:block_logic/screens/tutorials/keywords.dart';
 import 'package:block_logic/screens/tutorials/operators.dart';
 import 'package:block_logic/screens/tutorials/variables.dart';
 import 'package:flutter/material.dart';
@@ -64,7 +65,7 @@ class Tutorials extends ConsumerWidget {
       case TutorialType.operators:
         return [const Operators(), 'Operators'];
       case TutorialType.keywords:
-        return [const Placeholder(), 'Keywords'];
+        return [const Keywords(), 'Keywords'];
     }
   }
 }

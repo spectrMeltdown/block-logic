@@ -70,7 +70,7 @@ class TestingPage extends ConsumerWidget {
                         ],
                       )
                     ];
-                    await db.collection('rooms').doc('testing').set(room.toFirestore(), SetOptions(merge: true));
+                    await db.collection('rooms').doc('testing').update(room.toFirestore());
                     for (int i = 0; i <= challenges.length - 1; i++) {
                       await db
                           .collection('challenges')

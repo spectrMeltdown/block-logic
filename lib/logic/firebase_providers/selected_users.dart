@@ -9,12 +9,14 @@ Future<List<UserAccount>?> selectedUsers(
   SelectedUsersRef ref,
   List<String> ids,
 ) async {
-  if (ids.isEmpty) return null;
-  final db = FirebaseFirestore.instance;
-  final List<UserAccount> accounts = [];
-  for (final id in ids) {
-    final user = await db.collection('users').doc(id).get();
-    accounts.add(UserAccount.fromFirestore(user));
+  if (ids.isNotEmpty) {
+    final db = FirebaseFirestore.instance;
+    final List<UserAccount> accounts = [];
+    for (final id in ids) {
+      final user = await db.collection('users').doc(id).get();
+      accounts.add(UserAccount.fromFirestore(user));
+    }
+    return accounts;
   }
-  return accounts;
+  return null;
 }

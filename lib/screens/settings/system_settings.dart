@@ -1,24 +1,36 @@
-import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/button/toggle.dart';
-import 'package:block_logic/components/util/provider_default.dart';
-import 'package:block_logic/logic/enums.dart';
-import 'package:block_logic/logic/firebase_models/account_settings.dart';
-import 'package:block_logic/logic/firebase_providers/account_settings.dart';
+import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/logic/services/account.dart';
 import 'package:block_logic/logic/services/audio.dart';
-
 import 'package:block_logic/logic/services/persistent_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class SystemSettings extends ConsumerWidget {
-  const SystemSettings({super.key, required this.isLoggedIn});
-  final bool isLoggedIn;
+class SystemSetting extends ConsumerWidget {
+  final List<Widget> children;
+  const SystemSetting({super.key, required this.children});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final userSettings = ref.watch(SettingsProvider(FirestoreCollections.users));
+    final mediaQuery = MediaQuery.of(context);
+    return SizedBox(
+      width: mediaQuery.size.width / 1.4,
+      child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: children),
+    );
+  }
+}
+
+class SystemSettings extends ConsumerWidget {
+  final bool isLoggedIn;
+  const SystemSettings({super.key, required this.isLoggedIn});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    // final userSettings = ref.watch(SettingsProvider(FirestoreCollections.users));
     final accountService = ref.read(accountServiceProvider.notifier);
     final persistentDataNotifier = ref.read(persistentDataStateProvider.notifier);
     final gameAudio = ref.watch(bLAudioStateProvider);
@@ -82,63 +94,6 @@ class SystemSettings extends ConsumerWidget {
         )
       ]),
     ]);
-
-    /// add login alerts only if the user is logged in
-    if (isLoggedIn) {
-      settings.addAll([
-        SystemSetting(children: [
-          const Row(
-            children: [
-              Icon(FontAwesomeIcons.triangleExclamation),
-              SizedBox(width: 20),
-              BLText('Login Alerts'),
-            ],
-          ),
-          userSettings.when(
-              data: (settings) {
-                bool processing = false;
-                bool loginAlerts = settings?.loginAlerts ?? true;
-                return BLSwitch(
-                  state: loginAlerts,
-                  onPressed: (newValue) async {
-                    if (processing) return;
-                    processing = true;
-
-                    try {
-                      debugPrint('current value loginAlerts = $loginAlerts');
-                      await accountService.updateUserSettings(AccountSettings(loginAlerts: !loginAlerts));
-                    } catch (e) {
-                      if (!context.mounted) {
-                        debugPrint('Problem in settings.dart');
-                        return;
-                      }
-                    }
-                    processing = false;
-                  },
-                );
-              },
-              error: genericError,
-              loading: genericLoading)
-        ])
-      ]);
-    }
     return Column(children: settings);
-  }
-}
-
-class SystemSetting extends ConsumerWidget {
-  const SystemSetting({super.key, required this.children});
-  final List<Widget> children;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final mediaQuery = MediaQuery.of(context);
-    return SizedBox(
-      width: mediaQuery.size.width / 1.4,
-      child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: children),
-    );
   }
 }

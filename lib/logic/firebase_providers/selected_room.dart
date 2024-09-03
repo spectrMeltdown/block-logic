@@ -4,16 +4,16 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'generated/selected_room.g.dart';
 
-@Riverpod()
+@riverpod
 Stream<Room?> selectedRoom(
   SelectedRoomRef ref,
   String roomID,
 ) async* {
   final db = FirebaseFirestore.instance;
-  final roomStream = db.collection('rooms').doc(roomID).snapshots();
-  await for (final room in roomStream) {
-    if (room.exists) {
-      yield Room.fromFirestore(room);
+  final stream = db.collection('rooms').doc(roomID).snapshots();
+  await for (final doc in stream) {
+    if (doc.exists) {
+      yield Room.fromFirestore(doc);
     } else {
       yield null;
     }

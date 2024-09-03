@@ -1,6 +1,5 @@
 import 'package:block_logic/logic/enums.dart';
-import 'package:block_logic/logic/firebase_models/admin_account.dart';
-import 'package:block_logic/logic/firebase_models/user_account.dart';
+import 'package:block_logic/logic/firebase_providers/auth.dart';
 import 'package:block_logic/logic/services/account.dart';
 import 'package:block_logic/logic/services/error_handler.dart';
 import 'package:block_logic/logic/services/shared_pref.dart';
@@ -13,34 +12,40 @@ part 'generated/auth.g.dart';
 
 @riverpod
 class AuthService extends _$AuthService {
-  Future<void> addPhoneNumber(String phoneNumber) async {
-    FirebaseAuth auth = FirebaseAuth.instance;
+  /// Returns verificationID
+  // Future<String?> addPhoneNumber(String phoneNumber) async {
+  //   String? verificationID;
 
-    await auth.verifyPhoneNumber(
-      phoneNumber: phoneNumber,
-      verificationCompleted: (PhoneAuthCredential credential) async {
-        // Automatic verification (e.g., on Android)
-        await auth.currentUser?.updatePhoneNumber(credential);
-      },
-      verificationFailed: (FirebaseAuthException e) {
-        debugPrint('Phone number verification failed: ${e.message}');
-      },
-      codeSent: (String verificationId, int? resendToken) {
-        debugPrint('Verification code sent. Verification ID: $verificationId');
-      },
-      codeAutoRetrievalTimeout: (String verificationId) {
-        // Auto-retrieval timeout
-        debugPrint('Code auto-retrieval timeout. Verification ID: $verificationId');
-      },
-    );
-  }
+  //   await state._auth.verifyPhoneNumber(
+  //     phoneNumber: phoneNumber,
+  //     verificationCompleted: (PhoneAuthCredential credential) async {
+  //       // Automatic verification (e.g., on Android)
+  //       await state._auth.currentUser?.updatePhoneNumber(credential);
+  //     },
+  //     verificationFailed: (FirebaseAuthException e) {
+  //       debugPrint('Phone number verification failed: ${e.message}');
+  //     },
+  //     codeSent: (String verificationId, int? resendToken) {
+  //       debugPrint('Verification code sent. Verification ID: $verificationId');
+  //       verificationID = verificationId;
+  //     },
+  //     codeAutoRetrievalTimeout: (String verificationId) {
+  //       // Auto-retrieval timeout
+  //       debugPrint('Code auto-retrieval timeout. Verification ID: $verificationId');
+  //     },
+  //   );
+  //   return verificationID;
+  // }
 
   @override
   AuthServiceState build() {
     final errorHandler = ref.read(errorHandlerProvider.notifier);
     final sharedPref = ref.read(sharedPrefProvider);
     final account = ref.read(accountServiceProvider.notifier);
-    return AuthServiceState(errorHandler: errorHandler, sharedPref: sharedPref, account: account);
+    final user = ref.watch(authChangesProvider);
+    return switch (user) {
+      AsyncValue<User?>() => AuthServiceState(errorHandler: errorHandler, sharedPref: sharedPref, account: account),
+    };
   }
 
   Future<String?> changeEmail(String email) async {
@@ -73,9 +78,9 @@ class AuthService extends _$AuthService {
       /// create account
       await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
 
+      assert(FirebaseAuth.instance.currentUser == null);
       await FirebaseAuth.instance.currentUser!.updateDisplayName(displayName);
 
-      /// save phoneNum temporarily, if app data is cleared and signup was not completed
       await state._account.initFirestoreData(displayName: displayName, phoneNum: phoneNum, type: type);
       return null;
     } catch (e) {
@@ -84,21 +89,23 @@ class AuthService extends _$AuthService {
   }
 
   Future<String?> deleteAccount() async {
+    final String uid = state._auth.currentUser!.uid;
     try {
-      /// delete account in firebase _auth
-      await FirebaseAuth.instance.currentUser!.delete();
-
       final idTokenResult = await FirebaseAuth.instance.currentUser?.getIdTokenResult(true);
 
-      final Object isAdmin = idTokenResult?.claims?['admin'];
+      final Object? isAdmin = idTokenResult?.claims?['admin'];
       debugPrint('Role of account being deleted, is admin? : $isAdmin');
 
       if (isAdmin is bool && isAdmin == true) {
-        await state._account.deleteFirestoreData(state._auth.currentUser!.uid, AccountType.admin);
+        await state._account.deleteFirestoreData(uid, AccountType.admin);
       } else {
         /// do not await, this could take some time (especially if user has lots of data)
-        state._account.deleteFirestoreData(state._auth.currentUser!.uid, AccountType.user);
+        state._account.deleteFirestoreData(uid, AccountType.user);
       }
+
+      /// delete account in firebase _auth
+      await FirebaseAuth.instance.currentUser!.delete();
+
       return null;
     } catch (e) {
       return state._errorHandler.call(e);
@@ -142,7 +149,7 @@ class AuthService extends _$AuthService {
 
   /// logout
   Future<void> logout() async {
-    await state._sharedPref.setBool('loginAlertSent', false);
+    //await state._sharedPref.setBool('loginAlertSent', false);
     await state._auth.signOut();
   }
 
@@ -153,7 +160,7 @@ class AuthService extends _$AuthService {
       await state._auth.currentUser?.reauthenticateWithCredential(userCred);
       return null;
     } catch (e) {
-      return 'failed';
+      return state._errorHandler.call(e);
     }
   }
 
@@ -169,49 +176,49 @@ class AuthService extends _$AuthService {
     }
   }
 
-  Future<String?> verifyOTP({
-    required String verificationId,
-    required AccountType type,
-    String otp = '',
-    String? phoneNum,
-  }) async {
-    try {
-      /// first time verifying
-      if (verificationId.isEmpty && otp.isEmpty) {
-        await state._auth.verifyPhoneNumber(
-          phoneNumber: phoneNum,
-          verificationCompleted: (PhoneAuthCredential credential) async {
-            state._auth.currentUser!.linkWithCredential(credential);
-          },
-          verificationFailed: (FirebaseAuthException e) {
-            debugPrint('Verification failed: ${e.message}');
-          },
-          codeSent: (String verificationId, int? resendToken) {
-            /// update with new verification ID
-            if (type == AccountType.user) {
-              state._account.update(user: UserAccount(verificationID: verificationId));
-            } else {
-              state._account.update(admin: AdminAccount(verificationID: verificationId));
-            }
-          },
-          codeAutoRetrievalTimeout: (String verificationId) {},
-        );
-        return 'sent';
-      }
+  // Future<String?> verifyOTP({
+  //   required String verificationId,
+  //   required AccountType type,
+  //   String otp = '',
+  //   String? phoneNum,
+  // }) async {
+  //   try {
+  //     /// first time verifying
+  //     if (verificationId.isEmpty && otp.isEmpty) {
+  //       await state._auth.verifyPhoneNumber(
+  //         phoneNumber: phoneNum,
+  //         verificationCompleted: (PhoneAuthCredential credential) async {
+  //           state._auth.currentUser!.linkWithCredential(credential);
+  //         },
+  //         verificationFailed: (FirebaseAuthException e) {
+  //           debugPrint('Verification failed: ${e.message}');
+  //         },
+  //         codeSent: (String verificationId, int? resendToken) {
+  //           /// update with new verification ID
+  //           if (type == AccountType.user) {
+  //             state._account.update(user: UserAccount(phoneVerified: phoneVerified));
+  //           } else {
+  //             state._account.update(admin: AdminAccount(phoneVerified: phoneVerified));
+  //           }
+  //         },
+  //         codeAutoRetrievalTimeout: (String verificationId) {},
+  //       );
+  //       return 'sent';
+  //     }
 
-      /// for 2nd ++ attempt
-      else {
-        PhoneAuthCredential credential = PhoneAuthProvider.credential(
-          verificationId: verificationId,
-          smsCode: otp,
-        );
-        await state._auth.currentUser?.updatePhoneNumber(credential);
-        return 'done';
-      }
-    } catch (e) {
-      return state._errorHandler.call(e);
-    }
-  }
+  //     /// for 2nd ++ attempt
+  //     else {
+  //       PhoneAuthCredential credential = PhoneAuthProvider.credential(
+  //         verificationId: verificationId,
+  //         smsCode: otp,
+  //       );
+  //       await state._auth.currentUser?.updatePhoneNumber(credential);
+  //       return null;
+  //     }
+  //   } catch (e) {
+  //     return state._errorHandler.call(e);
+  //   }
+  // }
 }
 
 class AuthServiceState {

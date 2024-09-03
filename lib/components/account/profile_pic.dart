@@ -2,6 +2,7 @@ import 'package:block_logic/components/async/loading.dart';
 import 'package:block_logic/components/circular_image.dart';
 import 'package:block_logic/components/util/provider_default.dart';
 import 'package:block_logic/logic/enums.dart';
+import 'package:block_logic/logic/firebase_models/account_model.dart';
 import 'package:block_logic/logic/firebase_providers/selected_admin.dart';
 import 'package:block_logic/logic/firebase_providers/selected_user.dart';
 import 'package:block_logic/logic/services/audio.dart';
@@ -109,7 +110,7 @@ class _BLProfilePicState extends ConsumerState<BLProfilePic> {
     widget.onPressed?.call();
   }
 
-  Widget profilePic(AsyncValue account) {
+  Widget profilePic(AsyncValue<AccountModel?> account) {
     return account.when(
         data: (account) {
           if (account?.profilePicLink == null || account!.profilePicLink!.isEmpty) {

@@ -4,6 +4,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 part 'generated/persistent_data.g.dart';
 
+class PersistentData {
+  final SharedPreferences _sharedPref;
+  bool _notifications;
+  PersistentData({required SharedPreferences sharedPref, required bool notifications})
+      : _sharedPref = sharedPref,
+        _notifications = notifications;
+}
+
 @Riverpod(dependencies: [])
 class PersistentDataState extends _$PersistentDataState {
   @override
@@ -24,13 +32,4 @@ class PersistentDataState extends _$PersistentDataState {
     /// update in storage
     state._sharedPref.setBool('_notifications', state._notifications);
   }
-}
-
-class PersistentData {
-  final SharedPreferences _sharedPref;
-  bool _notifications;
-  PersistentData(
-      {required SharedPreferences sharedPref, required bool notifications})
-      : _sharedPref = sharedPref,
-        _notifications = notifications;
 }

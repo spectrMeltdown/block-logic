@@ -6,7 +6,7 @@ import 'package:block_logic/components/button/login_signup.dart';
 import 'package:block_logic/components/button/text.dart';
 import 'package:block_logic/components/dialog/reauth.dart';
 import 'package:block_logic/components/panel/panel.dart';
-import 'package:block_logic/components/profile_pic.dart';
+import 'package:block_logic/components/account/profile_pic.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/text/title_small.dart';
 import 'package:block_logic/components/util/provider_default.dart';
@@ -19,6 +19,7 @@ import 'package:block_logic/logic/services/toast.dart';
 import 'package:block_logic/screens/auth/change_display_name.dart';
 import 'package:block_logic/screens/auth/change_email.dart';
 import 'package:block_logic/screens/auth/change_password.dart';
+import 'package:block_logic/screens/auth/change_phone_num.dart';
 import 'package:block_logic/screens/checkpoint.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -45,7 +46,6 @@ class _AccountSettingsWidgetState extends ConsumerState<AccountSettingsWidget> {
   late final AccountService accountService;
   late final Toast toast;
   late final CustomNavigation nav;
-
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(authChangesProvider);
@@ -166,12 +166,17 @@ class _AccountSettingsWidgetState extends ConsumerState<AccountSettingsWidget> {
                                 widget.toggleProcessing.call(true);
                                 String? reauth = await showDialog(
                                   context: context,
+                                  barrierDismissible: false,
                                   builder: (BuildContext context) => const ReauthDialog(),
                                 );
+                                debugPrint('Reauth result = $reauth');
                                 if (reauth == null) {
-                                  auth.deleteAccount();
+                                  await auth.deleteAccount();
+                                  if (!context.mounted) return;
+                                  nav.pushAndRemove(context, const Checkpoint());
+                                } else {
+                                  widget.toggleProcessing.call(false);
                                 }
-                                widget.toggleProcessing.call(false);
                               },
                               child: const Row(
                                 mainAxisSize: MainAxisSize.min,
@@ -238,6 +243,7 @@ class _AccountSettingsWidgetState extends ConsumerState<AccountSettingsWidget> {
     widget.toggleProcessing.call(true);
     String? reauth = await showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (BuildContext context) => const ReauthDialog(),
     );
     if (reauth == null) {
@@ -255,6 +261,7 @@ class _AccountSettingsWidgetState extends ConsumerState<AccountSettingsWidget> {
     widget.toggleProcessing.call(true);
     String? reauth = await showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (BuildContext context) => const ReauthDialog(),
     );
     if (reauth == null) {
@@ -280,8 +287,12 @@ class _AccountSettingsWidgetState extends ConsumerState<AccountSettingsWidget> {
     widget.toggleProcessing.call(false);
   }
 
-  void changePhoneNum(BuildContext context) {
-    // TODO: implement change phone number
+  void changePhoneNum(BuildContext context) async {
+    if (widget.processing) return;
+    widget.toggleProcessing(true);
+    final result = await showDialog(context: context, builder: (context) => const ChangePhoneNum(AccountType.user));
+    if (result == null) {}
+    widget.toggleProcessing(false);
   }
 
   @override

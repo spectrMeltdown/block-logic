@@ -1,20 +1,21 @@
 import 'package:block_logic/components/account/display_name.dart';
+import 'package:block_logic/components/account/profile_pic.dart';
 import 'package:block_logic/components/background.dart';
 import 'package:block_logic/components/button/button.dart';
 import 'package:block_logic/components/dialog/confirm.dart';
 import 'package:block_logic/components/error.dart';
 import 'package:block_logic/components/panel/bordered.dart';
-import 'package:block_logic/components/profile_pic.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/text/title_small.dart';
 import 'package:block_logic/components/util/provider_default.dart';
 import 'package:block_logic/logic/enums.dart';
+import 'package:block_logic/logic/firebase_models/room.dart';
 import 'package:block_logic/logic/firebase_providers/selected_room.dart';
+import 'package:block_logic/logic/services/auth.dart';
 import 'package:block_logic/logic/services/dialog.dart';
 import 'package:block_logic/logic/services/navigation.dart';
 import 'package:block_logic/logic/services/room_manager.dart';
 import 'package:block_logic/screens/game/game_room.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widget_and_text_animator/widget_and_text_animator.dart';
@@ -29,18 +30,19 @@ class WaitingRoom extends ConsumerStatefulWidget {
 
 class _WaitingRoomState extends ConsumerState<WaitingRoom> {
   String? roomID;
+  late final CustomNavigation nav;
+  late final DialogService dialog;
+  late final RoomManager roomManager;
+  late final AuthService auth;
   @override
   Widget build(BuildContext context) {
     final room = ref.watch(SelectedRoomProvider(widget.roomID));
-    final nav = ref.read(customNavigationProvider);
-    final dialog = ref.read(dialogServiceProvider.notifier);
-    final roomManger = ref.read(roomManagerProvider.notifier);
 
     void exit() async {
       final exit = await dialog.show(context, const ConfirmDialog());
       if (context.mounted && exit is bool && exit) {
         nav.pop(context);
-        if (roomID != null) await roomManger.leaveRoom(roomID!);
+        if (roomID != null) await roomManager.leaveRoom(roomID!);
       }
     }
 
@@ -107,16 +109,29 @@ class _WaitingRoomState extends ConsumerState<WaitingRoom> {
                                             ),
                                           );
                                         }),
-                                    if (kDebugMode)
-                                      Positioned(
-                                        bottom: 0,
-                                        left: MediaQuery.of(context).size.width / 4,
-                                        child: BLButton(
-                                            onPressed: () {
-                                              nav.pushReplace(context, GameRoom(room));
-                                            },
-                                            child: const BLText('Start game')),
+                                    Visibility(
+                                      visible: auth.getUID() == room.hostID,
+                                      child: Align(
+                                        alignment: Alignment.bottomCenter,
+                                        child: Padding(
+                                          padding: const EdgeInsets.only(bottom: 8.0),
+                                          child: BLButton(
+                                              type: BtnType.green,
+                                              onPressed: () async {
+                                                /// update room status
+                                                await roomManager.update(
+                                                  Room(id: roomID, status: RoomStatus.inGame),
+                                                );
+                                                if (!context.mounted) return;
+                                                nav.pushReplace(context, GameRoom(room));
+                                              },
+                                              child: const BLText(
+                                                'Start game',
+                                                color: Colors.white,
+                                              )),
+                                        ),
                                       ),
+                                    )
                                   ],
                                 ),
                               )
@@ -140,5 +155,14 @@ class _WaitingRoomState extends ConsumerState<WaitingRoom> {
             ],
           ))),
     );
+  }
+
+  @override
+  void initState() {
+    nav = ref.read(customNavigationProvider);
+    dialog = ref.read(dialogServiceProvider.notifier);
+    roomManager = ref.read(roomManagerProvider.notifier);
+    auth = ref.read(authServiceProvider.notifier);
+    super.initState();
   }
 }

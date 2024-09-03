@@ -6,6 +6,7 @@ import 'package:block_logic/logic/services/assets.dart';
 import 'package:block_logic/logic/services/auth.dart';
 import 'package:block_logic/logic/services/shared_pref.dart';
 import 'package:block_logic/screens/auth/verify_email.dart';
+import 'package:block_logic/screens/auth/verify_phone_num.dart';
 import 'package:block_logic/screens/main_menu.dart';
 import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/material.dart';
@@ -46,10 +47,9 @@ class _CheckpointState extends ConsumerState<Checkpoint> {
                   accountService.initFirestoreData();
                 }
 
-                // TODO: disabled because unclear what SMS is for
-                // if (userAccount?.verificationID != null) {
-                //   return const VerifyPhoneNum();
-                // }
+                if (userAccount?.phoneVerified != null || userAccount?.phoneVerified == false) {
+                  return const VerifyPhoneNum();
+                }
                 return const MainMenuScreen();
               },
               error: genericError,

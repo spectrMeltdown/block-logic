@@ -1,13 +1,16 @@
 import 'package:block_logic/logic/enums.dart';
-import 'package:block_logic/logic/firebase_models/challenge.dart';
 import 'package:block_logic/logic/firebase_models/leaderboard.dart';
 import 'package:block_logic/logic/firebase_models/room.dart';
+import 'package:block_logic/logic/firebase_models/score.dart';
 import 'package:block_logic/logic/game/block_data.dart';
 import 'package:block_logic/logic/game/py_class.dart';
 import 'package:block_logic/logic/game/py_function.dart';
 import 'package:block_logic/logic/game/py_variable.dart';
 import 'package:block_logic/logic/services/error_handler.dart';
+import 'package:block_logic/logic/services/leaderboard_manager.dart';
+import 'package:block_logic/logic/services/score_manager.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -39,48 +42,21 @@ class GameManager extends _$GameManager {
     return [];
   }
 
-  void assignChallenges(List<Challenge> challenges) {
-    if (challenges.isEmpty) throw ArgumentError('Got a blank challenge list!');
-    state._challenges = challenges;
-    state.currentChallenge = challenges.first;
-  }
-
-  void assignRoom(Room room) => state._room = room;
-
   @override
   GameState build() {
     final errorHandler = ref.read(errorHandlerProvider.notifier);
+    final leaderboardManager = ref.read(leaderboardManagerProvider.notifier);
+    final scoreManager = ref.read(scoreManagerProvider.notifier);
     return GameState(
+      scoreManager: scoreManager,
       blockDataTree: [],
       variables: [],
       classes: [],
       functions: [],
+      leaderboardManager: leaderboardManager,
       errorHandler: errorHandler,
     );
   }
-
-  Future<bool> createLeaderboard() async {
-    if (state._room == null) {
-      debugPrint('Room was null, cannot create leaderboard');
-      return false;
-    }
-    try {
-      final id = '${state._room!.id}_${DateTime.now()}';
-      final leaderboard = Leaderboard(
-          id: id,
-          totalScore: state._room?.challengeIDs!.length,
-          roomID: state._room!.id,
-          status: LeaderboardStatus.pending,
-          date: DateTime.now());
-      state._db.collection('leaderboards').doc(id).set(leaderboard.toFirestore(), SetOptions(merge: true));
-      return true;
-    } catch (e) {
-      state._errorHandler.call(e);
-      return false;
-    }
-  }
-
-  int getChallengesLength() => state._challenges!.length;
 
   List<int>? getPath(String targetID) {
     //final List<int> path = [];
@@ -94,28 +70,63 @@ class GameManager extends _$GameManager {
 
   bool getTimer() => state.pauseTimer;
 
+  Future<String?> init(Room room) async {
+    // if (state._room != null) {
+    //   throw (ArgumentError('A room is already assigned.'));
+    // }
+
+    /// create leaderboard (host), add self to list of players (both host & player)
+    state._leaderboardID = '${room.id}-${DateTime.now()}';
+    if (state.auth.uid == room.hostID) {
+      await state.leaderboardManager.create(
+        Leaderboard(
+          id: state._leaderboardID,
+          roomName: room.name,
+          totalScore: room.challengeIDs!.length,
+          roomID: room.id,
+          status: LeaderboardStatus.pending,
+          date: DateTime.now(),
+        ),
+      );
+    }
+    await state.leaderboardManager.updatePlayers(state._leaderboardID!, {
+      'players': FieldValue.arrayUnion(
+        [state.auth.uid],
+      )
+    });
+
+    /// create score of self
+    // state._score = Score(accountID: state.auth.uid, playerScore: 0, status: ScoreStatus.pending);
+    await state.scoreManager.create(
+      state._leaderboardID!,
+      Score(
+        accountID: state.auth.uid,
+        playerScore: 0,
+        timeElapsed: 0,
+        status: ScoreStatus.pending,
+      ),
+    );
+    return null;
+  }
+
   void isDropCancelled(bool newState) {
     state.isDropCancelled = newState;
   }
 
-  Future<bool> leaveGame() async {
-    if (state._room == null) {
-      debugPrint('Room was null, havent left the game');
-      return false;
-    }
+  Future<String?> leaveGame(bool isComplete) async {
+    // update score & status
     try {
-      state._db.collection('leaderboards').doc(state._leaderboard?.id);
-      return true;
+      final score = Score(
+        playerScore: state._score ?? 0,
+        timeElapsed: state._timeElapsed ?? 0,
+        status: isComplete ? ScoreStatus.complete : ScoreStatus.incomplete,
+      );
+      await state.scoreManager.update(state._leaderboardID!, score);
+      return null;
     } catch (e) {
       state._errorHandler.call(e);
-      return false;
     }
-  }
-
-  void nextChallenge() {
-    assert(state._challengeIndex != null && state._challenges != null);
-    state._challengeIndex = state._challengeIndex! + 1;
-    state.currentChallenge = state._challenges![state._challengeIndex!];
+    return null;
   }
 
   GameBlockData? obtainPassedBlockData() {
@@ -183,33 +194,42 @@ class GameManager extends _$GameManager {
   void resumeTimer() {
     state.pauseTimer = false;
   }
+
+  void updateTimeElapsed(int seconds) {
+    state._timeElapsed = seconds;
+  }
 }
 
 class GameState {
   bool isDropCancelled;
-  final _db = FirebaseFirestore.instance;
+  // final _db = FirebaseFirestore.instance;
   List<PyVariable> variables = [];
   List<PyClass> classes = [];
   List<PyFunction> functions = [];
   List<GameBlockData> blockDataTree = [];
   bool pauseTimer;
-  Challenge? currentChallenge;
-  int? _challengeIndex;
+  int? _score;
   GameBlockData? _blockData;
   ScrollController? verticalScrollController;
   ScrollController? horizontalScrollController;
   final ErrorHandler _errorHandler;
-  Room? _room;
-  List<Challenge>? _challenges;
-  Leaderboard? _leaderboard;
+  // Room? _room;
+  //Leaderboard? _leaderboard;
+  final auth = FirebaseAuth.instance.currentUser!;
+  final LeaderboardManager leaderboardManager;
+  final ScoreManager scoreManager;
+  String? _leaderboardID;
+  int? _timeElapsed;
+  //Score? _score;
   GameState({
     this.isDropCancelled = false,
-    this.currentChallenge,
+    required this.scoreManager,
     this.pauseTimer = false,
     required ErrorHandler errorHandler,
     required this.blockDataTree,
     required this.variables,
     required this.classes,
+    required this.leaderboardManager,
     required this.functions,
     this.verticalScrollController,
     this.horizontalScrollController,

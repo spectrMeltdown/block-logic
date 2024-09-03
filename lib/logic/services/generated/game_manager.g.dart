@@ -6,7 +6,7 @@ part of '../game_manager.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$gameManagerHash() => r'b4caee464c2ce0bd3e6dc500c2bbf0fabf709a91';
+String _$gameManagerHash() => r'5e1b0aab32e7192642cdd0298bdaa50cf2ca3fa4';
 
 /// See also [GameManager].
 @ProviderFor(GameManager)

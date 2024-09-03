@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:animate_do/animate_do.dart';
 import 'package:block_logic/components/background.dart';
 import 'package:block_logic/components/button/button.dart';
-import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/util/spaced_col.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/services/assets.dart';
@@ -13,14 +12,16 @@ import 'package:block_logic/logic/services/toast.dart';
 import 'package:block_logic/route_observer.dart';
 import 'package:block_logic/screens/auth/login.dart';
 import 'package:block_logic/screens/creator_mode/creator_mode.dart';
+import 'package:block_logic/screens/feedback/feedback_dialog.dart';
+import 'package:block_logic/screens/leaderboard/leaderboards_page.dart';
 import 'package:block_logic/screens/rooms/rooms.dart';
 import 'package:block_logic/screens/settings/settings_page.dart';
-import 'package:block_logic/screens/testing.dart';
 import 'package:block_logic/screens/tutorials/tutorials.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 List<Widget> loggedInMenu(BuildContext context, CustomNavigation nav) {
   return [
@@ -29,6 +30,13 @@ List<Widget> loggedInMenu(BuildContext context, CustomNavigation nav) {
       type: BtnType.green,
       child: const Text(
         'Start',
+        style: TextStyle(fontSize: 16),
+      ),
+    ),
+    BLButton(
+      onPressed: () => nav.push(context, const LeaderboardsPage()),
+      child: const Text(
+        'Leaderboards',
         style: TextStyle(fontSize: 16),
       ),
     ),
@@ -74,7 +82,7 @@ List<Widget> loggedInMenu(BuildContext context, CustomNavigation nav) {
     ),
     const SizedBox(
       height: 80,
-    )
+    ),
   ];
 }
 
@@ -150,60 +158,64 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen>
     final nav = ref.read(customNavigationProvider);
     return Scaffold(
       resizeToAvoidBottomInset: false,
+      floatingActionButton: Container(
+        padding: const EdgeInsets.only(right: 10, bottom: 10),
+        child: FloatingActionButton(
+            onPressed: () async {
+              await showDialog(context: context, builder: (context) => const FeedbackDialog());
+            },
+            child: const Icon(FontAwesomeIcons.message)),
+      ),
       body: Background(
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Column(
-                children: [
-                  SlideInLeft(
-                    duration: const Duration(milliseconds: 1000),
-                    child: AnimatedBuilder(
-                        animation: _titleAnimationController,
-                        builder: (context, child) {
-                          return Text('BLOCK',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontFamily: 'MajorMonoDisplay',
-                                fontSize: 60,
-                                height: 1.05,
-                                shadows: <Shadow>[
-                                  Shadow(blurRadius: _blurRadiusAnimation.value, color: Colors.white),
-                                ],
-                              ));
-                        }),
-                  ),
-                  SlideInRight(
-                    duration: const Duration(milliseconds: 1300),
-                    child: AnimatedBuilder(
-                        animation: _titleAnimationController,
-                        builder: (context, child) {
-                          return Text('LOGIC',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontFamily: 'MajorMonoDisplay',
-                                fontSize: 60,
-                                height: 1.05,
-                                shadows: <Shadow>[
-                                  Shadow(blurRadius: _blurRadiusAnimation.value, color: Colors.white),
-                                ],
-                              ));
-                        }),
-                  )
-                ],
-              ),
-              SpacedColumn(spacing: 10, children: [
-                ...auth.isLoggedIn() ? loggedInMenu(context, nav) : loggedOutMenu(context, nav),
-                if (kDebugMode)
-                  BLButton(
-                      onPressed: () {
-                        nav.push(context, const TestingPage());
-                      },
-                      child: const BLText('Dev testing'))
-              ])
-            ],
+        child: SafeArea(
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Column(
+                  children: [
+                    SlideInLeft(
+                      duration: const Duration(milliseconds: 1000),
+                      child: AnimatedBuilder(
+                          animation: _titleAnimationController,
+                          builder: (context, child) {
+                            return Text('BLOCK',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontFamily: 'MajorMonoDisplay',
+                                  fontSize: 60,
+                                  height: 1.05,
+                                  shadows: <Shadow>[
+                                    Shadow(blurRadius: _blurRadiusAnimation.value, color: Colors.white),
+                                  ],
+                                ));
+                          }),
+                    ),
+                    SlideInRight(
+                      duration: const Duration(milliseconds: 1300),
+                      child: AnimatedBuilder(
+                          animation: _titleAnimationController,
+                          builder: (context, child) {
+                            return Text('LOGIC',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontFamily: 'MajorMonoDisplay',
+                                  fontSize: 60,
+                                  height: 1.05,
+                                  shadows: <Shadow>[
+                                    Shadow(blurRadius: _blurRadiusAnimation.value, color: Colors.white),
+                                  ],
+                                ));
+                          }),
+                    )
+                  ],
+                ),
+                SpacedColumn(spacing: 10, children: [
+                  ...auth.isLoggedIn() ? loggedInMenu(context, nav) : loggedOutMenu(context, nav),
+                ]),
+              ],
+            ),
           ),
         ),
       ),

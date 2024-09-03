@@ -6,14 +6,14 @@ class Score {
   final String? accountID;
   final int? playerScore; // refers to how many challenges they got correct
   final int? timeElapsed;
-  final int? rank;
+  // final int? rank;
   final ScoreStatus? status;
   Score({
     this.id,
     this.accountID,
     this.playerScore,
     this.timeElapsed,
-    this.rank,
+    // this.rank,
     this.status,
   });
 
@@ -44,7 +44,7 @@ class Score {
       accountID: data['accountID'],
       playerScore: data['playerScore'],
       timeElapsed: data['timeElapsed'],
-      rank: data['rank'],
+      // rank: data['rank'],
       status: status,
     );
   }
@@ -56,9 +56,9 @@ class Score {
     if (playerScore != null) {
       toFirestoreMap.addAll({'playerScore': playerScore});
     }
-    if (rank != null) {
-      toFirestoreMap.addAll({'rank': rank});
-    }
+    // if (rank != null) {
+    //   toFirestoreMap.addAll({'rank': rank});
+    // }
     if (status != null) {
       toFirestoreMap.addAll({'status': status!.name});
     }

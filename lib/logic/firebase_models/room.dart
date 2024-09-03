@@ -41,17 +41,18 @@ class Room {
       status = RoomStatus.locked;
     }
     return Room(
-        id: doc.id,
-        players: data['players'] == null ? null : (data['players'] as List).map((item) => item as String).toList(),
-        status: status,
-        // icon: data['icon'],
-        hostID: data['hostID'],
-        challengeIDs:
-            data['challengeIDs'] == null ? null : (data['challengeIDs'] as List).map((item) => item as String).toList(),
-        name: data['name'] ?? '',
-        password: data['password'],
-        maxPlayers: data['maxPlayers'],
-        adminLocked: data['adminLocked']);
+      id: doc.id,
+      players: data['players'] == null ? null : (data['players'] as List).map((item) => item as String).toList(),
+      status: status,
+      // icon: data['icon'],
+      hostID: data['hostID'],
+      challengeIDs:
+          data['challengeIDs'] == null ? null : (data['challengeIDs'] as List).map((item) => item as String).toList(),
+      name: data['name'] ?? '',
+      password: data['password'],
+      maxPlayers: data['maxPlayers'],
+      adminLocked: data['adminLocked'],
+    );
   }
 
   Map<String, dynamic> toFirestore() {
