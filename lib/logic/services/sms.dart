@@ -10,8 +10,8 @@ class SmsService extends _$SmsService {
   SmsServiceState build() {
     final errorHandler = ref.read(errorHandlerProvider.notifier);
     final instance = TwilioFlutter(
-        accountSid: 'ACe956e3411962c38899977dbfd5230510',
-        authToken: 'b2308671e9c586b1665f584596c89210',
+        accountSid: 'AC0fbc095eb856e8aee72feb40170bbda8',
+        authToken: '66950e6996e5019da79aa6ab459f615b',
         twilioNumber: '');
     return SmsServiceState(errorHandler: errorHandler, instance: instance);
   }
