@@ -32,7 +32,7 @@ class VerifyPhoneNum extends ConsumerStatefulWidget {
 }
 
 class _VerifyPhoneNumState extends ConsumerState<VerifyPhoneNum> {
-  late final SmsService sms;
+  // late final SmsService sms;
   late final OtpService otpService;
   late final Toast toast;
   late final TextValidator validator;
@@ -153,7 +153,7 @@ class _VerifyPhoneNumState extends ConsumerState<VerifyPhoneNum> {
     nav = ref.read(customNavigationProvider);
     accountService = ref.read(accountServiceProvider.notifier);
     toast = ref.read(toastProvider.notifier);
-    sms = ref.read(smsServiceProvider.notifier);
+    // sms = ref.read(smsServiceProvider.notifier);
     otpService = ref.read(otpServiceProvider.notifier);
     validator = ref.read(textValidatorProvider.notifier);
     sendOTP();
@@ -164,12 +164,12 @@ class _VerifyPhoneNumState extends ConsumerState<VerifyPhoneNum> {
     if (processing) return;
     processing = true;
     otp = otpService.getOTP().toString();
-    final result = await sms.send(phoneNum, otp!);
-    if (result != null) {
-      toast.showToast(result, type: NotifType.error);
-    } else {
-      toast.showToast('OTP sent!', type: NotifType.success);
-    }
+    // final result = await sms.send(phoneNum, otp!);
+    // if (result != null) {
+    //   toast.showToast(result, type: NotifType.error);
+    // } else {
+    //   toast.showToast('OTP sent!', type: NotifType.success);
+    // }
     processing = false;
   }
 
