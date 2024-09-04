@@ -6,7 +6,7 @@ part of '../challenge_manager.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$challengeManagerHash() => r'b3279cff3f2ef789f8d041d7a7b6e605d621fb05';
+String _$challengeManagerHash() => r'5a8f14a45bd345ae875f6ce28e66c73324f6eb0c';
 
 /// See also [ChallengeManager].
 @ProviderFor(ChallengeManager)

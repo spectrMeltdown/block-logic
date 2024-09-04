@@ -6,7 +6,7 @@ part of '../email.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$emailServiceHash() => r'a2e2cc919c12253a56217e4997f8d0eaed2dfd1f';
+String _$emailServiceHash() => r'c73d6cc146c356bdef57a7d034dd84e40fd74a23';
 
 /// See also [EmailService].
 @ProviderFor(EmailService)

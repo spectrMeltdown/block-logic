@@ -21,7 +21,7 @@ class RoomManager extends _$RoomManager {
       await state._db.doc().set(room.toFirestore());
       return null;
     } catch (e) {
-      return state._errorHandler.call(e);
+      return state._errorHandler.call(e, this);
     }
   }
 
@@ -32,7 +32,7 @@ class RoomManager extends _$RoomManager {
       });
       return true;
     } catch (e) {
-      state._errorHandler.call(e);
+      state._errorHandler.call(e, this);
       return false;
     }
   }
@@ -44,7 +44,7 @@ class RoomManager extends _$RoomManager {
       });
       return true;
     } catch (e) {
-      state._errorHandler.call(e);
+      state._errorHandler.call(e, this);
       return false;
     }
   }
@@ -57,7 +57,7 @@ class RoomManager extends _$RoomManager {
       await state._db.doc(room.id!).update(room.toFirestore());
       return null;
     } catch (e) {
-      return state._errorHandler.call(e);
+      return state._errorHandler.call(e, this);
     }
   }
 

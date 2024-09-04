@@ -196,7 +196,7 @@ class _SignupState extends ConsumerState<Signup> with RouteAware {
                                                 phoneNum: phoneNumController.text.trim(),
                                                 displayName: displayNameController.text.trim());
                                             if (error == null) {
-                                              await reportsManager.add(ReportType.users);
+                                              await reportsManager.add(ReportType.users, 1);
                                               if (!context.mounted) return;
                                               nav.pushReplace(context, const Checkpoint());
                                             } else {

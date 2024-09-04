@@ -6,7 +6,7 @@ part of '../feedback_manager.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$feedbackManagerHash() => r'f1a0d97457d49bf533ec20bf6d2d151510f59012';
+String _$feedbackManagerHash() => r'a9a7c4f08809ccafcbd8506b8929f9cf288916d7';
 
 /// See also [FeedbackManager].
 @ProviderFor(FeedbackManager)

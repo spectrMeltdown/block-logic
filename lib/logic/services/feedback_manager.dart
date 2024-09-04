@@ -18,7 +18,7 @@ class FeedbackManager extends _$FeedbackManager {
       await state._db.doc(id).delete();
       return null;
     } catch (e) {
-      return state._errorHandler.call(e);
+      return state._errorHandler.call(e, this);
     }
   }
 
@@ -27,7 +27,7 @@ class FeedbackManager extends _$FeedbackManager {
       await state._db.doc().set(feedback.toFirestore());
       return null;
     } catch (e) {
-      return state._errorHandler.call(e);
+      return state._errorHandler.call(e, this);
     }
   }
 }

@@ -15,13 +15,9 @@ class InGameRoomManager extends _$InGameRoomManager {
 
   Future<void> getRoom(String roomID) async {
     try {
-      state._room = await state._db
-          .collection('rooms')
-          .doc(roomID)
-          .get()
-          .then((room) => Room.fromFirestore(room));
+      state._room = await state._db.collection('rooms').doc(roomID).get().then((room) => Room.fromFirestore(room));
     } catch (e) {
-      state._errorHandler.call(e);
+      state._errorHandler.call(e, 'game room manager');
     }
   }
 }

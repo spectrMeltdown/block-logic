@@ -6,7 +6,7 @@ import 'package:block_logic/components/textbox.dart';
 import 'package:block_logic/components/util/blank_widget.dart';
 import 'package:block_logic/components/util/provider_default.dart';
 import 'package:block_logic/logic/enums.dart';
-import 'package:block_logic/logic/firebase_models/challenge.dart';
+import 'package:block_logic/logic/firebase_models/room.dart';
 import 'package:block_logic/logic/firebase_providers/selected_room_names.dart';
 import 'package:block_logic/logic/firebase_providers/selected_rooms.dart';
 import 'package:block_logic/logic/services/creator_mode.dart';
@@ -14,6 +14,7 @@ import 'package:block_logic/logic/services/navigation.dart';
 import 'package:block_logic/logic/services/validator_text.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:widget_and_text_animator/widget_and_text_animator.dart';
@@ -27,11 +28,10 @@ class AddRoomBottomSheet extends ConsumerStatefulWidget {
 
 class _AddRoomBottomSheetState extends ConsumerState<AddRoomBottomSheet> {
   late final roomNameController = TextEditingController();
-  late final roomPassController = TextEditingController();
   late final maxPlayersController = TextEditingController();
   late final passwordController = TextEditingController();
-  late final List<Challenge> challenges = [];
-  late bool includesPassword;
+  final List<String> challengeIDs = [];
+  bool includesPassword = false;
   bool processing = false;
   Widget errorMsg = const BlankWidget();
   final newRoomFormKey = GlobalKey<FormState>();
@@ -84,6 +84,8 @@ class _AddRoomBottomSheetState extends ConsumerState<AddRoomBottomSheet> {
                               Icons.numbers,
                             ),
                             labelText: '10',
+                            maxLength: 2,
+                            inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
                             keyboardType: TextInputType.number,
                             controller: maxPlayersController,
                             validator: (maxPlayers) => textValidator.validateMaxPlayers(maxPlayers),
@@ -115,7 +117,7 @@ class _AddRoomBottomSheetState extends ConsumerState<AddRoomBottomSheet> {
                                 prefixIcon: const Icon(
                                   FontAwesomeIcons.lock,
                                 ),
-                                labelText: '*****',
+                                labelText: 'Your secure password ...',
                                 controller: passwordController,
                                 isObscure: true,
                                 validator: (pass) => textValidator.validateRoomPass(pass),
@@ -144,11 +146,16 @@ class _AddRoomBottomSheetState extends ConsumerState<AddRoomBottomSheet> {
                                   });
                                   return;
                                 }
-                                final success = await creatorMode.addRoom(
-                                    roomName: roomNameController.text.trim(),
-                                    maxPlayers: int.tryParse(maxPlayersController.text.trim()) ?? -1,
-                                    challenges: challenges,
-                                    password: passwordController.text.isEmpty ? passwordController.text.trim() : null);
+                                final success = await creatorMode.addRoom(Room(
+                                  adminLocked: false,
+                                  hostID: FirebaseAuth.instance.currentUser!.uid,
+                                  players: [],
+                                  status: RoomStatus.available,
+                                  name: roomNameController.text.trim(),
+                                  maxPlayers: int.parse(maxPlayersController.text.trim()),
+                                  challengeIDs: challengeIDs,
+                                  password: passwordController.text.isNotEmpty ? passwordController.text.trim() : null,
+                                ));
                                 if (success == null) {
                                   if (!context.mounted) return;
                                   nav.pop(context);

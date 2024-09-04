@@ -22,7 +22,7 @@ class LeaderboardManager extends _$LeaderboardManager {
       await state._db.doc().set(leaderboard.toFirestore());
       return null;
     } catch (e) {
-      return state._errorHandler.call(e);
+      return state._errorHandler.call(e, this);
     }
   }
 
@@ -45,7 +45,7 @@ class LeaderboardManager extends _$LeaderboardManager {
       await state._db.doc(leaderboard.id).set(leaderboard.toFirestore(), SetOptions(merge: true));
       return null;
     } catch (e) {
-      return state._errorHandler.call(e);
+      return state._errorHandler.call(e, this);
     }
   }
 
@@ -54,7 +54,7 @@ class LeaderboardManager extends _$LeaderboardManager {
       await state._db.doc(leaderboardID).set(players, SetOptions(merge: true));
       return null;
     } catch (e) {
-      return state._errorHandler.call(e);
+      return state._errorHandler.call(e, this);
     }
   }
 }

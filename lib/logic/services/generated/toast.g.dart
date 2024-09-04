@@ -6,7 +6,7 @@ part of '../toast.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$toastHash() => r'2dcd29cc63969b6c7a4f455dd0178b8793cf2268';
+String _$toastHash() => r'226791f24c595c468749ea876441a2d0e9d627b7';
 
 /// See also [Toast].
 @ProviderFor(Toast)

@@ -124,7 +124,7 @@ class GameManager extends _$GameManager {
       await state.scoreManager.update(state._leaderboardID!, score);
       return null;
     } catch (e) {
-      state._errorHandler.call(e);
+      state._errorHandler.call(e, this);
     }
     return null;
   }

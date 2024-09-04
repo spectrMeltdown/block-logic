@@ -1,6 +1,5 @@
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/services/toast.dart';
-import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'generated/internet_connection.g.dart';
@@ -16,14 +15,14 @@ class InternetStatus extends _$InternetStatus {
   }
 
   void _initialize() {
-    InternetConnectionChecker().onStatusChange.listen((status) {
-      final isConnected = status == InternetConnectionStatus.connected;
-      if (!_initialCheck) {
-        _showToast(isConnected);
-      } else {
-        _initialCheck = false;
-      }
-    });
+    // InternetConnectionChecker().onStatusChange.listen((status) {
+    //   final isConnected = status == InternetConnectionStatus.connected;
+    //   if (!_initialCheck) {
+    //     _showToast(isConnected);
+    //   } else {
+    //     _initialCheck = false;
+    //   }
+    // });
   }
 
   void _showToast(bool isConnected) {

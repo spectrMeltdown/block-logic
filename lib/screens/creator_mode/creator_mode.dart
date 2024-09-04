@@ -96,7 +96,7 @@ class _CreatorModeState extends ConsumerState<CreatorMode> {
                 if (rooms.isEmpty) {
                   return const Center(
                     child: BLText(
-                      'There are no available rooms\nat the moment.',
+                      'You have no rooms yet.',
                       alignCenter: true,
                     ),
                   );
@@ -109,7 +109,10 @@ class _CreatorModeState extends ConsumerState<CreatorMode> {
                     shrinkWrap: true,
                     itemCount: roomsLength,
                     itemBuilder: (context, i) {
-                      return CreatorRoomItem(room: rooms[i], hostID: rooms[i].hostID ?? '');
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 5),
+                        child: CreatorRoomItem(room: rooms[i], hostID: rooms[i].hostID ?? ''),
+                      );
                     });
               },
               error: genericError,

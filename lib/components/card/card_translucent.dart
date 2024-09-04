@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class BLTranslucentCard extends ConsumerStatefulWidget {
   final VoidCallback onPressed;
+  final VoidCallback? onLongPress;
   final String? icon;
   final String title;
   final String subTitle;
@@ -20,6 +21,7 @@ class BLTranslucentCard extends ConsumerStatefulWidget {
   const BLTranslucentCard({
     super.key,
     required this.onPressed,
+    this.onLongPress,
     this.height,
     this.padding,
     this.color,
@@ -66,6 +68,7 @@ class _BLCardState extends ConsumerState<BLTranslucentCard> {
         },
         onTapUp: _onTapUp,
         onTapCancel: _onTapCancel,
+        onLongPress: widget.onLongPress,
 
         /// when user touches card, but releases it outside the card
         child:

@@ -32,9 +32,14 @@ class LoginAlert extends _$LoginAlert {
     late Position location;
 
     try {
-      location = await _determinePosition();
+      final testLocation = await _determinePosition();
+      if (testLocation == null) {
+        return 'Enable location for login alerts.';
+      } else {
+        location = testLocation;
+      }
     } catch (e) {
-      return state._errorHandler.call(e);
+      return state._errorHandler.call(e, this);
     }
     List<Placemark> placemark = await placemarkFromCoordinates(location.latitude, location.longitude);
     Placemark place = placemark[0];
@@ -68,20 +73,20 @@ class LoginAlert extends _$LoginAlert {
     }
   }
 
-  Future<Position> _determinePosition() async {
+  Future<Position?> _determinePosition() async {
     bool serviceEnabled;
     LocationPermission permission;
 
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      return Future.error('Location services are disabled.');
+      return null;
     }
 
     permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
-        return Future.error('Location permissions are denied');
+        return null;
       }
     }
 

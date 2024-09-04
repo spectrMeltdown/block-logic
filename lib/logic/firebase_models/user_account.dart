@@ -8,7 +8,7 @@ class UserAccount extends AccountModel {
     super.displayName,
     super.profilePicLink,
     super.createdAt,
-    super.phoneVerified,
+    super.verificationID,
   });
 
   factory UserAccount.fromFirestore(DocumentSnapshot doc) {
@@ -23,7 +23,7 @@ class UserAccount extends AccountModel {
         displayName: data['displayName'] ?? '',
         profilePicLink: data['profilePicLink'] ?? '',
         phoneNum: data['phoneNum'] ?? '',
-        phoneVerified: data['phoneVerified']);
+        verificationID: data['verificationID']);
   }
   Map<String, dynamic> toFirestore() {
     Map<String, dynamic> toFirestoreMap = {};
@@ -36,8 +36,8 @@ class UserAccount extends AccountModel {
     if (phoneNum != null) {
       toFirestoreMap.addAll({'phoneNum': phoneNum});
     }
-    if (phoneVerified != null) {
-      toFirestoreMap.addAll({'phoneVerified': phoneVerified});
+    if (verificationID != null) {
+      toFirestoreMap.addAll({'verificationID': verificationID});
     }
     return toFirestoreMap;
   }

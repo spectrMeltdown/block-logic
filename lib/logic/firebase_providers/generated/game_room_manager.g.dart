@@ -6,7 +6,7 @@ part of '../game_room_manager.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$inGameRoomManagerHash() => r'49c432d9f6ad8d833cdc7970038669167936c7d8';
+String _$inGameRoomManagerHash() => r'c641b40451067836cbe53e8de5001cc137091a7a';
 
 /// See also [InGameRoomManager].
 @ProviderFor(InGameRoomManager)

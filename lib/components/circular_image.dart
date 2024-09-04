@@ -37,6 +37,7 @@ class BLCircular extends StatelessWidget {
     }
     return CircleAvatar(
       backgroundImage: url != null ? imageFromURL() : buildImage(),
+      // child: url != null ? imageFromURL() : buildImage(),
     );
   }
 

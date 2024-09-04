@@ -38,7 +38,7 @@ class AdminRoomManager extends _$AdminRoomManager {
       }
       return null;
     } catch (e) {
-      return _errorHandler?.call(e);
+      return _errorHandler?.call(e, this);
     }
   }
 
@@ -56,7 +56,7 @@ class AdminRoomManager extends _$AdminRoomManager {
       }
       return null;
     } catch (e) {
-      return _errorHandler?.call(e);
+      return _errorHandler?.call(e, this);
     }
   }
 }

@@ -21,8 +21,13 @@ class TextValidator extends _$TextValidator {
 
   String? validateMaxPlayers(String? maxPlayers) {
     if (maxPlayers == null || maxPlayers.isEmpty) return 'Cannot be empty';
-    if (state._maxPlayers.hasMatch(maxPlayers)) return null;
-    return 'Not a valid number';
+    if (int.parse(maxPlayers) <= 0) {
+      return 'Have a higher number.';
+    }
+    if (int.parse(maxPlayers) > 20) {
+      return '20 is the highest.';
+    }
+    return null;
   }
 
   String? validateOtp(String? value) {
@@ -241,5 +246,5 @@ class TextValidatorState {
 
   final _nameRegex = RegExp(r'^([a-zA-Z\.]+([.-]?[a-zA-Z]+)?(\s|$)){1,10}\.?$'); // no special symbols
   final _phoneNumRegex = RegExp(r'^[0-9]+$');
-  final _maxPlayers = RegExp(r'^(?:[1-9]|1[0-9]|20)$'); // max 20
+  // final _maxPlayers = RegExp(r'^(?:[1-9]|1[0-9]|20)$'); // max 20
 }

@@ -13,7 +13,11 @@ class Toast extends _$Toast {
   @override
   void build() {}
 
-  void dismissAllToast() => toastification.dismissAll(delayForAnimation: false);
+  void dismissAllToast() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      toastification.dismissAll(delayForAnimation: false);
+    });
+  }
 
   void showToast(
     String title, {

@@ -20,7 +20,7 @@ class ChallengeManager extends _$ChallengeManager {
       await _db!.collection('challenges').doc(challenge.id).set(challenge.toFirestore());
       return null;
     } catch (e) {
-      return _errorHandler?.call(e);
+      return _errorHandler?.call(e, this);
     }
   }
 
@@ -29,7 +29,7 @@ class ChallengeManager extends _$ChallengeManager {
       await _db!.collection('challenges').doc(challenge.id).delete();
       return null;
     } catch (e) {
-      return _errorHandler?.call(e);
+      return _errorHandler?.call(e, 'challenge manager');
     }
   }
 
@@ -38,7 +38,7 @@ class ChallengeManager extends _$ChallengeManager {
       await _db!.collection('challenges').doc(challenge.id).update(challenge.toFirestore());
       return null;
     } catch (e) {
-      return _errorHandler?.call(e);
+      return _errorHandler?.call(e, this);
     }
   }
 }

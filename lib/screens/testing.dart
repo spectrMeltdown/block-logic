@@ -80,7 +80,7 @@ class TestingPage extends ConsumerWidget {
                     toast.showToast('Creating success', type: NotifType.success);
                   } catch (e) {
                     final errorHandler = ErrorHandler();
-                    errorHandler.call(e);
+                    errorHandler.call(e, this);
                     toast.showToast('Creating failed', type: NotifType.error);
                   }
                 },
@@ -96,7 +96,7 @@ class TestingPage extends ConsumerWidget {
                     toast.showToast('Deleting success', type: NotifType.success);
                   } catch (e) {
                     final errorHandler = ErrorHandler();
-                    errorHandler.call(e);
+                    errorHandler.call(e, this);
                     toast.showToast('Deleting failed', type: NotifType.error);
                   }
                 },

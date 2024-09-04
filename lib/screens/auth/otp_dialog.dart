@@ -25,6 +25,27 @@ class _OTPDialogState extends ConsumerState<OTPDialog> {
   final formKey = GlobalKey<FormState>();
   bool processing = false;
 
+  @override
+  Widget build(BuildContext context) {
+    return BLDialog(
+        child: Form(
+      key: formKey,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const BLText('Please enter the OTP we sent:'),
+          BLTextBox(
+            controller: otpController,
+            onFieldSubmitted: (p0) => submit(),
+            validator: (value) => validator.validateOtp(value),
+            keyboardType: TextInputType.number,
+          ),
+          BLTextButton(onPressed: () {}, child: const BLText('Resend')),
+        ],
+      ),
+    ));
+  }
+
   void submit() async {
     if (processing) return;
     setState(() {
@@ -34,26 +55,5 @@ class _OTPDialogState extends ConsumerState<OTPDialog> {
     setState(() {
       processing = false;
     });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return BLDialog(
-        child: Form(
-      key: formKey,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          BLText('Please enter the OTP we sent:'),
-          BLTextBox(
-            controller: otpController,
-            onFieldSubmitted: (p0) => submit(),
-            validator: (value) => validator.validateOtp(value),
-            keyboardType: TextInputType.number,
-          ),
-          BLTextButton(onPressed: () {}, child: BLText('Resend')),
-        ],
-      ),
-    ));
   }
 }

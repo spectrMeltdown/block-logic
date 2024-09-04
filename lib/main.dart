@@ -85,7 +85,7 @@ class BlockLogic extends ConsumerWidget {
         if (adminFirestore == null) {
           return '/unauthorized';
         }
-        if (adminFirestore.phoneVerified != null && adminFirestore.phoneVerified == false) {
+        if (adminFirestore.verificationID != null && adminFirestore.verificationID!.isEmpty) {
           return '/verify-phone-num';
         }
         return null;

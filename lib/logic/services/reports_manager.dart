@@ -7,12 +7,15 @@ part 'generated/reports_manager.g.dart';
 
 @riverpod
 class ReportsManager extends _$ReportsManager {
-  Future<String?> add(ReportType type) async {
+  Future<String?> add(ReportType type, int count) async {
     try {
-      await state._db.doc(type.name).collection('list').doc().set({'date': DateTime.now()});
+      await state._db.doc(type.name).collection('list').doc().set({
+        'date': DateTime.now(),
+        'count': count,
+      });
       return null;
     } catch (e) {
-      return state._errorHandler.call(e);
+      return state._errorHandler.call(e, this);
     }
   }
 
@@ -34,7 +37,7 @@ class ReportsManager extends _$ReportsManager {
   //     await state._db.doc(report.id).set(report.toFirestore(), SetOptions(merge: true));
   //     return null;
   //   } catch (e) {
-  //     return state._errorHandler.call(e);
+  //     return state._errorHandler.call(e, this);
   //   }
   // }
 }

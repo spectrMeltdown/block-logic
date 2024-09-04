@@ -1,4 +1,3 @@
-import 'package:block_logic/components/async/loading.dart';
 import 'package:block_logic/components/circular_image.dart';
 import 'package:block_logic/components/util/provider_default.dart';
 import 'package:block_logic/logic/enums.dart';
@@ -114,10 +113,13 @@ class _BLProfilePicState extends ConsumerState<BLProfilePic> {
     return account.when(
         data: (account) {
           if (account?.profilePicLink == null || account!.profilePicLink!.isEmpty) {
-            return const BLLoading(color: Colors.black);
-          }
-          if (account.profilePicLink == 'default') {
-            return const Icon(FontAwesomeIcons.user);
+            return const FittedBox(
+              fit: BoxFit.contain,
+              child: Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Icon(FontAwesomeIcons.user),
+              ),
+            );
           }
           return BLCircular(url: account.profilePicLink);
         },

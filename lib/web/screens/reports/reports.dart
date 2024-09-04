@@ -6,7 +6,7 @@ import 'package:block_logic/web/components/button.dart';
 import 'package:block_logic/web/components/card_simple.dart';
 import 'package:block_logic/web/components/header.dart';
 import 'package:block_logic/web/components/search.dart';
-import 'package:fl_chart/fl_chart.dart';
+// import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -141,7 +141,10 @@ class _ReportsState extends ConsumerState<Reports> {
     selectedReport = reportOptions.first;
   }
 
-  Widget leftTitleWidgets(double value, TitleMeta meta) {
+  Widget leftTitleWidgets(
+    double value,
+    // TitleMeta meta,
+  ) {
     const style = TextStyle(
       fontWeight: FontWeight.bold,
       fontSize: 15,

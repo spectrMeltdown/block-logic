@@ -12,8 +12,6 @@ import 'package:block_logic/logic/firebase_providers/selected_user.dart';
 import 'package:block_logic/logic/services/account.dart';
 import 'package:block_logic/logic/services/auth.dart';
 import 'package:block_logic/logic/services/navigation.dart';
-import 'package:block_logic/logic/services/otp.dart';
-import 'package:block_logic/logic/services/sms.dart';
 import 'package:block_logic/logic/services/toast.dart';
 import 'package:block_logic/logic/services/validator_text.dart';
 import 'package:block_logic/screens/checkpoint.dart';
@@ -33,15 +31,17 @@ class VerifyPhoneNum extends ConsumerStatefulWidget {
 
 class _VerifyPhoneNumState extends ConsumerState<VerifyPhoneNum> {
   // late final SmsService sms;
-  late final OtpService otpService;
+  // late final OtpService otpService;
   late final Toast toast;
   late final TextValidator validator;
   late final AccountService accountService;
   final formKey = GlobalKey<FormState>();
   bool processing = false;
-  String? otp;
-  final otpInput = TextEditingController();
   String phoneNum = '';
+  String otp = '';
+  bool initSent = false;
+  String verificationID = '';
+  final otpInput = TextEditingController();
   late AsyncValue<UserAccount?> account;
   late final AuthService auth;
   late final CustomNavigation nav;
@@ -68,7 +68,12 @@ class _VerifyPhoneNumState extends ConsumerState<VerifyPhoneNum> {
                             ),
                           );
                         }
-                        phoneNum = account.phoneNum ?? '--';
+                        phoneNum = account.phoneNum != null ? '+63${account.phoneNum}' : '--';
+                        if (initSent == false) {
+                          sendOTP();
+                          initSent = true;
+                        }
+                        verificationID = account.verificationID ?? '';
                         return Padding(
                           padding: EdgeInsets.only(bottom: media.viewInsets.bottom),
                           child: Padding(
@@ -83,7 +88,7 @@ class _VerifyPhoneNumState extends ConsumerState<VerifyPhoneNum> {
                                     Padding(
                                       padding: const EdgeInsets.symmetric(horizontal: 20),
                                       child: BLText(
-                                        'We need to verify the phone number +63$phoneNum.\n',
+                                        'We need to verify the phone number $phoneNum.\n',
                                         alignCenter: true,
                                         softWrap: true,
                                         color: Colors.white,
@@ -154,41 +159,43 @@ class _VerifyPhoneNumState extends ConsumerState<VerifyPhoneNum> {
     accountService = ref.read(accountServiceProvider.notifier);
     toast = ref.read(toastProvider.notifier);
     // sms = ref.read(smsServiceProvider.notifier);
-    otpService = ref.read(otpServiceProvider.notifier);
+    // otpService = ref.read(otpServiceProvider.notifier);
     validator = ref.read(textValidatorProvider.notifier);
-    sendOTP();
     super.initState();
   }
 
   void sendOTP() async {
     if (processing) return;
     processing = true;
-    otp = otpService.getOTP().toString();
+    final result = await accountService.verifyPhoneNumber(phoneNum, kIsWeb ? AccountType.admin : AccountType.user);
+    if (result != null) {
+      toast.showToast(result, type: NotifType.error);
+    } else {
+      toast.showToast('OTP sent!', type: NotifType.success);
+    }
+    // otp = otpService.getOTP().toString();
     // final result = await sms.send(phoneNum, otp!);
-    // if (result != null) {
-    //   toast.showToast(result, type: NotifType.error);
-    // } else {
-    //   toast.showToast('OTP sent!', type: NotifType.success);
-    // }
+
     processing = false;
   }
 
   void verifyOTP(BuildContext context, AccountModel account) async {
     if (processing) return;
     processing = true;
-    if (otp == null) {
-      toast.showToast('Send an otp first.', type: NotifType.error);
-    }
+
     if (formKey.currentState!.validate()) {
-      if (otpInput.text.trim() == otp) {
+      final result = await accountService.continuePhoneNumVerify(verificationID, otp);
+      if (result == null) {
         toast.showToast('Phone verified successfully.', type: NotifType.success);
         if (kIsWeb) {
+          if (!context.mounted) return;
           context.go('/dashboard');
         } else {
+          if (!context.mounted) return;
           nav.pushAndRemove(context, const Checkpoint());
         }
       } else {
-        toast.showToast('Incorrect OTP.', type: NotifType.error);
+        toast.showToast(result, type: NotifType.error);
       }
     }
     processing = false;

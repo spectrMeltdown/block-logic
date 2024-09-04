@@ -29,7 +29,7 @@ class AccountService extends _$AccountService {
       await state._db.collection(collection.name).doc(state._auth!.uid).update({'displayName': displayName});
       return null;
     } catch (e) {
-      return state._errorHandler.call(e);
+      return state._errorHandler.call(e, this);
     }
   }
 
@@ -75,10 +75,30 @@ class AccountService extends _$AccountService {
         await updateProfilePicLink(downloadURL, collection);
         return null;
       } catch (e) {
-        return state._errorHandler.call(e);
+        return state._errorHandler.call(e, this);
       }
     } else {
       return 'cancel';
+    }
+  }
+
+  Future<String?> continuePhoneNumVerify(String verificationId, String smsCode) async {
+    if (verificationId.isEmpty || smsCode.isEmpty) {
+      throw ('id and smscode must not be empty!');
+    }
+    final credential = PhoneAuthProvider.credential(
+      verificationId: verificationId,
+      smsCode: smsCode,
+    );
+    try {
+      await state._auth!.linkWithCredential(credential);
+      await state._db
+          .collection(kIsWeb ? 'admins' : 'users')
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .update({'verificationID': null});
+      return null;
+    } catch (e) {
+      return state._errorHandler.call(e, this);
     }
   }
 
@@ -99,7 +119,7 @@ class AccountService extends _$AccountService {
       }
       return null;
     } catch (e) {
-      return state._errorHandler.call(e);
+      return state._errorHandler.call(e, this);
     }
   }
 
@@ -107,23 +127,20 @@ class AccountService extends _$AccountService {
     String? createdID,
     String? displayName,
     String? phoneNum,
-    AccountType? type,
+    required AccountType type,
   }) async {
     if (createdID != null) debugPrint('Created id: $createdID');
     try {
-      String? result;
+      // String? result;
       if (type == AccountType.user) {
-        result = await update(
-            user: UserAccount(
-                id: createdID ?? state._auth!.uid,
-                createdAt: DateTime.now(),
-                displayName: displayName ?? state._auth!.displayName,
-                phoneNum: phoneNum,
-                profilePicLink: 'default',
-                phoneVerified: (phoneNum == null || phoneNum.isEmpty) ? null : false));
-        if (result != null) {
-          return result;
-        }
+        await state._db.collection('users').doc(createdID ?? FirebaseAuth.instance.currentUser!.uid).set(UserAccount(
+              createdAt: DateTime.now(),
+              displayName: displayName ?? state._auth!.displayName,
+              phoneNum: phoneNum,
+              profilePicLink: 'default',
+              verificationID: (phoneNum == null || phoneNum.isEmpty) ? null : '',
+              //isApproved: false,
+            ).toFirestore());
 
         /// initialize user settings
         // result = await updateUserSettings(AccountSettings(
@@ -135,23 +152,18 @@ class AccountService extends _$AccountService {
         //   return result;
         // }
       } else {
-        result = await update(
-            admin: AdminAccount(
-          id: createdID ?? state._auth!.uid,
-          createdAt: DateTime.now(),
-          displayName: displayName ?? state._auth!.displayName,
-          phoneNum: phoneNum,
-          profilePicLink: 'default',
-          phoneVerified: (phoneNum == null || phoneNum.isEmpty) ? null : false,
-          //isApproved: false,
-        ));
-        if (result != null) {
-          return result;
-        }
+        await state._db.collection('admins').doc(createdID ?? FirebaseAuth.instance.currentUser!.uid).set(AdminAccount(
+              createdAt: DateTime.now(),
+              displayName: displayName ?? state._auth!.displayName,
+              phoneNum: phoneNum,
+              profilePicLink: 'default',
+              verificationID: (phoneNum == null || phoneNum.isEmpty) ? null : '',
+              //isApproved: false,
+            ).toFirestore());
       }
       return null;
     } catch (e) {
-      return state._errorHandler.call(e);
+      return state._errorHandler.call(e, this);
     }
   }
 
@@ -169,7 +181,7 @@ class AccountService extends _$AccountService {
       }
       return null;
     } catch (e) {
-      return state._errorHandler.call(e);
+      return state._errorHandler.call(e, this);
     }
   }
 
@@ -178,11 +190,37 @@ class AccountService extends _$AccountService {
       await state._db.collection(collection.name).doc(state._auth!.uid).update({'profilePicLink': link});
       return null;
     } catch (e) {
-      return state._errorHandler.call(e);
+      return state._errorHandler.call(e, this);
     }
   }
 
-//   Future<String?> updateUserSettings(AccountSettings userSettings) async {
+  Future<String?> verifyPhoneNumber(String phoneNumber, AccountType type) async {
+    try {
+      await FirebaseAuth.instance.verifyPhoneNumber(
+        phoneNumber: phoneNumber,
+        verificationCompleted: (PhoneAuthCredential credential) async {
+          if (type == AccountType.user) {
+            await update(user: UserAccount(id: state._auth!.uid, verificationID: null));
+          } else {
+            await update(admin: AdminAccount(id: state._auth!.uid, verificationID: null));
+          }
+          await state._auth!.linkWithCredential(credential);
+        },
+        verificationFailed: (FirebaseAuthException e) {},
+        codeSent: (String verificationId, int? resendToken) async {
+          if (type == AccountType.user) {
+            await update(user: UserAccount(id: state._auth!.uid, verificationID: verificationId));
+          } else {
+            await update(admin: AdminAccount(id: state._auth!.uid, verificationID: verificationId));
+          }
+        },
+        codeAutoRetrievalTimeout: (String verificationId) {},
+      );
+      return null;
+    } catch (e) {
+      return state._errorHandler.call(e, this);
+    }
+  }
 //     try {
 //       await state._db
 //           .collection('users')
@@ -190,7 +228,7 @@ class AccountService extends _$AccountService {
 //           .update(userSettings.toFirestore());
 //       return null;
 //     } catch (e) {
-//       return state._errorHandler.call(e);
+//       return state._errorHandler.call(e, this);
 //     }
 //   }
 }

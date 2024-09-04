@@ -1,26 +1,19 @@
-import 'package:block_logic/logic/firebase_models/challenge.dart';
+import 'package:block_logic/logic/firebase_models/room.dart';
 import 'package:block_logic/logic/services/error_handler.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'generated/creator_mode.g.dart';
 
 @riverpod
 class CreatorModeManager extends _$CreatorModeManager {
-  Future<String?> addRoom({
-    required String roomName,
-    required int maxPlayers,
-    required List<Challenge> challenges,
-    String? password,
-  }) async {
+  Future<String?> addRoom(Room room) async {
     try {
-      if (maxPlayers == -1) {
-        throw ArgumentError('-1 number called!! tryParsefailed');
-      }
+      await state._rooms.doc().set(room.toFirestore());
       return null;
     } catch (e) {
-      state._errorHandler.call(e);
-      return 'Error';
+      return state._errorHandler.call(e, this);
     }
   }
 
@@ -34,28 +27,26 @@ class CreatorModeManager extends _$CreatorModeManager {
     try {
       return null;
     } catch (e) {
-      state._errorHandler.call(e);
-      return 'Error';
+      return state._errorHandler.call(e, this);
     }
   }
 
-  Future<String?> editRoom({
-    String? roomName,
-    int? maxPlayers,
-    List<Challenge>? challenges,
-    String? password,
-  }) async {
+  Future<String?> editRoom(Room room) async {
+    if (room.id == null || room.id!.isEmpty) {
+      throw ('Room id must not be empty!');
+    }
     try {
+      await state._rooms.doc(room.id).update(room.toFirestore());
       return null;
     } catch (e) {
-      state._errorHandler.call(e);
-      return 'Error';
+      return state._errorHandler.call(e, this);
     }
   }
 }
 
 class CreatorModeState {
-  final FirebaseFirestore _instance = FirebaseFirestore.instance;
+  final _rooms = FirebaseFirestore.instance.collection('rooms');
+  final _user = FirebaseAuth.instance.currentUser;
   final ErrorHandler _errorHandler;
 
   CreatorModeState({required ErrorHandler errorHandler}) : _errorHandler = errorHandler;

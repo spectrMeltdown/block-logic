@@ -10,7 +10,7 @@ class AdminAccount extends AccountModel {
     super.phoneNum,
     super.profilePicLink,
     super.createdAt,
-    super.phoneVerified,
+    super.verificationID,
   });
 
   factory AdminAccount.fromFirestore(DocumentSnapshot doc) {
@@ -25,7 +25,7 @@ class AdminAccount extends AccountModel {
       displayName: data['displayName'] ?? '',
       profilePicLink: data['profilePicLink'] ?? '',
       phoneNum: data['phoneNum'],
-      phoneVerified: data['phoneVerified'],
+      verificationID: data['verificationID'],
       // isApproved: data['isApproved'],
     );
   }
@@ -44,8 +44,8 @@ class AdminAccount extends AccountModel {
     if (profilePicLink != null) {
       toFirestoreMap.addAll({'profilePicLink': profilePicLink});
     }
-    if (phoneVerified != null) {
-      toFirestoreMap.addAll({'phoneVerified': phoneVerified});
+    if (verificationID != null) {
+      toFirestoreMap.addAll({'verificationID': verificationID});
     }
     // if (isApproved != null) {
     //   toFirestoreMap.addAll({'isApproved': isApproved});

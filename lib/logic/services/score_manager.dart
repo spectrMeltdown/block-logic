@@ -22,7 +22,7 @@ class ScoreManager extends _$ScoreManager {
       await state._db.doc(leaderboardID).set(score.toFirestore());
       return null;
     } catch (e) {
-      return state._errorHandler.call(e);
+      return state._errorHandler.call(e, this);
     }
   }
 
@@ -36,7 +36,7 @@ class ScoreManager extends _$ScoreManager {
       await state._db.doc(leaderboardID).update(score.toFirestore());
       return null;
     } catch (e) {
-      return state._errorHandler.call(e);
+      return state._errorHandler.call(e, this);
     }
   }
 }

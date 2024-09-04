@@ -54,7 +54,7 @@ class AuthService extends _$AuthService {
       // state._toast.showToast('A verification has been sent to your new email.');
       return null;
     } catch (e) {
-      return state._errorHandler.call(e);
+      return state._errorHandler.call(e, this);
     }
   }
 
@@ -63,7 +63,7 @@ class AuthService extends _$AuthService {
       await FirebaseAuth.instance.currentUser!.updatePassword(password.trim());
       return null;
     } catch (e) {
-      return state._errorHandler.call(e);
+      return state._errorHandler.call(e, this);
     }
   }
 
@@ -78,13 +78,13 @@ class AuthService extends _$AuthService {
       /// create account
       await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
 
-      assert(FirebaseAuth.instance.currentUser == null);
+      assert(FirebaseAuth.instance.currentUser != null);
       await FirebaseAuth.instance.currentUser!.updateDisplayName(displayName);
 
       await state._account.initFirestoreData(displayName: displayName, phoneNum: phoneNum, type: type);
       return null;
     } catch (e) {
-      return state._errorHandler.call(e);
+      return state._errorHandler.call(e, this);
     }
   }
 
@@ -108,7 +108,7 @@ class AuthService extends _$AuthService {
 
       return null;
     } catch (e) {
-      return state._errorHandler.call(e);
+      return state._errorHandler.call(e, this);
     }
   }
 
@@ -117,7 +117,7 @@ class AuthService extends _$AuthService {
       await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
       return null;
     } catch (e) {
-      return state._errorHandler.call(e);
+      return state._errorHandler.call(e, this);
     }
   }
 
@@ -143,7 +143,7 @@ class AuthService extends _$AuthService {
       await state._auth.signInWithEmailAndPassword(email: email, password: password);
       return null;
     } catch (e) {
-      return state._errorHandler.call(e);
+      return state._errorHandler.call(e, this);
     }
   }
 
@@ -160,7 +160,7 @@ class AuthService extends _$AuthService {
       await state._auth.currentUser?.reauthenticateWithCredential(userCred);
       return null;
     } catch (e) {
-      return state._errorHandler.call(e);
+      return state._errorHandler.call(e, this);
     }
   }
 
@@ -172,7 +172,7 @@ class AuthService extends _$AuthService {
       await state._auth.currentUser!.sendEmailVerification();
       return null;
     } catch (e) {
-      return state._errorHandler.call(e);
+      return state._errorHandler.call(e, this);
     }
   }
 
@@ -216,7 +216,7 @@ class AuthService extends _$AuthService {
   //       return null;
   //     }
   //   } catch (e) {
-  //     return state._errorHandler.call(e);
+  //     return state._errorHandler.call(e, this);
   //   }
   // }
 }

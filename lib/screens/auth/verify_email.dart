@@ -150,6 +150,7 @@ class _VerifyEmailState extends ConsumerState<VerifyEmail> with TickerProviderSt
           if (kIsWeb) {
             context.go('/dashboard');
           } else {
+            if (!context.mounted) return;
             nav.pushAndRemove(context, const Checkpoint());
           }
         });

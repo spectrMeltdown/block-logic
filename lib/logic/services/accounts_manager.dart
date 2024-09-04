@@ -66,7 +66,7 @@ class AccountsManager extends _$AccountsManager {
       }
     } catch (e) {
       debugPrint(responseBody);
-      debugPrint(state._errorHandler.call(e));
+      debugPrint(state._errorHandler.call(e, this));
       return 'Error: $responseBody';
     }
   }
@@ -103,7 +103,7 @@ class AccountsManager extends _$AccountsManager {
         return response.body;
       }
     } catch (e) {
-      return state._errorHandler.call(e);
+      return state._errorHandler.call(e, this);
     }
   }
 
