@@ -3,6 +3,7 @@ import 'package:block_logic/logic/services/encryption.dart';
 import 'package:block_logic/logic/services/error_handler.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'generated/room_manager.g.dart';
@@ -37,15 +38,24 @@ class RoomManager extends _$RoomManager {
     }
   }
 
-  Future<bool> leaveRoom(String roomID) async {
+  Future<String?> leaveRoom(String roomID) async {
     try {
       await state._db.doc(roomID).update({
         'players': FieldValue.arrayRemove([state._auth.uid])
       });
-      return true;
+      return null;
     } catch (e) {
-      state._errorHandler.call(e, this);
-      return false;
+      return state._errorHandler.call(e, this);
+    }
+  }
+
+  Future<List<String>?> currentPlayers(String roomID) async {
+    try {
+      final doc = await state._db.doc(roomID).get();
+      return Room.fromFirestore(doc).players;
+    } catch (e) {
+      debugPrint(state._errorHandler.call(e, this));
+      return null;
     }
   }
 

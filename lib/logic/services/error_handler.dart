@@ -30,53 +30,48 @@ class ErrorHandler extends _$ErrorHandler {
     debugPrint('FirebaseException Code: ${e.code}');
     String? error;
     switch (e.code) {
+      case 'captcha-check-failed':
+        error = 'Captcha failed, Cannot proceed.';
+        break;
+      case 'expired-action-code':
+        error = 'This code has expired. Try again.';
+        break;
+      case 'invalid-action-code':
+        error = 'Invalid OTP code.';
+        break;
+      case 'quota-exceeded':
+        error = 'Unknown error.';
+        break;
       case 'network-request-failed':
         error = 'Network Problem!';
-        if (handleOverlay) {
-          blShowNotifyDialog(context, title: 'Error', label: error);
-        }
-        return error;
+        break;
       case 'invalid-credential':
         error = 'Incorrect credentials';
-        if (handleOverlay) {
-          blShowNotifyDialog(context, title: 'Error', label: error);
-        }
-        return error;
+        break;
       case 'invalid-email':
         error = 'Incorrect email.';
-        if (handleOverlay) {
-          blShowNotifyDialog(context, title: 'Error', label: error);
-        }
-        return error;
+        break;
       case 'email-already-in-use':
         error = 'Account already exists!';
-        if (handleOverlay) {
-          blShowNotifyDialog(context, title: 'Error', label: error);
-        }
-        return error;
+        break;
       case 'requires-recent-login':
         return null;
       case 'too-many-requests':
         error = 'Sorry, too many attempts. Try again later';
-        if (handleOverlay) {
-          blShowNotifyDialog(context, title: 'Error', label: error);
-        }
-        return error;
+        break;
       case 'invalid-verification-code':
         error = 'Wrong code.';
-        if (handleOverlay) {
-          blShowNotifyDialog(context, title: 'Error', label: error);
-        }
-        return error;
+        break;
       case 'invalid-verification-id':
         error = 'The verification ID was incorrect (please contact developer).';
-        if (handleOverlay) {
-          blShowNotifyDialog(context, title: 'Error', label: error);
-        }
-        return error;
+        break;
       default:
         return null;
     }
+    if (handleOverlay) {
+      blShowNotifyDialog(context, title: 'Error', label: error);
+    }
+    return error;
   }
 }
 

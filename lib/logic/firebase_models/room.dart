@@ -2,9 +2,9 @@ import 'package:block_logic/logic/enums.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Room {
+  //final String? icon;
   final String? id;
   final String? hostID;
-  //final String? icon;
   final String? name;
   final String? password;
   final List<String>? players;
@@ -55,13 +55,38 @@ class Room {
     );
   }
 
+  Room copyWith(
+      {String? hostID,
+      String? name,
+      String? password,
+      List<String>? players,
+      List<String>? challengeIDs,
+      int? maxPlayers,
+      bool? adminLocked,
+      RoomStatus? status,
+      bool? leaderboardCreated}) {
+    return Room(
+      hostID: hostID ?? this.hostID,
+      name: name ?? this.name,
+      password: password ?? this.password,
+      players: players ?? this.players,
+      challengeIDs: challengeIDs ?? this.challengeIDs,
+      maxPlayers: maxPlayers ?? this.maxPlayers,
+      adminLocked: adminLocked ?? this.adminLocked,
+      status: status ?? this.status,
+    );
+  }
+
   Map<String, dynamic> toFirestore() {
     Map<String, dynamic> toFirestoreMap = {};
     if (challengeIDs != null) {
       toFirestoreMap.addAll({'challengeIDs': challengeIDs});
     }
     if (players != null) {
-      toFirestoreMap.addAll({'players!.length': players});
+      toFirestoreMap.addAll({'players': players});
+    }
+    if (maxPlayers != null) {
+      toFirestoreMap.addAll({'maxPlayers': maxPlayers});
     }
     if (hostID != null) {
       toFirestoreMap.addAll({'hostID': hostID});
@@ -72,6 +97,8 @@ class Room {
     if (name != null) {
       toFirestoreMap.addAll({'name': name});
     }
+
+    /// Password should be encrypted before passing to this function
     if (password != null) {
       toFirestoreMap.addAll({'password': password});
     }

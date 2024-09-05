@@ -11,8 +11,7 @@ class TopThreePlayers extends ConsumerStatefulWidget {
   const TopThreePlayers(this.playerPhotoURL, {super.key});
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() =>
-      _TopThreePlayersState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _TopThreePlayersState();
 }
 
 class _TopThreePlayersState extends ConsumerState<TopThreePlayers> {
@@ -20,10 +19,9 @@ class _TopThreePlayersState extends ConsumerState<TopThreePlayers> {
   final Duration picDelay = const Duration(milliseconds: 300);
   late final Duration iconStartDelay;
   late final Duration iconDelay;
-
+  late final Assets assets;
   @override
   Widget build(BuildContext context) {
-    final assets = ref.read(assetsProvider);
     if (widget.playerPhotoURL.isEmpty) {
       return const Center(
         child: BLText('No players..'),
@@ -41,9 +39,7 @@ class _TopThreePlayersState extends ConsumerState<TopThreePlayers> {
                 clipBehavior: Clip.none,
                 children: [
                   WidgetAnimator(
-                    incomingEffect:
-                        WidgetTransitionEffects.incomingSlideInFromBottom(
-                            delay: picStartDelay),
+                    incomingEffect: WidgetTransitionEffects.incomingSlideInFromBottom(delay: picStartDelay),
                     child: BLCircular(
                       url: widget.playerPhotoURL[i],
                       iconSize: 100,
@@ -53,9 +49,7 @@ class _TopThreePlayersState extends ConsumerState<TopThreePlayers> {
                       left: 20,
                       bottom: -40,
                       child: WidgetAnimator(
-                        incomingEffect:
-                            WidgetTransitionEffects.incomingOffsetThenScale(
-                                delay: picStartDelay),
+                        incomingEffect: WidgetTransitionEffects.incomingOffsetThenScale(delay: picStartDelay),
                         child: BLCircular(
                           width: 60,
                           height: 60,
@@ -75,11 +69,8 @@ class _TopThreePlayersState extends ConsumerState<TopThreePlayers> {
               clipBehavior: Clip.none,
               children: [
                 WidgetAnimator(
-                  incomingEffect:
-                      WidgetTransitionEffects.incomingSlideInFromBottom(
-                          delay: i == 0
-                              ? picStartDelay + picDelay
-                              : picStartDelay + picDelay + picDelay),
+                  incomingEffect: WidgetTransitionEffects.incomingSlideInFromBottom(
+                      delay: i == 0 ? picStartDelay + picDelay : picStartDelay + picDelay + picDelay),
                   child: BLCircular(
                     url: widget.playerPhotoURL[i],
                     iconSize: 60,
@@ -89,18 +80,13 @@ class _TopThreePlayersState extends ConsumerState<TopThreePlayers> {
                     bottom: -30,
                     left: i == 0 ? -20 : 30,
                     child: WidgetAnimator(
-                      incomingEffect:
-                          WidgetTransitionEffects.incomingOffsetThenScale(
-                              delay: i == 0
-                                  ? iconStartDelay + iconDelay
-                                  : iconStartDelay + iconDelay + iconDelay),
+                      incomingEffect: WidgetTransitionEffects.incomingOffsetThenScale(
+                          delay: i == 0 ? iconStartDelay + iconDelay : iconStartDelay + iconDelay + iconDelay),
                       child: BLCircular(
                         width: 50,
                         height: 50,
                         fit: BoxFit.scaleDown,
-                        asset: i == 0
-                            ? assets.leadeboardSecond
-                            : assets.leadeboardThird,
+                        asset: i == 0 ? assets.leadeboardSecond : assets.leadeboardThird,
                         backgroundColor: Colors.transparent,
                       ),
                     ))
@@ -118,6 +104,7 @@ class _TopThreePlayersState extends ConsumerState<TopThreePlayers> {
   void initState() {
     iconStartDelay = picStartDelay + picDelay + picDelay;
     iconDelay = picDelay;
+    assets = ref.read(assetsProvider);
     super.initState();
   }
 }

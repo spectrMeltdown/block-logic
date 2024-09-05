@@ -14,5 +14,7 @@ Stream<Leaderboard?> selectedLeaderboard(SelectedLeaderboardRef ref, String lead
         yield Leaderboard.fromFirestore(doc);
       }
     }
+  } else {
+    yield null;
   }
 }

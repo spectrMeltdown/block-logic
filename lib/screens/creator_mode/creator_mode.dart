@@ -55,12 +55,26 @@ class _CreatorModeState extends ConsumerState<CreatorMode> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     BLText(
-                                      'Creator mode is where you can manage your rooms, meaning you can create, delete, or edit any of your rooms.\n\n',
+                                      'Creator mode is where you can manage your rooms, meaning you can create, delete, or edit any of your rooms.\n',
+                                      softWrap: true,
+                                      color: Colors.white,
+                                    ),
+                                    BLText(
+                                      'Usage:',
+                                      bold: true,
+                                    ),
+                                    BLText(
+                                      'Long-press: Delete room',
                                       softWrap: true,
                                     ),
                                     BLText(
-                                      'Notes about creating rooms:',
+                                      'Short-press: Edit room',
                                       softWrap: true,
+                                    ),
+                                    BLText(
+                                      '\nAbout room creation:',
+                                      softWrap: true,
+                                      bold: true,
                                     ),
                                     BLText(
                                       '- Limited to 10 rooms per user.',

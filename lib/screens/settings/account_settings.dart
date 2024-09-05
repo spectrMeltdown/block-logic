@@ -1,12 +1,12 @@
 import 'package:block_logic/components/account/display_name.dart';
 import 'package:block_logic/components/account/email.dart';
 import 'package:block_logic/components/account/phone_num.dart';
+import 'package:block_logic/components/account/profile_pic.dart';
 import 'package:block_logic/components/button/button.dart';
 import 'package:block_logic/components/button/login_signup.dart';
 import 'package:block_logic/components/button/text.dart';
 import 'package:block_logic/components/dialog/reauth.dart';
 import 'package:block_logic/components/panel/panel.dart';
-import 'package:block_logic/components/account/profile_pic.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/text/title_small.dart';
 import 'package:block_logic/components/util/provider_default.dart';
@@ -159,8 +159,8 @@ class _AccountSettingsWidgetState extends ConsumerState<AccountSettingsWidget> {
                       const SizedBox(height: 20),
                       Column(
                         children: [
-                          BLButton(
-                              type: BtnType.red,
+                          BLTextButton(
+                              // type: BtnType.red,
                               onPressed: () async {
                                 if (widget.processing) return;
                                 widget.toggleProcessing.call(true);
@@ -181,11 +181,14 @@ class _AccountSettingsWidgetState extends ConsumerState<AccountSettingsWidget> {
                               child: const Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Icon(Icons.delete_forever),
+                                  Icon(
+                                    Icons.delete_forever,
+                                    color: Colors.red,
+                                  ),
                                   SizedBox(width: 10),
                                   BLText(
                                     'Delete account',
-                                    color: Colors.white,
+                                    color: Colors.red,
                                   )
                                 ],
                               )),
@@ -193,7 +196,7 @@ class _AccountSettingsWidgetState extends ConsumerState<AccountSettingsWidget> {
                             height: 10,
                           ),
                           BLButton(
-                              type: BtnType.orange,
+                              type: BtnType.red,
                               onPressed: () async {
                                 if (widget.processing) return;
                                 widget.toggleProcessing.call(true);

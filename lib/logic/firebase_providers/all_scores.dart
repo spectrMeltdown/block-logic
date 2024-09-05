@@ -1,6 +1,7 @@
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_models/score.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'generated/all_scores.g.dart';
@@ -17,7 +18,7 @@ Stream<Map<ScoreStatus, List<Score>>?> allScores(AllScoresRef ref, String leader
         ScoreStatus.pending: [],
       };
       final List<Score> scores = [];
-      if (query.docs.isEmpty) {
+      if (query.docs.isNotEmpty) {
         /// convert doc to score
         for (final doc in query.docs) {
           scores.add(Score.fromFirestore(doc));
@@ -38,18 +39,20 @@ Stream<Map<ScoreStatus, List<Score>>?> allScores(AllScoresRef ref, String leader
               break;
             default:
           }
+        }
 
-          /// do a ranking on ScoreStatus.complete
-          if (result[ScoreStatus.complete]!.isNotEmpty) {
-            /// sort score first
-            result[ScoreStatus.complete]!.sort((a, b) => a.playerScore!.compareTo(b.playerScore!));
+        /// do a ranking on ScoreStatus.complete
+        if (result[ScoreStatus.complete]!.isNotEmpty) {
+          /// sort score first
+          result[ScoreStatus.complete]!.sort((a, b) => a.playerScore!.compareTo(b.playerScore!));
 
-            /// sort time elapsed
-            result[ScoreStatus.complete]!.sort((a, b) => a.timeElapsed!.compareTo(b.timeElapsed!));
-          }
+          /// sort time elapsed
+          result[ScoreStatus.complete]!.sort((a, b) => a.timeElapsed!.compareTo(b.timeElapsed!));
         }
       }
+      debugPrint(result.toString());
       yield result;
     }
   }
+  yield null;
 }

@@ -7,8 +7,10 @@ class AccountModel extends TimestampModel {
   final String? profilePicLink;
   final String? phoneNum;
   final String? verificationID;
+  final int? resendToken;
   AccountModel({
     this.id,
+    this.resendToken,
     this.verificationID,
     this.displayName,
     this.profilePicLink,

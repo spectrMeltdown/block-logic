@@ -45,73 +45,76 @@ class Toast extends _$Toast {
     //   //     fontSize: 16.0);
     //   return;
     // }
-    toastification.dismissAll();
-    toastification.showCustom(
-        autoCloseDuration: duration,
-        alignment: alignment,
-        animationBuilder: (context, animation, alignment, child) {
-          return FadeTransition(
-            opacity: animation,
-            child: child,
-          );
-        },
-        builder: (context, item) {
-          return Container(
-            alignment: alignment,
-            margin: margin,
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: paddingX, vertical: 10),
-              decoration: BoxDecoration(
-                  borderRadius: const BorderRadius.all(Radius.circular(10)),
-                  border: Border.all(color: _getColor(type)),
-                  color: _getColor(type, withTransparency)),
-              child: LayoutBuilder(builder: (context, constraints) {
-                final icon = Icon(
-                  _getIcon(type),
-                  color: withTransparency ? _getColor(type) : Colors.white,
-                  size: 16,
-                );
-                const space = SizedBox(width: 10);
-                final textPainter = TextPainter(
-                  text: TextSpan(
-                      text: title,
-                      style: const TextStyle(
-                        fontSize: 18,
-                      )),
-                  maxLines: 1,
-                  textDirection: TextDirection.ltr,
-                );
-                textPainter.layout(minWidth: 0, maxWidth: constraints.maxWidth);
-                if (textPainter.didExceedMaxLines) {
+    dismissAllToast();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      toastification.showCustom(
+          autoCloseDuration: duration,
+          alignment: alignment,
+          animationBuilder: (context, animation, alignment, child) {
+            return FadeTransition(
+              opacity: animation,
+              child: child,
+            );
+          },
+          builder: (context, item) {
+            return Container(
+              alignment: alignment,
+              margin: margin,
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: paddingX, vertical: 10),
+                decoration: BoxDecoration(
+                    borderRadius: const BorderRadius.all(Radius.circular(10)),
+                    border: Border.all(color: _getColor(type)),
+                    color: _getColor(type, withTransparency)),
+                child: LayoutBuilder(builder: (context, constraints) {
+                  final icon = Icon(
+                    _getIcon(type),
+                    color: withTransparency ? _getColor(type) : Colors.white,
+                    size: 16,
+                  );
+                  const space = SizedBox(width: 10);
+                  final textPainter = TextPainter(
+                    text: TextSpan(
+                        text: title,
+                        style: const TextStyle(
+                          fontSize: 18,
+                        )),
+                    maxLines: 1,
+                    textDirection: TextDirection.ltr,
+                  );
+                  textPainter.layout(minWidth: 0, maxWidth: constraints.maxWidth);
+                  if (textPainter.didExceedMaxLines) {
+                    return Row(
+                      children: [
+                        icon,
+                        space,
+                        Flexible(
+                          child: BLText(
+                            title,
+                            color: Colors.white,
+                            softWrap: true,
+                          ),
+                        )
+                      ],
+                    );
+                  }
                   return Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       icon,
                       space,
-                      Flexible(
-                        child: BLText(
-                          title,
-                          color: Colors.white,
-                          softWrap: true,
-                        ),
+                      BLText(
+                        title,
+                        color: Colors.white,
                       )
                     ],
                   );
-                }
-                return Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    icon,
-                    space,
-                    BLText(
-                      title,
-                      color: Colors.white,
-                    )
-                  ],
-                );
-              }),
-            ),
-          );
-        });
+                }),
+              ),
+            );
+          });
+    });
+
     // context.showToast(
     //   padding: const EdgeInsets.all(16),
     //   margin: const EdgeInsets.only(top: 40),

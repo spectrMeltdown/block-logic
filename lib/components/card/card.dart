@@ -69,9 +69,9 @@ class _BLCardState extends ConsumerState<BLCard> {
                       ...widget.glow ??
                           [
                             BoxShadow(
-                              color: widget.color.brighten(0.4).withOpacity(0.8),
-                              spreadRadius: -20,
-                              blurRadius: 10,
+                              color: widget.color.brighten(0.3).withOpacity(0.6),
+                              spreadRadius: 0,
+                              blurRadius: 20,
                             )
                           ],
                     ]

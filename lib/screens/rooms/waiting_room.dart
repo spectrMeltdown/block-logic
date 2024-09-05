@@ -9,12 +9,15 @@ import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/text/title_small.dart';
 import 'package:block_logic/components/util/provider_default.dart';
 import 'package:block_logic/logic/enums.dart';
+import 'package:block_logic/logic/firebase_models/leaderboard.dart';
 import 'package:block_logic/logic/firebase_models/room.dart';
 import 'package:block_logic/logic/firebase_providers/selected_room.dart';
 import 'package:block_logic/logic/services/auth.dart';
 import 'package:block_logic/logic/services/dialog.dart';
+import 'package:block_logic/logic/services/leaderboard_manager.dart';
 import 'package:block_logic/logic/services/navigation.dart';
 import 'package:block_logic/logic/services/room_manager.dart';
+import 'package:block_logic/logic/services/toast.dart';
 import 'package:block_logic/screens/game/game_room.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -33,7 +36,9 @@ class _WaitingRoomState extends ConsumerState<WaitingRoom> {
   late final CustomNavigation nav;
   late final DialogService dialog;
   late final RoomManager roomManager;
+  late final Toast toast;
   late final AuthService auth;
+  late final LeaderboardManager leaderboardManager;
   @override
   Widget build(BuildContext context) {
     final room = ref.watch(SelectedRoomProvider(widget.roomID));
@@ -122,8 +127,28 @@ class _WaitingRoomState extends ConsumerState<WaitingRoom> {
                                                 await roomManager.update(
                                                   Room(id: roomID, status: RoomStatus.inGame),
                                                 );
-                                                if (!context.mounted) return;
-                                                nav.pushReplace(context, GameRoom(room));
+
+                                                /// create leaderboard ahead of time
+                                                final id = await leaderboardManager.create(
+                                                    Leaderboard(
+                                                      id: '${room.id}${DateTime.now()}',
+                                                      roomID: room.id,
+                                                      roomName: room.name,
+                                                      totalScore: room.challengeIDs!.length,
+                                                      status: LeaderboardStatus.pending,
+                                                      date: DateTime.now(),
+                                                    ),
+                                                    true);
+                                                // if id not returned, exit function
+                                                if (id == null || id == 'error') {
+                                                  toast.showToast('Error initiating game. Check connection..',
+                                                      type: NotifType.error);
+                                                }
+                                                // else to game
+                                                else {
+                                                  if (!context.mounted) return;
+                                                  nav.pushReplace(context, GameRoom(room, id));
+                                                }
                                               },
                                               child: const BLText(
                                                 'Start game',
@@ -159,10 +184,12 @@ class _WaitingRoomState extends ConsumerState<WaitingRoom> {
 
   @override
   void initState() {
+    toast = ref.read(toastProvider.notifier);
     nav = ref.read(customNavigationProvider);
     dialog = ref.read(dialogServiceProvider.notifier);
     roomManager = ref.read(roomManagerProvider.notifier);
     auth = ref.read(authServiceProvider.notifier);
+    leaderboardManager = ref.read(leaderboardManagerProvider.notifier);
     super.initState();
   }
 }

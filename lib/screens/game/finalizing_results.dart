@@ -19,7 +19,7 @@ class _FinalizingResultsState extends ConsumerState<FinalizingResults> {
           child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
-        children: [BLLoading(), BLText('Finalizing results ...')],
+        children: [BLLoading()],
       )),
     );
   }

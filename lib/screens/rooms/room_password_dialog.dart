@@ -1,10 +1,9 @@
-import 'package:block_logic/components/button/button.dart';
+import 'package:block_logic/components/button/text.dart';
 import 'package:block_logic/components/dialog/dialog.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/text/title_small.dart';
 import 'package:block_logic/components/textbox.dart';
 import 'package:block_logic/components/util/blank_widget.dart';
-import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/services/navigation.dart';
 import 'package:block_logic/logic/services/room_manager.dart';
 import 'package:block_logic/logic/services/validator_text.dart';
@@ -31,11 +30,20 @@ class RoomPasswordDialogState extends ConsumerState<RoomPasswordDialog> {
   final formKey = GlobalKey<FormState>();
   Widget msg = const BlankWidget();
   bool processing = false;
+  late final CustomNavigation nav;
+  late final TextValidator validator;
+  late final RoomManager roomManager;
+
+  @override
+  void initState() {
+    nav = ref.read(customNavigationProvider);
+    validator = ref.read(textValidatorProvider.notifier);
+    roomManager = ref.read(roomManagerProvider.notifier);
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final nav = ref.read(customNavigationProvider);
-    final validator = ref.read(textValidatorProvider.notifier);
-    final roomManager = ref.read(roomManagerProvider.notifier);
     return BLDialog(
         child: Form(
       key: formKey,
@@ -53,36 +61,47 @@ class RoomPasswordDialogState extends ConsumerState<RoomPasswordDialog> {
           const SizedBox(height: 10),
           msg,
           const SizedBox(height: 5),
-          BLButton(
-              onPressed: () async {
-                if (processing) return;
-                processing = true;
-                if (formKey.currentState!.validate()) {
-                  debugPrint(widget.hostID);
-                  final correctInput = await roomManager.validatePassword(
-                      input: passController.text.trim(), pass: widget.pass, hostID: widget.hostID);
-                  if (correctInput) {
-                    if (!context.mounted) return;
-                    nav.pop(context, true);
-                  } else {
-                    setState(() {
-                      msg = const BLText(
-                        'Wrong password.',
-                        color: Colors.red,
-                      );
-                    });
-                  }
-                }
-                processing = false;
-              },
-              child: const BLText('Submit')),
-          const SizedBox(height: 10),
-          BLButton(
-              onPressed: () {
-                nav.pop(context, false);
-              },
-              type: BtnType.red,
-              child: const BLText('Back'))
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              BLTextButton(
+                  onPressed: () {
+                    nav.pop(context, false);
+                  },
+                  // type: BtnType.red,
+                  child: const BLText(
+                    'Back',
+                    color: Colors.red,
+                  )),
+              const SizedBox(height: 10),
+              BLTextButton(
+                  onPressed: () async {
+                    if (processing) return;
+                    processing = true;
+                    if (formKey.currentState!.validate()) {
+                      debugPrint(widget.hostID);
+                      final correctInput = await roomManager.validatePassword(
+                          input: passController.text.trim(), pass: widget.pass, hostID: widget.hostID);
+                      if (correctInput) {
+                        if (!context.mounted) return;
+                        nav.pop(context, true);
+                      } else {
+                        setState(() {
+                          msg = const BLText(
+                            'Wrong password.',
+                            color: Colors.red,
+                          );
+                        });
+                      }
+                    }
+                    processing = false;
+                  },
+                  child: const BLText(
+                    'Submit',
+                    color: Colors.green,
+                  )),
+            ],
+          )
         ],
       ),
     ));

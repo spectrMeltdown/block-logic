@@ -37,7 +37,7 @@ class _CreatorRoomItemState extends ConsumerState<CreatorRoomItem> {
               if (widget.room.adminLocked != null && widget.room.adminLocked == true) {
                 toast.showToast('Cannot edit room, locked by admin', type: NotifType.error);
               } else {
-                bottomSheet.show(context, EditRoomBottomSheet(widget.room.id!));
+                bottomSheet.show(context, EditRoomBottomSheet(widget.room.id!), isScrollControlled: true);
               }
             },
             onLongPress: () {

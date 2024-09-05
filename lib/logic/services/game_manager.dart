@@ -8,6 +8,7 @@ import 'package:block_logic/logic/game/py_function.dart';
 import 'package:block_logic/logic/game/py_variable.dart';
 import 'package:block_logic/logic/services/error_handler.dart';
 import 'package:block_logic/logic/services/leaderboard_manager.dart';
+import 'package:block_logic/logic/services/room_manager.dart';
 import 'package:block_logic/logic/services/score_manager.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -47,8 +48,10 @@ class GameManager extends _$GameManager {
     final errorHandler = ref.read(errorHandlerProvider.notifier);
     final leaderboardManager = ref.read(leaderboardManagerProvider.notifier);
     final scoreManager = ref.read(scoreManagerProvider.notifier);
+    final roomManager = ref.read(roomManagerProvider.notifier);
     return GameState(
       scoreManager: scoreManager,
+      roomManager: roomManager,
       blockDataTree: [],
       variables: [],
       classes: [],
@@ -70,25 +73,19 @@ class GameManager extends _$GameManager {
 
   bool getTimer() => state.pauseTimer;
 
-  Future<String?> init(Room room) async {
-    // if (state._room != null) {
-    //   throw (ArgumentError('A room is already assigned.'));
-    // }
+  Future<String?> init(Room room, String leaderboardID) async {
+    if (room.id == null || room.id!.isEmpty) {
+      throw (ArgumentError('Room ID cannot be empty!'));
+    }
+    if (leaderboardID.isEmpty) {
+      throw (ArgumentError('Leaderboard ID cannot be empty!'));
+    }
 
     /// create leaderboard (host), add self to list of players (both host & player)
-    state._leaderboardID = '${room.id}-${DateTime.now()}';
-    if (state.auth.uid == room.hostID) {
-      await state.leaderboardManager.create(
-        Leaderboard(
-          id: state._leaderboardID,
-          roomName: room.name,
-          totalScore: room.challengeIDs!.length,
-          roomID: room.id,
-          status: LeaderboardStatus.pending,
-          date: DateTime.now(),
-        ),
-      );
-    }
+    state._roomID = room.id;
+    state._leaderboardID = leaderboardID;
+
+    /// add self to leaderboard list of players (meaning you actually got into the game from the room)
     await state.leaderboardManager.updatePlayers(state._leaderboardID!, {
       'players': FieldValue.arrayUnion(
         [state.auth.uid],
@@ -96,7 +93,6 @@ class GameManager extends _$GameManager {
     });
 
     /// create score of self
-    // state._score = Score(accountID: state.auth.uid, playerScore: 0, status: ScoreStatus.pending);
     await state.scoreManager.create(
       state._leaderboardID!,
       Score(
@@ -113,21 +109,50 @@ class GameManager extends _$GameManager {
     state.isDropCancelled = newState;
   }
 
-  Future<String?> leaveGame(bool isComplete) async {
-    // update score & status
+  Future<String?> leaveGame(bool isComplete, [bool returnValue = false]) async {
+    if (state._processing) return '';
+    state._processing = true;
     try {
-      final score = Score(
+      // create final score
+      final finalScore = Score(
+        id: FirebaseAuth.instance.currentUser!.uid,
         playerScore: state._score ?? 0,
         timeElapsed: state._timeElapsed ?? 0,
         status: isComplete ? ScoreStatus.complete : ScoreStatus.incomplete,
       );
-      await state.scoreManager.update(state._leaderboardID!, score);
+      // upload final score in db
+      await state.scoreManager.update(state._leaderboardID!, finalScore);
+
+      // execute leaveRoom method
+      await state.roomManager.leaveRoom(state._roomID!);
+
+      // get current list of players after leaving
+      final playerList = await state.roomManager.currentPlayers(state._roomID!);
+
+      // if this player is the last to leave the room
+      if (playerList == null || playerList.isEmpty) {
+        // finalize the leaderboard
+        await state.leaderboardManager
+            .update(Leaderboard(id: state._leaderboardID, status: LeaderboardStatus.complete));
+
+        // reset the room status to available
+        await state.roomManager.update(Room(
+          id: state._roomID,
+          status: RoomStatus.available,
+        ));
+      }
+      state._processing = false;
+      if (returnValue) {
+        return 'success';
+      }
       return null;
     } catch (e) {
-      state._errorHandler.call(e, this);
+      state._processing = false;
+      return state._errorHandler.call(e, this);
     }
-    return null;
   }
+
+  String getLeaderboardID() => state._leaderboardID!;
 
   GameBlockData? obtainPassedBlockData() {
     final blockData = state._blockData;
@@ -208,6 +233,7 @@ class GameState {
   List<PyFunction> functions = [];
   List<GameBlockData> blockDataTree = [];
   bool pauseTimer;
+  bool _processing;
   int? _score;
   GameBlockData? _blockData;
   ScrollController? verticalScrollController;
@@ -218,20 +244,25 @@ class GameState {
   final auth = FirebaseAuth.instance.currentUser!;
   final LeaderboardManager leaderboardManager;
   final ScoreManager scoreManager;
+  final RoomManager roomManager;
   String? _leaderboardID;
+  String? _roomID;
   int? _timeElapsed;
   //Score? _score;
   GameState({
+    bool processing = false,
     this.isDropCancelled = false,
     required this.scoreManager,
     this.pauseTimer = false,
     required ErrorHandler errorHandler,
     required this.blockDataTree,
     required this.variables,
+    required this.roomManager,
     required this.classes,
     required this.leaderboardManager,
     required this.functions,
     this.verticalScrollController,
     this.horizontalScrollController,
-  }) : _errorHandler = errorHandler;
+  })  : _errorHandler = errorHandler,
+        _processing = processing;
 }

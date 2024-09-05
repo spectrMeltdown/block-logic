@@ -7,7 +7,7 @@ part of '../selected_challenges.dart';
 // **************************************************************************
 
 String _$selectedChallengesHash() =>
-    r'709f2ec6ab01e69577522302304fecddf11911d7';
+    r'e9e42c2046ae8f6a35c53007fdd199e8431eeaab';
 
 /// Copied from Dart SDK
 class _SystemHash {

@@ -11,6 +11,7 @@ import 'package:block_logic/logic/firebase_providers/selected_room_names.dart';
 import 'package:block_logic/logic/firebase_providers/selected_rooms.dart';
 import 'package:block_logic/logic/services/creator_mode.dart';
 import 'package:block_logic/logic/services/navigation.dart';
+import 'package:block_logic/logic/services/toast.dart';
 import 'package:block_logic/logic/services/validator_text.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -36,6 +37,7 @@ class _AddRoomBottomSheetState extends ConsumerState<AddRoomBottomSheet> {
   Widget errorMsg = const BlankWidget();
   final newRoomFormKey = GlobalKey<FormState>();
   late final TextValidator textValidator;
+  late final Toast toast;
   late final CreatorModeManager creatorMode;
   late final CustomNavigation nav;
 
@@ -146,7 +148,7 @@ class _AddRoomBottomSheetState extends ConsumerState<AddRoomBottomSheet> {
                                   });
                                   return;
                                 }
-                                final success = await creatorMode.addRoom(Room(
+                                final error = await creatorMode.addRoom(Room(
                                   adminLocked: false,
                                   hostID: FirebaseAuth.instance.currentUser!.uid,
                                   players: [],
@@ -156,12 +158,11 @@ class _AddRoomBottomSheetState extends ConsumerState<AddRoomBottomSheet> {
                                   challengeIDs: challengeIDs,
                                   password: passwordController.text.isNotEmpty ? passwordController.text.trim() : null,
                                 ));
-                                if (success == null) {
-                                  if (!context.mounted) return;
-                                  nav.pop(context);
-                                } else {
-                                  // toast.showToast(success);
+                                if (error != null) {
+                                  toast.showToast(error, type: NotifType.error);
                                 }
+                                if (!context.mounted) return;
+                                nav.pop(context);
                                 processing = false;
                               }
                             },
@@ -196,6 +197,7 @@ class _AddRoomBottomSheetState extends ConsumerState<AddRoomBottomSheet> {
   void initState() {
     textValidator = ref.read(textValidatorProvider.notifier);
     creatorMode = ref.read(creatorModeManagerProvider.notifier);
+    toast = ref.read(toastProvider.notifier);
     nav = ref.read(customNavigationProvider);
     super.initState();
   }

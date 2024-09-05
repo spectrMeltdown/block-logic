@@ -50,7 +50,7 @@ class _RoomSelectorState extends ConsumerState<RoomSelector> with TickerProvider
                                     bold: true,
                                   ),
                                   BLText(
-                                    '- It is possible that your room has been locked by the admin.\nPlease message the admin through feedback in the main menu screen if you think this is a mistake.',
+                                    '- It is possible that your room has been locked by the admin.\n\nPlease message the admin through feedback in the main menu screen if you think this is a mistake.',
                                     softWrap: true,
                                     color: Colors.white,
                                   )

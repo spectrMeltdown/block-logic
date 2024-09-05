@@ -17,11 +17,20 @@ class LeaderboardManager extends _$LeaderboardManager {
     );
   }
 
-  Future<String?> create(Leaderboard leaderboard) async {
+  Future<String?> create(Leaderboard leaderboard, [bool returnID = false]) async {
+    if (leaderboard.id == null || leaderboard.id!.isEmpty) return '';
     try {
-      await state._db.doc().set(leaderboard.toFirestore());
+      final ref = state._db.doc(leaderboard.id);
+      await ref.set(leaderboard.toFirestore());
+      final doc = await ref.get();
+      if (returnID) {
+        return Leaderboard.fromFirestore(doc).id;
+      }
       return null;
     } catch (e) {
+      if (returnID) {
+        return 'error';
+      }
       return state._errorHandler.call(e, this);
     }
   }

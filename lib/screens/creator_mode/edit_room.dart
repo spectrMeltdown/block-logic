@@ -11,6 +11,7 @@ import 'package:block_logic/logic/firebase_providers/selected_room.dart';
 import 'package:block_logic/logic/firebase_providers/selected_room_names.dart';
 import 'package:block_logic/logic/firebase_providers/selected_rooms.dart';
 import 'package:block_logic/logic/services/creator_mode.dart';
+import 'package:block_logic/logic/services/encryption.dart';
 import 'package:block_logic/logic/services/navigation.dart';
 import 'package:block_logic/logic/services/validator_text.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -29,9 +30,9 @@ class EditRoomBottomSheet extends ConsumerStatefulWidget {
 }
 
 class _EditRoomBottomSheetState extends ConsumerState<EditRoomBottomSheet> {
-  late final TextEditingController roomNameController;
-  late final TextEditingController maxPlayersController;
-  late final TextEditingController passwordController;
+  TextEditingController roomNameController = TextEditingController();
+  TextEditingController maxPlayersController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
   bool includesPassword = false;
   final List<String> challengeIDs = [];
   bool processing = false;
@@ -41,7 +42,7 @@ class _EditRoomBottomSheetState extends ConsumerState<EditRoomBottomSheet> {
   late final TextValidator textValidator;
   late final CreatorModeManager creatorMode;
   late final CustomNavigation nav;
-
+  late final Encryption encryption;
   @override
   Widget build(BuildContext context) {
     final roomsProvider = ref.watch(SelectedRoomsProvider(FirebaseAuth.instance.currentUser!.uid));
@@ -55,13 +56,16 @@ class _EditRoomBottomSheetState extends ConsumerState<EditRoomBottomSheet> {
                 if (selectedRoom == null) {
                   return const BLText('Couldn\'t find that room ...');
                 }
-                if (isset = false) {
-                  roomNameController = TextEditingController(text: selectedRoom.name);
-                  maxPlayersController = TextEditingController(text: selectedRoom.maxPlayers.toString());
-                  if (selectedRoom.password != null) {
-                    passwordController = TextEditingController(text: selectedRoom.password);
-                    includesPassword = true;
-                  }
+                if (isset == false) {
+                  setState(() {
+                    roomNameController = TextEditingController(text: selectedRoom.name);
+                    maxPlayersController = TextEditingController(text: selectedRoom.maxPlayers.toString());
+                    if (selectedRoom.password != null) {
+                      passwordController = TextEditingController(
+                          text: encryption.decryptString(encrypted: selectedRoom.password!, key: selectedRoom.hostID!));
+                      includesPassword = true;
+                    }
+                  });
                   isset = true;
                 }
 
@@ -166,6 +170,7 @@ class _EditRoomBottomSheetState extends ConsumerState<EditRoomBottomSheet> {
                                         return;
                                       }
                                       final success = await creatorMode.editRoom(Room(
+                                        id: selectedRoom.id,
                                         hostID: FirebaseAuth.instance.currentUser!.uid,
                                         name: roomNameController.text.trim(),
                                         maxPlayers: int.parse(maxPlayersController.text.trim()),
@@ -217,6 +222,7 @@ class _EditRoomBottomSheetState extends ConsumerState<EditRoomBottomSheet> {
     textValidator = ref.read(textValidatorProvider.notifier);
     creatorMode = ref.read(creatorModeManagerProvider.notifier);
     nav = ref.read(customNavigationProvider);
+    encryption = ref.read(encryptionProvider.notifier);
     super.initState();
   }
 }

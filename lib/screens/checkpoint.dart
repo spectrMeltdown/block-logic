@@ -136,7 +136,7 @@ class _CheckpointState extends ConsumerState<Checkpoint> {
                   accountService.initFirestoreData(type: AccountType.user);
                 }
 
-                if (userAccount?.verificationID != null && userAccount!.verificationID!.isEmpty) {
+                if (userAccount?.verificationID != null) {
                   return const VerifyPhoneNum();
                 }
                 return const MainMenuScreen();

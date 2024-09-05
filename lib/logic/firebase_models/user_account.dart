@@ -2,14 +2,14 @@ import 'package:block_logic/logic/firebase_models/account_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UserAccount extends AccountModel {
-  UserAccount({
-    super.id,
-    super.phoneNum,
-    super.displayName,
-    super.profilePicLink,
-    super.createdAt,
-    super.verificationID,
-  });
+  UserAccount(
+      {super.id,
+      super.phoneNum,
+      super.displayName,
+      super.profilePicLink,
+      super.createdAt,
+      super.verificationID,
+      super.resendToken});
 
   factory UserAccount.fromFirestore(DocumentSnapshot doc) {
     Map<String, dynamic> data = {};
@@ -18,12 +18,14 @@ class UserAccount extends AccountModel {
     }
 
     return UserAccount(
-        id: doc.id,
-        createdAt: data['createdAt'] == null ? null : (data['createdAt'] as Timestamp).toDate(),
-        displayName: data['displayName'] ?? '',
-        profilePicLink: data['profilePicLink'] ?? '',
-        phoneNum: data['phoneNum'] ?? '',
-        verificationID: data['verificationID']);
+      id: doc.id,
+      createdAt: data['createdAt'] == null ? null : (data['createdAt'] as Timestamp).toDate(),
+      displayName: data['displayName'] ?? '',
+      profilePicLink: data['profilePicLink'] ?? '',
+      phoneNum: data['phoneNum'] ?? '',
+      verificationID: data['verificationID'],
+      resendToken: data['resendToken'],
+    );
   }
   Map<String, dynamic> toFirestore() {
     Map<String, dynamic> toFirestoreMap = {};
@@ -38,6 +40,9 @@ class UserAccount extends AccountModel {
     }
     if (verificationID != null) {
       toFirestoreMap.addAll({'verificationID': verificationID});
+    }
+    if (resendToken != null) {
+      toFirestoreMap.addAll({'resendToken': resendToken});
     }
     return toFirestoreMap;
   }

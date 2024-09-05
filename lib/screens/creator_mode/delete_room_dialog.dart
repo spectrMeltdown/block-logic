@@ -40,6 +40,7 @@ class _DeleteRoomDialogState extends ConsumerState<DeleteRoomDialog> {
           height: 10,
         ),
         Row(
+          mainAxisAlignment: MainAxisAlignment.end,
           children: [
             BLTextButton(
                 onPressed: () {
@@ -49,23 +50,15 @@ class _DeleteRoomDialogState extends ConsumerState<DeleteRoomDialog> {
                   'No',
                   color: Colors.red,
                 )),
-            const SizedBox(
-              width: 10,
-            ),
             BLTextButton(
                 onPressed: () async {
                   if (processing) return;
                   processing = true;
                   final result = await room.deleteRoom(widget.roomID);
-                  if (result == null) {
-                    if (context.mounted) {
-                      nav.pop(context);
-                    }
-                    toast.showToast('Delete successfully', type: NotifType.success);
-                  } else {
-                    if (context.mounted) {
-                      nav.pop(context);
-                    }
+                  if (context.mounted) {
+                    nav.pop(context);
+                  }
+                  if (result != null) {
                     toast.showToast(result, type: NotifType.error);
                   }
                   processing = false;

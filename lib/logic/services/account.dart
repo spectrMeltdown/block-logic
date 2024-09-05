@@ -194,29 +194,36 @@ class AccountService extends _$AccountService {
     }
   }
 
-  Future<String?> verifyPhoneNumber(String phoneNumber, AccountType type) async {
+  Future<String?> verifyPhoneNumber(String phoneNumber, AccountType type, int? resendToken) async {
+    String? error;
     try {
       await FirebaseAuth.instance.verifyPhoneNumber(
         phoneNumber: phoneNumber,
         verificationCompleted: (PhoneAuthCredential credential) async {
           if (type == AccountType.user) {
-            await update(user: UserAccount(id: state._auth!.uid, verificationID: null));
+            await update(user: UserAccount(id: state._auth!.uid, verificationID: null, resendToken: null));
           } else {
-            await update(admin: AdminAccount(id: state._auth!.uid, verificationID: null));
+            await update(admin: AdminAccount(id: state._auth!.uid, verificationID: null, resendToken: null));
           }
           await state._auth!.linkWithCredential(credential);
         },
-        verificationFailed: (FirebaseAuthException e) {},
+        verificationFailed: (FirebaseAuthException e) {
+          debugPrint('OTP FAILED: $e');
+          error = state._errorHandler.call(e, this);
+        },
         codeSent: (String verificationId, int? resendToken) async {
           if (type == AccountType.user) {
-            await update(user: UserAccount(id: state._auth!.uid, verificationID: verificationId));
+            await update(
+                user: UserAccount(id: state._auth!.uid, verificationID: verificationId, resendToken: resendToken));
           } else {
-            await update(admin: AdminAccount(id: state._auth!.uid, verificationID: verificationId));
+            await update(
+                admin: AdminAccount(id: state._auth!.uid, verificationID: verificationId, resendToken: resendToken));
           }
         },
+        forceResendingToken: resendToken,
         codeAutoRetrievalTimeout: (String verificationId) {},
       );
-      return null;
+      return error;
     } catch (e) {
       return state._errorHandler.call(e, this);
     }

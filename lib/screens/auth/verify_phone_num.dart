@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:block_logic/components/background.dart';
 import 'package:block_logic/components/button/button.dart';
 import 'package:block_logic/components/button/text.dart';
@@ -35,10 +37,14 @@ class _VerifyPhoneNumState extends ConsumerState<VerifyPhoneNum> {
   late final Toast toast;
   late final TextValidator validator;
   late final AccountService accountService;
+  Timer? timer;
+  int seconds = 30;
+  bool displayDelay = false;
   final formKey = GlobalKey<FormState>();
   bool processing = false;
   String phoneNum = '';
-  String otp = '';
+  int? resendToken;
+  // String otp = '';
   bool initSent = false;
   String verificationID = '';
   final otpInput = TextEditingController();
@@ -69,9 +75,12 @@ class _VerifyPhoneNumState extends ConsumerState<VerifyPhoneNum> {
                           );
                         }
                         phoneNum = account.phoneNum != null ? '+63${account.phoneNum}' : '--';
-                        if (initSent == false) {
-                          sendOTP();
-                          initSent = true;
+                        resendToken = account.resendToken;
+                        if (!kDebugMode) {
+                          if (initSent == false) {
+                            sendOTP();
+                            initSent = true;
+                          }
                         }
                         verificationID = account.verificationID ?? '';
                         return Padding(
@@ -113,8 +122,8 @@ class _VerifyPhoneNumState extends ConsumerState<VerifyPhoneNum> {
                                     BLTextButton(
                                         onPressed: () => sendOTP(),
                                         child: BLText(
-                                          'Send OTP',
-                                          color: processing ? Colors.grey : null,
+                                          displayDelay ? 'Send OTP ($seconds)' : 'Send OTP',
+                                          color: displayDelay ? Colors.grey : null,
                                         )),
                                     BLButton(
                                         onPressed: () => verifyOTP(context, account),
@@ -164,14 +173,38 @@ class _VerifyPhoneNumState extends ConsumerState<VerifyPhoneNum> {
     super.initState();
   }
 
+  @override
+  void dispose() {
+    timer?.cancel();
+    super.dispose();
+  }
+
   void sendOTP() async {
-    if (processing) return;
+    if (processing || displayDelay) return;
     processing = true;
-    final result = await accountService.verifyPhoneNumber(phoneNum, kIsWeb ? AccountType.admin : AccountType.user);
+
+    final result =
+        await accountService.verifyPhoneNumber(phoneNum, kIsWeb ? AccountType.admin : AccountType.user, resendToken);
     if (result != null) {
       toast.showToast(result, type: NotifType.error);
     } else {
       toast.showToast('OTP sent!', type: NotifType.success);
+      setState(() {
+        displayDelay = true;
+        timer = Timer.periodic(const Duration(seconds: 1), (time) {
+          if (seconds != 0) {
+            setState(() {
+              seconds--;
+            });
+          } else {
+            setState(() {
+              seconds = 30;
+              displayDelay = false;
+            });
+            timer!.cancel();
+          }
+        });
+      });
     }
     // otp = otpService.getOTP().toString();
     // final result = await sms.send(phoneNum, otp!);
@@ -184,7 +217,7 @@ class _VerifyPhoneNumState extends ConsumerState<VerifyPhoneNum> {
     processing = true;
 
     if (formKey.currentState!.validate()) {
-      final result = await accountService.continuePhoneNumVerify(verificationID, otp);
+      final result = await accountService.continuePhoneNumVerify(verificationID, otpInput.text.trim());
       if (result == null) {
         toast.showToast('Phone verified successfully.', type: NotifType.success);
         if (kIsWeb) {

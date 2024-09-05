@@ -34,7 +34,7 @@ class LoginAlert extends _$LoginAlert {
     try {
       final testLocation = await _determinePosition();
       if (testLocation == null) {
-        return 'Enable location for login alerts.';
+        return '';
       } else {
         location = testLocation;
       }
@@ -91,7 +91,7 @@ class LoginAlert extends _$LoginAlert {
     }
 
     if (permission == LocationPermission.deniedForever) {
-      return Future.error('Location permissions are permanently denied, we cannot request permissions.');
+      return null;
     }
     return await Geolocator.getCurrentPosition();
   }

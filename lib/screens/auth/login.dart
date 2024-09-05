@@ -225,11 +225,11 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
       final error = await auth.login(email: emailController.text.trim(), password: passwordController.text.trim());
       if (error == null) {
         final loginAlert = ref.read(loginAlertProvider.notifier);
-        final result = await loginAlert.send();
-        if (result != null) {
-          if (!context.mounted) return;
-          toast.showToast(result, type: NotifType.error);
-        }
+        await loginAlert.send();
+        // if (result != null) {
+        //   if (!context.mounted) return;
+        //   toast.showToast(result, type: NotifType.error);
+        // }
         if (kIsWeb) {
           if (!context.mounted) return;
           context.go('/dashboard');

@@ -2,6 +2,7 @@ import 'package:block_logic/components/dialog/dialog.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/text/title_small.dart';
 import 'package:block_logic/components/textbox.dart';
+import 'package:block_logic/components/util/blank_widget.dart';
 import 'package:block_logic/components/util/provider_default.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_models/admin_account.dart';
@@ -31,6 +32,7 @@ class _ChangePhoneNumState extends ConsumerState<ChangePhoneNum> {
   late final TextValidator validator;
   late final AuthService authService;
   final formKey = GlobalKey<FormState>();
+  Widget msg = const BlankWidget();
   bool processing = false;
   bool set = false;
   @override
@@ -72,6 +74,10 @@ class _ChangePhoneNumState extends ConsumerState<ChangePhoneNum> {
                       validator: (value) => validator.validatePhoneNum(value, true),
                     ),
                     const SizedBox(
+                      height: 5,
+                    ),
+                    msg,
+                    const SizedBox(
                       height: 10,
                     ),
                     Row(
@@ -101,19 +107,28 @@ class _ChangePhoneNumState extends ConsumerState<ChangePhoneNum> {
 
                                     result = await accountService.update(
                                         admin: AdminAccount(
-                                            id: FirebaseAuth.instance.currentUser!.uid, phoneNum: newPhoneNum));
+                                            id: FirebaseAuth.instance.currentUser!.uid,
+                                            phoneNum: newPhoneNum,
+                                            verificationID: ''));
                                   } else {
                                     // result = await authService.addPhoneNumber(newPhoneNum);
                                     result = await accountService.update(
                                         user: UserAccount(
-                                            id: FirebaseAuth.instance.currentUser!.uid, phoneNum: newPhoneNum));
+                                            id: FirebaseAuth.instance.currentUser!.uid,
+                                            phoneNum: newPhoneNum,
+                                            verificationID: ''));
                                   }
-                                  if (result == null) {
+                                  if (result != null) {
+                                    setState(() {
+                                      msg = BLText(
+                                        result!,
+                                        color: Colors.deepOrange,
+                                      );
+                                    });
+                                  } else {
                                     if (!context.mounted) return;
                                     nav.pop(context);
                                   }
-                                } else {
-                                  nav.pop(context);
                                 }
                               }
                               setState(() {

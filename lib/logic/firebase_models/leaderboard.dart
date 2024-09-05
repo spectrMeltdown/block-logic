@@ -37,16 +37,18 @@ class Leaderboard {
       id: doc.id,
       roomName: data['roomName'] ?? '',
       roomID: data['roomID'] ?? '',
-      totalScore: data['totalScore'] ?? '',
+      totalScore: data['totalScore'],
       status: status,
-      players: data['players'] ?? [],
+      players: data['players'] == null
+          ? <String>[]
+          : (data['players'] as List<dynamic>).map((player) => player as String).toList(),
       date: data['date'] == null ? null : (data['date'] as Timestamp).toDate(),
     );
   }
   Map<String, dynamic> toFirestore() {
     Map<String, dynamic> toFirestoreMap = {};
     if (date != null) {
-      toFirestoreMap.addAll({'dateCreated': Timestamp.fromDate(date!)});
+      toFirestoreMap.addAll({'date': Timestamp.fromDate(date!)});
     }
     if (roomID != null) {
       toFirestoreMap.addAll({'roomID': roomID});
@@ -58,7 +60,7 @@ class Leaderboard {
       toFirestoreMap.addAll({'totalScore': totalScore});
     }
     if (status != null) {
-      toFirestoreMap.addAll({'totalScore': status!.name});
+      toFirestoreMap.addAll({'status': status!.name});
     }
     if (players != null) {
       toFirestoreMap.addAll({'players': players});
