@@ -4,7 +4,9 @@ import 'package:block_logic/logic/game/py_conditional.dart';
 import 'package:block_logic/logic/game/py_literal.dart';
 import 'package:block_logic/logic/game/py_loops.dart';
 import 'package:block_logic/logic/game/py_operators.dart';
+import 'package:copy_with_extension/copy_with_extension.dart';
 
+@CopyWith()
 class GameBlockData {
   //String id;
   CodeBlockType type;

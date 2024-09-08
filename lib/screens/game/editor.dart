@@ -1,5 +1,4 @@
 import 'package:block_logic/components/panel/bordered.dart';
-import 'package:block_logic/screens/game/custom_add_tab.dart';
 import 'package:block_logic/screens/game/custom_tab.dart';
 import 'package:block_logic/screens/game/editor_view.dart';
 import 'package:flutter/material.dart';
@@ -17,58 +16,55 @@ class _EditorState extends ConsumerState<Editor> with TickerProviderStateMixin {
   List<String> mainTabList = [];
   List<Widget> mainTabViewList = [];
   final editorWidgetKey = GlobalKey();
+  BoxConstraints? constraints;
   void addNew() {
     /// add the new tab
     mainTabList.add('New ${mainTabList.length + 1}');
-    mainTabViewList.add(EditorView(editorWidgetKey: editorWidgetKey));
+    mainTabViewList.add(EditorView(parentConstraints: constraints!));
 
-    mainTabController = TabController(
-        length: mainTabList.length + 1,
-        vsync: this,
-        initialIndex: mainTabList.length - 1);
+    mainTabController =
+        TabController(length: mainTabList.length + 1, vsync: this, initialIndex: mainTabList.length - 1);
     setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
-    return Flexible(
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15),
-            child: SizedBox(
-              width: double.maxFinite,
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    TabBar(
-                        onTap: disableForAddTab,
-                        indicator:
-                            const BoxDecoration(color: Colors.transparent),
-                        isScrollable: true,
-                        tabAlignment: TabAlignment.start,
-                        labelColor: Colors.white,
-                        labelPadding: const EdgeInsets.symmetric(horizontal: 3),
-                        controller: mainTabController,
-                        tabs: [
-                          ...List.generate(
-                              mainTabList.length,
-                              (index) => buildTab(mainTabList[index], index,
-                                  mainTabController.index)),
-                          AddTab(addNew)
-                        ]),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          SizedBox(
-            key: editorWidgetKey,
-            width: double.maxFinite,
-            height: mediaQuery.size.height / 1.95,
+    return Column(
+      children: [
+        // Padding(
+        //   padding: const EdgeInsets.symmetric(horizontal: 15),
+        //   child: SizedBox(
+        //     width: double.maxFinite,
+        //     child: SingleChildScrollView(
+        //       scrollDirection: Axis.horizontal,
+        //       child: Row(
+        //         crossAxisAlignment: CrossAxisAlignment.start,
+        //         children: [
+        //           TabBar(
+        //               onTap: disableForAddTab,
+        //               indicator:
+        //                   const BoxDecoration(color: Colors.transparent),
+        //               isScrollable: true,
+        //               tabAlignment: TabAlignment.start,
+        //               labelColor: Colors.white,
+        //               labelPadding: const EdgeInsets.symmetric(horizontal: 3),
+        //               controller: mainTabController,
+        //               tabs: [
+        //                 ...List.generate(
+        //                     mainTabList.length,
+        //                     (index) => buildTab(mainTabList[index], index,
+        //                         mainTabController.index)),
+        //                 AddTab(addNew)
+        //               ]),
+        //         ],
+        //       ),
+        //     ),
+        //   ),
+        // ),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 20),
             child: BLBorderedPanel(
               child: TabBarView(
                   clipBehavior: Clip.antiAlias,
@@ -76,16 +72,26 @@ class _EditorState extends ConsumerState<Editor> with TickerProviderStateMixin {
                   controller: mainTabController,
                   children: [
                     ...List.generate(
-                        mainTabViewList.length, (index) => buildTabView()),
+                        mainTabViewList.length,
+                        (index) => LayoutBuilder(builder: (context, thisConstraints) {
+                              constraints ??= thisConstraints;
+                              return buildTabView();
+                            })),
 
                     /// placeholder since tabs & tabview length must match
                     /// (tabs has an extra tab for add tab)
                     const Placeholder()
                   ]),
             ),
-          )
-        ],
-      ),
+          ),
+        )
+        // SizedBox(
+        //   key: editorWidgetKey,
+        //   width: double.maxFinite,
+        //   height: mediaQuery.size.height / 1.95,
+        //   child:
+        // )
+      ],
     );
   }
 
@@ -98,15 +104,13 @@ class _EditorState extends ConsumerState<Editor> with TickerProviderStateMixin {
 
   Widget buildTabView() {
     return EditorView(
-      editorWidgetKey: editorWidgetKey,
+      parentConstraints: constraints!,
     );
   }
 
   void disableForAddTab(int index) {
     /// if add tab was tapped, move back to previousIndex
-    mainTabController.index = index == mainTabController.length
-        ? mainTabController.previousIndex
-        : index;
+    mainTabController.index = index == mainTabController.length ? mainTabController.previousIndex : index;
     setState(() {});
   }
 
@@ -119,9 +123,8 @@ class _EditorState extends ConsumerState<Editor> with TickerProviderStateMixin {
   @override
   void initState() {
     mainTabList = ['Main'];
-    mainTabViewList = [EditorView(editorWidgetKey: editorWidgetKey)];
-    mainTabController =
-        TabController(length: mainTabList.length + 1, vsync: this);
+    mainTabViewList = [EditorView(parentConstraints: constraints!)];
+    mainTabController = TabController(length: mainTabList.length + 1, vsync: this);
 
     mainTabController.addListener(() {
       setState(() {});

@@ -25,7 +25,7 @@ class _TimeBoxState extends ConsumerState<TimeBox> {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('pause timer in widget: $shouldPauseTimer');
+    // debugPrint('pause timer in widget: $shouldPauseTimer');
     if (shouldPauseTimer) {
       pauseTimer();
     } else {

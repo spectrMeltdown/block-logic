@@ -10,7 +10,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class GameBlock extends ConsumerStatefulWidget {
   final GameBlockData data;
-  const GameBlock({required this.data, super.key});
+  final List<int> indexPath;
+  const GameBlock({required this.indexPath, required this.data, super.key});
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => GameCodeBlockState();
 }
@@ -66,8 +67,15 @@ class GameCodeBlockState extends ConsumerState<GameBlock> with TickerProviderSta
   Widget buildBlockState(CodeBlockState state) {
     switch (state) {
       case CodeBlockState.unselected:
-        debugPrint('${widget.data.name} unselected');
-        return BlockDesignWrapper(data: widget.data, child: Center(child: BLText(widget.data.name, size: 14)));
+        return BlockDesignWrapper(
+          data: widget.data,
+          child: Center(
+            child: BLText(
+              widget.data.name,
+              size: 14,
+            ),
+          ),
+        );
       case CodeBlockState.faded:
 
         /// if still in the block selector
@@ -87,30 +95,51 @@ class GameCodeBlockState extends ConsumerState<GameBlock> with TickerProviderSta
         switch (widget.data.type) {
           case CodeBlockType.loops:
           case CodeBlockType.conditionals:
-            return BlockDesignWrapper(data: widget.data, child: GameBlockWithChild(data: widget.data));
+            debugPrint('With child');
+            return BlockDesignWrapper(
+              data: widget.data,
+              child: GameBlockWithChild(data: widget.data),
+            );
           case CodeBlockType.objects:
           case CodeBlockType.keywords:
           case CodeBlockType.functions:
           case CodeBlockType.operators:
           case CodeBlockType.literals:
           case CodeBlockType.variables:
-            return BlockDesignWrapper(data: widget.data, child: Center(child: BLText(widget.data.name, size: 14)));
+            return BlockDesignWrapper(
+              data: widget.data,
+              child: Center(
+                child: BLText(
+                  widget.data.name,
+                  size: 14,
+                ),
+              ),
+            );
         }
 
       case CodeBlockState.selected:
-        debugPrint('${widget.data.name} selected');
         switch (widget.data.type) {
           case CodeBlockType.loops:
           case CodeBlockType.conditionals:
-            debugPrint('selected');
-            return BlockDesignWrapper(data: widget.data, child: GameBlockWithChild(data: widget.data));
+            return BlockDesignWrapper(
+              data: widget.data,
+              child: GameBlockWithChild(data: widget.data),
+            );
           case CodeBlockType.objects:
           case CodeBlockType.keywords:
           case CodeBlockType.functions:
           case CodeBlockType.operators:
           case CodeBlockType.literals:
           case CodeBlockType.variables:
-            return BlockDesignWrapper(data: widget.data, child: Center(child: BLText(widget.data.name, size: 14)));
+            return BlockDesignWrapper(
+              data: widget.data,
+              child: Center(
+                child: BLText(
+                  widget.data.name,
+                  size: 14,
+                ),
+              ),
+            );
         }
     }
   }

@@ -16,7 +16,7 @@ class CreatorModeManager extends _$CreatorModeManager {
       encryptedPass = state._encryption.encryptString(text: room.password!, key: room.hostID!);
     }
     try {
-      await state._rooms.doc().set(room.copyWith(password: encryptedPass!).toFirestore());
+      await state._rooms.doc().set(room.copyWith(password: encryptedPass).toFirestore());
       return null;
     } catch (e) {
       return state._errorHandler.call(e, this);
@@ -42,7 +42,7 @@ class CreatorModeManager extends _$CreatorModeManager {
     }
   }
 
-  Future<String?> editRoom(Room room) async {
+  Future<String?> editRoom(Room room, [bool removePass = false]) async {
     if (room.id == null || room.id!.isEmpty) {
       throw ('Room id must not be empty!');
     }
@@ -52,7 +52,10 @@ class CreatorModeManager extends _$CreatorModeManager {
       encryptedPass = state._encryption.encryptString(text: room.password!, key: room.hostID!);
     }
     try {
-      await state._rooms.doc(room.id).update(room.copyWith(password: encryptedPass!).toFirestore());
+      await state._rooms.doc(room.id).update(room.copyWith(password: encryptedPass).toFirestore());
+      if (removePass) {
+        await state._rooms.doc(room.id).update({'password': FieldValue.delete()});
+      }
       return null;
     } catch (e) {
       return state._errorHandler.call(e, this);

@@ -156,7 +156,7 @@ class _LeaderboardState extends ConsumerState<SelectedLeaderboard> {
                           final completed = scores[ScoreStatus.complete];
                           final incomplete = scores[ScoreStatus.incomplete];
                           final pending = scores[ScoreStatus.pending];
-                          final lists = scores.values.toList();
+                          // final lists = scores.values.toList();
                           return Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: SingleChildScrollView(
@@ -174,7 +174,7 @@ class _LeaderboardState extends ConsumerState<SelectedLeaderboard> {
                                   ], rows: [
                                     ...List.generate(completed.length, (i) {
                                       return DataRow(cells: [
-                                        DataCell(BLText(i.toString())),
+                                        DataCell(BLText((i + 1).toString())),
                                         DataCell(SizedBox(
                                           width: width * 0.4,
                                           child: Row(
@@ -298,7 +298,7 @@ class _LeaderboardState extends ConsumerState<SelectedLeaderboard> {
           if (!widget.showBackButton)
             BLButton(
                 onPressed: () {
-                  nav.pop(context);
+                  nav.pop(context, 'feedback');
                 },
                 child: const BLText(
                   'Back to rooms',

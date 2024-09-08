@@ -54,10 +54,8 @@ class _DeleteRoomDialogState extends ConsumerState<DeleteRoomDialog> {
                 onPressed: () async {
                   if (processing) return;
                   processing = true;
+                  nav.pop(context);
                   final result = await room.deleteRoom(widget.roomID);
-                  if (context.mounted) {
-                    nav.pop(context);
-                  }
                   if (result != null) {
                     toast.showToast(result, type: NotifType.error);
                   }

@@ -1,31 +1,27 @@
 targets:
+  copy_with:
+    sources:
+      include:
+        - lib/logic/game/**.dart
+    builders:
+    copy_with_extension_gen:
+      enabled: true
+      options:
+        copy_with_null: true # default is false
+        skip_fields: true # default is false
+        build_extensions:
+          "lib/{{path}}/{{file}}.dart": "lib/{{path}}/generated/{{file}}.g.dart"
   $default:
     sources:
       include:
-      - lib/logic/**.dart
-      - $package$
-      - lib/$lib$
+        - lib/logic/**.dart
+        - $package$
+        - lib/$lib$
     builders:
       source_gen|combining_builder:
         generate_for:
           - lib/logic/firebase_providers/*.dart
           - lib/logic/services/*.dart
         options:
-          build_extensions: 
-            #{'.service.dart': ['.gr.dart']}
-            'lib/{{path}}/{{file}}.dart': 'lib/{{path}}/generated/{{file}}.g.dart'
-            #'^lib/logic/firebase_providers/{{}}.provider.dart': 'lib/logic/firebase_providers/generated/{{}}.g.dart'
-  # servicesTarget:
-  #   sources:
-  #     - lib/**.dart
-  #     - lib/logic/enum1.dart
-  #     - $package$
-  #     - lib/$lib$
-  #   builders:
-  #     source_gen|combining_builder:
-  #       generate_for:
-  #         - lib/logic/services/*.service.dart
-  #       options: 
-  #         build_extensions:
-  #           #'lib/{{path}}/{{file}}.dart': 'lib/{{path}}/generated/{{file}}.g.dart'
-  #           '^lib/logic/services/{{}}.service.dart': 'lib/logic/services/generated/{{}}.g.dart'
+          build_extensions:
+            "lib/{{path}}/{{file}}.dart": "lib/{{path}}/generated/{{file}}.g.dart"

@@ -31,19 +31,19 @@ class GameChallenge extends ConsumerWidget {
           roomName: roomName,
           challenge: challenge,
         ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-          child: Container(
-            constraints: BoxConstraints(
-              maxHeight: MediaQuery.of(context).size.height / 8.3,
-            ),
+        Flexible(
+          flex: 0,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
             child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-              ChallengeBox(
-                challenge: challenge,
+              Expanded(
+                child: ChallengeBox(
+                  challenge: challenge,
+                ),
               ),
               const SizedBox(width: 10),
-              Container(
-                constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width / 2.9),
+              ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: 120),
                 child: Column(
                   children: [
                     GameSubmitButton(updateChallenge),
@@ -56,7 +56,7 @@ class GameChallenge extends ConsumerWidget {
           ),
         ),
         const SizedBox(height: 10),
-        const Editor(),
+        Flexible(flex: 2, child: const Editor()),
         // TODO: get blocks from challenge, save to gameManager, load into gameManager
         Padding(padding: const EdgeInsets.only(bottom: 20), child: GameBlocks(AllBlocks.getAll())),
       ],

@@ -3,9 +3,6 @@ import 'package:block_logic/logic/firebase_models/leaderboard.dart';
 import 'package:block_logic/logic/firebase_models/room.dart';
 import 'package:block_logic/logic/firebase_models/score.dart';
 import 'package:block_logic/logic/game/block_data.dart';
-import 'package:block_logic/logic/game/py_class.dart';
-import 'package:block_logic/logic/game/py_function.dart';
-import 'package:block_logic/logic/game/py_variable.dart';
 import 'package:block_logic/logic/services/error_handler.dart';
 import 'package:block_logic/logic/services/leaderboard_manager.dart';
 import 'package:block_logic/logic/services/room_manager.dart';
@@ -19,30 +16,6 @@ part 'generated/game_manager.g.dart';
 
 @riverpod
 class GameManager extends _$GameManager {
-  /// adds data to the current tree the callee is on
-  List<int> addData({
-    required List<int> currentIndexPath,
-    required List<GameBlockData> data,
-  }) {
-    //   final List<GameBlockData> finalData = [];
-    //   for (final blockData in data) {
-    //     finalData.add(blockData.copyWith(state: CodeBlockState.selected));
-    //   }
-    //   final parentList = _getNestedList(currentIndexPath);
-
-    //   state.blockDataTree.add(data);
-    //   debugPrint(state.blockDataTree.toString());
-    //   return currentIndexPath.add();
-    // }
-
-    // /// gets the item found at the indexPath, deletes it from the tree
-    // void deleteFromTree(List<int> indexPath) {
-    //   final listToDelete = _getNestedList(indexPath);
-    //   // remove it
-    //   listToDelete.removeAt(indexPath.last);
-    return [];
-  }
-
   @override
   GameState build() {
     final errorHandler = ref.read(errorHandlerProvider.notifier);
@@ -50,16 +23,75 @@ class GameManager extends _$GameManager {
     final scoreManager = ref.read(scoreManagerProvider.notifier);
     final roomManager = ref.read(roomManagerProvider.notifier);
     return GameState(
+      blockDataTree: [],
       scoreManager: scoreManager,
       roomManager: roomManager,
-      blockDataTree: [],
-      variables: [],
-      classes: [],
-      functions: [],
       leaderboardManager: leaderboardManager,
       errorHandler: errorHandler,
     );
   }
+
+  /// adds data to the current tree the callee is on
+  List<int> addData({
+    required List<int> indexPath,
+    required GameBlockData data,
+  }) {
+    // make a deep copy of the gameblockdata
+    final newData = data.copyWith(state: CodeBlockState.selected);
+    if (indexPath.isEmpty) {
+      state.blockDataTree.add(newData);
+      return [state.blockDataTree.length];
+    }
+    final parentData = getBlockData(indexPath);
+    if (parentData.body == null) {
+      parentData.body = [newData];
+    } else {
+      parentData.body!.add(newData);
+    }
+    return [...indexPath, insertData(state.blockDataTree, indexPath, parentData)!];
+  }
+
+  int? insertData(List<GameBlockData> currentList, List<int> indexPath, GameBlockData data) {
+    for (int i = 0; i < currentList.length; i++) {
+      if (indexPath.first >= 0 && indexPath.first <= currentList.length - 1) {
+        if (indexPath.length == 1) {
+        } else {
+          final indexToGo = indexPath.first;
+          indexPath.removeAt(0);
+          if (currentList[indexToGo].body == null) {
+            throw ('selected GameBlockData in currentList has no body!');
+          }
+          insertData(currentList[indexToGo].body!, indexPath, data);
+        }
+      } else {
+        throw ('Index was greater than the current list length!');
+      }
+    }
+  }
+
+  GameBlockData getBlockData(List<int> indexPath) {
+    List<GameBlockData> currentList = state.blockDataTree;
+    for (int i = 0; i < indexPath.length; i++) {
+      if (i >= 0 && i < currentList.length) {
+        if (i == currentList.length - 1) {
+          return currentList[i];
+        } else {
+          currentList = currentList[i].body!;
+        }
+      } else {
+        throw ('Incorrect index path.');
+      }
+    }
+    throw ('Never found the targetted data!');
+  }
+
+  /// gets the item found at the indexPath, deletes it from the tree
+  // void deleteFromTree(List<int> indexPath) {
+  //   final listToDelete = _getNestedList(indexPath);
+  //   // remove it
+  //   listToDelete.removeAt(indexPath.last);
+  //   return [];
+  // }
 
   List<int>? getPath(String targetID) {
     //final List<int> path = [];
@@ -73,6 +105,31 @@ class GameManager extends _$GameManager {
 
   bool getTimer() => state.pauseTimer;
 
+  void isDropCancelled(bool newState) => state.isDropCancelled = newState;
+
+  String getLeaderboardID() => state._leaderboardID!;
+
+  GameBlockData? obtainPassedBlockData() {
+    // get the data first
+    final blockData = state._blockData;
+
+    // remove the data from manager
+    removePassedBlockData();
+
+    //return
+    return blockData;
+  }
+
+  /// when passing block data from [Draggable] to [DragTarget].
+  void passBlockData(GameBlockData blockData) => state._blockData = blockData;
+  void removePassedBlockData() => state._blockData == null;
+
+  // when pausing game
+  void pauseTimer() => state.pauseTimer = true;
+  void resumeTimer() => state.pauseTimer = false;
+  void updateTimeElapsed(int seconds) => state._timeElapsed = seconds;
+
+// initiate the manager and game
   Future<String?> init(Room room, String leaderboardID) async {
     if (room.id == null || room.id!.isEmpty) {
       throw (ArgumentError('Room ID cannot be empty!'));
@@ -81,7 +138,7 @@ class GameManager extends _$GameManager {
       throw (ArgumentError('Leaderboard ID cannot be empty!'));
     }
 
-    /// create leaderboard (host), add self to list of players (both host & player)
+// save for later
     state._roomID = room.id;
     state._leaderboardID = leaderboardID;
 
@@ -103,10 +160,6 @@ class GameManager extends _$GameManager {
       ),
     );
     return null;
-  }
-
-  void isDropCancelled(bool newState) {
-    state.isDropCancelled = newState;
   }
 
   Future<String?> leaveGame(bool isComplete, [bool returnValue = false]) async {
@@ -151,104 +204,40 @@ class GameManager extends _$GameManager {
       return state._errorHandler.call(e, this);
     }
   }
-
-  String getLeaderboardID() => state._leaderboardID!;
-
-  GameBlockData? obtainPassedBlockData() {
-    final blockData = state._blockData;
-    removePassedBlockData();
-    return blockData;
-  }
-
-  /// when passing block data from [Draggable] to [DragTarget].
-  void passBlockData(GameBlockData blockData) {
-    state._blockData = blockData;
-  }
-
-  void pauseTimer() {
-    state.pauseTimer = true;
-  }
-
-  void removePassedBlockData() {
-    state._blockData == null;
-  }
-
-  // List<GameBlockData> updateList(List<int> indexPath, {bool isTopLevel = false}) {
-  //   if (isTopLevel == true) {
-  //     return state.blockDataTree;
-  //   }
-  //   // if only one index was provided, then get the index and return
-  //   else if (indexPath.length == 1) {
-  //     return state.blockDataTree[indexPath.first];
-  //   } else if (indexPath.isEmpty) {
-  //     throw ArgumentError('Indexes list cannot be empty');
-  //   }
-
-  //   // holds the current list to search in
-  //   List<dynamic> currentList = state.blockDataTree;
-
-  //   /// loop though current list. Final list is assigned to currentList.
-  //   /// Excludes the last index, as this is the item to delete
-  //   for (int i = 0; i < indexPath.length - 1; i++) {
-  //     // get the current index in indexPath
-  //     int index = indexPath[i];
-
-  //     // check if index is valid
-  //     if (index < 0 ||
-  //         index >= currentList.length ||
-  //         currentList[index] is! List) {
-  //       throw ArgumentError('Invalid index path');
-  //     }
-
-  //     // get the next nested list, assign as currentList
-  //     currentList = currentList[index];
-  //   }
-
-  //   // get last index
-  //   int lastIndex = indexPath.last;
-  //   // check if index is valid
-  //   if (lastIndex < 0 || lastIndex >= currentList.length) {
-  //     throw ArgumentError('Invalid final index');
-  //   }
-  //   return currentList;
-  // }
-
-  // List<dynamic> getBlockData(List<int> indexPath, {bool isTopLevel = false}) =>
-  //     _getNestedList(indexPath, isTopLevel: isTopLevel);
-
-  void resumeTimer() {
-    state.pauseTimer = false;
-  }
-
-  void updateTimeElapsed(int seconds) {
-    state._timeElapsed = seconds;
-  }
 }
 
 class GameState {
-  bool isDropCancelled;
-  // final _db = FirebaseFirestore.instance;
-  List<PyVariable> variables = [];
-  List<PyClass> classes = [];
-  List<PyFunction> functions = [];
-  List<GameBlockData> blockDataTree = [];
+  // used when opening/closing pause menu
   bool pauseTimer;
-  bool _processing;
-  int? _score;
+
+  // the block tree that keeps track of the data in the tree
+  List<GameBlockData> blockDataTree = [];
+
+  // used when passing data from dragtarget to dragtarget
   GameBlockData? _blockData;
+  bool isDropCancelled;
+
+// for async tasks
+  bool _processing;
+
+  // for navigating the controller later on
   ScrollController? verticalScrollController;
   ScrollController? horizontalScrollController;
+
+  // you know this
   final ErrorHandler _errorHandler;
-  // Room? _room;
-  //Leaderboard? _leaderboard;
+
+  // below is used for updating room, leaderboard, and score state in database
   final auth = FirebaseAuth.instance.currentUser!;
   final LeaderboardManager leaderboardManager;
   final ScoreManager scoreManager;
   final RoomManager roomManager;
   String? _leaderboardID;
   String? _roomID;
+  int? _score;
   int? _timeElapsed;
-  //Score? _score;
+
+  // constructor
   GameState({
     bool processing = false,
     this.isDropCancelled = false,
@@ -256,11 +245,8 @@ class GameState {
     this.pauseTimer = false,
     required ErrorHandler errorHandler,
     required this.blockDataTree,
-    required this.variables,
     required this.roomManager,
-    required this.classes,
     required this.leaderboardManager,
-    required this.functions,
     this.verticalScrollController,
     this.horizontalScrollController,
   })  : _errorHandler = errorHandler,

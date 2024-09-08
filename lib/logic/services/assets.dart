@@ -14,6 +14,7 @@ class Assets {
   final String leadeboardSecond = 'assets/images/leaderboard-second.png';
   final String leadeboardThird = 'assets/images/leaderboard-third.png';
   final String headerWeb = 'assets/images/header_web.jpg';
+  final String feedback = 'assets/images/feedback.png';
 
   /// audio
   /// TODO: find the following audio
@@ -32,6 +33,9 @@ class Assets {
   /// animations
   final String loading = 'assets/animations/loading.json';
   final String emailVerification = 'assets/animations/email-verification.json';
+  final String loadingBricks1 = 'assets/animations/loading-bricks-1.json';
+  final String loadingBricks2 = 'assets/animations/loading-bricks-2.json';
+  final String premiumCrown = 'assets/animations/premium-crown.json';
 
   /// backgrounds
   // static final String bg1 = 'assets/animations/backgrounds/bg-1.json';

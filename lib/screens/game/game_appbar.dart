@@ -32,11 +32,10 @@ class _GameAppbarState extends ConsumerState<GameAppbar> {
   //late bool pauseTimer;
   //late final GameState GameState;
   late final DialogService pauseDialog;
-
+  late final GameManager gameManager;
   @override
   Widget build(BuildContext context) {
     ref.watch(gameManagerProvider);
-    final gameManager = ref.read(gameManagerProvider.notifier);
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -164,6 +163,7 @@ class _GameAppbarState extends ConsumerState<GameAppbar> {
   void initState() {
     pauseDialog = ref.read(dialogServiceProvider.notifier);
     audio = ref.read(bLAudioStateProvider.notifier);
+    gameManager = ref.read(gameManagerProvider.notifier);
     super.initState();
   }
 }

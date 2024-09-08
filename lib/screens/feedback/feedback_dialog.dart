@@ -12,9 +12,11 @@ import 'package:block_logic/logic/services/navigation.dart';
 import 'package:block_logic/logic/services/toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class FeedbackDialog extends ConsumerStatefulWidget {
-  const FeedbackDialog({super.key});
+  final String? title;
+  const FeedbackDialog({this.title, super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _FeedbackDialogState();
@@ -42,8 +44,17 @@ class _FeedbackDialogState extends ConsumerState<FeedbackDialog> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              const BLSmallTitle('Send Feedback'),
-              const SizedBox(height: 10),
+              Row(
+                children: [
+                  Icon(FontAwesomeIcons.paperPlane),
+                  SizedBox(width: 10),
+                  BLSmallTitle(
+                    widget.title ?? 'Send Feedback',
+                    bottomPadding: 2,
+                  )
+                ],
+              ),
+              const SizedBox(height: 20),
               const BLText('Title:'),
               const SizedBox(height: 5),
               BLTextBox(

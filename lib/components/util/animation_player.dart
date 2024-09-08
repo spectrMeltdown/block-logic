@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
@@ -12,8 +11,15 @@ class BLAnimationPlayer extends StatefulWidget {
 
   final double? height;
   final double? width;
-  const BLAnimationPlayer(this.animation,
-      {this.controller, this.controllerActions, this.height = 200, this.width = 200, this.size, super.key});
+  const BLAnimationPlayer(
+    this.animation, {
+    this.controller,
+    this.controllerActions,
+    this.height = 200,
+    this.width = 200,
+    this.size,
+    super.key,
+  });
 
   @override
   State<BLAnimationPlayer> createState() => _BLAnimationPlayerState();
@@ -30,18 +36,13 @@ class _BLAnimationPlayerState extends State<BLAnimationPlayer> with TickerProvid
       width: (widget.size != null) ? widget.size : widget.width,
       height: (widget.size != null) ? widget.size : widget.height,
       onLoaded: (comp) {
-        if (kDebugMode) {
-          for (int i = 0; i <= comp.layers.length; i++) {
-            debugPrint('Found $i layers');
-          }
-        }
+        // if (kDebugMode) {
+        //   for (int i = 0; i <= comp.layers.length; i++) {
+        //     debugPrint('Found $i layers');
+        //   }
+        // }
         widget.controllerActions?.call(comp);
       },
     );
-  }
-
-  @override
-  void initState() {
-    super.initState();
   }
 }

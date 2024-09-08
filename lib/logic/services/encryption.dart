@@ -12,28 +12,25 @@ class Encryption extends _$Encryption {
   String decryptString({required String encrypted, required String key}) {
     if (encrypted.isEmpty) return encrypted;
     if (key.isEmpty) throw (ArgumentError('Key should not be blank!'));
-    final String decrypted =
-        _getEncrypter(key).decrypt64(encrypted, iv: _getIV());
+    final String decrypted = _getEncrypter(key).decrypt64(encrypted, iv: _getIV());
     return decrypted;
   }
 
   String encryptString({required String text, required String key}) {
     if (text.isEmpty) return text;
     if (key.isEmpty) throw (ArgumentError('Key should not be blank!'));
-    final String encrypted =
-        _getEncrypter(key).encrypt(text, iv: _getIV()).base64;
+    final String encrypted = _getEncrypter(key).encrypt(text, iv: _getIV()).base64;
     return encrypted;
   }
 
   encrypt_lib.Encrypter _getEncrypter(String key) {
-    debugPrint(key.length.toString());
+    // debugPrint(key.length.toString());
     //assert(key.length == 32);
 
     /// use firebase_auth id, appended and prepended with '==' symbols to reach a length of 32
     final uniqueString = 'bl${key}bl';
     final finalKey = encrypt_lib.Key.fromUtf8(uniqueString);
-    final encrypter =
-        encrypt_lib.Encrypter(encrypt_lib.AES(finalKey, padding: null));
+    final encrypter = encrypt_lib.Encrypter(encrypt_lib.AES(finalKey, padding: null));
     return encrypter;
   }
 

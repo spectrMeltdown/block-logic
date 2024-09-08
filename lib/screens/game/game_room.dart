@@ -61,6 +61,7 @@ class _GameRoomState extends ConsumerState<GameRoom> with WidgetsBindingObserver
                       }
                       return SelectedLeaderboard(
                         leaderboard,
+                        showBackButton: false,
                         // roomTitle: widget.room.name!,
                       );
                     },
@@ -95,8 +96,8 @@ class _GameRoomState extends ConsumerState<GameRoom> with WidgetsBindingObserver
                   );
                 }
                 challengeLength ??= challenges.length;
-                debugPrint('Challenge length: $challengeLength');
-                debugPrint('current challenge: $currentChallenge');
+                // debugPrint('Challenge length: $challengeLength');
+                // debugPrint('current challenge: $currentChallenge');
                 return GameChallenge(
                   roomName: widget.room.name ?? '',
                   challenge: challenges[currentChallenge],

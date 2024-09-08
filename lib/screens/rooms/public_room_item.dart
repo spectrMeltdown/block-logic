@@ -46,7 +46,13 @@ class _PublicRoomItemState extends ConsumerState<PublicRoomItem> {
               if (widget.room.password == null || widget.room.password!.isEmpty) {
                 await roomManager.joinRoom(widget.room.id!);
                 if (context.mounted) {
-                  nav.push(context, WaitingRoom(widget.room.id!));
+                  nav.push(
+                    context,
+                    WaitingRoom(widget.room.id!),
+                    onPop: () {
+                      // TODO: display feedback if popped from leaderboard
+                    },
+                  );
                 }
               } else {
                 final result = await dialog.show(

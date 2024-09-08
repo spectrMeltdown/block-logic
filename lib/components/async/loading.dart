@@ -34,18 +34,11 @@ class BLLoading extends ConsumerStatefulWidget {
 
 class _BLLoadingState extends ConsumerState<BLLoading> with TickerProviderStateMixin {
   AnimationController? _controller;
+  late final Assets assets;
   @override
   Widget build(BuildContext context) {
-    final assets = ref.watch(assetsProvider);
     switch (widget.type) {
       case LoadingType.full:
-        return Center(
-            child: BLAnimationPlayer(
-          assets.loading,
-          controller: _controller,
-          size: 200,
-        ));
-      case LoadingType.normal:
         return Center(
             child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -55,6 +48,19 @@ class _BLLoadingState extends ConsumerState<BLLoading> with TickerProviderStateM
             CircularProgressIndicator(
               color: widget.color ?? Colors.white,
             ),
+          ],
+        ));
+      case LoadingType.normal:
+        return Center(
+            child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (widget.message != null) BLText(widget.message!),
+            if (widget.message != null) const SizedBox(height: 10),
+            BLAnimationPlayer(
+              assets.loadingBricks1,
+              size: 100,
+            )
           ],
         ));
       default:
@@ -71,6 +77,7 @@ class _BLLoadingState extends ConsumerState<BLLoading> with TickerProviderStateM
   @override
   void initState() {
     if (!kIsWeb) _controller = AnimationController(vsync: this);
+    assets = ref.read(assetsProvider);
     super.initState();
   }
 }

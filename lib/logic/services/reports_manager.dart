@@ -1,6 +1,7 @@
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/services/error_handler.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'generated/reports_manager.g.dart';
@@ -8,11 +9,14 @@ part 'generated/reports_manager.g.dart';
 @riverpod
 class ReportsManager extends _$ReportsManager {
   Future<String?> add(ReportType type, int count) async {
+    // TODO: Reports are currently disabled in debug to prevent database read/write cap
     try {
-      await state._db.doc(type.name).collection('list').doc().set({
-        'date': DateTime.now(),
-        'count': count,
-      });
+      if (!kDebugMode) {
+        await state._db.doc(type.name).collection('list').doc().set({
+          'date': DateTime.now(),
+          'count': count,
+        });
+      }
       return null;
     } catch (e) {
       return state._errorHandler.call(e, this);

@@ -23,15 +23,14 @@ class AuthService extends _$AuthService {
   //       await state._auth.currentUser?.updatePhoneNumber(credential);
   //     },
   //     verificationFailed: (FirebaseAuthException e) {
-  //       debugPrint('Phone number verification failed: ${e.message}');
-  //     },
+  //
   //     codeSent: (String verificationId, int? resendToken) {
-  //       debugPrint('Verification code sent. Verification ID: $verificationId');
+  //
   //       verificationID = verificationId;
   //     },
   //     codeAutoRetrievalTimeout: (String verificationId) {
   //       // Auto-retrieval timeout
-  //       debugPrint('Code auto-retrieval timeout. Verification ID: $verificationId');
+
   //     },
   //   );
   //   return verificationID;

@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:block_logic/app_theme.dart';
+import 'package:block_logic/components/background.dart';
+import 'package:block_logic/logic/firebase_models/challenge.dart';
 import 'package:block_logic/logic/firebase_providers/auth.dart';
 import 'package:block_logic/logic/firebase_providers/selected_admin.dart';
 import 'package:block_logic/logic/services/audio.dart';
@@ -8,7 +10,7 @@ import 'package:block_logic/logic/services/auth.dart';
 import 'package:block_logic/logic/services/shared_pref.dart';
 import 'package:block_logic/route_observer.dart';
 import 'package:block_logic/router_config.dart';
-import 'package:block_logic/screens/checkpoint.dart';
+import 'package:block_logic/screens/game/game_challenge.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -66,7 +68,11 @@ class BlockLogic extends ConsumerWidget {
           theme: appTheme.theme(),
           darkTheme: appTheme.theme(),
           //home: const Checkpoint(),
-          home: const Checkpoint(),
+          home: Scaffold(
+              body: Background(
+            child:
+                GameChallenge(updateChallenge: () {}, roomName: 'Testing', challenge: Challenge(), challengeCount: 1),
+          )),
         ),
       );
     }

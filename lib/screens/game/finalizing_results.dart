@@ -1,6 +1,5 @@
 import 'package:block_logic/components/async/loading.dart';
 import 'package:block_logic/components/background.dart';
-import 'package:block_logic/components/text/text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

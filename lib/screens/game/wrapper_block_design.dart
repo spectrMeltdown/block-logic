@@ -2,7 +2,6 @@ import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/game/block_data.dart';
 import 'package:block_logic/logic/services/ui.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -12,14 +11,19 @@ class BlockDesignWrapper extends ConsumerStatefulWidget {
   final Widget child;
   final String? text;
   final void Function()? updateSelection;
-  const BlockDesignWrapper(
-      {required this.child, required this.data, this.color, this.updateSelection, this.text, super.key});
+  const BlockDesignWrapper({
+    required this.child,
+    required this.data,
+    this.color,
+    this.updateSelection,
+    this.text,
+    super.key,
+  });
   @override
   ConsumerState<BlockDesignWrapper> createState() => _BlockDesignWrapperState();
 }
 
 class _BlockDesignWrapperState extends ConsumerState<BlockDesignWrapper> {
-  bool selected = false;
   @override
   Widget build(BuildContext context) {
     final blui = ref.read(bLUIProvider.notifier);
@@ -30,13 +34,9 @@ class _BlockDesignWrapperState extends ConsumerState<BlockDesignWrapper> {
           decoration: BoxDecoration(
             border: widget.data.state == CodeBlockState.selected ? Border.all(color: Colors.grey.shade700) : null,
             borderRadius: const BorderRadius.all(Radius.circular(10)),
-            color: widget.color == null
-                ? kIsWeb
-                    ? selected == false
-                        ? blui.getBlockColor(widget.data.type).withOpacity(0.3)
-                        : blui.getBlockColor(widget.data.type)
-                    : null
-                : null,
+            color: widget.data.state == CodeBlockState.selected
+                ? blui.getBlockColor(widget.data.type).withOpacity(0.3)
+                : blui.getBlockColor(widget.data.type),
           ),
           child: widget.updateSelection != null ? BLText(widget.text!) : widget.child),
     );

@@ -25,41 +25,39 @@ class ChallengeBox extends ConsumerWidget {
         await challengeDialog.show(context, DialogChallengeInfo(challenge: challenge));
         gameManager.resumeTimer();
       },
-      child: Container(
-        constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width / 1.9),
-        child: BLPanel(
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(2),
-              child: Column(
-                children: [
-                  Wrap(
-                    children: [
-                      BLText(
-                        'Challenge:',
-                        bold: true,
-                        color: BLUI().getAppColor('blue'),
-                      ),
-                      BLText('${challenge.shortDescription}\n', size: 14),
-                      BLText(
-                        'Limitations:',
-                        bold: true,
-                        color: BLUI().getAppColor('orange'),
-                      ),
-                      challenge.limitations!.isEmpty
-                          ? const BLText('No limitations set', size: 14)
-                          : ListView.builder(
-                              physics: const NeverScrollableScrollPhysics(),
-                              padding: EdgeInsets.zero,
-                              shrinkWrap: true,
-                              itemCount: challenge.limitations!.length,
-                              itemBuilder: (context, i) {
-                                return BLText('• ${challenge.limitations![i]}', size: 14);
-                              })
-                    ],
-                  ),
-                ],
-              ),
+      child: BLPanel(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(2),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Wrap(
+                  children: [
+                    BLText(
+                      'Challenge:',
+                      bold: true,
+                      color: BLUI().getAppColor('blue'),
+                    ),
+                    BLText('${challenge.shortDescription}\n', size: 14),
+                    BLText(
+                      'Limitations:',
+                      bold: true,
+                      color: BLUI().getAppColor('orange'),
+                    ),
+                    challenge.limitations == null || challenge.limitations!.isEmpty
+                        ? const BLText('No limitations set', size: 14)
+                        : ListView.builder(
+                            physics: const NeverScrollableScrollPhysics(),
+                            padding: EdgeInsets.zero,
+                            shrinkWrap: true,
+                            itemCount: challenge.limitations!.length,
+                            itemBuilder: (context, i) {
+                              return BLText('• ${challenge.limitations![i]}', size: 14);
+                            })
+                  ],
+                ),
+              ],
             ),
           ),
         ),

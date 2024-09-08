@@ -34,7 +34,7 @@ class _CreatorModeState extends ConsumerState<CreatorMode> {
   Widget build(BuildContext context) {
     final auth = ref.watch(authServiceProvider.notifier);
     final ownRooms = ref.watch(SelectedRoomsProvider(auth.getUID()));
-    debugPrint(IconTheme.of(context).color.toString());
+    // debugPrint(IconTheme.of(context).color.toString());
     return Scaffold(
       body: Background(
           child: Column(

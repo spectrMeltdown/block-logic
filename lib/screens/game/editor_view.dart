@@ -1,22 +1,22 @@
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/logic/game/block_data.dart';
 import 'package:block_logic/logic/services/game_manager.dart';
+import 'package:block_logic/screens/game/block.dart';
 import 'package:block_logic/screens/game/validator.dart';
 import 'package:block_logic/screens/game/wrapper_drag_target.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class EditorView extends ConsumerStatefulWidget {
-  final GlobalKey editorWidgetKey;
-  const EditorView({required this.editorWidgetKey, super.key});
+  final BoxConstraints parentConstraints;
+  const EditorView({required this.parentConstraints, super.key});
   @override
   ConsumerState<EditorView> createState() => _CustomTabViewState();
 }
 
-class _CustomTabViewState extends ConsumerState<EditorView>
-    with AutomaticKeepAliveClientMixin {
-  List<Widget> blocks = [];
-  List<GameBlockData> blocksData = [];
+class _CustomTabViewState extends ConsumerState<EditorView> with AutomaticKeepAliveClientMixin {
+  List<GameBlockData> blockData = [];
+  List<int>? childIndexPath;
   bool editorOutline = false;
   bool addedPlaceholder = false;
   // late final GameState GameState;
@@ -25,36 +25,31 @@ class _CustomTabViewState extends ConsumerState<EditorView>
   @override
   bool get wantKeepAlive => true;
 
+  late final GameManager gameManager;
+
+  @override
+  void initState() {
+    gameManager = ref.read(gameManagerProvider.notifier);
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final gameManager = ref.read(gameManagerProvider.notifier);
     final gameState = ref.watch(gameManagerProvider);
-
-    /// get the block
-    blocksData = [];
-    //     GameState.getBlockData([], isTopLevel: true).map((item) {
-    //   return item as GameBlockData;
-    // }).toList();
-    // blocks = blocksData.map((data){
-    //   if () {
-    //       blocks.add(StatementBox(
-    //   firstBLock: dataSelected,
-    // ));
-    //   }
-    // }).toList();
     if (gameState.isDropCancelled) {
       // TODO: if drop was cancelled, reverse to previous state of this widget.
       // Use this when animation is applied
       gameManager.isDropCancelled(false);
     }
 
-    if (blocks.isEmpty) return buildDragTarget();
+    setState(() {
+      blockData = gameManager.getData(indexPath: []);
+    });
 
-    final parentRenderBox =
-        widget.editorWidgetKey.currentContext!.findRenderObject() as RenderBox;
-    final parentSize = parentRenderBox.size;
-
+    if (blockData.isEmpty) return buildDragTarget();
+    // final parentRenderBox = widget.editorWidgetKey.currentContext!.findRenderObject() as RenderBox;
+    // final parentSize = parentRenderBox.size;
     return SingleChildScrollView(
       clipBehavior: Clip.antiAlias,
       child: SingleChildScrollView(
@@ -62,30 +57,27 @@ class _CustomTabViewState extends ConsumerState<EditorView>
           scrollDirection: Axis.horizontal,
           child: Stack(
             children: [
-              LayoutBuilder(
-                builder: (context, constraints) {
-                  return SizedBox(
-                      width: parentSize.width * 0.893,
-                      height: parentSize.height * 0.95,
-                      child: buildDragTarget());
-                },
-              ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  ...List.generate(blocks.length, (i) {
+                  ...List.generate(blockData.length, (i) {
+                    debugPrint(blockData.toString());
                     return Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         Padding(
                           padding: const EdgeInsets.all(3),
-                          child: blocks[i],
+                          child: GameBlock(data: blockData[i]),
                         )
                       ],
                     );
                   }),
+                  ConstrainedBox(
+                      constraints: BoxConstraints(minWidth: widget.parentConstraints.minWidth, minHeight: 100),
+                      child: buildDragTarget()),
                 ],
-              ),
+              )
             ],
           )),
     );
@@ -122,7 +114,7 @@ class _CustomTabViewState extends ConsumerState<EditorView>
   Widget buildDragTarget() {
     return DragTargetWrapper(
       builderChild: () {
-        if (blocks.isNotEmpty) {
+        if (blockData.isNotEmpty) {
           return const SizedBox();
         }
         return const Center(child: BLText('Drop a block'));
@@ -133,48 +125,9 @@ class _CustomTabViewState extends ConsumerState<EditorView>
       },
       onAcceptWithDetails: (block, gameManager) {
         if (block == null) return;
-        //GameState.addData(currentIndexPath: [], data: block);
+        childIndexPath = gameManager.addData(currentIndexPath: [], data: block);
+        setState(() {});
       },
     );
-    // return Container(
-    //   decoration: editorOutline
-    //       ? BoxDecoration(
-    //           borderRadius: const BorderRadius.all(Radius.circular(10)),
-    //           border: Border.all(color: Colors.white))
-    //       : null,
-    //   child: DragTarget(
-    //     // rejected bypasses onMove
-    //     builder: (context, accepted, rejected) {},
-    //     onWillAcceptWithDetails: (details) {
-    //       block = GameState.obtainBlockData();
-    //       if (block == null) return false;
-    //       setState(() {
-    //         editorOutline = true;
-    //       });
-    //       return true;
-    //       // if (validator.topLevelBox(block!)) {
-    //       //   return true;
-    //       // }
-    //       // return false;
-    //     },
-    //     onAcceptWithDetails: (details) {
-    //       setState(() {
-    //         editorOutline = false;
-    //       });
-    //       if (block == null) return;
-    //       if (validator.rootStatementBox(data: block!)) {
-    //         addStatement(block!);
-    //       } else {
-    //         addBlock(block!);
-    //       }
-    //       GameState.removePassedBlockData();
-    //     },
-    //     onLeave: (details) {
-    //       setState(() {
-    //         editorOutline = false;
-    //       });
-    //     },
-    //   ),
-    // );
   }
 }

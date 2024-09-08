@@ -72,6 +72,7 @@ dev_dependencies:
   riverpod_lint: any
   riverpod_generator: ^2.4.0
   build_runner: ^2.4.11
+  copy_with_extension_gen: ^5.0.4
 dependency_overrides:
   fading_edge_scrollview: ^4.1.1
 flutter:
