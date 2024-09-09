@@ -12,7 +12,7 @@ enum BLColors {
 
 enum BtnType { normal, green, red, orange, grey }
 
-enum CodeBlockState { selected, unselected, faded }
+enum CodeBlockState { inSelector, inEditor }
 
 /// Used to define a block type in [Game] widget.
 enum CodeBlockType { literals, conditionals, loops, functions, objects, keywords, variables, operators }

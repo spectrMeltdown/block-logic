@@ -6,9 +6,11 @@ import 'package:block_logic/logic/game/py_loops.dart';
 import 'package:block_logic/logic/game/py_operators.dart';
 import 'package:copy_with_extension/copy_with_extension.dart';
 
+part 'generated/block_data.g.dart';
+
 @CopyWith()
 class GameBlockData {
-  //String id;
+  List<int>? indexPath;
   CodeBlockType type;
   CodeBlockState state;
   String name;
@@ -23,10 +25,11 @@ class GameBlockData {
   PyLiteral? value;
 
   GameBlockData({
+    this.indexPath,
     required this.type,
     required this.name,
     //required this.id,
-    this.state = CodeBlockState.unselected,
+    this.state = CodeBlockState.inSelector,
     this.init,
     this.body,
     this.return_,
@@ -229,37 +232,37 @@ class GameBlockData {
   }
 
   ///overwrite any fields provided, copies any old existing data from the object
-  GameBlockData copyWith({
-    CodeBlockType? type,
-    String? name,
-    CodeBlockState? state,
-    PyInitFunction? init,
-    List<GameBlockData>? body,
-    PyLiteral? return_,
-    List<GameBlockData>? parameters,
-    List<GameBlockData>? arguments,
-    List<GameBlockData>? condition,
-    GameBlockData? functionDefinition,
-    GameBlockData? classDefinition,
-    PyLiteral? value,
-    String? id,
-  }) {
-    return GameBlockData(
-      //id: id ?? this.id,
-      type: type ?? this.type,
-      name: name ?? this.name,
-      state: state ?? this.state,
-      init: init ?? this.init,
-      body: body ?? this.body,
-      return_: return_ ?? this.return_,
-      parameters: parameters ?? this.parameters,
-      arguments: arguments ?? this.arguments,
-      condition: condition ?? this.condition,
-      functionDefinition: functionDefinition ?? this.functionDefinition,
-      classDefinition: classDefinition ?? this.classDefinition,
-      value: value ?? this.value,
-    );
-  }
+  // GameBlockData copyWith({
+  //   CodeBlockType? type,
+  //   String? name,
+  //   CodeBlockState? state,
+  //   PyInitFunction? init,
+  //   List<GameBlockData>? body,
+  //   PyLiteral? return_,
+  //   List<GameBlockData>? parameters,
+  //   List<GameBlockData>? arguments,
+  //   List<GameBlockData>? condition,
+  //   GameBlockData? functionDefinition,
+  //   GameBlockData? classDefinition,
+  //   PyLiteral? value,
+  //   String? id,
+  // }) {
+  //   return GameBlockData(
+  //     //id: id ?? this.id,
+  //     type: type ?? this.type,
+  //     name: name ?? this.name,
+  //     state: state ?? this.state,
+  //     init: init ?? this.init,
+  //     body: body ?? this.body,
+  //     return_: return_ ?? this.return_,
+  //     parameters: parameters ?? this.parameters,
+  //     arguments: arguments ?? this.arguments,
+  //     condition: condition ?? this.condition,
+  //     functionDefinition: functionDefinition ?? this.functionDefinition,
+  //     classDefinition: classDefinition ?? this.classDefinition,
+  //     value: value ?? this.value,
+  //   );
+  // }
 
   // fromJson factory method
   factory GameBlockData.fromJson(Map<String, dynamic> json) {
@@ -267,7 +270,7 @@ class GameBlockData {
       type: CodeBlockType.values.firstWhere((e) => e.toString() == json['type']),
       name: json['name'] as String,
       state: CodeBlockState.values
-          .firstWhere((e) => e.toString() == json['state'], orElse: () => CodeBlockState.unselected),
+          .firstWhere((e) => e.toString() == json['state'], orElse: () => CodeBlockState.inSelector),
       //init: json['init'] != null ? PyInitFunction.fromJson(json['init']) : null,
       return_: json['return'] != null ? PyLiteral.fromJson(json['return']) : null,
       parameters: json['parameters'] != null

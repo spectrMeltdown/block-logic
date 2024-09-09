@@ -14,13 +14,13 @@ class Editor extends ConsumerStatefulWidget {
 class _EditorState extends ConsumerState<Editor> with TickerProviderStateMixin {
   late TabController mainTabController;
   List<String> mainTabList = [];
-  List<Widget> mainTabViewList = [];
+  // List<Widget> mainTabViewList = [];
   final editorWidgetKey = GlobalKey();
   BoxConstraints? constraints;
   void addNew() {
     /// add the new tab
     mainTabList.add('New ${mainTabList.length + 1}');
-    mainTabViewList.add(EditorView(parentConstraints: constraints!));
+    // mainTabViewList.add(EditorView(parentConstraints: constraints!));
 
     mainTabController =
         TabController(length: mainTabList.length + 1, vsync: this, initialIndex: mainTabList.length - 1);
@@ -71,12 +71,15 @@ class _EditorState extends ConsumerState<Editor> with TickerProviderStateMixin {
                   physics: const NeverScrollableScrollPhysics(),
                   controller: mainTabController,
                   children: [
-                    ...List.generate(
-                        mainTabViewList.length,
-                        (index) => LayoutBuilder(builder: (context, thisConstraints) {
-                              constraints ??= thisConstraints;
-                              return buildTabView();
-                            })),
+                    LayoutBuilder(builder: (context, parentConstraints) {
+                      return EditorView(parentConstraints: parentConstraints);
+                    }),
+                    // ...List.generate(
+                    //     mainTabViewList.length,
+                    //     (index) => LayoutBuilder(builder: (context, thisConstraints) {
+                    //           constraints ??= thisConstraints;
+                    //           return buildTabView();
+                    //         })),
 
                     /// placeholder since tabs & tabview length must match
                     /// (tabs has an extra tab for add tab)
@@ -123,7 +126,7 @@ class _EditorState extends ConsumerState<Editor> with TickerProviderStateMixin {
   @override
   void initState() {
     mainTabList = ['Main'];
-    mainTabViewList = [EditorView(parentConstraints: constraints!)];
+    // mainTabViewList = [EditorView(parentConstraints: constraints!)];
     mainTabController = TabController(length: mainTabList.length + 1, vsync: this);
 
     mainTabController.addListener(() {

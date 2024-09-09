@@ -52,7 +52,7 @@ class TestingPage extends ConsumerWidget {
                         additionalInfo:
                             'A leap year has 366 days, with an extra day in February (29 days instead of 28). It occurs every four years to keep the calendar year aligned with the solar year.',
                         limitations: ['5 block lines', 'No functions', 'No classes'],
-                        blocks: AllBlocks.getAll(),
+                        blocks: AllBlocks.get(),
                         difficulty: Difficulty.intermediate,
                         tags: ['conditionals', ''],
                       ),
@@ -62,7 +62,7 @@ class TestingPage extends ConsumerWidget {
                         shortDescription: 'Count the number of vowels in a given string.',
                         additionalInfo: '',
                         limitations: ['2 block lines', 'Use one function', ''],
-                        blocks: AllBlocks.getAll(),
+                        blocks: AllBlocks.get(),
                         difficulty: Difficulty.beginner,
                         tags: [
                           'conditionals',

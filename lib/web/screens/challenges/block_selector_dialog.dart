@@ -21,7 +21,7 @@ class BlockSelectorDialog extends ConsumerStatefulWidget {
 }
 
 class _BlockSelectorDialogState extends ConsumerState<BlockSelectorDialog> with SingleTickerProviderStateMixin {
-  final Map<CodeBlockType, List<GameBlockData>> allBlocks = AllBlocks.getAll();
+  final Map<CodeBlockType, List<GameBlockData>> allBlocks = AllBlocks.get();
   late final List<Tab> tabs;
   late TabController tabController;
   bool processing = false;

@@ -1,16 +1,4 @@
 targets:
-  copy_with:
-    sources:
-      include:
-        - lib/logic/game/**.dart
-    builders:
-    copy_with_extension_gen:
-      enabled: true
-      options:
-        copy_with_null: true # default is false
-        skip_fields: true # default is false
-        build_extensions:
-          "lib/{{path}}/{{file}}.dart": "lib/{{path}}/generated/{{file}}.g.dart"
   $default:
     sources:
       include:
@@ -18,10 +6,16 @@ targets:
         - $package$
         - lib/$lib$
     builders:
+      copy_with_extension_gen:
+        enabled: true
+        options:
+          copy_with_null: true # default is false
+          skip_fields: true # default is false
       source_gen|combining_builder:
         generate_for:
           - lib/logic/firebase_providers/*.dart
           - lib/logic/services/*.dart
+          - lib/logic/game/*.dart
         options:
           build_extensions:
             "lib/{{path}}/{{file}}.dart": "lib/{{path}}/generated/{{file}}.g.dart"

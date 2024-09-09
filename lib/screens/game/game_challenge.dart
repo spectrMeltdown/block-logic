@@ -58,7 +58,7 @@ class GameChallenge extends ConsumerWidget {
         const SizedBox(height: 10),
         Flexible(flex: 2, child: const Editor()),
         // TODO: get blocks from challenge, save to gameManager, load into gameManager
-        Padding(padding: const EdgeInsets.only(bottom: 20), child: GameBlocks(AllBlocks.getAll())),
+        Padding(padding: const EdgeInsets.only(bottom: 20), child: GameBlocks(AllBlocks.get())),
       ],
     );
   }

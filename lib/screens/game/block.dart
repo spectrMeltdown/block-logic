@@ -10,8 +10,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class GameBlock extends ConsumerStatefulWidget {
   final GameBlockData data;
-  final List<int> indexPath;
-  const GameBlock({required this.indexPath, required this.data, super.key});
+  const GameBlock({required this.data, super.key});
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => GameCodeBlockState();
 }
@@ -20,9 +19,9 @@ class GameCodeBlockState extends ConsumerState<GameBlock> with TickerProviderSta
   late final GameManager gameManager;
   late final BLUI blui;
   late final String id;
+  late final Widget block;
   @override
   Widget build(BuildContext context) {
-    ref.watch(gameManagerProvider);
     // TODO: animate when cancelled
     return LongPressDraggable(
       delay: const Duration(milliseconds: 100),
@@ -46,9 +45,12 @@ class GameCodeBlockState extends ConsumerState<GameBlock> with TickerProviderSta
         //   _animateBackToStartPosition(details.offset);
         // }
       },
-      childWhenDragging: buildBlockState(CodeBlockState.faded),
-      feedback: buildBlockState(CodeBlockState.unselected),
-      child: buildBlockState(widget.data.state),
+      childWhenDragging: block,
+      feedback: block,
+      child: block,
+      // childWhenDragging: buildBlockState(CodeBlockState.faded),
+      // feedback: buildBlockState(CodeBlockState.unselected),
+      // child: buildBlockState(widget.data.state),
     );
   }
 
@@ -65,8 +67,9 @@ class GameCodeBlockState extends ConsumerState<GameBlock> with TickerProviderSta
   // }
 
   Widget buildBlockState(CodeBlockState state) {
+    debugPrint(state.toString());
     switch (state) {
-      case CodeBlockState.unselected:
+      case CodeBlockState.inSelector:
         return BlockDesignWrapper(
           data: widget.data,
           child: Center(
@@ -76,66 +79,31 @@ class GameCodeBlockState extends ConsumerState<GameBlock> with TickerProviderSta
             ),
           ),
         );
-      case CodeBlockState.faded:
 
-        /// if still in the block selector
-        if (widget.data.state != CodeBlockState.selected) {
-          return BlockDesignWrapper(
-            data: widget.data,
-            color: blui.getBlockColor(widget.data.type).withAlpha(100),
-            child: Center(
-                child: BLText(
-              widget.data.name,
-              size: 14,
-            )),
-          );
-        }
-
-        /// if from inside the editor
-        switch (widget.data.type) {
-          case CodeBlockType.loops:
-          case CodeBlockType.conditionals:
-            debugPrint('With child');
-            return BlockDesignWrapper(
-              data: widget.data,
-              child: GameBlockWithChild(data: widget.data),
-            );
-          case CodeBlockType.objects:
-          case CodeBlockType.keywords:
-          case CodeBlockType.functions:
-          case CodeBlockType.operators:
-          case CodeBlockType.literals:
-          case CodeBlockType.variables:
-            return BlockDesignWrapper(
-              data: widget.data,
-              child: Center(
-                child: BLText(
-                  widget.data.name,
-                  size: 14,
-                ),
-              ),
-            );
-        }
-
-      case CodeBlockState.selected:
+      case CodeBlockState.inEditor:
+        final data = widget.data.copyWith(state: CodeBlockState.inEditor);
         switch (widget.data.type) {
           case CodeBlockType.loops:
           case CodeBlockType.conditionals:
             return BlockDesignWrapper(
-              data: widget.data,
-              child: GameBlockWithChild(data: widget.data),
+              data: data,
+              child: GameBlockWithChild(data: data),
             );
           case CodeBlockType.objects:
-          case CodeBlockType.keywords:
           case CodeBlockType.functions:
+            return BlockDesignWrapper(
+              data: data,
+              child: GameBlockWithChild(data: data),
+            );
+          case CodeBlockType.keywords:
           case CodeBlockType.operators:
           case CodeBlockType.literals:
           case CodeBlockType.variables:
             return BlockDesignWrapper(
-              data: widget.data,
+              data: data,
               child: Center(
                 child: BLText(
-                  widget.data.name,
+                  data.name,
                   size: 14,
                 ),
               ),
@@ -152,7 +120,7 @@ class GameCodeBlockState extends ConsumerState<GameBlock> with TickerProviderSta
   void initState() {
     gameManager = ref.read(gameManagerProvider.notifier);
     blui = ref.read(bLUIProvider.notifier);
-
+    block = buildBlockState(widget.data.state);
     // _controller = AnimationController(
     //   duration: const Duration(milliseconds: 300),
     //   vsync: this,

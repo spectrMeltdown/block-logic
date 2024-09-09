@@ -1,6 +1,7 @@
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/logic/game/block_data.dart';
 import 'package:block_logic/logic/services/game_manager.dart';
+import 'package:block_logic/logic/services/game_provider.dart';
 import 'package:block_logic/screens/game/block.dart';
 import 'package:block_logic/screens/game/validator.dart';
 import 'package:block_logic/screens/game/wrapper_drag_target.dart';
@@ -15,7 +16,6 @@ class EditorView extends ConsumerStatefulWidget {
 }
 
 class _CustomTabViewState extends ConsumerState<EditorView> with AutomaticKeepAliveClientMixin {
-  List<GameBlockData> blockData = [];
   List<int>? childIndexPath;
   bool editorOutline = false;
   bool addedPlaceholder = false;
@@ -37,17 +37,15 @@ class _CustomTabViewState extends ConsumerState<EditorView> with AutomaticKeepAl
   Widget build(BuildContext context) {
     super.build(context);
     final gameState = ref.watch(gameManagerProvider);
+    final blockData = ref.watch(getRootDataProvider);
+
     if (gameState.isDropCancelled) {
       // TODO: if drop was cancelled, reverse to previous state of this widget.
       // Use this when animation is applied
       gameManager.isDropCancelled(false);
     }
 
-    setState(() {
-      blockData = gameManager.getData(indexPath: []);
-    });
-
-    if (blockData.isEmpty) return buildDragTarget();
+    if (blockData.isEmpty) return buildDragTarget(blockData);
     // final parentRenderBox = widget.editorWidgetKey.currentContext!.findRenderObject() as RenderBox;
     // final parentSize = parentRenderBox.size;
     return SingleChildScrollView(
@@ -61,7 +59,7 @@ class _CustomTabViewState extends ConsumerState<EditorView> with AutomaticKeepAl
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   ...List.generate(blockData.length, (i) {
-                    debugPrint(blockData.toString());
+                    // debugPrint(blockData.toString());
                     return Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
@@ -74,8 +72,9 @@ class _CustomTabViewState extends ConsumerState<EditorView> with AutomaticKeepAl
                     );
                   }),
                   ConstrainedBox(
-                      constraints: BoxConstraints(minWidth: widget.parentConstraints.minWidth, minHeight: 100),
-                      child: buildDragTarget()),
+                      constraints: BoxConstraints(
+                          minWidth: widget.parentConstraints.minWidth, minHeight: widget.parentConstraints.minHeight),
+                      child: buildDragTarget(blockData)),
                 ],
               )
             ],
@@ -83,35 +82,7 @@ class _CustomTabViewState extends ConsumerState<EditorView> with AutomaticKeepAl
     );
   }
 
-  // void addStatement(GameBlockData initial) {
-  //   final dataSelected = initial.copyWith(state: CodeBlockState.selected);
-  //   blocks.add(StatementBox(
-  //     firstBLock: dataSelected,
-  //   ));
-  // }
-
-  // void addBlock(GameBlockData initial) {
-  //   final dataSelected = initial.copyWith(state: CodeBlockState.selected);
-  //   blocks.add(GameBlock(data: dataSelected));
-  // }
-
-  // void addPlaceholder(GameBlockData data) {
-  //   if (addedPlaceholder == true) return;
-  //   final dataWithPlaceholder = data.copyWith(state: CodeBlockState.faded);
-  //   debugPrint('add placeholder ${dataWithPlaceholder.state}');
-  //   blocks.add(GameBlock(data: dataWithPlaceholder));
-  //   addedPlaceholder = true;
-  // }
-
-  // void removePlaceholder() {
-  //   if (addedPlaceholder == true) {
-  //     blocks.removeLast();
-  //     debugPrint('removed, codeblocks empty = ${blocks.isEmpty}');
-  //     addedPlaceholder = false;
-  //   }
-  // }
-
-  Widget buildDragTarget() {
+  Widget buildDragTarget(List<GameBlockData> blockData) {
     return DragTargetWrapper(
       builderChild: () {
         if (blockData.isNotEmpty) {
@@ -123,10 +94,11 @@ class _CustomTabViewState extends ConsumerState<EditorView> with AutomaticKeepAl
         /// accept all blockData because this is top-level
         return true;
       },
-      onAcceptWithDetails: (block, gameManager) {
-        if (block == null) return;
-        childIndexPath = gameManager.addData(currentIndexPath: [], data: block);
-        setState(() {});
+      onAcceptWithDetails: (initData, gameManager) {
+        if (initData == null) return;
+        final data = initData.copyWith(indexPath: []);
+        gameManager.addData(data);
+        // setState(() {});
       },
     );
   }

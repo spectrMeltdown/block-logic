@@ -20,7 +20,7 @@ class _StatementBoxState extends ConsumerState<StatementBox> {
   final List<Widget> blocks = [];
   GameBlockData? passedBlock;
   void addBlock(GameBlockData data) {
-    final dataSelected = data.copyWith(state: CodeBlockState.selected);
+    final dataSelected = data.copyWith(state: CodeBlockState.inEditor);
     debugPrint('add block ${dataSelected.state}');
     blocks.add(Padding(
       padding: const EdgeInsets.all(3),

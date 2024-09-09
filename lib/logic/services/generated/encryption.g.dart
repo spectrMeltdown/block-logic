@@ -6,7 +6,7 @@ part of '../encryption.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$encryptionHash() => r'19305254e4e0df833fb563e4c6851d84d97593ae';
+String _$encryptionHash() => r'5ad2665e6df1f0661ba145f7d2e598e106119e57';
 
 /// See also [Encryption].
 @ProviderFor(Encryption)

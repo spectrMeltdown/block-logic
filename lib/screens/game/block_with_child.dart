@@ -2,6 +2,7 @@ import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/game/block_data.dart';
 import 'package:block_logic/logic/services/game_manager.dart';
+import 'package:block_logic/logic/services/game_provider.dart';
 import 'package:block_logic/screens/game/add_new_block_box.dart';
 import 'package:block_logic/screens/game/block.dart';
 import 'package:block_logic/screens/game/parameter_condition_box.dart';
@@ -13,8 +14,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class GameBlockWithChild extends ConsumerStatefulWidget {
   final GameBlockData data;
-  final List<int> indexPath;
-  const GameBlockWithChild({required this.indexPath, required this.data, super.key});
+  const GameBlockWithChild({required this.data, super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _GameBlockWithChildState();
@@ -23,10 +23,6 @@ class GameBlockWithChild extends ConsumerStatefulWidget {
 class _GameBlockWithChildState extends ConsumerState<GameBlockWithChild> {
   final BlockValidator validator = BlockValidator();
   late final GameManager gameManager;
-  GameBlockData? block;
-  List<GameBlockData> blockData = [];
-  bool editorOutline = false;
-  List<GameBlockData> parameters = [];
 
   @override
   void initState() {
@@ -36,10 +32,7 @@ class _GameBlockWithChildState extends ConsumerState<GameBlockWithChild> {
 
   @override
   Widget build(BuildContext context) {
-    ref.watch(gameManagerProvider);
-    setState(() {
-      blockData = gameManager.getData(indexPath: widget.indexPath);
-    });
+    final blockData = ref.watch(GetBlockDataProvider(widget.data.indexPath!));
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -49,39 +42,31 @@ class _GameBlockWithChildState extends ConsumerState<GameBlockWithChild> {
             const SizedBox(width: 20),
 
             /// Parameter/condition box
-            Container(
-              decoration: editorOutline
-                  ? BoxDecoration(
-                      borderRadius: const BorderRadius.all(Radius.circular(10)),
-                      border: Border.all(color: Colors.white))
-                  : null,
-              child: DragTarget(
-                builder: (context, accepted, rejected) {
-                  if (parameters.isNotEmpty) {
-                    return ParameterConditionBox(
-                      parameters: parameters,
-                    );
-                  }
-                  return const SizedBox(width: 80, height: 40);
-                },
-                onAcceptWithDetails: (details) {
-                  if (block == null) return;
-                  // addParameter(block!);
-                  // gameManager.removePassedBlockData();
-                },
+            DragTargetWrapper(
+              builderChild: () {
+                if (blockData.parameters != null && blockData.parameters!.isNotEmpty) {
+                  return ParameterConditionBox(
+                    parameters: blockData.parameters!,
+                  );
+                }
+                return const SizedBox(width: 80, height: 40);
+              },
+              onAcceptWithDetails: (block, manager) {
+                if (block == null) return;
+                // addParameter(block!);
+                // gameManager.removePassedBlockData();
+              },
 
-                /// Parameters/condition box
-                onWillAcceptWithDetails: (details) {
-                  block = gameManager.obtainPassedBlockData();
-                  if (block == null) return false;
-                  // TODO: customize to accept custom blocks only
-                  if (widget.data.type == CodeBlockType.conditionals) {
-                    return validator.statementBox(data: widget.data, dataToAccept: block!);
-                  }
-                  return validator.parameterBox(data: widget.data, dataToAccept: block!);
-                },
-                onLeave: (details) {},
-              ),
+              /// Parameters/condition box
+              onWillAcceptWithDetails: (data) {
+                data = gameManager.obtainPassedBlockData();
+                if (data == null) return false;
+                // TODO: customize to accept custom blocks only
+                if (widget.data.type == CodeBlockType.conditionals) {
+                  return validator.statementBox(data: widget.data, dataToAccept: data);
+                }
+                return validator.parameterBox(data: widget.data, dataToAccept: data);
+              },
             )
           ],
         ),
@@ -89,27 +74,27 @@ class _GameBlockWithChildState extends ConsumerState<GameBlockWithChild> {
           padding: const EdgeInsets.only(left: 10),
           child: DragTargetWrapper(
             builderChild: () {
-              if (blockData.isNotEmpty) {
+              if (blockData.body != null && blockData.body!.isNotEmpty) {
                 return BlockWrapper(
                     widgetList: List.generate(
-                        blockData.length,
+                        blockData.body!.length,
                         (i) => GameBlock(
-                              indexPath: childIndex,
-                              data: blockData[i],
+                              data: blockData.body![i],
                             )));
               }
               return const AddNewBlockBox();
             },
-            onAcceptWithDetails: (data, manager) {
-              if (block == null) return;
-              childIndex = gameManager.addData(currentIndexPath: widget.indexPath, data: block!);
-              gameManager.removePassedBlockData();
+            onAcceptWithDetails: (initData, manager) {
+              if (initData == null) return;
+              final data = initData.copyWith(indexPath: widget.data.indexPath);
+              gameManager.addData(data);
+              // setState(() {});
             },
-            onWillAcceptWithDetails: (details) {
-              block = gameManager.obtainPassedBlockData();
-              if (block == null) return false;
+            onWillAcceptWithDetails: (data) {
+              if (data == null) return false;
               // TODO: customize to accept custom blocks only
-              return validator.nestedBox(data: widget.data, dataToAccept: block!);
+              return true;
+              // return validator.nestedBox(data: widget.data, dataToAccept: block!);
             },
           ),
         )

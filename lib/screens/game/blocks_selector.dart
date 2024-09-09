@@ -30,7 +30,6 @@ class _GameBlocksState extends ConsumerState<GameBlocks> with TickerProviderStat
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
-    ref.watch(gameManagerProvider);
     return Column(
       children: [
         Padding(
@@ -91,8 +90,8 @@ class _GameBlocksState extends ConsumerState<GameBlocks> with TickerProviderStat
   void initState() {
     gameManager = ref.read(gameManagerProvider.notifier);
     // TODO: get Map<CodeBlockType[], List<GameBlockData>> from challenge data
-    blocks = AllBlocks.getAll();
-    blocksTabList.remove('FunctionDefinition');
+    blocks = AllBlocks.get();
+    // blocksTabList.remove('FunctionDefinition');
     blocksTabController = TabController(length: blocksTabList.length, vsync: this);
     blocksTabController.addListener(() {
       setState(() {});

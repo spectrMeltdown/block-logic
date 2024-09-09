@@ -8,7 +8,7 @@ import 'package:block_logic/logic/game/py_loops.dart';
 import 'package:block_logic/logic/game/py_operators.dart';
 
 class AllBlocks {
-  static Map<CodeBlockType, List<GameBlockData>> getAll() {
+  static Map<CodeBlockType, List<GameBlockData>> get() {
     /// DONT CHANGE ORDER OF KEYS. THEY MATTER
     return {
       CodeBlockType.objects: [],
