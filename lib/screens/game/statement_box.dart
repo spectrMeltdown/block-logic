@@ -44,10 +44,8 @@ class _StatementBoxState extends ConsumerState<StatementBox> {
       onAcceptWithDetails: (details) {
         if (passedBlock == null) return;
         addBlock(passedBlock!);
-        gameManager.removePassedBlockData();
       },
       onWillAcceptWithDetails: (details) {
-        passedBlock = gameManager.obtainPassedBlockData();
         if (passedBlock == null) return false;
         // TODO: customize to accept custom blocks only
         return validator.rootStatementBox(data: passedBlock!);

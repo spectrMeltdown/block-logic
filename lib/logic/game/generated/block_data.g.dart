@@ -14,13 +14,14 @@ abstract class _$GameBlockDataCWProxy {
   /// GameBlockData(...).copyWith(id: 12, name: "My name")
   /// ````
   GameBlockData call({
-    List<int>? indexPath,
+    String? uid,
+    String? parentUID,
     CodeBlockType? type,
     String? name,
     CodeBlockState? state,
     PyInitFunction? init,
-    List<GameBlockData>? body,
     PyLiteral? return_,
+    List<GameBlockData>? body,
     List<GameBlockData>? parameters,
     List<GameBlockData>? arguments,
     List<GameBlockData>? condition,
@@ -45,13 +46,14 @@ class _$GameBlockDataCWProxyImpl implements _$GameBlockDataCWProxy {
   /// GameBlockData(...).copyWith(id: 12, name: "My name")
   /// ````
   GameBlockData call({
-    Object? indexPath = const $CopyWithPlaceholder(),
+    Object? uid = const $CopyWithPlaceholder(),
+    Object? parentUID = const $CopyWithPlaceholder(),
     Object? type = const $CopyWithPlaceholder(),
     Object? name = const $CopyWithPlaceholder(),
     Object? state = const $CopyWithPlaceholder(),
     Object? init = const $CopyWithPlaceholder(),
-    Object? body = const $CopyWithPlaceholder(),
     Object? return_ = const $CopyWithPlaceholder(),
+    Object? body = const $CopyWithPlaceholder(),
     Object? parameters = const $CopyWithPlaceholder(),
     Object? arguments = const $CopyWithPlaceholder(),
     Object? condition = const $CopyWithPlaceholder(),
@@ -60,10 +62,14 @@ class _$GameBlockDataCWProxyImpl implements _$GameBlockDataCWProxy {
     Object? value = const $CopyWithPlaceholder(),
   }) {
     return GameBlockData(
-      indexPath: indexPath == const $CopyWithPlaceholder()
-          ? _value.indexPath
+      uid: uid == const $CopyWithPlaceholder()
+          ? _value.uid
           // ignore: cast_nullable_to_non_nullable
-          : indexPath as List<int>?,
+          : uid as String?,
+      parentUID: parentUID == const $CopyWithPlaceholder()
+          ? _value.parentUID
+          // ignore: cast_nullable_to_non_nullable
+          : parentUID as String?,
       type: type == const $CopyWithPlaceholder() || type == null
           ? _value.type
           // ignore: cast_nullable_to_non_nullable
@@ -80,14 +86,14 @@ class _$GameBlockDataCWProxyImpl implements _$GameBlockDataCWProxy {
           ? _value.init
           // ignore: cast_nullable_to_non_nullable
           : init as PyInitFunction?,
-      body: body == const $CopyWithPlaceholder()
-          ? _value.body
-          // ignore: cast_nullable_to_non_nullable
-          : body as List<GameBlockData>?,
       return_: return_ == const $CopyWithPlaceholder()
           ? _value.return_
           // ignore: cast_nullable_to_non_nullable
           : return_ as PyLiteral?,
+      body: body == const $CopyWithPlaceholder()
+          ? _value.body
+          // ignore: cast_nullable_to_non_nullable
+          : body as List<GameBlockData>?,
       parameters: parameters == const $CopyWithPlaceholder()
           ? _value.parameters
           // ignore: cast_nullable_to_non_nullable
@@ -128,10 +134,11 @@ extension $GameBlockDataCopyWith on GameBlockData {
   /// GameBlockData(...).copyWithNull(firstField: true, secondField: true)
   /// ````
   GameBlockData copyWithNull({
-    bool indexPath = false,
+    bool uid = false,
+    bool parentUID = false,
     bool init = false,
-    bool body = false,
     bool return_ = false,
+    bool body = false,
     bool parameters = false,
     bool arguments = false,
     bool condition = false,
@@ -140,13 +147,14 @@ extension $GameBlockDataCopyWith on GameBlockData {
     bool value = false,
   }) {
     return GameBlockData(
-      indexPath: indexPath == true ? null : this.indexPath,
+      uid: uid == true ? null : this.uid,
+      parentUID: parentUID == true ? null : this.parentUID,
       type: type,
       name: name,
       state: state,
       init: init == true ? null : this.init,
-      body: body == true ? null : this.body,
       return_: return_ == true ? null : this.return_,
+      body: body == true ? null : this.body,
       parameters: parameters == true ? null : this.parameters,
       arguments: arguments == true ? null : this.arguments,
       condition: condition == true ? null : this.condition,

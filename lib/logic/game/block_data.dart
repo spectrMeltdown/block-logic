@@ -10,9 +10,10 @@ import 'package:flutter/material.dart';
 part 'generated/block_data.g.dart';
 
 @CopyWith()
-@immutable
+@immutable // must be immutable, for moveInTree function
 class GameBlockData {
-  final List<int>? indexPath;
+  final String? uid;
+  final String? parentUID;
   final CodeBlockType type;
   final CodeBlockState state;
   final String name;
@@ -27,14 +28,15 @@ class GameBlockData {
   final PyLiteral? value;
 
   const GameBlockData({
-    this.indexPath,
+    this.uid,
+    this.parentUID,
     required this.type,
     required this.name,
     //required this.id,
     this.state = CodeBlockState.inSelector,
     this.init,
-    this.body,
     this.return_,
+    this.body,
     this.parameters,
     this.arguments,
     this.condition,
@@ -85,7 +87,7 @@ class GameBlockData {
       // id: id,
       type: type,
       name: name,
-      arguments: const [],
+      arguments: [],
       functionDefinition: functionDefinition,
     );
   }
@@ -137,7 +139,7 @@ class GameBlockData {
       // id: id,
       type: type,
       name: name,
-      arguments: const [],
+      arguments: [],
       classDefinition: classDefinition,
     );
   }

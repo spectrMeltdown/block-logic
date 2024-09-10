@@ -23,7 +23,7 @@ class DragTargetWrapper extends ConsumerStatefulWidget {
 }
 
 class _GameDragTargetState extends ConsumerState<DragTargetWrapper> {
-  GameBlockData? blockData;
+  // GameBlockData? blockData;
   bool editorOutline = false;
   late final GameManager gameManager;
 
@@ -34,7 +34,7 @@ class _GameDragTargetState extends ConsumerState<DragTargetWrapper> {
           ? BoxDecoration(
               borderRadius: const BorderRadius.all(Radius.circular(10)), border: Border.all(color: Colors.white))
           : null,
-      child: DragTarget(
+      child: DragTarget<GameBlockData>(
         builder: (context, accepted, rejected) {
           widget.builder?.call();
           return widget.builderChild?.call() ?? const SizedBox(width: 80, height: 40);
@@ -43,13 +43,13 @@ class _GameDragTargetState extends ConsumerState<DragTargetWrapper> {
           setState(() {
             editorOutline = false;
           });
-          if (blockData == null) return;
-          widget.onAcceptWithDetails?.call(blockData!, gameManager);
+          // if (blockData == null) return;
+          widget.onAcceptWithDetails?.call(details.data, gameManager);
         },
         onWillAcceptWithDetails: (details) {
-          blockData = gameManager.obtainPassedBlockData();
-          if (blockData == null) return false;
-          final shouldAccept = widget.onWillAcceptWithDetails.call(blockData!);
+          // blockData = gameManager.obtainPassedBlockData();
+          // if (details.data == null) return false;
+          final shouldAccept = widget.onWillAcceptWithDetails.call(details.data);
           if (shouldAccept) {
             setState(() {
               editorOutline = true;

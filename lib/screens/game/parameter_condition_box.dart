@@ -2,7 +2,6 @@ import 'package:block_logic/components/util/blank_widget.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/game/block_data.dart';
 import 'package:block_logic/logic/services/game_manager.dart';
-import 'package:block_logic/logic/services/game_provider.dart';
 import 'package:block_logic/screens/game/block.dart';
 import 'package:block_logic/screens/game/validator.dart';
 import 'package:block_logic/screens/game/wrapper_drag_target.dart';

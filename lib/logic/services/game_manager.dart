@@ -31,118 +31,42 @@ class GameManager extends _$GameManager {
     );
   }
 
-  void addRootData(GameBlockData childData) {
-    state.blockDataTree
-        .add(childData.copyWith(state: CodeBlockState.inEditor, indexPath: [state.blockDataTree.length]));
-  }
+  void addRootData(GameBlockData newData) =>
+      state.blockDataTree.add(newData.copyWith(state: CodeBlockState.inEditor, uid: _getID(), parentUID: 'root'));
 
-  void addData(GameBlockData childData, GameBlockData parentData, [bool parameter = false]) {
-    late final GameBlockData newChild;
-    late final GameBlockData newParent;
-    debugPrint('add on this body: \nParent - ${parentData.indexPath}\nChild - ${childData.indexPath}');
-
-    // add parameter
-    if (parameter) {
-      if (parentData.parameters == null || parentData.parameters!.isEmpty) {
-        newChild = childData.copyWith(
-          state: CodeBlockState.inEditor,
-          indexPath: [...parentData.indexPath!, 0],
-        );
-        newParent = parentData.copyWith(
-          parameters: [newChild],
-        );
-      } else {
-        newChild = childData.copyWith(
-          state: CodeBlockState.inEditor,
-          indexPath: [...parentData.indexPath!, parentData.parameters!.length],
-        );
-        newParent = parentData.copyWith(
-          parameters: [...parentData.parameters!, newChild],
-        );
-      }
-    }
-    // add body
-    else {
-      debugPrint('Parent is empty: ${parentData.body!.isEmpty}');
-      if (parentData.body == null || parentData.body!.isEmpty) {
-        newChild = childData.copyWith(
-          state: CodeBlockState.inEditor,
-          indexPath: [...List.from(parentData.indexPath!), 0],
-        );
-        newParent = parentData.copyWith(
-          body: [newChild.copyWith()],
-        );
-      } else {
-        newChild = childData.copyWith(
-          state: CodeBlockState.inEditor,
-          indexPath: [...List.from(parentData.indexPath!), parentData.body!.length],
-        );
-        newParent = parentData.copyWith(
-          body: [...List.from(parentData.body!), newChild.copyWith()],
-        );
-      }
+  void addData(GameBlockData newData, String parentUID, [bool parameter = false]) {
+    debugPrint('add on this body: \nParent - $parentUID\nChild - ${newData.name}');
+    if (newData.uid == null || newData.uid!.isEmpty) {
+      newData = newData.copyWith(uid: _getID());
     }
 
-    List<GameBlockData> currentList = state.blockDataTree;
-    List<int> indexPath = newParent.indexPath!;
-
-    debugPrint('Newparent: ${newParent.indexPath}\nNewchild: ${newChild.indexPath}');
-
-    // loop through current list
-    for (int i = 0; i < indexPath.length; i++) {
-      // check if index valid
-      if (indexPath[i] >= 0 && indexPath[i] < currentList.length) {
-        if (i == indexPath.length - 1) {
-          currentList.removeAt(i);
-          currentList.insert(i, newParent);
-          return;
-        } else {
-          currentList = currentList[i].body!;
-        }
-      }
-      // throw if incorrect indexPath index
-      else {
-        throw ('Index was greater than the current list length!');
-      }
+    GameBlockData parentData = _findData(state.blockDataTree, parentUID);
+    final grandfatherData = _findData(state.blockDataTree, parentData.uid!);
+    if (parentData.body == null) {
+      parentData = parentData.copyWith(body: [newData.copyWith(parentUID: parentUID)]);
+    } else {
+      parentData = parentData.copyWith(body: [...parentData.body!, newData.copyWith(parentUID: parentUID)]);
     }
-    throw ('No data added!');
   }
 
   List<GameBlockData> getRootTree() => state.blockDataTree;
 
-  // get the parent data, which holds the body
-  GameBlockData getBlockData(List<int> indexPath) {
-    debugPrint('get self: ${indexPath.toString()}');
-    List<GameBlockData> currentList = state.blockDataTree;
-    if (indexPath.length == 1) {
-      // check if valid index
-      if (indexPath.first >= 0 && indexPath.first < currentList.length) {
-        return currentList[indexPath.first];
-      } else {
-        debugPrint('Index path: $indexPath');
-        throw ('Incorrect index path.');
-      }
+  GameBlockData _findData(List<GameBlockData> blocks, String uid, [bool parameter = false]) {
+    for (final data in blocks) {
+      if (data.uid == uid) return data;
+      _findData(parameter ? data.parameters! : data.body!, uid);
     }
-    for (int i = 0; i < indexPath.length; i++) {
-      if (i >= 0 && i < currentList.length) {
-        if (i == indexPath.length - 1) {
-          return currentList[i];
-        } else {
-          currentList = currentList[i].body!;
-        }
-      } else {
-        debugPrint('Index path: $indexPath');
-        throw ('Incorrect index path.');
-      }
-    }
-    throw ('Never found the targetted data!');
+    throw ('Never found the data!');
   }
 
-  void resetTree() {
-    state.blockDataTree = [];
-    // state.shouldSetState = true;
-    // to trigger a rebuild on watchers
+  // get the parent data, which holds the body
+  GameBlockData getData(String uid, [bool parameter = false]) {
+    debugPrint('get self: $uid');
+    if (uid.isEmpty) throw ('UID was empty!');
+    return _findData(state.blockDataTree, uid, parameter);
   }
+
+  void resetTree() => state.blockDataTree = [];
 
   void getScrollController() {}
 
@@ -152,20 +76,20 @@ class GameManager extends _$GameManager {
 
   String getLeaderboardID() => state._leaderboardID!;
 
-  GameBlockData? obtainPassedBlockData() {
-    // get the data first
-    final blockData = state._blockData;
+  // GameBlockData? obtainPassedBlockData() {
+  //   // get the data first
+  //   final blockData = state._blockData;
 
-    // remove the data from manager
-    removePassedBlockData();
+  //   // remove the data from manager
+  //   removePassedBlockData();
 
-    //return
-    return blockData;
-  }
+  //   //return
+  //   return blockData;
+  // }
 
   /// when passing block data from [Draggable] to [DragTarget].
-  void passBlockData(GameBlockData blockData) => state._blockData = blockData;
-  void removePassedBlockData() => state._blockData == null;
+  // void passBlockData(GameBlockData blockData) => state._blockData = blockData;
+  // void removePassedBlockData() => state._blockData == null;
 
   // when pausing game
   void pauseTimer() => state.pauseTimer = true;
@@ -259,27 +183,11 @@ class GameManager extends _$GameManager {
     delete(parent.indexPath!);
   }
 
-  void delete(List<int> indexPath, [bool parameter = false]) {
-    List<GameBlockData> currentList = state.blockDataTree;
-    if (indexPath.length == 1) {
-      currentList.removeAt(indexPath.first);
-      return;
-    }
-    for (int i = 0; i < currentList.length; i++) {
-      if (i >= 0 && i < currentList.length) {
-        if (i == indexPath.length - 1) {
-          if (parameter) {
-          } else {
-            currentList.removeAt(i);
-          }
-        } else {
-          currentList = currentList[i].body!;
-        }
-      } else {
-        throw ('Incorrect index detected.');
-      }
-    }
+  void deleteData(String uid, [bool parameter = false]) {
+    final data = _findData(state.blockDataTree, uid);
   }
+
+  String _getID() => DateTime.now().millisecondsSinceEpoch.toString();
 }
 
 class GameState {

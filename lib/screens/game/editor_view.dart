@@ -2,7 +2,6 @@ import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/game/block_data.dart';
 import 'package:block_logic/logic/services/game_manager.dart';
-import 'package:block_logic/logic/services/game_provider.dart';
 import 'package:block_logic/screens/game/block.dart';
 import 'package:block_logic/screens/game/validator.dart';
 import 'package:block_logic/screens/game/wrapper_drag_target.dart';
@@ -37,13 +36,12 @@ class _CustomTabViewState extends ConsumerState<EditorView> with AutomaticKeepAl
   Widget build(BuildContext context) {
     super.build(context);
     final gameState = ref.watch(gameManagerProvider);
-    final blockData = ref.watch(getRootDataProvider);
+    final blockData = ref.watch(gameManagerProvider.select((tree) => tree.blockDataTree));
     if (gameState.isDropCancelled) {
       // TODO: if drop was cancelled, reverse to previous state of this widget.
       // Use this when animation is applied
       gameManager.isDropCancelled(false);
     }
-
     if (blockData.isEmpty) return buildDragTarget(blockData);
     // final parentRenderBox = widget.editorWidgetKey.currentContext!.findRenderObject() as RenderBox;
     // final parentSize = parentRenderBox.size;

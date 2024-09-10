@@ -21,21 +21,21 @@ class GameCodeBlockState extends ConsumerState<GameBlock> with TickerProviderSta
   @override
   Widget build(BuildContext context) {
     // TODO: animate when cancelled
-    return Draggable(
+    return Draggable<GameBlockData>(
       // delay: const Duration(milliseconds: 100),
-      data: '', // drag target will not detect if data is null
+      data: widget.data, // drag target will not detect if data is null
       onDragUpdate: (details) {},
       dragAnchorStrategy: (draggable, context, position) {
         return const Offset(-30, 50);
       },
       onDragStarted: () {
         // TODO: add bouncing animation on feedback,
-        gameManager.passBlockData(widget.data);
+        // gameManager.passBlockData(widget.data);
         //startPosition = position;
       },
       onDraggableCanceled: (velocity, offset) {
-        gameManager.removePassedBlockData();
-        gameManager.isDropCancelled(true);
+        // gameManager.removePassedBlockData();
+        // gameManager.isDropCancelled(true);
         //_animateBackToStartPosition(offset);
       },
       onDragEnd: (details) {

@@ -2,7 +2,6 @@ import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/game/block_data.dart';
 import 'package:block_logic/logic/services/game_manager.dart';
-import 'package:block_logic/logic/services/game_provider.dart';
 import 'package:block_logic/screens/game/add_new_block_box.dart';
 import 'package:block_logic/screens/game/block.dart';
 import 'package:block_logic/screens/game/parameter_condition_box.dart';
@@ -90,7 +89,6 @@ class _GameBlockWithChildState extends ConsumerState<GameBlockWithChild> {
               } else {
                 gameManager.addData(initData, data);
               }
-              ref.invalidate(getRootDataProvider);
               setState(() {});
             },
             onWillAcceptWithDetails: (initData) {
