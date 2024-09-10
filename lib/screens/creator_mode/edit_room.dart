@@ -238,7 +238,7 @@ class _EditRoomBottomSheetState extends ConsumerState<EditRoomBottomSheet> {
                               challenges.when(
                                   data: (challenges) {
                                     if (challenges.isEmpty) {
-                                      return BLText('Sorry, there are no challenges available');
+                                      return const BLText('Sorry, there are no challenges available');
                                     }
                                     if (!issetChallenges) {
                                       maxChallenges = challenges.length;

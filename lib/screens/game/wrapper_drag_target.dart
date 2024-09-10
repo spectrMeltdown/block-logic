@@ -5,8 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class DragTargetWrapper extends ConsumerStatefulWidget {
   final Function()? builder;
-  final bool Function(GameBlockData?) onWillAcceptWithDetails;
-  final void Function(GameBlockData?, GameManager)? onAcceptWithDetails;
+  final bool Function(GameBlockData) onWillAcceptWithDetails;
+  final void Function(GameBlockData, GameManager)? onAcceptWithDetails;
   final Widget Function()? builderChild;
   final void Function()? onLeave;
   const DragTargetWrapper({
@@ -32,28 +32,30 @@ class _GameDragTargetState extends ConsumerState<DragTargetWrapper> {
     return Container(
       decoration: editorOutline
           ? BoxDecoration(
-              borderRadius: const BorderRadius.all(Radius.circular(10)),
-              border: Border.all(color: Colors.white))
+              borderRadius: const BorderRadius.all(Radius.circular(10)), border: Border.all(color: Colors.white))
           : null,
       child: DragTarget(
         builder: (context, accepted, rejected) {
           widget.builder?.call();
-          return widget.builderChild?.call() ??
-              const SizedBox(width: 80, height: 40);
+          return widget.builderChild?.call() ?? const SizedBox(width: 80, height: 40);
         },
         onAcceptWithDetails: (details) {
           setState(() {
             editorOutline = false;
           });
+          if (blockData == null) return;
           widget.onAcceptWithDetails?.call(blockData!, gameManager);
         },
         onWillAcceptWithDetails: (details) {
-          setState(() {
-            editorOutline = true;
-          });
           blockData = gameManager.obtainPassedBlockData();
           if (blockData == null) return false;
-          return widget.onWillAcceptWithDetails.call(blockData);
+          final shouldAccept = widget.onWillAcceptWithDetails.call(blockData!);
+          if (shouldAccept) {
+            setState(() {
+              editorOutline = true;
+            });
+          }
+          return shouldAccept;
         },
         onLeave: (details) {
           setState(() {

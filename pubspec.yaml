@@ -63,6 +63,9 @@ dependencies:
   fluttertoast: ^8.2.8
   firebase_app_check: ^0.3.0+5
 
+  copy_with_extension: any
+  flutter_highlight: any
+  highlight: any
 dev_dependencies:
   flutter_test:
     sdk: flutter

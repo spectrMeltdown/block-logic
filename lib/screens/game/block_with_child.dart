@@ -9,6 +9,7 @@ import 'package:block_logic/screens/game/parameter_condition_box.dart';
 import 'package:block_logic/screens/game/validator.dart';
 import 'package:block_logic/screens/game/wrapper_blocks.dart';
 import 'package:block_logic/screens/game/wrapper_drag_target.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -32,40 +33,33 @@ class _GameBlockWithChildState extends ConsumerState<GameBlockWithChild> {
 
   @override
   Widget build(BuildContext context) {
-    final blockData = ref.watch(GetBlockDataProvider(widget.data.indexPath!));
+    final data = widget.data;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
-            BLText(widget.data.name),
+            BLText(data.name),
             const SizedBox(width: 20),
 
             /// Parameter/condition box
             DragTargetWrapper(
               builderChild: () {
-                if (blockData.parameters != null && blockData.parameters!.isNotEmpty) {
+                if (data.parameters != null && data.parameters!.isNotEmpty) {
                   return ParameterConditionBox(
-                    parameters: blockData.parameters!,
+                    data: data,
                   );
                 }
                 return const SizedBox(width: 80, height: 40);
               },
-              onAcceptWithDetails: (block, manager) {
-                if (block == null) return;
-                // addParameter(block!);
-                // gameManager.removePassedBlockData();
-              },
+              onAcceptWithDetails: (block, manager) {},
 
               /// Parameters/condition box
               onWillAcceptWithDetails: (data) {
-                data = gameManager.obtainPassedBlockData();
-                if (data == null) return false;
-                // TODO: customize to accept custom blocks only
-                if (widget.data.type == CodeBlockType.conditionals) {
-                  return validator.statementBox(data: widget.data, dataToAccept: data);
+                if (data.type == CodeBlockType.conditionals) {
+                  return validator.statementBox(data: data, dataToAccept: data);
                 }
-                return validator.parameterBox(data: widget.data, dataToAccept: data);
+                return validator.parameterBox(data: data, dataToAccept: data);
               },
             )
           ],
@@ -74,27 +68,40 @@ class _GameBlockWithChildState extends ConsumerState<GameBlockWithChild> {
           padding: const EdgeInsets.only(left: 10),
           child: DragTargetWrapper(
             builderChild: () {
-              if (blockData.body != null && blockData.body!.isNotEmpty) {
-                return BlockWrapper(
-                    widgetList: List.generate(
-                        blockData.body!.length,
-                        (i) => GameBlock(
-                              data: blockData.body![i],
-                            )));
+              if (data.body != null && data.body!.isNotEmpty) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    BlockWrapper(
+                        widgetList: List.generate(
+                            data.body!.length,
+                            (i) => GameBlock(
+                                  data: data.body![i],
+                                ))),
+                    const AddNewBlockBox()
+                  ],
+                );
               }
               return const AddNewBlockBox();
             },
             onAcceptWithDetails: (initData, manager) {
-              if (initData == null) return;
-              final data = initData.copyWith(indexPath: widget.data.indexPath);
-              gameManager.addData(data);
-              // setState(() {});
+              if (initData.state == CodeBlockState.inEditor) {
+                gameManager.moveInTree(initData, data);
+              } else {
+                gameManager.addData(initData, data);
+              }
+              ref.invalidate(getRootDataProvider);
+              setState(() {});
             },
-            onWillAcceptWithDetails: (data) {
-              if (data == null) return false;
-              // TODO: customize to accept custom blocks only
+            onWillAcceptWithDetails: (initData) {
+              if (initData.indexPath != null) {
+                bool sameIndexPath = const ListEquality().equals(initData.indexPath, data.indexPath);
+                if (sameIndexPath) {
+                  return false;
+                }
+              }
               return true;
-              // return validator.nestedBox(data: widget.data, dataToAccept: block!);
+              // return validator.nestedBox(data: data, dataToAccept: initData);
             },
           ),
         )

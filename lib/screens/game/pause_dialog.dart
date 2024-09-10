@@ -38,13 +38,13 @@ class _PauseDialogState extends ConsumerState<PauseDialog> {
       mainAxisSize: MainAxisSize.min,
       children: [
         const BLSmallTitle('PAUSE'),
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
         BLButton(
             onPressed: () {
               gameManager.resetTree();
               ref.invalidate(getRootDataProvider);
             },
-            child: BLText('Reset blocks')),
+            child: const BLText('Reset blocks')),
         const SizedBox(height: 10),
         BLButton(
             // TODO: update this later with room exit logic

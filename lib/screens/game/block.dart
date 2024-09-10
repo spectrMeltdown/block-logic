@@ -1,10 +1,7 @@
-import 'package:block_logic/components/text/text.dart';
-import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/game/block_data.dart';
 import 'package:block_logic/logic/services/game_manager.dart';
 import 'package:block_logic/logic/services/ui.dart';
-import 'package:block_logic/screens/game/block_with_child.dart';
-import 'package:block_logic/screens/game/wrapper_block_design.dart';
+import 'package:block_logic/screens/game/block_render.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -18,19 +15,21 @@ class GameBlock extends ConsumerStatefulWidget {
 class GameCodeBlockState extends ConsumerState<GameBlock> with TickerProviderStateMixin {
   late final GameManager gameManager;
   late final BLUI blui;
-  late final String id;
-  late final Widget block;
+  bool shouldBounce = false;
+  // late final String id;
+  // late final Widget block;
   @override
   Widget build(BuildContext context) {
     // TODO: animate when cancelled
-    return LongPressDraggable(
-      delay: const Duration(milliseconds: 100),
+    return Draggable(
+      // delay: const Duration(milliseconds: 100),
       data: '', // drag target will not detect if data is null
       onDragUpdate: (details) {},
       dragAnchorStrategy: (draggable, context, position) {
         return const Offset(-30, 50);
       },
       onDragStarted: () {
+        // TODO: add bouncing animation on feedback,
         gameManager.passBlockData(widget.data);
         //startPosition = position;
       },
@@ -45,9 +44,9 @@ class GameCodeBlockState extends ConsumerState<GameBlock> with TickerProviderSta
         //   _animateBackToStartPosition(details.offset);
         // }
       },
-      childWhenDragging: block,
-      feedback: block,
-      child: block,
+      childWhenDragging: BlockRender(widget.data),
+      feedback: BlockRender(widget.data), // the widget that follws the touch position
+      child: BlockRender(widget.data), // the normal display
       // childWhenDragging: buildBlockState(CodeBlockState.faded),
       // feedback: buildBlockState(CodeBlockState.unselected),
       // child: buildBlockState(widget.data.state),
@@ -66,52 +65,6 @@ class GameCodeBlockState extends ConsumerState<GameBlock> with TickerProviderSta
   //   _controller.forward(from: 0.0);
   // }
 
-  Widget buildBlockState(CodeBlockState state) {
-    debugPrint(state.toString());
-    switch (state) {
-      case CodeBlockState.inSelector:
-        return BlockDesignWrapper(
-          data: widget.data,
-          child: Center(
-            child: BLText(
-              widget.data.name,
-              size: 14,
-            ),
-          ),
-        );
-
-      case CodeBlockState.inEditor:
-        final data = widget.data.copyWith(state: CodeBlockState.inEditor);
-        switch (widget.data.type) {
-          case CodeBlockType.loops:
-          case CodeBlockType.conditionals:
-            return BlockDesignWrapper(
-              data: data,
-              child: GameBlockWithChild(data: data),
-            );
-          case CodeBlockType.objects:
-          case CodeBlockType.functions:
-            return BlockDesignWrapper(
-              data: data,
-              child: GameBlockWithChild(data: data),
-            );
-          case CodeBlockType.keywords:
-          case CodeBlockType.operators:
-          case CodeBlockType.literals:
-          case CodeBlockType.variables:
-            return BlockDesignWrapper(
-              data: data,
-              child: Center(
-                child: BLText(
-                  data.name,
-                  size: 14,
-                ),
-              ),
-            );
-        }
-    }
-  }
-
   // Offset position = const Offset(100, 100);
   // Offset startPosition = const Offset(100, 100);
   // late AnimationController _controller;
@@ -120,7 +73,6 @@ class GameCodeBlockState extends ConsumerState<GameBlock> with TickerProviderSta
   void initState() {
     gameManager = ref.read(gameManagerProvider.notifier);
     blui = ref.read(bLUIProvider.notifier);
-    block = buildBlockState(widget.data.state);
     // _controller = AnimationController(
     //   duration: const Duration(milliseconds: 300),
     //   vsync: this,

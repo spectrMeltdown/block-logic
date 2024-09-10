@@ -6,7 +6,7 @@ part of '../game_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$getBlockDataHash() => r'6e9234614f0d82199495c2713e3b37aa980e3575';
+String _$getBlockDataHash() => r'2f2bcbb9433394f1ffb580632a7ef25c3739f43d';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -155,7 +155,7 @@ class _GetBlockDataProviderElement
   List<int> get indexPath => (origin as GetBlockDataProvider).indexPath;
 }
 
-String _$getRootDataHash() => r'367cd5c5c45065e04fce6cd597bb281fbeaf791d';
+String _$getRootDataHash() => r'099eba0444fc6e49d161bfbbaf02c03ae0a5f4d7';
 
 /// See also [getRootData].
 @ProviderFor(getRootData)

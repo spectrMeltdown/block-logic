@@ -20,7 +20,7 @@ class _LeaderboardItemState extends ConsumerState<LeaderboardItem> {
   @override
   Widget build(BuildContext context) {
     return BLCard(
-        outerPadding: EdgeInsets.symmetric(horizontal: 5),
+        outerPadding: const EdgeInsets.symmetric(horizontal: 5),
         color: Colors.white.withOpacity(0.3),
         onPressed: () {
           nav.push(context, SelectedLeaderboard(widget.leaderboard));

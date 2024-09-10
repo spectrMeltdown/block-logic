@@ -46,8 +46,8 @@ class _FeedbackDialogState extends ConsumerState<FeedbackDialog> {
             children: [
               Row(
                 children: [
-                  Icon(FontAwesomeIcons.paperPlane),
-                  SizedBox(width: 10),
+                  const Icon(FontAwesomeIcons.paperPlane),
+                  const SizedBox(width: 10),
                   BLSmallTitle(
                     widget.title ?? 'Send Feedback',
                     bottomPadding: 2,

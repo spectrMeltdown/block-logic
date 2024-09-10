@@ -6,14 +6,14 @@ part 'generated/game_provider.g.dart';
 
 @riverpod
 GameBlockData getBlockData(GetBlockDataRef ref, List<int> indexPath) {
-  ref.watch(gameManagerProvider);
+  ref.watch(gameManagerProvider.select((tree) => tree.blockDataTree));
   final gameManager = ref.read(gameManagerProvider.notifier);
   return gameManager.getBlockData(indexPath);
 }
 
 @riverpod
 List<GameBlockData> getRootData(GetRootDataRef ref) {
-  ref.watch(gameManagerProvider);
+  ref.watch(gameManagerProvider.select((tree) => tree.blockDataTree));
   final gameManager = ref.read(gameManagerProvider.notifier);
   return gameManager.getRootTree();
 }

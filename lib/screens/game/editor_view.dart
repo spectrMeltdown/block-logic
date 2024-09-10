@@ -1,4 +1,5 @@
 import 'package:block_logic/components/text/text.dart';
+import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/game/block_data.dart';
 import 'package:block_logic/logic/services/game_manager.dart';
 import 'package:block_logic/logic/services/game_provider.dart';
@@ -19,7 +20,6 @@ class _CustomTabViewState extends ConsumerState<EditorView> with AutomaticKeepAl
   List<int>? childIndexPath;
   bool editorOutline = false;
   bool addedPlaceholder = false;
-  // late final GameState GameState;
   final validator = BlockValidator();
 
   @override
@@ -38,7 +38,6 @@ class _CustomTabViewState extends ConsumerState<EditorView> with AutomaticKeepAl
     super.build(context);
     final gameState = ref.watch(gameManagerProvider);
     final blockData = ref.watch(getRootDataProvider);
-
     if (gameState.isDropCancelled) {
       // TODO: if drop was cancelled, reverse to previous state of this widget.
       // Use this when animation is applied
@@ -90,15 +89,19 @@ class _CustomTabViewState extends ConsumerState<EditorView> with AutomaticKeepAl
         }
         return const Center(child: BLText('Drop a block'));
       },
-      onWillAcceptWithDetails: (blockData) {
-        /// accept all blockData because this is top-level
+      onWillAcceptWithDetails: (initData) {
+        if (initData.indexPath != null && initData.indexPath!.length == 1) {
+          return false;
+        }
         return true;
       },
       onAcceptWithDetails: (initData, gameManager) {
-        if (initData == null) return;
-        final data = initData.copyWith(indexPath: []);
-        gameManager.addData(data);
-        // setState(() {});
+        if (initData.state == CodeBlockState.inEditor) {
+          gameManager.moveToRoot(initData);
+        } else {
+          gameManager.addRootData(initData);
+        }
+        setState(() {});
       },
     );
   }

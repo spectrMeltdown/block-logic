@@ -6,7 +6,7 @@ part 'generated/internet_connection.g.dart';
 
 @Riverpod(keepAlive: true)
 class InternetStatus extends _$InternetStatus {
-  bool _initialCheck = true; // to avoid displaying when app has first started
+  final bool _initialCheck = true; // to avoid displaying when app has first started
   Toast? _toast;
   @override
   void build() {

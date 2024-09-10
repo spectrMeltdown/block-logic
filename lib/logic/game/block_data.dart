@@ -5,26 +5,28 @@ import 'package:block_logic/logic/game/py_literal.dart';
 import 'package:block_logic/logic/game/py_loops.dart';
 import 'package:block_logic/logic/game/py_operators.dart';
 import 'package:copy_with_extension/copy_with_extension.dart';
+import 'package:flutter/material.dart';
 
 part 'generated/block_data.g.dart';
 
 @CopyWith()
+@immutable
 class GameBlockData {
-  List<int>? indexPath;
-  CodeBlockType type;
-  CodeBlockState state;
-  String name;
-  PyInitFunction? init;
-  PyLiteral? return_;
-  List<GameBlockData>? parameters;
-  List<GameBlockData>? arguments;
-  List<GameBlockData>? condition;
-  List<GameBlockData>? body;
-  GameBlockData? functionDefinition;
-  GameBlockData? classDefinition;
-  PyLiteral? value;
+  final List<int>? indexPath;
+  final CodeBlockType type;
+  final CodeBlockState state;
+  final String name;
+  final PyInitFunction? init;
+  final PyLiteral? return_;
+  final List<GameBlockData>? parameters;
+  final List<GameBlockData>? arguments;
+  final List<GameBlockData>? condition;
+  final List<GameBlockData>? body;
+  final GameBlockData? functionDefinition;
+  final GameBlockData? classDefinition;
+  final PyLiteral? value;
 
-  GameBlockData({
+  const GameBlockData({
     this.indexPath,
     required this.type,
     required this.name,
@@ -48,7 +50,7 @@ class GameBlockData {
     const type = CodeBlockType.conditionals;
     switch (conditional) {
       case PyConditional.elif_:
-        return GameBlockData(
+        return const GameBlockData(
           // id: id,
           type: type,
           name: 'elif',
@@ -56,7 +58,7 @@ class GameBlockData {
           body: [],
         );
       case PyConditional.if_:
-        return GameBlockData(
+        return const GameBlockData(
           // id: id,
           type: type,
           name: 'if',
@@ -64,7 +66,7 @@ class GameBlockData {
           body: [],
         );
       case PyConditional.else_:
-        return GameBlockData(
+        return const GameBlockData(
           // id: id,
           type: type,
           name: 'else',
@@ -83,7 +85,7 @@ class GameBlockData {
       // id: id,
       type: type,
       name: name,
-      arguments: [],
+      arguments: const [],
       functionDefinition: functionDefinition,
     );
   }
@@ -107,7 +109,7 @@ class GameBlockData {
     const type = CodeBlockType.loops;
     switch (loop) {
       case PyLoop.while_:
-        return GameBlockData(
+        return const GameBlockData(
           // id: id,
           type: type,
           name: 'while',
@@ -115,7 +117,7 @@ class GameBlockData {
           body: [],
         );
       case PyLoop.for_:
-        return GameBlockData(
+        return const GameBlockData(
           // id: id,
           type: type,
           name: 'for',
@@ -135,7 +137,7 @@ class GameBlockData {
       // id: id,
       type: type,
       name: name,
-      arguments: [],
+      arguments: const [],
       classDefinition: classDefinition,
     );
   }
@@ -210,7 +212,7 @@ class GameBlockData {
           );
         }
     }
-    return GameBlockData(
+    return const GameBlockData(
       // id: id,
       type: type,
       name: '',

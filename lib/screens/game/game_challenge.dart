@@ -43,7 +43,7 @@ class GameChallenge extends ConsumerWidget {
               ),
               const SizedBox(width: 10),
               ConstrainedBox(
-                constraints: BoxConstraints(maxWidth: 120),
+                constraints: const BoxConstraints(maxWidth: 120),
                 child: Column(
                   children: [
                     GameSubmitButton(updateChallenge),
@@ -56,7 +56,7 @@ class GameChallenge extends ConsumerWidget {
           ),
         ),
         const SizedBox(height: 10),
-        Flexible(flex: 2, child: const Editor()),
+        const Flexible(flex: 2, child: Editor()),
         // TODO: get blocks from challenge, save to gameManager, load into gameManager
         Padding(padding: const EdgeInsets.only(bottom: 20), child: GameBlocks(AllBlocks.get())),
       ],

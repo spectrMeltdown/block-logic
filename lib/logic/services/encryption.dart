@@ -1,5 +1,4 @@
 import 'package:encrypt/encrypt.dart' as encrypt_lib;
-import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'generated/encryption.g.dart';

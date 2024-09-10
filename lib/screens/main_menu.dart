@@ -183,7 +183,7 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen>
                             assets.premiumCrown,
                             size: 50,
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 5,
                           ),
                         ],

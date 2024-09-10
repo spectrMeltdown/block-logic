@@ -24,9 +24,15 @@ class BlockDesignWrapper extends ConsumerStatefulWidget {
 }
 
 class _BlockDesignWrapperState extends ConsumerState<BlockDesignWrapper> {
+  late final BLUI blui;
+  @override
+  void initState() {
+    blui = ref.read(bLUIProvider.notifier);
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final blui = ref.read(bLUIProvider.notifier);
     return Material(
       color: Colors.transparent,
       child: Container(
