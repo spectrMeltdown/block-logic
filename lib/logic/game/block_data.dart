@@ -19,10 +19,11 @@ class GameBlockData {
   final String name;
   final PyInitFunction? init;
   final PyLiteral? return_;
-  final List<GameBlockData>? parameters;
-  final List<GameBlockData>? arguments;
-  final List<GameBlockData>? condition;
-  final List<GameBlockData>? body;
+  final List<String>? parameterUIDs;
+  final List<String>? argumentUIDs;
+  final List<String>? conditionUIDs;
+  final List<String>? bodyUIDs;
+  final List<String>? statementUIDs;
   final GameBlockData? functionDefinition;
   final GameBlockData? classDefinition;
   final PyLiteral? value;
@@ -36,10 +37,11 @@ class GameBlockData {
     this.state = CodeBlockState.inSelector,
     this.init,
     this.return_,
-    this.body,
-    this.parameters,
-    this.arguments,
-    this.condition,
+    this.bodyUIDs,
+    this.parameterUIDs,
+    this.argumentUIDs,
+    this.statementUIDs,
+    this.conditionUIDs,
     this.functionDefinition,
     this.classDefinition,
     this.value,
@@ -53,28 +55,29 @@ class GameBlockData {
     switch (conditional) {
       case PyConditional.elif_:
         return const GameBlockData(
-          // id: id,
           type: type,
           name: 'elif',
-          condition: [],
-          body: [],
+          conditionUIDs: [],
+          bodyUIDs: [],
         );
       case PyConditional.if_:
         return const GameBlockData(
-          // id: id,
           type: type,
           name: 'if',
-          condition: [],
-          body: [],
+          conditionUIDs: [],
+          bodyUIDs: [],
         );
       case PyConditional.else_:
         return const GameBlockData(
-          // id: id,
           type: type,
           name: 'else',
-          body: [],
+          bodyUIDs: [],
         );
     }
+  }
+
+  factory GameBlockData.createStatement() {
+    return const GameBlockData(type: CodeBlockType.statement, name: '', statementUIDs: []);
   }
 
   factory GameBlockData.createFunction({
@@ -84,10 +87,9 @@ class GameBlockData {
   }) {
     const type = CodeBlockType.functions;
     return GameBlockData(
-      // id: id,
       type: type,
       name: name,
-      arguments: [],
+      argumentUIDs: const [],
       functionDefinition: functionDefinition,
     );
   }
@@ -98,7 +100,6 @@ class GameBlockData {
   }) {
     const type = CodeBlockType.literals;
     return GameBlockData(
-      // id: id,
       type: type,
       name: literal.value,
     );
@@ -112,19 +113,17 @@ class GameBlockData {
     switch (loop) {
       case PyLoop.while_:
         return const GameBlockData(
-          // id: id,
           type: type,
           name: 'while',
-          condition: [],
-          body: [],
+          conditionUIDs: [],
+          bodyUIDs: [],
         );
       case PyLoop.for_:
         return const GameBlockData(
-          // id: id,
           type: type,
           name: 'for',
-          condition: [],
-          body: [],
+          conditionUIDs: [],
+          bodyUIDs: [],
         );
     }
   }
@@ -136,10 +135,9 @@ class GameBlockData {
   }) {
     const type = CodeBlockType.objects;
     return GameBlockData(
-      // id: id,
       type: type,
       name: name,
-      arguments: [],
+      argumentUIDs: const [],
       classDefinition: classDefinition,
     );
   }
@@ -163,7 +161,6 @@ class GameBlockData {
         if (PyOperatorsArithmetic.values.contains(operator)) {
           final dataValue = operator as PyOperatorsArithmetic;
           return GameBlockData(
-            // id: id,
             type: type,
             name: PyOperator.arithmetic(dataValue).operator,
           );
@@ -172,7 +169,6 @@ class GameBlockData {
         if (PyOperatorsComparison.values.contains(operator)) {
           final dataValue = operator as PyOperatorsComparison;
           return GameBlockData(
-            // id: id,
             type: type,
             name: PyOperator.comparison(dataValue).operator,
           );
@@ -181,7 +177,6 @@ class GameBlockData {
         if (PyOperatorsAssignment.values.contains(operator)) {
           final dataValue = operator as PyOperatorsAssignment;
           return GameBlockData(
-            // id: id,
             type: type,
             name: PyOperator.assignment(dataValue).operator,
           );
@@ -190,7 +185,6 @@ class GameBlockData {
         if (PyOperatorsIdentity.values.contains(operator)) {
           final dataValue = operator as PyOperatorsIdentity;
           return GameBlockData(
-            // id: id,
             type: type,
             name: PyOperator.identity(dataValue).operator,
           );
@@ -199,7 +193,6 @@ class GameBlockData {
         if (PyOperatorsLogical.values.contains(operator)) {
           final dataValue = operator as PyOperatorsLogical;
           return GameBlockData(
-            // id: id,
             type: type,
             name: PyOperator.logical(dataValue).operator,
           );
@@ -208,14 +201,12 @@ class GameBlockData {
         if (PyOperatorsMembership.values.contains(operator)) {
           final dataValue = operator as PyOperatorsMembership;
           return GameBlockData(
-            // id: id,
             type: type,
             name: PyOperator.membership(dataValue).operator,
           );
         }
     }
     return const GameBlockData(
-      // id: id,
       type: type,
       name: '',
     );
@@ -228,71 +219,46 @@ class GameBlockData {
   }) {
     const type = CodeBlockType.variables;
     return GameBlockData(
-      // id: id,
       type: type,
       name: name,
       value: value,
     );
   }
 
-  ///overwrite any fields provided, copies any old existing data from the object
-  // GameBlockData copyWith({
-  //   CodeBlockType? type,
-  //   String? name,
-  //   CodeBlockState? state,
-  //   PyInitFunction? init,
-  //   List<GameBlockData>? body,
-  //   PyLiteral? return_,
-  //   List<GameBlockData>? parameters,
-  //   List<GameBlockData>? arguments,
-  //   List<GameBlockData>? condition,
-  //   GameBlockData? functionDefinition,
-  //   GameBlockData? classDefinition,
-  //   PyLiteral? value,
-  //   String? id,
-  // }) {
-  //   return GameBlockData(
-  //     //id: id ?? this.id,
-  //     type: type ?? this.type,
-  //     name: name ?? this.name,
-  //     state: state ?? this.state,
-  //     init: init ?? this.init,
-  //     body: body ?? this.body,
-  //     return_: return_ ?? this.return_,
-  //     parameters: parameters ?? this.parameters,
-  //     arguments: arguments ?? this.arguments,
-  //     condition: condition ?? this.condition,
-  //     functionDefinition: functionDefinition ?? this.functionDefinition,
-  //     classDefinition: classDefinition ?? this.classDefinition,
-  //     value: value ?? this.value,
-  //   );
+  // Map<String, Map<String, dynamic>> toMap() {
+  //   late final Map<String, Map<String, dynamic>> map = {uid!: {}};
+  //   if (bodyUIDs != null) {
+  //     map[uid!]!.addAll({'bodyUIDs': bodyUIDs});
+  //   }
+  //   if (parameterUIDs != null) {
+  //     map[uid!]!.addAll({'parameterUIDs': parameterUIDs});
+  //   }
+  //   if (argumentUIDs != null) {
+  //     map[uid!]!.addAll({'argumentUIDs': argumentUIDs});
+  //   }
+  //   if (conditionUIDs != null) {
+  //     map[uid!]!.addAll({'conditionUIDs': conditionUIDs});
+  //   }
+  //   map[uid!]!.addAll({'data': conditionUIDs});
+  //   return map;
   // }
 
-  // fromJson factory method
-  factory GameBlockData.fromJson(Map<String, dynamic> json) {
-    return GameBlockData(
-      type: CodeBlockType.values.firstWhere((e) => e.toString() == json['type']),
-      name: json['name'] as String,
-      state: CodeBlockState.values
-          .firstWhere((e) => e.toString() == json['state'], orElse: () => CodeBlockState.inSelector),
-      //init: json['init'] != null ? PyInitFunction.fromJson(json['init']) : null,
-      return_: json['return'] != null ? PyLiteral.fromJson(json['return']) : null,
-      parameters: json['parameters'] != null
-          ? (json['parameters'] as List<dynamic>).map((item) => GameBlockData.fromJson(item)).toList()
-          : null,
-      arguments: json['arguments'] != null
-          ? (json['arguments'] as List<dynamic>).map((item) => GameBlockData.fromJson(item)).toList()
-          : null,
-      condition: json['condition'] != null
-          ? (json['condition'] as List<dynamic>).map((item) => GameBlockData.fromJson(item)).toList()
-          : null,
-      body: json['body'] != null
-          ? (json['body'] as List<dynamic>).map((item) => GameBlockData.fromJson(item)).toList()
-          : null,
-      functionDefinition:
-          json['functionDefinition'] != null ? GameBlockData.fromJson(json['functionDefinition']) : null,
-      classDefinition: json['classDefinition'] != null ? GameBlockData.fromJson(json['classDefinition']) : null,
-      value: json['value'] != null ? PyLiteral.fromJson(json['value']) : null,
-    );
-  }
+  // pass just the contents, no uid
+  // factory GameBlockData.fromMap(Map<String, dynamic> data) {
+  //   final gameBlock = data['data'] as GameBlockData;
+  //   GameBlockData newData = gameBlock.copyWith();
+  //   if (data['bodyUIDs'] != null) {
+  //     newData = newData.copyWith(bodyUIDs: data['bodyUIDs']);
+  //   }
+  //   if (data['parameterUIDs'] != null) {
+  //     newData = newData.copyWith(parameterUIDs: data['parameterUIDs']);
+  //   }
+  //   if (data['argumentUIDs'] != null) {
+  //     newData = newData.copyWith(argumentUIDs: data['argumentUIDs']);
+  //   }
+  //   if (data['conditionUIDs'] != null) {
+  //     newData = newData.copyWith(conditionUIDs: data['conditionUIDs']);
+  //   }
+  //   return newData;
+  // }
 }

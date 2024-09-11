@@ -50,17 +50,17 @@ class Challenge {
       additionalInfo: data['additionalInfo'] ?? '',
       limitations:
           data['limitations'] == null ? [] : (data['limitations'] as List<dynamic>).map((i) => i as String).toList(),
-      blocks: data['blocks'] == null
-          ? null
-          : data.map<CodeBlockType, List<GameBlockData>>((key, value) {
-              // Convert the key to CodeBlockType
-              CodeBlockType codeBlockType = CodeBlockType.values.firstWhere((e) => e.toString() == key.toString());
+      // blocks: data['blocks'] == null
+      //     ? null
+      //     : data.map<CodeBlockType, List<GameBlockData>>((key, value) {
+      //         // Convert the key to CodeBlockType
+      //         CodeBlockType codeBlockType = CodeBlockType.values.firstWhere((e) => e.toString() == key.toString());
 
-              // Convert the value (List<dynamic>) to List<GameBlockData>
-              List<GameBlockData> gameBlockDataList = value.map((item) => GameBlockData.fromJson(item)).toList();
+      //         // Convert the value (List<dynamic>) to List<GameBlockData>
+      //         List<GameBlockData> gameBlockDataList = value.map((item) => GameBlockData.fromJson(item)).toList();
 
-              return MapEntry(codeBlockType, gameBlockDataList);
-            }),
+      //         return MapEntry(codeBlockType, gameBlockDataList);
+      //       }),
       difficulty: difficultyFirestore,
       tags: data['tags'] == null ? [] : (data['tags'] as List<dynamic>).map((i) => i as String).toList(),
     );

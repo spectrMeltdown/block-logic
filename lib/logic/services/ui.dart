@@ -60,6 +60,8 @@ class BLUI extends _$BLUI {
         return blockColors.keywords;
       case null:
         return Colors.white;
+      case CodeBlockType.statement:
+        return Colors.transparent;
     }
   }
 

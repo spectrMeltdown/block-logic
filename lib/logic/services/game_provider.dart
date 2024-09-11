@@ -5,15 +5,22 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'generated/game_provider.g.dart';
 
 @riverpod
-GameBlockData getBlockData(GetBlockDataRef ref, List<int> indexPath) {
-  ref.watch(gameManagerProvider.select((tree) => tree.blockDataTree));
+GameBlockData getSelfData(GetSelfDataRef ref, String uid) {
+  ref.watch(gameManagerProvider.select((tree) => tree.dataTree[uid]));
   final gameManager = ref.read(gameManagerProvider.notifier);
-  return gameManager.getBlockData(indexPath);
+  return gameManager.getSelfData(uid);
+}
+
+@riverpod
+List<GameBlockData> getChildrenData(GetChildrenDataRef ref, List<String> uids) {
+  ref.watch(gameManagerProvider.select((tree) => tree.dataTree));
+  final gameManager = ref.read(gameManagerProvider.notifier);
+  return gameManager.getChildrenData(uids);
 }
 
 @riverpod
 List<GameBlockData> getRootData(GetRootDataRef ref) {
-  ref.watch(gameManagerProvider.select((tree) => tree.blockDataTree));
+  ref.watch(gameManagerProvider.select((tree) => tree.dataTree));
   final gameManager = ref.read(gameManagerProvider.notifier);
-  return gameManager.getRootTree();
+  return gameManager.getRootData();
 }

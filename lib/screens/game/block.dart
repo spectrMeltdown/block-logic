@@ -18,6 +18,11 @@ class GameCodeBlockState extends ConsumerState<GameBlock> with TickerProviderSta
   bool shouldBounce = false;
   // late final String id;
   // late final Widget block;
+
+  void refresh() {
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     // TODO: animate when cancelled
@@ -44,9 +49,9 @@ class GameCodeBlockState extends ConsumerState<GameBlock> with TickerProviderSta
         //   _animateBackToStartPosition(details.offset);
         // }
       },
-      childWhenDragging: BlockRender(widget.data),
-      feedback: BlockRender(widget.data), // the widget that follws the touch position
-      child: BlockRender(widget.data), // the normal display
+      childWhenDragging: BlockRender(widget.data, refresh),
+      feedback: BlockRender(widget.data, refresh), // the widget that follws the touch position
+      child: BlockRender(widget.data, refresh), // the normal display
       // childWhenDragging: buildBlockState(CodeBlockState.faded),
       // feedback: buildBlockState(CodeBlockState.unselected),
       // child: buildBlockState(widget.data.state),

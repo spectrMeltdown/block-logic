@@ -21,10 +21,11 @@ abstract class _$GameBlockDataCWProxy {
     CodeBlockState? state,
     PyInitFunction? init,
     PyLiteral? return_,
-    List<GameBlockData>? body,
-    List<GameBlockData>? parameters,
-    List<GameBlockData>? arguments,
-    List<GameBlockData>? condition,
+    List<String>? bodyUIDs,
+    List<String>? parameterUIDs,
+    List<String>? argumentUIDs,
+    List<String>? statementUIDs,
+    List<String>? conditionUIDs,
     GameBlockData? functionDefinition,
     GameBlockData? classDefinition,
     PyLiteral? value,
@@ -53,10 +54,11 @@ class _$GameBlockDataCWProxyImpl implements _$GameBlockDataCWProxy {
     Object? state = const $CopyWithPlaceholder(),
     Object? init = const $CopyWithPlaceholder(),
     Object? return_ = const $CopyWithPlaceholder(),
-    Object? body = const $CopyWithPlaceholder(),
-    Object? parameters = const $CopyWithPlaceholder(),
-    Object? arguments = const $CopyWithPlaceholder(),
-    Object? condition = const $CopyWithPlaceholder(),
+    Object? bodyUIDs = const $CopyWithPlaceholder(),
+    Object? parameterUIDs = const $CopyWithPlaceholder(),
+    Object? argumentUIDs = const $CopyWithPlaceholder(),
+    Object? statementUIDs = const $CopyWithPlaceholder(),
+    Object? conditionUIDs = const $CopyWithPlaceholder(),
     Object? functionDefinition = const $CopyWithPlaceholder(),
     Object? classDefinition = const $CopyWithPlaceholder(),
     Object? value = const $CopyWithPlaceholder(),
@@ -90,22 +92,26 @@ class _$GameBlockDataCWProxyImpl implements _$GameBlockDataCWProxy {
           ? _value.return_
           // ignore: cast_nullable_to_non_nullable
           : return_ as PyLiteral?,
-      body: body == const $CopyWithPlaceholder()
-          ? _value.body
+      bodyUIDs: bodyUIDs == const $CopyWithPlaceholder()
+          ? _value.bodyUIDs
           // ignore: cast_nullable_to_non_nullable
-          : body as List<GameBlockData>?,
-      parameters: parameters == const $CopyWithPlaceholder()
-          ? _value.parameters
+          : bodyUIDs as List<String>?,
+      parameterUIDs: parameterUIDs == const $CopyWithPlaceholder()
+          ? _value.parameterUIDs
           // ignore: cast_nullable_to_non_nullable
-          : parameters as List<GameBlockData>?,
-      arguments: arguments == const $CopyWithPlaceholder()
-          ? _value.arguments
+          : parameterUIDs as List<String>?,
+      argumentUIDs: argumentUIDs == const $CopyWithPlaceholder()
+          ? _value.argumentUIDs
           // ignore: cast_nullable_to_non_nullable
-          : arguments as List<GameBlockData>?,
-      condition: condition == const $CopyWithPlaceholder()
-          ? _value.condition
+          : argumentUIDs as List<String>?,
+      statementUIDs: statementUIDs == const $CopyWithPlaceholder()
+          ? _value.statementUIDs
           // ignore: cast_nullable_to_non_nullable
-          : condition as List<GameBlockData>?,
+          : statementUIDs as List<String>?,
+      conditionUIDs: conditionUIDs == const $CopyWithPlaceholder()
+          ? _value.conditionUIDs
+          // ignore: cast_nullable_to_non_nullable
+          : conditionUIDs as List<String>?,
       functionDefinition: functionDefinition == const $CopyWithPlaceholder()
           ? _value.functionDefinition
           // ignore: cast_nullable_to_non_nullable
@@ -138,10 +144,11 @@ extension $GameBlockDataCopyWith on GameBlockData {
     bool parentUID = false,
     bool init = false,
     bool return_ = false,
-    bool body = false,
-    bool parameters = false,
-    bool arguments = false,
-    bool condition = false,
+    bool bodyUIDs = false,
+    bool parameterUIDs = false,
+    bool argumentUIDs = false,
+    bool statementUIDs = false,
+    bool conditionUIDs = false,
     bool functionDefinition = false,
     bool classDefinition = false,
     bool value = false,
@@ -154,10 +161,11 @@ extension $GameBlockDataCopyWith on GameBlockData {
       state: state,
       init: init == true ? null : this.init,
       return_: return_ == true ? null : this.return_,
-      body: body == true ? null : this.body,
-      parameters: parameters == true ? null : this.parameters,
-      arguments: arguments == true ? null : this.arguments,
-      condition: condition == true ? null : this.condition,
+      bodyUIDs: bodyUIDs == true ? null : this.bodyUIDs,
+      parameterUIDs: parameterUIDs == true ? null : this.parameterUIDs,
+      argumentUIDs: argumentUIDs == true ? null : this.argumentUIDs,
+      statementUIDs: statementUIDs == true ? null : this.statementUIDs,
+      conditionUIDs: conditionUIDs == true ? null : this.conditionUIDs,
       functionDefinition:
           functionDefinition == true ? null : this.functionDefinition,
       classDefinition: classDefinition == true ? null : this.classDefinition,

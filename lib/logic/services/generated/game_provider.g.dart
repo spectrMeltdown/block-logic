@@ -6,7 +6,7 @@ part of '../game_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$getBlockDataHash() => r'2f2bcbb9433394f1ffb580632a7ef25c3739f43d';
+String _$getSelfDataHash() => r'005cf87019b8fe8e5603130e6848290f23fa6da8';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -29,30 +29,30 @@ class _SystemHash {
   }
 }
 
-/// See also [getBlockData].
-@ProviderFor(getBlockData)
-const getBlockDataProvider = GetBlockDataFamily();
+/// See also [getSelfData].
+@ProviderFor(getSelfData)
+const getSelfDataProvider = GetSelfDataFamily();
 
-/// See also [getBlockData].
-class GetBlockDataFamily extends Family<GameBlockData> {
-  /// See also [getBlockData].
-  const GetBlockDataFamily();
+/// See also [getSelfData].
+class GetSelfDataFamily extends Family<GameBlockData> {
+  /// See also [getSelfData].
+  const GetSelfDataFamily();
 
-  /// See also [getBlockData].
-  GetBlockDataProvider call(
-    List<int> indexPath,
+  /// See also [getSelfData].
+  GetSelfDataProvider call(
+    String uid,
   ) {
-    return GetBlockDataProvider(
-      indexPath,
+    return GetSelfDataProvider(
+      uid,
     );
   }
 
   @override
-  GetBlockDataProvider getProviderOverride(
-    covariant GetBlockDataProvider provider,
+  GetSelfDataProvider getProviderOverride(
+    covariant GetSelfDataProvider provider,
   ) {
     return call(
-      provider.indexPath,
+      provider.uid,
     );
   }
 
@@ -68,94 +68,223 @@ class GetBlockDataFamily extends Family<GameBlockData> {
       _allTransitiveDependencies;
 
   @override
-  String? get name => r'getBlockDataProvider';
+  String? get name => r'getSelfDataProvider';
 }
 
-/// See also [getBlockData].
-class GetBlockDataProvider extends AutoDisposeProvider<GameBlockData> {
-  /// See also [getBlockData].
-  GetBlockDataProvider(
-    List<int> indexPath,
+/// See also [getSelfData].
+class GetSelfDataProvider extends AutoDisposeProvider<GameBlockData> {
+  /// See also [getSelfData].
+  GetSelfDataProvider(
+    String uid,
   ) : this._internal(
-          (ref) => getBlockData(
-            ref as GetBlockDataRef,
-            indexPath,
+          (ref) => getSelfData(
+            ref as GetSelfDataRef,
+            uid,
           ),
-          from: getBlockDataProvider,
-          name: r'getBlockDataProvider',
+          from: getSelfDataProvider,
+          name: r'getSelfDataProvider',
           debugGetCreateSourceHash:
               const bool.fromEnvironment('dart.vm.product')
                   ? null
-                  : _$getBlockDataHash,
-          dependencies: GetBlockDataFamily._dependencies,
+                  : _$getSelfDataHash,
+          dependencies: GetSelfDataFamily._dependencies,
           allTransitiveDependencies:
-              GetBlockDataFamily._allTransitiveDependencies,
-          indexPath: indexPath,
+              GetSelfDataFamily._allTransitiveDependencies,
+          uid: uid,
         );
 
-  GetBlockDataProvider._internal(
+  GetSelfDataProvider._internal(
     super._createNotifier, {
     required super.name,
     required super.dependencies,
     required super.allTransitiveDependencies,
     required super.debugGetCreateSourceHash,
     required super.from,
-    required this.indexPath,
+    required this.uid,
   }) : super.internal();
 
-  final List<int> indexPath;
+  final String uid;
 
   @override
   Override overrideWith(
-    GameBlockData Function(GetBlockDataRef provider) create,
+    GameBlockData Function(GetSelfDataRef provider) create,
   ) {
     return ProviderOverride(
       origin: this,
-      override: GetBlockDataProvider._internal(
-        (ref) => create(ref as GetBlockDataRef),
+      override: GetSelfDataProvider._internal(
+        (ref) => create(ref as GetSelfDataRef),
         from: from,
         name: null,
         dependencies: null,
         allTransitiveDependencies: null,
         debugGetCreateSourceHash: null,
-        indexPath: indexPath,
+        uid: uid,
       ),
     );
   }
 
   @override
   AutoDisposeProviderElement<GameBlockData> createElement() {
-    return _GetBlockDataProviderElement(this);
+    return _GetSelfDataProviderElement(this);
   }
 
   @override
   bool operator ==(Object other) {
-    return other is GetBlockDataProvider && other.indexPath == indexPath;
+    return other is GetSelfDataProvider && other.uid == uid;
   }
 
   @override
   int get hashCode {
     var hash = _SystemHash.combine(0, runtimeType.hashCode);
-    hash = _SystemHash.combine(hash, indexPath.hashCode);
+    hash = _SystemHash.combine(hash, uid.hashCode);
 
     return _SystemHash.finish(hash);
   }
 }
 
-mixin GetBlockDataRef on AutoDisposeProviderRef<GameBlockData> {
-  /// The parameter `indexPath` of this provider.
-  List<int> get indexPath;
+mixin GetSelfDataRef on AutoDisposeProviderRef<GameBlockData> {
+  /// The parameter `uid` of this provider.
+  String get uid;
 }
 
-class _GetBlockDataProviderElement
-    extends AutoDisposeProviderElement<GameBlockData> with GetBlockDataRef {
-  _GetBlockDataProviderElement(super.provider);
+class _GetSelfDataProviderElement
+    extends AutoDisposeProviderElement<GameBlockData> with GetSelfDataRef {
+  _GetSelfDataProviderElement(super.provider);
 
   @override
-  List<int> get indexPath => (origin as GetBlockDataProvider).indexPath;
+  String get uid => (origin as GetSelfDataProvider).uid;
 }
 
-String _$getRootDataHash() => r'099eba0444fc6e49d161bfbbaf02c03ae0a5f4d7';
+String _$getChildrenDataHash() => r'2c801871ef447ea7ba4cf0414b16bb404611558d';
+
+/// See also [getChildrenData].
+@ProviderFor(getChildrenData)
+const getChildrenDataProvider = GetChildrenDataFamily();
+
+/// See also [getChildrenData].
+class GetChildrenDataFamily extends Family<List<GameBlockData>> {
+  /// See also [getChildrenData].
+  const GetChildrenDataFamily();
+
+  /// See also [getChildrenData].
+  GetChildrenDataProvider call(
+    List<String> uids,
+  ) {
+    return GetChildrenDataProvider(
+      uids,
+    );
+  }
+
+  @override
+  GetChildrenDataProvider getProviderOverride(
+    covariant GetChildrenDataProvider provider,
+  ) {
+    return call(
+      provider.uids,
+    );
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'getChildrenDataProvider';
+}
+
+/// See also [getChildrenData].
+class GetChildrenDataProvider extends AutoDisposeProvider<List<GameBlockData>> {
+  /// See also [getChildrenData].
+  GetChildrenDataProvider(
+    List<String> uids,
+  ) : this._internal(
+          (ref) => getChildrenData(
+            ref as GetChildrenDataRef,
+            uids,
+          ),
+          from: getChildrenDataProvider,
+          name: r'getChildrenDataProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product')
+                  ? null
+                  : _$getChildrenDataHash,
+          dependencies: GetChildrenDataFamily._dependencies,
+          allTransitiveDependencies:
+              GetChildrenDataFamily._allTransitiveDependencies,
+          uids: uids,
+        );
+
+  GetChildrenDataProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.uids,
+  }) : super.internal();
+
+  final List<String> uids;
+
+  @override
+  Override overrideWith(
+    List<GameBlockData> Function(GetChildrenDataRef provider) create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: GetChildrenDataProvider._internal(
+        (ref) => create(ref as GetChildrenDataRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        uids: uids,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeProviderElement<List<GameBlockData>> createElement() {
+    return _GetChildrenDataProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is GetChildrenDataProvider && other.uids == uids;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, uids.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+mixin GetChildrenDataRef on AutoDisposeProviderRef<List<GameBlockData>> {
+  /// The parameter `uids` of this provider.
+  List<String> get uids;
+}
+
+class _GetChildrenDataProviderElement
+    extends AutoDisposeProviderElement<List<GameBlockData>>
+    with GetChildrenDataRef {
+  _GetChildrenDataProviderElement(super.provider);
+
+  @override
+  List<String> get uids => (origin as GetChildrenDataProvider).uids;
+}
+
+String _$getRootDataHash() => r'ef8c836757dfce718cdadd8203d13ee4e96d9188';
 
 /// See also [getRootData].
 @ProviderFor(getRootData)

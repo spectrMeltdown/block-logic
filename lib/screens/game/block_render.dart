@@ -2,13 +2,15 @@ import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/game/block_data.dart';
 import 'package:block_logic/screens/game/block_with_child.dart';
+import 'package:block_logic/screens/game/statement_block.dart';
 import 'package:block_logic/screens/game/wrapper_block_design.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class BlockRender extends ConsumerStatefulWidget {
   final GameBlockData data;
-  const BlockRender(this.data, {super.key});
+  final VoidCallback refresh;
+  const BlockRender(this.data, this.refresh, {super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _BlockRenderState();
@@ -21,6 +23,7 @@ class _BlockRenderState extends ConsumerState<BlockRender> {
     switch (widget.data.state) {
       case CodeBlockState.inSelector:
         return BlockDesignWrapper(
+          color: Colors.transparent,
           data: widget.data,
           child: Center(
             child: BLText(
@@ -32,17 +35,31 @@ class _BlockRenderState extends ConsumerState<BlockRender> {
 
       case CodeBlockState.inEditor:
         switch (widget.data.type) {
+          case CodeBlockType.statement:
+            return BlockDesignWrapper(
+                data: widget.data,
+                child: StatementBox(
+                  data: widget.data,
+                ));
           case CodeBlockType.loops:
           case CodeBlockType.conditionals:
             return BlockDesignWrapper(
               data: widget.data,
-              child: GameBlockWithChild(data: widget.data),
+              child: GameBlockWithChild(
+                refresh: widget.refresh,
+                box: GameBox.conditions,
+                uid: widget.data.uid!,
+              ),
             );
           case CodeBlockType.objects:
           case CodeBlockType.functions:
             return BlockDesignWrapper(
               data: widget.data,
-              child: GameBlockWithChild(data: widget.data),
+              child: GameBlockWithChild(
+                refresh: widget.refresh,
+                box: GameBox.arguments,
+                uid: widget.data.uid!,
+              ),
             );
           case CodeBlockType.keywords:
           case CodeBlockType.operators:

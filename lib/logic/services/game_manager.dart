@@ -23,50 +23,12 @@ class GameManager extends _$GameManager {
     final scoreManager = ref.read(scoreManagerProvider.notifier);
     final roomManager = ref.read(roomManagerProvider.notifier);
     return GameState(
-      blockDataTree: [],
       scoreManager: scoreManager,
       roomManager: roomManager,
       leaderboardManager: leaderboardManager,
       errorHandler: errorHandler,
     );
   }
-
-  void addRootData(GameBlockData newData) =>
-      state.blockDataTree.add(newData.copyWith(state: CodeBlockState.inEditor, uid: _getID(), parentUID: 'root'));
-
-  void addData(GameBlockData newData, String parentUID, [bool parameter = false]) {
-    debugPrint('add on this body: \nParent - $parentUID\nChild - ${newData.name}');
-    if (newData.uid == null || newData.uid!.isEmpty) {
-      newData = newData.copyWith(uid: _getID());
-    }
-
-    GameBlockData parentData = _findData(state.blockDataTree, parentUID);
-    final grandfatherData = _findData(state.blockDataTree, parentData.uid!);
-    if (parentData.body == null) {
-      parentData = parentData.copyWith(body: [newData.copyWith(parentUID: parentUID)]);
-    } else {
-      parentData = parentData.copyWith(body: [...parentData.body!, newData.copyWith(parentUID: parentUID)]);
-    }
-  }
-
-  List<GameBlockData> getRootTree() => state.blockDataTree;
-
-  GameBlockData _findData(List<GameBlockData> blocks, String uid, [bool parameter = false]) {
-    for (final data in blocks) {
-      if (data.uid == uid) return data;
-      _findData(parameter ? data.parameters! : data.body!, uid);
-    }
-    throw ('Never found the data!');
-  }
-
-  // get the parent data, which holds the body
-  GameBlockData getData(String uid, [bool parameter = false]) {
-    debugPrint('get self: $uid');
-    if (uid.isEmpty) throw ('UID was empty!');
-    return _findData(state.blockDataTree, uid, parameter);
-  }
-
-  void resetTree() => state.blockDataTree = [];
 
   void getScrollController() {}
 
@@ -75,22 +37,6 @@ class GameManager extends _$GameManager {
   void isDropCancelled(bool newState) => state.isDropCancelled = newState;
 
   String getLeaderboardID() => state._leaderboardID!;
-
-  // GameBlockData? obtainPassedBlockData() {
-  //   // get the data first
-  //   final blockData = state._blockData;
-
-  //   // remove the data from manager
-  //   removePassedBlockData();
-
-  //   //return
-  //   return blockData;
-  // }
-
-  /// when passing block data from [Draggable] to [DragTarget].
-  // void passBlockData(GameBlockData blockData) => state._blockData = blockData;
-  // void removePassedBlockData() => state._blockData == null;
-
   // when pausing game
   void pauseTimer() => state.pauseTimer = true;
   void resumeTimer() => state.pauseTimer = false;
@@ -172,22 +118,94 @@ class GameManager extends _$GameManager {
     }
   }
 
-  void moveToRoot(GameBlockData data) {
-    final finalData = data.copyWith(indexPath: [state.blockDataTree.length]);
-    state.blockDataTree.add(finalData);
-    delete(data.indexPath!);
+  void addRootData(GameBlockData newData) {
+    if (newData.uid == null) {
+      final newUID = _getUID();
+      state.dataTree.addAll({newUID: newData.copyWith(uid: newUID, parentUID: 'root', state: CodeBlockState.inEditor)});
+    } else {
+      state.dataTree[newData.uid!] = newData.copyWith(parentUID: 'root', state: CodeBlockState.inEditor);
+    }
   }
 
-  void moveInTree(GameBlockData child, GameBlockData parent, [bool parameter = false]) {
-    addData(child, parent, parameter);
-    delete(parent.indexPath!);
+  List<GameBlockData> getRootData() {
+    final List<GameBlockData> result = [];
+    for (final data in state.dataTree.values) {
+      if (data.parentUID == 'root') {
+        result.add(data);
+      }
+    }
+    return result;
   }
 
-  void deleteData(String uid, [bool parameter = false]) {
-    final data = _findData(state.blockDataTree, uid);
+  void addData(GameBlockData newData, String parentUID, ChildrenData type) {
+    if (parentUID.isEmpty) throw ('ParentUID cannot be empty');
+
+    final newDataUID = newData.uid ?? _getUID();
+
+    // add newData to tree
+    if (newData.uid == null) {
+      state.dataTree.addAll({newDataUID: newData.copyWith(uid: newDataUID, parentUID: parentUID)});
+    } else {
+      state.dataTree[newDataUID] = newData.copyWith(parentUID: parentUID);
+    }
+    GameBlockData parent = state.dataTree[parentUID]!;
+    switch (type) {
+      case ChildrenData.body:
+        debugPrint('passed here');
+        final newParent = parent.copyWith(bodyUIDs: [...parent.bodyUIDs!, newDataUID]);
+        state.dataTree[parentUID] = newParent;
+        break;
+      case ChildrenData.arguments:
+        final newParent = parent.copyWith(argumentUIDs: [...parent.argumentUIDs!, newDataUID]);
+        state.dataTree[parentUID] = newParent;
+        break;
+      case ChildrenData.parameters:
+        final newParent = parent.copyWith(parameterUIDs: [...parent.parameterUIDs!, newDataUID]);
+        state.dataTree[parentUID] = newParent;
+        break;
+      case ChildrenData.condition:
+        final newParent = parent.copyWith(conditionUIDs: [...parent.conditionUIDs!, newDataUID]);
+        state.dataTree[parentUID] = newParent;
+        break;
+    }
   }
 
-  String _getID() => DateTime.now().millisecondsSinceEpoch.toString();
+  GameBlockData getSelfData(String uid) {
+    if (uid.isEmpty) throw ('UID was empty!');
+    return state.dataTree[uid]!;
+  }
+
+  List<GameBlockData> getChildrenData(List<String> uids) {
+    final List<GameBlockData> result = [];
+    for (final uid in uids) {
+      if (state.dataTree[uid] == null) {
+        debugPrint(uid);
+        debugPrint('UID does not exist!');
+        continue;
+      }
+      result.add(state.dataTree[uid]!);
+    }
+    return result;
+  }
+
+  void resetTree() => state.dataTree = {};
+
+  void moveToRoot(String uid) {
+    if (uid.isEmpty) throw ('UID was empty!');
+    state.dataTree[uid]!.copyWith(parentUID: 'root');
+  }
+
+  void moveData(String uid, String parentUID) {
+    if (uid.isEmpty) throw ('UID was empty!');
+    state.dataTree[uid]!.copyWith(parentUID: parentUID);
+  }
+
+  void deleteData(String uid) {
+    if (uid.isEmpty) throw ('UID was empty!');
+    state.dataTree.remove(uid);
+  }
+
+  String _getUID() => DateTime.now().millisecondsSinceEpoch.toString();
 }
 
 class GameState {
@@ -195,11 +213,9 @@ class GameState {
   bool pauseTimer;
 
   // Track of the data in the tree
-  List<GameBlockData> blockDataTree = [];
-  List<int> originalIndexPath = [];
+  Map<String, GameBlockData> dataTree = {};
 
   // used when passing data from dragtarget to dragtarget
-  GameBlockData? _blockData;
   bool isDropCancelled;
   // bool shouldSetState;
 
@@ -231,7 +247,6 @@ class GameState {
     required this.scoreManager,
     this.pauseTimer = false,
     required ErrorHandler errorHandler,
-    required this.blockDataTree,
     required this.roomManager,
     required this.leaderboardManager,
     this.verticalScrollController,
@@ -239,3 +254,5 @@ class GameState {
   })  : _errorHandler = errorHandler,
         _processing = processing;
 }
+
+enum ChildrenData { body, arguments, parameters, condition }

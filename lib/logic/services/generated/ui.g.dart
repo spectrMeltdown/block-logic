@@ -6,7 +6,7 @@ part of '../ui.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$bLUIHash() => r'95556b5c606ac6ba932a1895cb1e333ccbc1a07f';
+String _$bLUIHash() => r'8a13c1e980b122efc69c1626ae796fc36967ba27';
 
 /// See also [BLUI].
 @ProviderFor(BLUI)

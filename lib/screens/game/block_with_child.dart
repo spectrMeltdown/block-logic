@@ -1,20 +1,23 @@
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/logic/enums.dart';
-import 'package:block_logic/logic/game/block_data.dart';
 import 'package:block_logic/logic/services/game_manager.dart';
+import 'package:block_logic/logic/services/game_provider.dart';
 import 'package:block_logic/screens/game/add_new_block_box.dart';
 import 'package:block_logic/screens/game/block.dart';
-import 'package:block_logic/screens/game/parameter_condition_box.dart';
+import 'package:block_logic/screens/game/custom_box.dart';
 import 'package:block_logic/screens/game/validator.dart';
 import 'package:block_logic/screens/game/wrapper_blocks.dart';
 import 'package:block_logic/screens/game/wrapper_drag_target.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+enum GameBox { parameters, arguments, conditions }
+
 class GameBlockWithChild extends ConsumerStatefulWidget {
-  final GameBlockData data;
-  const GameBlockWithChild({required this.data, super.key});
+  final String uid;
+  final GameBox box;
+  final VoidCallback refresh;
+  const GameBlockWithChild({required this.uid, required this.box, required this.refresh, super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _GameBlockWithChildState();
@@ -32,7 +35,8 @@ class _GameBlockWithChildState extends ConsumerState<GameBlockWithChild> {
 
   @override
   Widget build(BuildContext context) {
-    final data = widget.data;
+    final data = ref.watch(GetSelfDataProvider(widget.uid));
+    final body = ref.watch(GetChildrenDataProvider(data.bodyUIDs!));
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -40,26 +44,9 @@ class _GameBlockWithChildState extends ConsumerState<GameBlockWithChild> {
           children: [
             BLText(data.name),
             const SizedBox(width: 20),
-
-            /// Parameter/condition box
-            DragTargetWrapper(
-              builderChild: () {
-                if (data.parameters != null && data.parameters!.isNotEmpty) {
-                  return ParameterConditionBox(
-                    data: data,
-                  );
-                }
-                return const SizedBox(width: 80, height: 40);
-              },
-              onAcceptWithDetails: (block, manager) {},
-
-              /// Parameters/condition box
-              onWillAcceptWithDetails: (data) {
-                if (data.type == CodeBlockType.conditionals) {
-                  return validator.statementBox(data: data, dataToAccept: data);
-                }
-                return validator.parameterBox(data: data, dataToAccept: data);
-              },
+            CustomBox(
+              data: data,
+              box: widget.box,
             )
           ],
         ),
@@ -67,36 +54,38 @@ class _GameBlockWithChildState extends ConsumerState<GameBlockWithChild> {
           padding: const EdgeInsets.only(left: 10),
           child: DragTargetWrapper(
             builderChild: () {
-              if (data.body != null && data.body!.isNotEmpty) {
+              if (body.isNotEmpty) {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     BlockWrapper(
                         widgetList: List.generate(
-                            data.body!.length,
+                            body.length,
                             (i) => GameBlock(
-                                  data: data.body![i],
+                                  data: body[i],
                                 ))),
-                    const AddNewBlockBox()
+                    AddNewBlockBox(
+                      width: 120,
+                    )
                   ],
                 );
               }
-              return const AddNewBlockBox();
+              return AddNewBlockBox(width: 120);
             },
             onAcceptWithDetails: (initData, manager) {
               if (initData.state == CodeBlockState.inEditor) {
-                gameManager.moveInTree(initData, data);
+                gameManager.moveData(initData.uid!, data.uid!);
               } else {
-                gameManager.addData(initData, data);
+                debugPrint('Parent: ${data.uid}');
+                gameManager.addData(initData, data.uid!, ChildrenData.body);
               }
+              ref.invalidate(getSelfDataProvider);
+              ref.invalidate(getChildrenDataProvider);
               setState(() {});
             },
             onWillAcceptWithDetails: (initData) {
-              if (initData.indexPath != null) {
-                bool sameIndexPath = const ListEquality().equals(initData.indexPath, data.indexPath);
-                if (sameIndexPath) {
-                  return false;
-                }
+              if (data.bodyUIDs!.contains(initData.uid) || initData.uid == data.uid) {
+                return false;
               }
               return true;
               // return validator.nestedBox(data: data, dataToAccept: initData);
