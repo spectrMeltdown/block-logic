@@ -10,7 +10,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class BlockRender extends ConsumerStatefulWidget {
   final GameBlockData data;
   final VoidCallback refresh;
-  const BlockRender(this.data, this.refresh, {super.key});
+  final bool feedback;
+  const BlockRender(this.data, this.refresh, {this.feedback = false, super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _BlockRenderState();
@@ -23,12 +24,12 @@ class _BlockRenderState extends ConsumerState<BlockRender> {
     switch (widget.data.state) {
       case CodeBlockState.inSelector:
         return BlockDesignWrapper(
-          color: Colors.transparent,
           data: widget.data,
           child: Center(
             child: BLText(
               widget.data.name,
               size: 14,
+              color: widget.data.type == CodeBlockType.keywords ? Colors.black : null,
             ),
           ),
         );
@@ -36,11 +37,17 @@ class _BlockRenderState extends ConsumerState<BlockRender> {
       case CodeBlockState.inEditor:
         switch (widget.data.type) {
           case CodeBlockType.statement:
-            return BlockDesignWrapper(
-                data: widget.data,
-                child: StatementBox(
-                  data: widget.data,
-                ));
+            // return BlockDesignWrapper(
+            //   data: widget.data,
+            //   child: Center(
+            //     child: BLText(
+            //       widget.data.name,
+            //       size: 14,
+            //       color: widget.data.type == CodeBlockType.keywords ? Colors.black : null,
+            //     ),
+            //   ),
+            // );
+            return StatementBox(data: widget.data);
           case CodeBlockType.loops:
           case CodeBlockType.conditionals:
             return BlockDesignWrapper(
@@ -48,17 +55,39 @@ class _BlockRenderState extends ConsumerState<BlockRender> {
               child: GameBlockWithChild(
                 refresh: widget.refresh,
                 box: GameBox.conditions,
-                uid: widget.data.uid!,
+                // uid: widget.data.uid!,
+                data: widget.data,
               ),
             );
           case CodeBlockType.objects:
           case CodeBlockType.functions:
+            if (widget.data.name.contains('def')) {
+              return BlockDesignWrapper(
+                data: widget.data,
+                child: GameBlockWithChild(
+                  refresh: widget.refresh,
+                  box: GameBox.parameters,
+                  // uid: widget.data.uid!,
+                  data: widget.data,
+                ),
+              );
+            } else if (widget.data.name.contains('class')) {
+              return BlockDesignWrapper(
+                data: widget.data,
+                child: GameBlockWithChild(
+                  refresh: widget.refresh,
+                  // uid: widget.data.uid!,
+                  data: widget.data,
+                ),
+              );
+            }
             return BlockDesignWrapper(
               data: widget.data,
               child: GameBlockWithChild(
                 refresh: widget.refresh,
                 box: GameBox.arguments,
-                uid: widget.data.uid!,
+                // uid: widget.data.uid!,
+                data: widget.data,
               ),
             );
           case CodeBlockType.keywords:
@@ -71,6 +100,7 @@ class _BlockRenderState extends ConsumerState<BlockRender> {
                 child: BLText(
                   widget.data.name,
                   size: 14,
+                  color: widget.data.type == CodeBlockType.keywords ? Colors.black : null,
                 ),
               ),
             );

@@ -21,6 +21,7 @@ class _CustomTabViewState extends ConsumerState<EditorView> with AutomaticKeepAl
   bool editorOutline = false;
   bool addedPlaceholder = false;
   final validator = BlockValidator();
+  late GameState gameState;
 
   @override
   bool get wantKeepAlive => true;
@@ -36,14 +37,15 @@ class _CustomTabViewState extends ConsumerState<EditorView> with AutomaticKeepAl
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final gameState = ref.watch(gameManagerProvider);
-    final blockData = ref.watch(getRootDataProvider);
+    gameState = ref.watch(gameManagerProvider);
+    // final blockData = ref.watch(getRootDataProvider);
+    final blockData = gameManager.getRootData();
     if (gameState.isDropCancelled) {
       // TODO: if drop was cancelled, reverse to previous state of this widget.
       // Use this when animation is applied
       gameManager.isDropCancelled(false);
     }
-    if (blockData.isEmpty) return buildDragTarget(blockData);
+    if (blockData.isEmpty) return buildDragTarget([]);
     // final parentRenderBox = widget.editorWidgetKey.currentContext!.findRenderObject() as RenderBox;
     // final parentSize = parentRenderBox.size;
     return SingleChildScrollView(
@@ -55,19 +57,11 @@ class _CustomTabViewState extends ConsumerState<EditorView> with AutomaticKeepAl
             children: [
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   ...List.generate(blockData.length, (i) {
                     // debugPrint(blockData.toString());
-                    return Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(3),
-                          child: GameBlock(data: blockData[i]),
-                        )
-                      ],
-                    );
+                    return GameBlock(data: blockData[i]);
                   }),
                   ConstrainedBox(
                       constraints: BoxConstraints(
@@ -81,6 +75,11 @@ class _CustomTabViewState extends ConsumerState<EditorView> with AutomaticKeepAl
   }
 
   Widget buildDragTarget(List<GameBlockData> blockData) {
+    // debugPrint(gameState.dataTree.toString());
+    List<String> rootBlockIDs = [];
+    for (final block in blockData) {
+      rootBlockIDs.add(block.uid!);
+    }
     return DragTargetWrapper(
       builderChild: () {
         if (blockData.isNotEmpty) {
@@ -89,7 +88,7 @@ class _CustomTabViewState extends ConsumerState<EditorView> with AutomaticKeepAl
         return const Center(child: BLText('Drop a block'));
       },
       onWillAcceptWithDetails: (initData) {
-        if (initData.parentUID == 'root') {
+        if (initData.parentUID == 'root' || rootBlockIDs.contains(initData.parentUID)) {
           return false;
         }
         return true;

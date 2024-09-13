@@ -19,7 +19,6 @@ class _BlockWrapperState extends ConsumerState<BlockWrapper> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: List.generate(widget.widgetList.length, (i) {
           return Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
                 padding: const EdgeInsets.all(3),

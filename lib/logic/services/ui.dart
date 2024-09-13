@@ -61,7 +61,7 @@ class BLUI extends _$BLUI {
       case null:
         return Colors.white;
       case CodeBlockType.statement:
-        return Colors.transparent;
+        return Colors.black.withOpacity(0.4);
     }
   }
 

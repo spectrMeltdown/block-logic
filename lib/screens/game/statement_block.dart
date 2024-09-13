@@ -21,34 +21,54 @@ class _StatementBoxState extends ConsumerState<StatementBox> {
   late final GameManager gameManager;
   @override
   Widget build(BuildContext context) {
-    final blocks = ref.watch(GetChildrenDataProvider(widget.data.bodyUIDs!));
-    return DragTargetWrapper(
-      builderChild: () {
-        if (blocks.isNotEmpty) {
-          return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            ...List.generate(blocks.length, (i) => GameBlock(data: blocks[i])),
-            AddNewBlockBox(height: 40, width: 20)
-          ]);
-        }
-        return AddNewBlockBox(height: 40, width: 20);
-      },
-      onAcceptWithDetails: (initData, manager) {
-        if (initData.state == CodeBlockState.inEditor) {
-          gameManager.moveData(initData.uid!, widget.data.uid!);
-        } else {
-          debugPrint('Parent: ${widget.data.uid}');
-          gameManager.addData(initData, widget.data.uid!, ChildrenData.body);
-        }
-        // ref.invalidate(getSelfDataProvider);
-        ref.invalidate(getChildrenDataProvider);
-        setState(() {});
-      },
-      onWillAcceptWithDetails: (initData) {
-        if (widget.data.bodyUIDs!.contains(initData.uid) || initData.uid == widget.data.uid) {
-          return false;
-        }
-        return true;
-      },
+    final data = ref.watch(GetSelfDataProvider(widget.data.uid!));
+    final blocks = ref.watch(GetChildrenDataProvider(data.statementUIDs!));
+    // debugPrint(blocks.toString());
+    // debugPrint('${widget.data.name} ${widget.data.statementUIDs}');
+
+    return Padding(
+      padding: const EdgeInsets.all(2),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ...List.generate(
+            blocks.length,
+            (i) => Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 3),
+              child: GameBlock(data: blocks[i]),
+            ),
+          ),
+          DragTargetWrapper(
+            builderChild: () {
+              return const AddNewBlockBox(height: 30, width: 30);
+              // return AddNewBlockBox();
+            },
+            onAcceptWithDetails: (initData, manager) {
+              debugPrint(initData.state.toString());
+              if (initData.state == CodeBlockState.inEditor) {
+                gameManager.moveData(initData.uid!, widget.data.uid!);
+              } else {
+                debugPrint('parent id: ${widget.data.uid}');
+                debugPrint('initData name: ${initData.name}');
+                gameManager.addData(initData, widget.data.uid!, ChildrenData.statement);
+              }
+              ref.invalidate(getRootDataProvider);
+              ref.invalidate(getSelfDataProvider);
+              ref.invalidate(getChildrenDataProvider);
+              // debugPrint(gameManager.getRootData().toString());
+              setState(() {});
+            },
+            onWillAcceptWithDetails: (initData) {
+              if (widget.data.statementUIDs!.contains(initData.uid) ||
+                  initData.uid == widget.data.uid ||
+                  initData.uid == widget.data.parentUID) {
+                return false;
+              }
+              return true;
+            },
+          )
+        ],
+      ),
     );
   }
 

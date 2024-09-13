@@ -1,5 +1,5 @@
-import 'package:block_logic/components/button/text.dart';
 import 'package:block_logic/components/account/profile_pic.dart';
+import 'package:block_logic/components/button/text.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/textbox.dart';
 import 'package:block_logic/components/util/blank_widget.dart';
@@ -33,12 +33,11 @@ class _AdminSettingsState extends ConsumerState<AdminSettings> {
   Widget msg = const BlankWidget();
   late final AccountService accountService;
   late final Toast toast;
+  late final TextValidator validator;
+
   @override
   Widget build(BuildContext context) {
     final account = ref.watch(SelectedAdminProvider(auth.getUID()));
-    accountService = ref.read(accountServiceProvider.notifier);
-    toast = ref.read(toastProvider.notifier);
-    final validator = ref.read(textValidatorProvider.notifier);
     double width = MediaQuery.of(context).size.width;
     //double height = MediaQuery.of(context).size.height;
     return Column(
@@ -160,6 +159,9 @@ class _AdminSettingsState extends ConsumerState<AdminSettings> {
   void initState() {
     auth = ref.read(authServiceProvider.notifier);
     emailController = TextEditingController(text: auth.getEmail());
+    accountService = ref.read(accountServiceProvider.notifier);
+    toast = ref.read(toastProvider.notifier);
+    validator = ref.read(textValidatorProvider.notifier);
     super.initState();
   }
 

@@ -42,11 +42,14 @@ class _PublicRoomsState extends ConsumerState<PublicRooms> {
         return Stack(
           children: [
             ListView.builder(
-                padding: const EdgeInsets.symmetric(vertical: 15),
+                // padding: EdgeInsets.zero,
+                padding: const EdgeInsets.symmetric(vertical: 10),
                 itemCount: rooms.length,
                 itemBuilder: (context, i) {
-                  return PublicRoomItem(
-                      room: rooms[i], toggleProcessing: toggleProcessing);
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+                    child: PublicRoomItem(room: rooms[i], toggleProcessing: toggleProcessing),
+                  );
                 }),
             Visibility(
                 visible: processing,

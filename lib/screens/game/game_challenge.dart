@@ -1,4 +1,5 @@
 import 'package:block_logic/logic/firebase_models/challenge.dart';
+import 'package:block_logic/logic/services/game_manager.dart';
 import 'package:block_logic/logic/testing.dart';
 import 'package:block_logic/screens/game/blocks_selector.dart';
 import 'package:block_logic/screens/game/challange_box.dart';
@@ -6,10 +7,11 @@ import 'package:block_logic/screens/game/editor.dart';
 import 'package:block_logic/screens/game/game_appbar.dart';
 import 'package:block_logic/screens/game/run_btn.dart';
 import 'package:block_logic/screens/game/submit_btn.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class GameChallenge extends ConsumerWidget {
+class GameChallenge extends ConsumerStatefulWidget {
   final String roomName;
   final void Function() updateChallenge;
   final Challenge challenge;
@@ -22,14 +24,30 @@ class GameChallenge extends ConsumerWidget {
     super.key,
   });
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<GameChallenge> createState() => _GameChallengeState();
+}
+
+class _GameChallengeState extends ConsumerState<GameChallenge> {
+  late final GameManager gameManager;
+
+  @override
+  void initState() {
+    gameManager = ref.read(gameManagerProvider.notifier);
+    if (!kDebugMode) {
+      gameManager.updateSolution(widget.challenge.solution!);
+    }
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         const SizedBox(height: 25),
         GameAppbar(
-          roomName: roomName,
-          challenge: challenge,
+          roomName: widget.roomName,
+          challenge: widget.challenge,
         ),
         Flexible(
           flex: 0,
@@ -38,7 +56,7 @@ class GameChallenge extends ConsumerWidget {
             child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
               Expanded(
                 child: ChallengeBox(
-                  challenge: challenge,
+                  challenge: widget.challenge,
                 ),
               ),
               const SizedBox(width: 10),
@@ -46,7 +64,7 @@ class GameChallenge extends ConsumerWidget {
                 constraints: const BoxConstraints(maxWidth: 120),
                 child: Column(
                   children: [
-                    GameSubmitButton(updateChallenge),
+                    GameSubmitButton(widget.updateChallenge),
                     const SizedBox(height: 10),
                     const GameRunButton(),
                   ],
@@ -58,7 +76,10 @@ class GameChallenge extends ConsumerWidget {
         const SizedBox(height: 10),
         const Flexible(flex: 2, child: Editor()),
         // TODO: get blocks from challenge, save to gameManager, load into gameManager
-        Padding(padding: const EdgeInsets.only(bottom: 20), child: GameBlocks(AllBlocks.get())),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 20),
+          child: GameBlocks(AllBlocks.get()),
+        ),
       ],
     );
   }

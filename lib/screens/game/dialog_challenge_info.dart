@@ -25,9 +25,12 @@ class DialogChallengeInfo extends ConsumerWidget {
           padding: const EdgeInsets.only(left: 8),
           child: Wrap(
             children: [
-              BLText(challenge.shortDescription ?? 'No description provided'),
+              BLText(challenge.shortDescription ?? 'No description provided.'),
               const BLText('\n'),
-              BLText(challenge.additionalInfo ?? 'No additional info provided'),
+              BLText(
+                challenge.additionalInfo ?? 'No additional info provided.',
+                softWrap: true,
+              ),
             ],
           ),
         ),
@@ -39,8 +42,12 @@ class DialogChallengeInfo extends ConsumerWidget {
           padding: const EdgeInsets.only(left: 8),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: List.generate(challenge.limitations!.length, (i) {
-              return Wrap(children: [BLText('• ${challenge.limitations![i]}')]);
+            children: List.generate(challenge.limitations?.length ?? 1, (i) {
+              return Wrap(
+                children: [
+                  BLText('• ${challenge.limitations?[i] ?? 'No limitations provided.'}'),
+                ],
+              );
             }),
           ),
         ),

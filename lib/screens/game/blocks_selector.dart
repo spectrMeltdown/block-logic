@@ -21,11 +21,9 @@ class GameBlocks extends ConsumerStatefulWidget {
 class _GameBlocksState extends ConsumerState<GameBlocks> with TickerProviderStateMixin {
   late TabController blocksTabController;
   late GameManager gameManager;
-  List<String> blocksTabList = List.generate(CodeBlockType.values.length, (index) {
-    final name = CodeBlockType.values[index].name;
-    final firstLetter = name[0].toUpperCase();
-    return firstLetter + name.substring(1, name.length);
-  });
+  late List<String> blocksTabList;
+  // late List<String> topBlocksList;
+  // late List<String> bottomBlocksList;
   late Map<CodeBlockType, List<GameBlockData>> blocks;
   @override
   Widget build(BuildContext context) {
@@ -65,15 +63,16 @@ class _GameBlocksState extends ConsumerState<GameBlocks> with TickerProviderStat
           height: mediaQuery.size.height / 11,
           child: BLBorderedPanel(
             child: TabBarView(
-                clipBehavior: Clip.antiAlias,
-                physics: const NeverScrollableScrollPhysics(),
-                controller: blocksTabController,
-                children: List.generate(
-                    blocksTabList.length,
-                    (index) => BlockSelectorView(
-                            blocks: widget.blocks[CodeBlockType.values[index]]!.map((data) {
-                          return GameBlock(data: data);
-                        }).toList()))),
+              clipBehavior: Clip.antiAlias,
+              physics: const NeverScrollableScrollPhysics(),
+              controller: blocksTabController,
+              children: List.generate(
+                blocksTabList.length,
+                (index) {
+                  return BlockSelectorView(blockData: widget.blocks[CodeBlockType.values[index]]!);
+                },
+              ),
+            ),
           ),
         )
       ],
@@ -89,6 +88,14 @@ class _GameBlocksState extends ConsumerState<GameBlocks> with TickerProviderStat
   @override
   void initState() {
     gameManager = ref.read(gameManagerProvider.notifier);
+    blocksTabList = List.generate(CodeBlockType.values.length, (index) {
+      final name = CodeBlockType.values[index].name;
+      final firstLetter = name[0].toUpperCase();
+      return firstLetter + name.substring(1, name.length);
+    });
+    blocksTabList.removeWhere((tab) => tab.toLowerCase() == 'statement');
+
+    // topBlocksList = blocksTabList.where((a) => a == 'Variables' || a == 'Literals' || a == 'Keywords').toList();
     // TODO: get Map<CodeBlockType[], List<GameBlockData>> from challenge data
     blocks = AllBlocks.get();
     // blocksTabList.remove('FunctionDefinition');

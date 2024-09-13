@@ -40,12 +40,15 @@ class _UserRoomsState extends ConsumerState<UserRooms> {
           );
         }
         return ListView.builder(
-            padding: const EdgeInsets.symmetric(vertical: 15),
+            padding: const EdgeInsets.symmetric(vertical: 10),
             itemCount: rooms.length,
             itemBuilder: (context, i) {
-              return UserRoomItem(
-                room: rooms[i],
-                toggleProcessing: toggleProcessing,
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+                child: UserRoomItem(
+                  room: rooms[i],
+                  toggleProcessing: toggleProcessing,
+                ),
               );
             });
       },

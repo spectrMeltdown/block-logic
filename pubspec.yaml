@@ -18,7 +18,7 @@ dependencies:
   firebase_storage: ^12.1.3
   firebase_auth: ^5.1.4
   geocoding: ^3.0.0
-  geolocator: ^12.0.0
+  geolocator: ^13.0.1
   permission_handler: ^11.3.1
   http: ^1.2.1
   firebase_core: ^3.3.0
@@ -62,20 +62,20 @@ dependencies:
   flutter_code_editor: ^0.3.2
   fluttertoast: ^8.2.8
   firebase_app_check: ^0.3.0+5
-
-  copy_with_extension: any
-  flutter_highlight: any
-  highlight: any
+  riverpod: ^2.5.1
+  # copy_with_extension: ^5.0.4
+  flutter_highlight: ^0.7.0
+  highlight: ^0.7.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^4.0.0
   flutter_launcher_icons: "^0.13.1"
-  custom_lint: any
-  riverpod_lint: any
-  riverpod_generator: ^2.4.0
   build_runner: ^2.4.11
-  copy_with_extension_gen: ^5.0.4
+  # copy_with_extension_gen: ^5.0.4
+  riverpod_generator: ^2.4.0
+  custom_lint: ^0.6.4
+  riverpod_lint: ^2.3.10
 dependency_overrides:
   fading_edge_scrollview: ^4.1.1
 flutter:

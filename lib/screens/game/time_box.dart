@@ -9,8 +9,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:widget_and_text_animator/widget_and_text_animator.dart';
 
 class TimeBox extends ConsumerStatefulWidget {
-  final bool pauseTimer;
-  const TimeBox(this.pauseTimer, {super.key});
+  const TimeBox({super.key});
 
   @override
   ConsumerState<TimeBox> createState() => _TimeBoxState();
@@ -18,15 +17,14 @@ class TimeBox extends ConsumerStatefulWidget {
 
 class _TimeBoxState extends ConsumerState<TimeBox> {
   int seconds = 0;
-  late bool shouldPauseTimer;
   late String timeString;
   late Timer timer;
   late final GameManager gameManager;
 
   @override
   Widget build(BuildContext context) {
-    // debugPrint('pause timer in widget: $shouldPauseTimer');
-    if (shouldPauseTimer) {
+    final shouldPause = ref.watch(gameManagerProvider.select((state) => state.pauseTimer));
+    if (shouldPause) {
       pauseTimer();
     } else {
       resumeTimer();
@@ -47,7 +45,6 @@ class _TimeBoxState extends ConsumerState<TimeBox> {
           const SizedBox(width: 7),
           BLText(
             formatTime(seconds),
-            animated: false,
             bold: true,
           )
         ],
@@ -80,22 +77,24 @@ class _TimeBoxState extends ConsumerState<TimeBox> {
 
   @override
   void initState() {
-    shouldPauseTimer = widget.pauseTimer;
     gameManager = ref.read(gameManagerProvider.notifier);
     timer = createTimer();
     super.initState();
   }
 
   void pauseTimer() {
-    timer.cancel();
-    setState(() {});
+    setState(() {
+      timer.cancel();
+    });
   }
 
   void resumeTimer() {
     if (timer.isActive) {
       return;
     } else {
-      timer = createTimer();
+      setState(() {
+        timer = createTimer();
+      });
     }
   }
 }

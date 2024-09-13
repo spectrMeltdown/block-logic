@@ -15,7 +15,17 @@ enum BtnType { normal, green, red, orange, grey }
 enum CodeBlockState { inSelector, inEditor }
 
 /// Used to define a block type in [Game] widget.
-enum CodeBlockType { literals, conditionals, loops, functions, objects, keywords, variables, operators, statement }
+enum CodeBlockType {
+  variables,
+  functions,
+  objects,
+  operators,
+  keywords,
+  literals,
+  conditionals,
+  loops,
+  statement,
+}
 
 enum Difficulty {
   beginner,

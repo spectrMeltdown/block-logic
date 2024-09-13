@@ -1,8 +1,6 @@
 import 'dart:async';
 
 import 'package:block_logic/app_theme.dart';
-import 'package:block_logic/components/background.dart';
-import 'package:block_logic/logic/firebase_models/challenge.dart';
 import 'package:block_logic/logic/firebase_providers/auth.dart';
 import 'package:block_logic/logic/firebase_providers/selected_admin.dart';
 import 'package:block_logic/logic/services/audio.dart';
@@ -10,9 +8,8 @@ import 'package:block_logic/logic/services/auth.dart';
 import 'package:block_logic/logic/services/shared_pref.dart';
 import 'package:block_logic/route_observer.dart';
 import 'package:block_logic/router_config.dart';
-import 'package:block_logic/screens/game/game_challenge.dart';
+import 'package:block_logic/screens/checkpoint.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -29,8 +26,8 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  await FirebaseAppCheck.instance.activate();
   if (!kIsWeb) {
+    await FirebaseAppCheck.instance.activate();
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
     SystemChrome.setPreferredOrientations(
       <DeviceOrientation>[DeviceOrientation.portraitUp],
@@ -67,22 +64,21 @@ class BlockLogic extends ConsumerWidget {
           debugShowCheckedModeBanner: false,
           theme: appTheme.theme(),
           darkTheme: appTheme.theme(),
-          //home: const Checkpoint(),
-          home: Scaffold(
-              body: Background(
-            child:
-                GameChallenge(updateChallenge: () {}, roomName: 'Testing', challenge: Challenge(), challengeCount: 1),
-          )),
+          home: const Checkpoint(),
+          // home: Scaffold(
+          //     body: Background(
+          //   child:
+          //       GameChallenge(updateChallenge: () {}, roomName: 'Testing', challenge: Challenge(), challengeCount: 1),
+          // )),
         ),
       );
     }
     ref.watch(authChangesProvider);
     Future<String?> redirect() async {
       final auth = ref.read(authServiceProvider.notifier);
-      //if (user.isLoading || user.hasError) return '/loading';
-      if (FirebaseAuth.instance.currentUser != null) {
-        if (FirebaseAuth.instance.currentUser?.emailVerified == null ||
-            FirebaseAuth.instance.currentUser!.emailVerified == false) {
+      final user = await ref.watch(authChangesProvider.future);
+      if (user != null) {
+        if (user.emailVerified == false) {
           /// go to email verification screen (after main menu finish building)
           return '/verify-email';
         }

@@ -6,21 +6,21 @@ part 'generated/game_provider.g.dart';
 
 @riverpod
 GameBlockData getSelfData(GetSelfDataRef ref, String uid) {
-  ref.watch(gameManagerProvider.select((tree) => tree.dataTree[uid]));
+  // ref.watch(gameManagerProvider.select((tree) => tree.dataTree[uid]));
   final gameManager = ref.read(gameManagerProvider.notifier);
   return gameManager.getSelfData(uid);
 }
 
 @riverpod
 List<GameBlockData> getChildrenData(GetChildrenDataRef ref, List<String> uids) {
-  ref.watch(gameManagerProvider.select((tree) => tree.dataTree));
+  // ref.watch(gameManagerProvider.select((tree) => tree.dataTree));
   final gameManager = ref.read(gameManagerProvider.notifier);
   return gameManager.getChildrenData(uids);
 }
 
 @riverpod
 List<GameBlockData> getRootData(GetRootDataRef ref) {
-  ref.watch(gameManagerProvider.select((tree) => tree.dataTree));
+  // ref.watch(gameManagerProvider.select((tree) => tree.dataTree));
   final gameManager = ref.read(gameManagerProvider.notifier);
   return gameManager.getRootData();
 }

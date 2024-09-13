@@ -1,30 +1,42 @@
-import 'package:block_logic/components/util/spaced_row.dart';
+import 'package:block_logic/logic/game/block_data.dart';
+import 'package:block_logic/logic/services/game_manager.dart';
 import 'package:block_logic/screens/game/block.dart';
+import 'package:block_logic/screens/game/block_selector_stack.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class BlockSelectorView extends ConsumerStatefulWidget {
-  const BlockSelectorView({required this.blocks, super.key});
-  final List<GameBlock> blocks;
+  const BlockSelectorView({required this.blockData, super.key});
+  final List<GameBlockData> blockData;
   @override
   ConsumerState<BlockSelectorView> createState() => _BlockSelectorViewState();
 }
 
-class _BlockSelectorViewState extends ConsumerState<BlockSelectorView>
-    with AutomaticKeepAliveClientMixin {
+class _BlockSelectorViewState extends ConsumerState<BlockSelectorView> with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
-
+  bool? shouldReset;
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    shouldReset = ref.watch(gameManagerProvider.select((a) => a.shouldRedisplay));
+    if (shouldReset!) {
+      // setState(() {});
+    }
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 8),
-        child: SpacedRow(
-          spacing: 10,
-          children: widget.blocks,
+        child: Row(
+          // spacing: 10,
+          children: List.generate(widget.blockData.length, (i) {
+            final data = widget.blockData[i];
+            final count = data.inSelectorCount;
+            if (count != null) {
+              return BlockSelectorStack(data);
+            }
+            return GameBlock(data: data);
+          }),
         ),
       ),
     );

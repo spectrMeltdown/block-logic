@@ -1,15 +1,14 @@
 import 'package:block_logic/logic/enums.dart';
-import 'package:block_logic/logic/game/py_class.dart';
 import 'package:block_logic/logic/game/py_conditional.dart';
+import 'package:block_logic/logic/game/py_keyword.dart';
 import 'package:block_logic/logic/game/py_literal.dart';
 import 'package:block_logic/logic/game/py_loops.dart';
 import 'package:block_logic/logic/game/py_operators.dart';
-import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:flutter/material.dart';
 
-part 'generated/block_data.g.dart';
+// part 'generated/block_data.g.dart';
 
-@CopyWith()
+// @CopyWith()
 @immutable // must be immutable, for moveInTree function
 class GameBlockData {
   final String? uid;
@@ -17,128 +16,164 @@ class GameBlockData {
   final CodeBlockType type;
   final CodeBlockState state;
   final String name;
-  final PyInitFunction? init;
-  final PyLiteral? return_;
+  // final PyInitFunction? init;
+  final PyLiteral? returnValue;
   final List<String>? parameterUIDs;
   final List<String>? argumentUIDs;
   final List<String>? conditionUIDs;
   final List<String>? bodyUIDs;
   final List<String>? statementUIDs;
-  final GameBlockData? functionDefinition;
-  final GameBlockData? classDefinition;
+  final int? inSelectorCount;
+  final int? inSelectorIndex;
   final PyLiteral? value;
+  final PyKeyword? keyword;
 
   const GameBlockData({
     this.uid,
     this.parentUID,
+    this.inSelectorCount,
+    this.inSelectorIndex,
     required this.type,
     required this.name,
     //required this.id,
     this.state = CodeBlockState.inSelector,
-    this.init,
-    this.return_,
+    // this.init,
+    this.returnValue,
     this.bodyUIDs,
     this.parameterUIDs,
     this.argumentUIDs,
     this.statementUIDs,
     this.conditionUIDs,
-    this.functionDefinition,
-    this.classDefinition,
     this.value,
+    this.keyword,
   });
 
   factory GameBlockData.createConditional({
     required PyConditional conditional,
+    required int inSelectorIndex,
+    int? count,
     // required String id,
   }) {
     const type = CodeBlockType.conditionals;
-    switch (conditional) {
-      case PyConditional.elif_:
-        return const GameBlockData(
-          type: type,
-          name: 'elif',
-          conditionUIDs: [],
-          bodyUIDs: [],
-        );
-      case PyConditional.if_:
-        return const GameBlockData(
-          type: type,
-          name: 'if',
-          conditionUIDs: [],
-          bodyUIDs: [],
-        );
-      case PyConditional.else_:
-        return const GameBlockData(
-          type: type,
-          name: 'else',
-          bodyUIDs: [],
-        );
-    }
+    return GameBlockData(
+      type: type,
+      inSelectorIndex: inSelectorIndex,
+      name: conditional.name.replaceFirst(RegExp(r'_'), ''),
+      conditionUIDs: conditional == PyConditional.else_ ? null : [],
+      bodyUIDs: const [],
+      inSelectorCount: count,
+    );
   }
 
-  factory GameBlockData.createStatement() {
-    return const GameBlockData(type: CodeBlockType.statement, name: '', statementUIDs: []);
+  factory GameBlockData.createStatement({
+    List<String> uids = const [],
+  }) {
+    return GameBlockData(
+      type: CodeBlockType.statement,
+      name: 'statement',
+      statementUIDs: uids,
+    );
+  }
+
+  factory GameBlockData.createKeyword({
+    required PyKeyword keyword,
+    required int inSelectorIndex,
+    int? count,
+  }) {
+    const type = CodeBlockType.keywords;
+    return GameBlockData(
+      type: type,
+      inSelectorIndex: inSelectorIndex,
+      name: keyword.name.replaceFirst(RegExp(r'_'), ''),
+      inSelectorCount: count,
+    );
   }
 
   factory GameBlockData.createFunction({
     // required String id,
     required String name,
-    GameBlockData? functionDefinition,
+    required int inSelectorIndex,
   }) {
     const type = CodeBlockType.functions;
     return GameBlockData(
       type: type,
-      name: name,
+      name: '$name ',
+      inSelectorIndex: inSelectorIndex,
       argumentUIDs: const [],
-      functionDefinition: functionDefinition,
+    );
+  }
+
+  factory GameBlockData.createFunctionDefinition({
+    // required String id,
+    required String name,
+    required int inSelectorIndex,
+  }) {
+    const type = CodeBlockType.functions;
+    return GameBlockData(
+      type: type,
+      name: 'def $name',
+      inSelectorIndex: inSelectorIndex,
+      parameterUIDs: const [],
+      bodyUIDs: const [],
     );
   }
 
   factory GameBlockData.createLiteral({
     // required String id,
     required PyLiteral literal,
+    required int inSelectorIndex,
+    int? count,
   }) {
     const type = CodeBlockType.literals;
     return GameBlockData(
       type: type,
       name: literal.value,
+      inSelectorIndex: inSelectorIndex,
+      inSelectorCount: count,
     );
   }
 
   factory GameBlockData.createLoop({
     // required String id,
     required PyLoop loop,
+    required int inSelectorIndex,
+    int? count,
   }) {
     const type = CodeBlockType.loops;
-    switch (loop) {
-      case PyLoop.while_:
-        return const GameBlockData(
-          type: type,
-          name: 'while',
-          conditionUIDs: [],
-          bodyUIDs: [],
-        );
-      case PyLoop.for_:
-        return const GameBlockData(
-          type: type,
-          name: 'for',
-          conditionUIDs: [],
-          bodyUIDs: [],
-        );
-    }
+    return GameBlockData(
+      type: type,
+      name: loop.name.replaceFirst(RegExp(r'_'), ''),
+      conditionUIDs: const [],
+      bodyUIDs: const [],
+      inSelectorCount: count,
+      inSelectorIndex: inSelectorIndex,
+    );
   }
 
   factory GameBlockData.createObject({
     // required String id,
     required String name,
-    GameBlockData? classDefinition,
+    required int inSelectorIndex,
   }) {
     const type = CodeBlockType.objects;
     return GameBlockData(
       type: type,
-      name: name,
+      name: '$name ',
       argumentUIDs: const [],
-      classDefinition: classDefinition,
+      inSelectorIndex: inSelectorIndex,
+    );
+  }
+  factory GameBlockData.createObjectDefinition({
+    // required String id,
+    required String name,
+    required int inSelectorIndex,
+  }) {
+    const type = CodeBlockType.objects;
+    return GameBlockData(
+      type: type,
+      name: 'class $name',
+      bodyUIDs: const [],
+      inSelectorIndex: inSelectorIndex,
     );
   }
 
@@ -154,6 +189,8 @@ class GameBlockData {
     // required String id,
     required PyOperatorTypes operatorType,
     required Object operator,
+    required int inSelectorIndex,
+    int? count,
   }) {
     const type = CodeBlockType.operators;
     switch (operatorType) {
@@ -163,6 +200,8 @@ class GameBlockData {
           return GameBlockData(
             type: type,
             name: PyOperator.arithmetic(dataValue).operator,
+            inSelectorCount: count,
+            inSelectorIndex: inSelectorIndex,
           );
         }
       case PyOperatorTypes.comparison:
@@ -171,6 +210,8 @@ class GameBlockData {
           return GameBlockData(
             type: type,
             name: PyOperator.comparison(dataValue).operator,
+            inSelectorCount: count,
+            inSelectorIndex: inSelectorIndex,
           );
         }
       case PyOperatorTypes.assignment:
@@ -179,6 +220,8 @@ class GameBlockData {
           return GameBlockData(
             type: type,
             name: PyOperator.assignment(dataValue).operator,
+            inSelectorCount: count,
+            inSelectorIndex: inSelectorIndex,
           );
         }
       case PyOperatorTypes.identity:
@@ -187,6 +230,8 @@ class GameBlockData {
           return GameBlockData(
             type: type,
             name: PyOperator.identity(dataValue).operator,
+            inSelectorCount: count,
+            inSelectorIndex: inSelectorIndex,
           );
         }
       case PyOperatorTypes.logical:
@@ -195,6 +240,8 @@ class GameBlockData {
           return GameBlockData(
             type: type,
             name: PyOperator.logical(dataValue).operator,
+            inSelectorCount: count,
+            inSelectorIndex: inSelectorIndex,
           );
         }
       case PyOperatorTypes.membership:
@@ -203,25 +250,62 @@ class GameBlockData {
           return GameBlockData(
             type: type,
             name: PyOperator.membership(dataValue).operator,
+            inSelectorCount: count,
+            inSelectorIndex: inSelectorIndex,
           );
         }
     }
-    return const GameBlockData(
-      type: type,
-      name: '',
-    );
+    throw ('Wrong operator!!');
   }
 
   factory GameBlockData.createVariable({
     // required String id,
     required String name,
     required PyLiteral value,
+    required int inSelectorIndex,
   }) {
     const type = CodeBlockType.variables;
     return GameBlockData(
       type: type,
       name: name,
       value: value,
+      inSelectorIndex: inSelectorIndex,
+    );
+  }
+
+  GameBlockData copyWith({
+    String? uid,
+    String? parentUID,
+    CodeBlockType? type,
+    CodeBlockState? state,
+    String? name,
+    PyLiteral? returnValue,
+    List<String>? parameterUIDs,
+    List<String>? argumentUIDs,
+    List<String>? conditionUIDs,
+    List<String>? bodyUIDs,
+    List<String>? statementUIDs,
+    int? inSelectorCount,
+    int? inSelectorIndex,
+    PyLiteral? value,
+    PyKeyword? keyword,
+  }) {
+    return GameBlockData(
+      uid: uid ?? this.uid,
+      parentUID: parentUID ?? this.parentUID,
+      type: type ?? this.type,
+      state: state ?? this.state,
+      name: name ?? this.name,
+      returnValue: returnValue ?? this.returnValue,
+      parameterUIDs: parameterUIDs ?? this.parameterUIDs,
+      argumentUIDs: argumentUIDs ?? this.argumentUIDs,
+      conditionUIDs: conditionUIDs ?? this.conditionUIDs,
+      bodyUIDs: bodyUIDs ?? this.bodyUIDs,
+      statementUIDs: statementUIDs ?? this.statementUIDs,
+      inSelectorCount: inSelectorCount ?? this.inSelectorCount,
+      inSelectorIndex: inSelectorIndex ?? this.inSelectorIndex,
+      value: value ?? this.value,
+      keyword: keyword ?? this.keyword,
     );
   }
 

@@ -43,7 +43,7 @@ class _GameAppbarState extends ConsumerState<GameAppbar> {
           onTapDown: (details) => audio.playBtn(),
           onTapUp: (details) async {
             gameManager.pauseTimer();
-            debugPrint('pause timer: ${gameManager.getTimer()}');
+            // debugPrint('pause timer: ${gameManager.getTimer()}');
             await showGeneralDialog(
                 context: context,
                 transitionDuration: const Duration(milliseconds: 500),
@@ -72,7 +72,7 @@ class _GameAppbarState extends ConsumerState<GameAppbar> {
                   return const PauseDialog();
                 });
             gameManager.resumeTimer();
-            debugPrint('pause timer: ${gameManager.getTimer()}');
+            // debugPrint('pause timer: ${gameManager.getTimer()}');
           },
           child: const BLBorderedPanel(
             child: Icon(
@@ -90,7 +90,7 @@ class _GameAppbarState extends ConsumerState<GameAppbar> {
         const SizedBox(
           width: 10,
         ),
-        Expanded(child: TimeBox(gameManager.getTimer())),
+        Expanded(child: TimeBox()),
       ],
     );
   }

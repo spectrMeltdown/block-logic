@@ -26,49 +26,52 @@ class _ParameterConditionBoxState extends ConsumerState<CustomBox> {
   Widget build(BuildContext context) {
     switch (widget.box) {
       case GameBox.parameters:
-        // TODO: update later
-        final parameters = ref.watch(GetChildrenDataProvider(widget.data.parameterUIDs!));
-        return DragTargetWrapper(
-          builderChild: () {
-            if (parameters.isNotEmpty) {
-              return Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: List.generate(parameters.length, (index) {
-                  return Padding(
-                    padding: const EdgeInsets.all(3),
-                    child: GameBlock(data: parameters[index]),
-                  );
-                }),
+        final data = ref.watch(GetSelfDataProvider(widget.data.uid!));
+        final parameters = ref.watch(GetChildrenDataProvider(data.parameterUIDs!));
+        return Row(
+          children: [
+            ...List.generate(parameters.length, (index) {
+              return Padding(
+                padding: const EdgeInsets.all(3),
+                child: GameBlock(data: parameters[index]),
               );
-            }
-            return AddNewBlockBox(
-              height: 40,
-            );
-          },
-          onAcceptWithDetails: (data, manager) {
-            if (data.state == CodeBlockState.inEditor) {
-              gameManager.moveData(data.uid!, widget.data.uid!);
-            } else {
-              gameManager.addData(data, widget.data.uid!, ChildrenData.parameters);
-            }
-            ref.invalidate(getSelfDataProvider);
-            setState(() {});
-          },
-          onWillAcceptWithDetails: (data) {
-            if (widget.data.conditionUIDs!.contains(data.uid) || data.uid == widget.data.uid) {
-              return false;
-            }
-            return true;
-            // return validator.parameterBox(data: data!, dataToAccept: data!);
-          },
+            }),
+            DragTargetWrapper(
+              builderChild: () {
+                if (parameters.isNotEmpty) {}
+                return const AddNewBlockBox(
+                  height: 40,
+                  width: 100,
+                );
+              },
+              onAcceptWithDetails: (data, manager) {
+                if (data.state == CodeBlockState.inEditor) {
+                  gameManager.moveData(data.uid!, widget.data.uid!);
+                } else {
+                  gameManager.addData(data, widget.data.uid!, ChildrenData.parameters);
+                }
+                ref.invalidate(getRootDataProvider);
+                ref.invalidate(getSelfDataProvider);
+                ref.invalidate(getChildrenDataProvider);
+                setState(() {});
+              },
+              onWillAcceptWithDetails: (data) {
+                if (widget.data.parameterUIDs!.contains(data.uid) || data.uid == widget.data.uid) {
+                  return false;
+                }
+                return true;
+                // return validator.parameterBox(data: data!, dataToAccept: data!);
+              },
+            )
+          ],
         );
       case GameBox.arguments:
-        final arguments = ref.watch(GetChildrenDataProvider(widget.data.argumentUIDs!));
+        final data = ref.watch(GetSelfDataProvider(widget.data.uid!));
+        final arguments = ref.watch(GetChildrenDataProvider(data.argumentUIDs!));
         return DragTargetWrapper(
           builderChild: () {
             if (arguments.isNotEmpty) {
               return Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: List.generate(arguments.length, (index) {
                   return Padding(
                     padding: const EdgeInsets.all(3),
@@ -77,7 +80,7 @@ class _ParameterConditionBoxState extends ConsumerState<CustomBox> {
                 }),
               );
             }
-            return AddNewBlockBox(
+            return const AddNewBlockBox(
               height: 40,
             );
           },
@@ -87,11 +90,13 @@ class _ParameterConditionBoxState extends ConsumerState<CustomBox> {
             } else {
               gameManager.addData(data, widget.data.uid!, ChildrenData.arguments);
             }
+            ref.invalidate(getRootDataProvider);
+            ref.invalidate(getChildrenDataProvider);
             ref.invalidate(getSelfDataProvider);
             setState(() {});
           },
           onWillAcceptWithDetails: (data) {
-            if (widget.data.conditionUIDs!.contains(data.uid) || data.uid == widget.data.uid) {
+            if (widget.data.argumentUIDs!.contains(data.uid) || data.uid == widget.data.uid) {
               return false;
             }
             return true;
@@ -99,40 +104,45 @@ class _ParameterConditionBoxState extends ConsumerState<CustomBox> {
           },
         );
       case GameBox.conditions:
-        final conditions = ref.watch(GetChildrenDataProvider(widget.data.conditionUIDs!));
-        return DragTargetWrapper(
-          builderChild: () {
-            if (conditions.isNotEmpty) {
-              return Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: List.generate(conditions.length, (index) {
-                  return Padding(
-                    padding: const EdgeInsets.all(3),
-                    child: GameBlock(data: conditions[index]),
-                  );
-                }),
+        final data = ref.watch(GetSelfDataProvider(widget.data.uid!));
+        final conditions = ref.watch(GetChildrenDataProvider(data.conditionUIDs!));
+
+        return Row(
+          children: [
+            ...List.generate(conditions.length, (index) {
+              return Padding(
+                padding: const EdgeInsets.all(3),
+                child: GameBlock(data: conditions[index]),
               );
-            }
-            return AddNewBlockBox(
-              height: 40,
-            );
-          },
-          onAcceptWithDetails: (data, manager) {
-            if (data.state == CodeBlockState.inEditor) {
-              gameManager.moveData(data.uid!, widget.data.uid!);
-            } else {
-              gameManager.addData(data, widget.data.uid!, ChildrenData.condition);
-            }
-            ref.invalidate(getSelfDataProvider);
-            setState(() {});
-          },
-          onWillAcceptWithDetails: (data) {
-            if (widget.data.conditionUIDs!.contains(data.uid) || data.uid == widget.data.uid) {
-              return false;
-            }
-            return true;
-            // return validator.parameterBox(data: data!, dataToAccept: data!);
-          },
+            }),
+            DragTargetWrapper(
+              builderChild: () {
+                return AddNewBlockBox(
+                  height: 35,
+                  width: conditions.isEmpty ? 100 : 30,
+                );
+              },
+              onAcceptWithDetails: (data, manager) {
+                if (data.state == CodeBlockState.inEditor) {
+                  gameManager.moveData(data.uid!, widget.data.uid!);
+                } else {
+                  gameManager.addData(data, widget.data.uid!, ChildrenData.condition);
+                }
+                ref.invalidate(getRootDataProvider);
+                ref.invalidate(getSelfDataProvider);
+                ref.invalidate(getChildrenDataProvider);
+                setState(() {});
+              },
+              onWillAcceptWithDetails: (data) {
+                if (widget.data.conditionUIDs!.contains(data.uid) ||
+                    data.uid == widget.data.uid ||
+                    data.uid == widget.data.parentUID) {
+                  return false;
+                }
+                return validator.conditionBox(data: widget.data, dataToAccept: data);
+              },
+            )
+          ],
         );
     }
   }

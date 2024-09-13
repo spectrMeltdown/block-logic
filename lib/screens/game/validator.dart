@@ -24,25 +24,53 @@ class BlockValidator {
   //   return false;
   // }
 
-  bool nestedBox({
-    required GameBlockData data,
-    required GameBlockData dataToAccept,
-  }) {
-    /// data = data that called this function
-    switch (data.type) {
-      case CodeBlockType.loops:
-      case CodeBlockType.conditionals:
-        return true;
-      default:
-        return false;
-    }
-  }
-
   bool parameterBox({
     required GameBlockData data,
     required GameBlockData dataToAccept,
   }) {
     return true;
+  }
+
+  bool conditionBox({
+    required GameBlockData data,
+    required GameBlockData dataToAccept,
+  }) {
+    switch (data.type) {
+      case CodeBlockType.conditionals:
+      case CodeBlockType.loops:
+        switch (dataToAccept.type) {
+          case CodeBlockType.functions:
+          case CodeBlockType.operators:
+          case CodeBlockType.literals:
+          case CodeBlockType.variables:
+            return true;
+          default:
+            return false;
+        }
+      default:
+        return false;
+    }
+  }
+
+  bool bodyBox({
+    required GameBlockData data,
+    required GameBlockData dataToAccept,
+  }) {
+    switch (data.type) {
+      case CodeBlockType.conditionals:
+      case CodeBlockType.loops:
+        switch (dataToAccept.type) {
+          case CodeBlockType.functions:
+          case CodeBlockType.operators:
+          case CodeBlockType.literals:
+          case CodeBlockType.variables:
+            return true;
+          default:
+            return false;
+        }
+      default:
+        return false;
+    }
   }
 
   bool argumentBox({

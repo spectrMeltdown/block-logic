@@ -6,7 +6,7 @@ part of '../game_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$getSelfDataHash() => r'005cf87019b8fe8e5603130e6848290f23fa6da8';
+String _$getSelfDataHash() => r'8d1134e930c0c044065a0ef493fa4550adb80022';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -155,7 +155,7 @@ class _GetSelfDataProviderElement
   String get uid => (origin as GetSelfDataProvider).uid;
 }
 
-String _$getChildrenDataHash() => r'2c801871ef447ea7ba4cf0414b16bb404611558d';
+String _$getChildrenDataHash() => r'b156d46aa9b61d5bd2cf98fdf75281c1c562feca';
 
 /// See also [getChildrenData].
 @ProviderFor(getChildrenData)
@@ -284,7 +284,7 @@ class _GetChildrenDataProviderElement
   List<String> get uids => (origin as GetChildrenDataProvider).uids;
 }
 
-String _$getRootDataHash() => r'ef8c836757dfce718cdadd8203d13ee4e96d9188';
+String _$getRootDataHash() => r'c6ca22c5ad2c2fe4dd5c3becbe51792027036720';
 
 /// See also [getRootData].
 @ProviderFor(getRootData)

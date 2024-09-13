@@ -138,8 +138,9 @@ class _GameRoomState extends ConsumerState<GameRoom> with WidgetsBindingObserver
   }
 
   void updateChallenge() {
-    currentChallenge++;
-    setState(() {});
+    setState(() {
+      currentChallenge++;
+    });
   }
 
   // Future<String?> finalizeGame() async {
