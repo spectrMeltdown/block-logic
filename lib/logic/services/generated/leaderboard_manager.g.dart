@@ -7,7 +7,7 @@ part of '../leaderboard_manager.dart';
 // **************************************************************************
 
 String _$leaderboardManagerHash() =>
-    r'954e1d89a3fefafcde80962f4c42ca19252d7633';
+    r'4837769adfaac80f8bd9f3ffa20f43ad0fd08b3c';
 
 /// See also [LeaderboardManager].
 @ProviderFor(LeaderboardManager)
