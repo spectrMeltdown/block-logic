@@ -1,5 +1,6 @@
 import 'package:block_logic/logic/game/block_data.dart';
 import 'package:block_logic/logic/services/game_manager.dart';
+import 'package:block_logic/logic/services/should_reset_all_blocks.dart';
 import 'package:block_logic/screens/game/block.dart';
 import 'package:block_logic/screens/game/block_selector_stack.dart';
 import 'package:flutter/material.dart';
@@ -16,13 +17,22 @@ class _BlockSelectorViewState extends ConsumerState<BlockSelectorView> with Auto
   @override
   bool get wantKeepAlive => true;
   bool? shouldReset;
+  late final GameManager gameManager;
+
+  @override
+  void initState() {
+    gameManager = ref.read(gameManagerProvider.notifier);
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    shouldReset = ref.watch(gameManagerProvider.select((a) => a.shouldRedisplay));
-    if (shouldReset!) {
-      // setState(() {});
-    }
+    // shouldReset = ref.watch(shouldResetBlockProvider);
+    // if (shouldReset!) {
+    //   gameManager.setshouldRedisplay(false);
+    //   ref.invalidate(shouldRedisplayProvider);
+    // }
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Padding(

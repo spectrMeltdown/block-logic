@@ -24,88 +24,98 @@ class _ChangeDisplayNameState extends ConsumerState<ChangeDisplayName> {
   late final String oldDisplayName;
   late final TextEditingController displayNameController;
   late final AuthService auth;
+  late final CustomNavigation nav;
+  late final TextValidator validator;
+  late final AccountService accountService;
   final formKey = GlobalKey<FormState>();
   bool processing = false;
   Widget msg = const BlankWidget();
 
   @override
   Widget build(BuildContext context) {
-    final nav = ref.read(customNavigationProvider);
-    final accountService = ref.read(accountServiceProvider.notifier);
-    final validator = ref.read(textValidatorProvider.notifier);
     return BLDialog(
         color: Colors.grey.shade800,
-        child: Form(
-          key: formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const BLSmallTitle('Enter your new display name'),
-              const SizedBox(
-                height: 10,
-              ),
-              BLTextBox(
-                controller: displayNameController,
-                maxLength: 20,
-                keyboardType: TextInputType.name,
-                prefixIcon: const Icon(
-                  Icons.abc,
-                  color: Colors.white,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 600),
+          child: Form(
+            key: formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const BLSmallTitle('Enter your new display name'),
+                const SizedBox(
+                  height: 10,
                 ),
-                validator: (name) => validator.validateDisplayName(name),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  BLTextButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      child: const BLText(
-                        'Cancel',
-                        color: Colors.deepOrange,
-                      )),
-                  BLTextButton(
-                      onPressed: () async {
-                        if (processing) return;
-                        processing = true;
-                        if (formKey.currentState!.validate()) {
-                          final newName = displayNameController.text.trim();
-                          if (oldDisplayName != newName) {
-                            final result = await accountService.changeDisplayName(newName, FirestoreCollections.users);
-                            if (result != null) {
-                              setState(() {
-                                msg = BLText(result);
-                              });
-                              processing = false;
-                              return;
+                ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 400),
+                  child: BLTextBox(
+                    controller: displayNameController,
+                    maxLength: 20,
+                    keyboardType: TextInputType.name,
+                    prefixIcon: const Icon(
+                      Icons.abc,
+                      color: Colors.white,
+                    ),
+                    validator: (name) => validator.validateDisplayName(name),
+                  ),
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    BLTextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: const BLText(
+                          'Cancel',
+                          color: Colors.deepOrange,
+                        )),
+                    BLTextButton(
+                        onPressed: () async {
+                          if (processing) return;
+                          processing = true;
+                          if (formKey.currentState!.validate()) {
+                            final newName = displayNameController.text.trim();
+                            if (oldDisplayName != newName) {
+                              final result =
+                                  await accountService.changeDisplayName(newName, FirestoreCollections.users);
+                              if (result != null) {
+                                setState(() {
+                                  msg = BLText(result);
+                                });
+                                processing = false;
+                                return;
+                              }
+                              if (!context.mounted) return;
+                              nav.pop(context, true);
+                            } else {
+                              // name was the same, so just go back
+                              nav.pop(context);
                             }
-                            if (!context.mounted) return;
-                            nav.pop(context, true);
-                          } else {
-                            // name was the same, so just go back
-                            nav.pop(context);
                           }
-                        }
-                        processing = false;
-                      },
-                      child: const BLText(
-                        'Save',
-                        color: Colors.green,
-                      )),
-                  const SizedBox(width: 10)
-                ],
-              )
-            ],
+                          processing = false;
+                        },
+                        child: const BLText(
+                          'Save',
+                          color: Colors.green,
+                        )),
+                    const SizedBox(width: 10)
+                  ],
+                )
+              ],
+            ),
           ),
         ));
   }
 
   @override
   void initState() {
+    nav = ref.read(customNavigationProvider);
+    accountService = ref.read(accountServiceProvider.notifier);
+    validator = ref.read(textValidatorProvider.notifier);
     auth = ref.read(authServiceProvider.notifier);
     final user = ref.read(SelectedUserProvider(auth.getUID())).value;
     oldDisplayName = user?.displayName ?? '';

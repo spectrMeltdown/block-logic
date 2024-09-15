@@ -18,11 +18,12 @@ class _ReauthDialogState extends ConsumerState<ReauthDialog> {
   final passwordController = TextEditingController();
   int attemptsLeft = 3;
   late Widget errorMessage;
+  bool processing = false;
+  late final CustomNavigation nav;
+  late final AuthService auth;
 
   @override
   Widget build(BuildContext context) {
-    final nav = ref.read(customNavigationProvider);
-    final auth = ref.read(authServiceProvider.notifier);
     return AlertDialog(
       backgroundColor: Colors.grey.shade800,
       title: const BLSmallTitle('Verification'),
@@ -40,35 +41,56 @@ class _ReauthDialogState extends ConsumerState<ReauthDialog> {
         ],
       ),
       actions: [
-        TextButton(onPressed: () => nav.pop(context, 'cancelled'), child: const BLText('Cancel', color: Colors.red)),
         TextButton(
-            onPressed: () async {
-              String? result = await auth.reauth(passwordController.text.trim());
-              if (!context.mounted) return;
-              if (result == null) {
-                nav.pop(context, null);
-              } else if (result == 'too-many-attempts') {
-                nav.pop(context, 'TOA');
+          onPressed: () {
+            nav.pop(context, 'cancelled');
+          },
+          child: BLText(
+            'Cancel',
+            color: processing ? Colors.grey : Colors.red,
+          ),
+        ),
+        TextButton(
+          onPressed: () async {
+            if (processing) return;
+            setState(() {
+              processing = true;
+            });
+            String? result = await auth.reauth(passwordController.text.trim());
+            if (!context.mounted) return;
+            if (result == null) {
+              nav.pop(context, null);
+            } else if (result == 'too-many-attempts') {
+              nav.pop(context, 'TOA');
+            } else {
+              if (attemptsLeft == 1) {
+                nav.pop(context, 'failed');
               } else {
-                if (attemptsLeft == 1) {
-                  nav.pop(context, 'failed');
-                } else {
-                  attemptsLeft = attemptsLeft - 1;
-                  errorMessage = Text(
-                    'Wrong password. Attempts left: $attemptsLeft',
-                    style: const TextStyle(color: Colors.red),
-                  );
-                  setState(() {});
-                }
+                attemptsLeft = attemptsLeft - 1;
+                errorMessage = Text(
+                  'Wrong password. Attempts left: $attemptsLeft',
+                  style: const TextStyle(color: Colors.red),
+                );
+                setState(() {});
               }
-            },
-            child: const BLText('Submit', color: Colors.green)),
+            }
+            setState(() {
+              processing = false;
+            });
+          },
+          child: BLText(
+            'Submit',
+            color: processing ? Colors.grey : Colors.green,
+          ),
+        ),
       ],
     );
   }
 
   @override
   void initState() {
+    nav = ref.read(customNavigationProvider);
+    auth = ref.read(authServiceProvider.notifier);
     errorMessage = const BlankWidget();
     super.initState();
   }

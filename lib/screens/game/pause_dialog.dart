@@ -1,11 +1,14 @@
 import 'package:block_logic/components/button/button.dart';
+import 'package:block_logic/components/button/outline.dart';
 import 'package:block_logic/components/dialog/dialog.dart';
 import 'package:block_logic/components/text/text.dart';
-import 'package:block_logic/components/text/title_small.dart';
+import 'package:block_logic/components/text/title.dart';
 import 'package:block_logic/logic/enums.dart';
+import 'package:block_logic/logic/services/custom_tab.dart';
 import 'package:block_logic/logic/services/game_manager.dart';
 import 'package:block_logic/logic/services/game_provider.dart';
 import 'package:block_logic/logic/services/navigation.dart';
+import 'package:block_logic/logic/services/should_reset_all_blocks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -37,28 +40,60 @@ class _PauseDialogState extends ConsumerState<PauseDialog> {
         child: Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        const BLSmallTitle('PAUSE'),
+        const BLTitle('PAUSE'),
         const SizedBox(height: 20),
         BLButton(
+            paddingX: 20,
+            type: BtnType.orange,
             onPressed: () {
               gameManager.resetTree();
+              gameManager.setShouldResetAllBlocks(true);
               ref.invalidate(getRootDataProvider);
+              ref.invalidate(shouldResetAllBlocksProvider);
+              // ref.invalidate(getSelfDataProvider);
+              // ref.invalidate(getChildrenDataProvider);
             },
-            child: const BLText('Reset blocks')),
+            child: const Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.restore,
+                  size: 30,
+                ),
+                SizedBox(
+                  width: 8,
+                ),
+                BLText(
+                  'Reset blocks',
+                  color: Colors.white,
+                )
+              ],
+            )),
         const SizedBox(height: 10),
-        BLButton(
-            // TODO: update this later with room exit logic
-            onPressed: () async {
-              nav.pop(context); // pop the dialog
-              nav.pop(context); // pop to rooms
-            },
-            type: BtnType.red,
-            child: const BLText('Exit')),
-        const SizedBox(height: 10),
-        BLButton(
-          onPressed: () => nav.pop(context),
-          type: BtnType.green,
-          child: const BLText('Back to game'),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            BLOutlineButton(
+                type: BtnType.red,
+                onPressed: () async {
+                  nav.pop(context, true);
+                },
+                child: const BLText(
+                  'Exit',
+                  // color: Colors.red,
+                )),
+            const SizedBox(width: 10),
+            BLOutlineButton(
+              type: BtnType.green,
+              onPressed: () => nav.pop(context, false),
+              child: const BLText(
+                'Resume',
+                // color: Colors.green,
+              ),
+            )
+          ],
         )
       ],
     ));

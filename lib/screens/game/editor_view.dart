@@ -38,13 +38,13 @@ class _CustomTabViewState extends ConsumerState<EditorView> with AutomaticKeepAl
   Widget build(BuildContext context) {
     super.build(context);
     gameState = ref.watch(gameManagerProvider);
-    // final blockData = ref.watch(getRootDataProvider);
-    final blockData = gameManager.getRootData();
-    if (gameState.isDropCancelled) {
-      // TODO: if drop was cancelled, reverse to previous state of this widget.
-      // Use this when animation is applied
-      gameManager.isDropCancelled(false);
-    }
+    final blockData = ref.watch(getRootDataProvider);
+    // final blockData = gameManager.getRootData();
+    // if (gameState.isDropCancelled) {
+    //   // TODO: if drop was cancelled, reverse to previous state of this widget.
+    //   // Use this when animation is applied
+    //   gameManager.isDropCancelled(false);
+    // }
     if (blockData.isEmpty) return buildDragTarget([]);
     // final parentRenderBox = widget.editorWidgetKey.currentContext!.findRenderObject() as RenderBox;
     // final parentSize = parentRenderBox.size;

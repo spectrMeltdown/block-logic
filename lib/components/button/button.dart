@@ -27,6 +27,7 @@ class BLButton extends ConsumerStatefulWidget {
 
 class _BtnState extends ConsumerState<BLButton> {
   BLAudioState? audio;
+  late final BLUI blui;
   bool _isTapped = false;
   late List<Color> btnPressedColor;
   late List<Color> btnColor;
@@ -45,7 +46,6 @@ class _BtnState extends ConsumerState<BLButton> {
 
   @override
   Widget build(BuildContext context) {
-    final blui = ref.read(bLUIProvider.notifier);
     return GestureDetector(
       onTapDown: (details) {
         audio?.playBtn();
@@ -97,6 +97,7 @@ class _BtnState extends ConsumerState<BLButton> {
   @override
   void initState() {
     if (!kIsWeb) audio = ref.read(bLAudioStateProvider.notifier);
+    blui = ref.read(bLUIProvider.notifier);
     getBtnColor();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // Access the width after the first frame is rendered

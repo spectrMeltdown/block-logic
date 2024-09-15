@@ -10,14 +10,14 @@ import 'package:block_logic/logic/services/game_manager.dart';
 import 'package:block_logic/logic/services/navigation.dart';
 import 'package:block_logic/logic/services/room_manager.dart';
 import 'package:block_logic/screens/game/game_challenge.dart';
+import 'package:block_logic/screens/game/pause_dialog.dart';
 import 'package:block_logic/screens/leaderboard/selected_leaderboard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class GameRoom extends ConsumerStatefulWidget {
   final Room room;
-  final String leaderboardID;
-  const GameRoom(this.room, this.leaderboardID, {super.key});
+  const GameRoom(this.room, {super.key});
 
   @override
   ConsumerState<GameRoom> createState() => _GameRoomState();
@@ -73,13 +73,17 @@ class _GameRoomState extends ConsumerState<GameRoom> with WidgetsBindingObserver
     }
     return PopScope(
       canPop: false,
-      onPopInvoked: (didPop) async {
+      onPopInvokedWithResult: (didPop, result) async {
         if (didPop) return;
-        final result = await dialog.show(context, const ConfirmDialog());
-        if (result is bool && result) {
-          await gameManager.leaveGame(false);
+        final leave = await dialog.show(context, const PauseDialog());
+        if (leave is bool && leave) {
           if (!context.mounted) return;
-          nav.pop(context);
+          final result = await showDialog(context: context, builder: (context) => const ConfirmDialog());
+          if (result is bool && result) {
+            await gameManager.leaveGame(false);
+            if (!context.mounted) return;
+            nav.pop(context);
+          }
         }
       },
       child: Scaffold(
@@ -99,6 +103,7 @@ class _GameRoomState extends ConsumerState<GameRoom> with WidgetsBindingObserver
                 // debugPrint('Challenge length: $challengeLength');
                 // debugPrint('current challenge: $currentChallenge');
                 return GameChallenge(
+                  currentChallenge: 0,
                   roomName: widget.room.name ?? '',
                   challenge: challenges[currentChallenge],
                   challengeCount: challenges.length,
@@ -115,7 +120,7 @@ class _GameRoomState extends ConsumerState<GameRoom> with WidgetsBindingObserver
   @override
   void initState() {
     gameManager = ref.read(gameManagerProvider.notifier);
-    gameManager.init(widget.room, widget.leaderboardID);
+    gameManager.init(widget.room);
     roomManager = ref.read(roomManagerProvider.notifier);
     dialog = ref.read(dialogServiceProvider.notifier);
     nav = ref.read(customNavigationProvider);

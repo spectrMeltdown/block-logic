@@ -31,8 +31,8 @@ class Assets {
   final String majorMonoDisplay = 'assets/fonts/MajorMonoDisplay-Regular.ttf';
 
   /// animations
-  final String loading = 'assets/animations/loading.json';
   final String emailVerification = 'assets/animations/email-verification.json';
+  final String testLoading = 'assets/animations/test-loading.json';
   final String loadingBricks1 = 'assets/animations/loading-bricks-1.json';
   final String loadingBricks2 = 'assets/animations/loading-bricks-2.json';
   final String premiumCrown = 'assets/animations/premium-crown.json';

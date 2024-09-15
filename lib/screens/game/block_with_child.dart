@@ -44,8 +44,8 @@ class _GameBlockWithChildState extends ConsumerState<GameBlockWithChild> {
 
   @override
   Widget build(BuildContext context) {
-    // final widget.data = ref.watch(GetSelfDataProvider(widget.data.uid!));
-    final data = ref.watch(GetChildrenDataProvider(widget.data.bodyUIDs ?? []));
+    final data = ref.watch(getSelfDataProvider(widget.data.uid!));
+    final bodyData = ref.watch(getChildrenDataProvider(data?.bodyUIDs ?? []));
     // final body = gameManager.getChildrenData(widget.data.bodyUIDs!);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -70,9 +70,9 @@ class _GameBlockWithChildState extends ConsumerState<GameBlockWithChild> {
               children: [
                 BlockWrapper(
                   widgetList: List.generate(
-                    data.length,
+                    bodyData!.length,
                     (i) => GameBlock(
-                      data: data[i],
+                      data: bodyData[i],
                     ),
                   ),
                 ),
@@ -82,10 +82,10 @@ class _GameBlockWithChildState extends ConsumerState<GameBlockWithChild> {
                   },
                   onAcceptWithDetails: (initData, manager) {
                     if (initData.state == CodeBlockState.inEditor) {
-                      gameManager.moveData(initData.uid!, widget.data.uid!);
+                      gameManager.moveData(initData.uid!, data!.uid!);
                     } else {
                       // debugPrint('Parent: ${widget.data.uid}');
-                      gameManager.addData(initData, widget.data.uid!, ChildrenData.body);
+                      gameManager.addData(initData, data!.uid!, ChildrenData.body);
                     }
                     ref.invalidate(getRootDataProvider);
                     ref.invalidate(getSelfDataProvider);
@@ -93,9 +93,9 @@ class _GameBlockWithChildState extends ConsumerState<GameBlockWithChild> {
                     setState(() {});
                   },
                   onWillAcceptWithDetails: (initData) {
-                    if (widget.data.bodyUIDs!.contains(initData.uid) ||
-                        initData.uid == widget.data.uid ||
-                        initData.uid == widget.data.parentUID) {
+                    if (data!.bodyUIDs!.contains(initData.uid) ||
+                        initData.uid == data.uid ||
+                        initData.uid == data.parentUID) {
                       return false;
                     }
                     return true;

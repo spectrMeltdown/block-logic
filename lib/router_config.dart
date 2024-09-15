@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:block_logic/components/button/text.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/logic/enums.dart';
+import 'package:block_logic/logic/firebase_models/admin_account.dart';
 import 'package:block_logic/route_observer.dart';
 import 'package:block_logic/screens/auth/login.dart';
 import 'package:block_logic/screens/auth/verify_email.dart';
@@ -22,6 +23,8 @@ import 'package:block_logic/web/screens/reports/reports.dart';
 import 'package:block_logic/web/screens/rooms/rooms.dart';
 import 'package:block_logic/web/screens/settings/settings.dart';
 import 'package:block_logic/web/screens/web_scaffold.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -75,7 +78,7 @@ FutureOr<bool> onExitEdit(BuildContext context, GoRouterState state) async {
   return confirmed ?? false;
 }
 
-GoRouter router(Future<String?> redirect) {
+GoRouter router() {
   final parentKey = GlobalKey<NavigatorState>();
   final shellKey = GlobalKey<NavigatorState>();
   Map<String, List<dynamic>> shellRoutes = {
@@ -166,7 +169,25 @@ GoRouter router(Future<String?> redirect) {
     ],
     observers: [routeObserver],
     redirect: (context, state) async {
-      return await redirect;
+      final user = FirebaseAuth.instance.currentUser;
+      if (user?.uid != null) {
+        if (user!.emailVerified == false) {
+          /// go to email verification screen (after main menu finish building)
+          return '/verify-email';
+        }
+
+        final doc = await FirebaseFirestore.instance.collection('admins').doc(user.uid).get();
+        final adminFirestore = AdminAccount.fromFirestore(doc);
+        if (doc.exists == false) {
+          return '/unauthorized';
+        }
+        if (adminFirestore.verificationID != null && adminFirestore.verificationID!.isEmpty) {
+          return '/verify-phone-num';
+        }
+        return null;
+      } else {
+        return '/login';
+      }
     },
     errorBuilder: (context, state) {
       return const NotFound();

@@ -1,10 +1,9 @@
 import 'package:block_logic/components/panel/bordered.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/game/block_data.dart';
+import 'package:block_logic/logic/services/custom_tab.dart';
 import 'package:block_logic/logic/services/game_manager.dart';
 import 'package:block_logic/logic/services/ui.dart';
-import 'package:block_logic/logic/testing.dart';
-import 'package:block_logic/screens/game/block.dart';
 import 'package:block_logic/screens/game/blocks_selector_view.dart';
 import 'package:block_logic/screens/game/custom_tab.dart';
 import 'package:flutter/material.dart';
@@ -21,7 +20,6 @@ class GameBlocks extends ConsumerStatefulWidget {
 class _GameBlocksState extends ConsumerState<GameBlocks> with TickerProviderStateMixin {
   late TabController blocksTabController;
   late GameManager gameManager;
-  late List<String> blocksTabList;
   // late List<String> topBlocksList;
   // late List<String> bottomBlocksList;
   late Map<CodeBlockType, List<GameBlockData>> blocks;
@@ -46,13 +44,19 @@ class _GameBlocksState extends ConsumerState<GameBlocks> with TickerProviderStat
                       labelPadding: const EdgeInsets.symmetric(horizontal: 3),
                       indicatorColor: BLUI().getAppColor(''),
                       controller: blocksTabController,
-                      tabs: List.generate(
-                          blocksTabList.length,
-                          (index) => CustomTab(
-                                title: blocksTabList[index],
-                                isSelected: index == blocksTabController.index,
-                                paddingX: 10,
-                              ))),
+                      tabs: List.generate(blocks.keys.length, (i) {
+                        return Consumer(builder: (context, ref, child) {
+                          final type = blocks.keys.toList()[i];
+                          // final count = ref.watch(CustomTabProvider(type));
+                          final count = ref.watch(customTabProvider(type));
+                          return CustomTab(
+                            type: type,
+                            count: count,
+                            isSelected: i == blocksTabController.index,
+                            paddingX: 10,
+                          );
+                        });
+                      })),
                 ],
               ),
             ),
@@ -67,9 +71,9 @@ class _GameBlocksState extends ConsumerState<GameBlocks> with TickerProviderStat
               physics: const NeverScrollableScrollPhysics(),
               controller: blocksTabController,
               children: List.generate(
-                blocksTabList.length,
+                blocks.keys.length,
                 (index) {
-                  return BlockSelectorView(blockData: widget.blocks[CodeBlockType.values[index]]!);
+                  return BlockSelectorView(blockData: widget.blocks[blocks.keys.toList()[index]]!);
                 },
               ),
             ),
@@ -88,18 +92,11 @@ class _GameBlocksState extends ConsumerState<GameBlocks> with TickerProviderStat
   @override
   void initState() {
     gameManager = ref.read(gameManagerProvider.notifier);
-    blocksTabList = List.generate(CodeBlockType.values.length, (index) {
-      final name = CodeBlockType.values[index].name;
-      final firstLetter = name[0].toUpperCase();
-      return firstLetter + name.substring(1, name.length);
-    });
-    blocksTabList.removeWhere((tab) => tab.toLowerCase() == 'statement');
-
     // topBlocksList = blocksTabList.where((a) => a == 'Variables' || a == 'Literals' || a == 'Keywords').toList();
     // TODO: get Map<CodeBlockType[], List<GameBlockData>> from challenge data
-    blocks = AllBlocks.get();
+    blocks = widget.blocks;
     // blocksTabList.remove('FunctionDefinition');
-    blocksTabController = TabController(length: blocksTabList.length, vsync: this);
+    blocksTabController = TabController(length: blocks.keys.length, vsync: this);
     blocksTabController.addListener(() {
       setState(() {});
     });

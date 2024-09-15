@@ -3,7 +3,7 @@ import 'package:block_logic/logic/game/block_data.dart';
 
 class BlockValidator {
   // bool topLevelBox(GameBlockData data) {
-  //   if (data.state == CodeBlockState.unselected) {
+  //   if (data == CodeBlockState.unselected) {
   //     return true;
   //   }
   //   switch (data.type) {

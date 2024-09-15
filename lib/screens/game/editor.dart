@@ -1,5 +1,4 @@
 import 'package:block_logic/components/panel/bordered.dart';
-import 'package:block_logic/screens/game/custom_tab.dart';
 import 'package:block_logic/screens/game/editor_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -98,12 +97,12 @@ class _EditorState extends ConsumerState<Editor> with TickerProviderStateMixin {
     );
   }
 
-  Widget buildTab(String tabName, int tabNum, int selectedIndex) {
-    return CustomTab(
-      title: tabNum == 0 ? 'Main' : tabName,
-      isSelected: selectedIndex == tabNum,
-    );
-  }
+  // Widget buildTab(String tabName, int tabNum, int selectedIndex) {
+  //   return CustomTab(
+  //     title: tabNum == 0 ? 'Main' : tabName,
+  //     isSelected: selectedIndex == tabNum,
+  //   );
+  // }
 
   Widget buildTabView() {
     return EditorView(

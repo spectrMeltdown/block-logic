@@ -32,7 +32,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     final nav = ref.read(customNavigationProvider);
     return PopScope(
       canPop: false,
-      onPopInvoked: (didPop) {
+      onPopInvokedWithResult: (didPop, result) {
         if (didPop) return;
         if (!processing) {
           nav.pop(context);

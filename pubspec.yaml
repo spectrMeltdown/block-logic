@@ -11,7 +11,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  # cupertino_icons: ^1.0.6
+  cupertino_icons: ^1.0.6
   # flame: ^1.17.0
   cloud_firestore: ^5.2.1
   webview_flutter: ^4.8.0
@@ -66,6 +66,7 @@ dependencies:
   # copy_with_extension: ^5.0.4
   flutter_highlight: ^0.7.0
   highlight: ^0.7.0
+  tuple: ^2.0.2
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -85,7 +86,7 @@ flutter:
     - assets/images/
     - assets/audio/
     - assets/animations/
-    - assets/videos/
+    # - assets/videos/
     - assets/animations/backgrounds/
   fonts:
     - family: Play

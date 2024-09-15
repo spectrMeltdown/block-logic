@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:block_logic/components/panel/bordered.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/logic/services/game_manager.dart';
+import 'package:block_logic/logic/services/time_box.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -23,7 +24,7 @@ class _TimeBoxState extends ConsumerState<TimeBox> {
 
   @override
   Widget build(BuildContext context) {
-    final shouldPause = ref.watch(gameManagerProvider.select((state) => state.pauseTimer));
+    final shouldPause = ref.watch(runTimerProvider);
     if (shouldPause) {
       pauseTimer();
     } else {

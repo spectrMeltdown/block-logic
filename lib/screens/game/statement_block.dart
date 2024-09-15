@@ -21,8 +21,8 @@ class _StatementBoxState extends ConsumerState<StatementBox> {
   late final GameManager gameManager;
   @override
   Widget build(BuildContext context) {
-    final data = ref.watch(GetSelfDataProvider(widget.data.uid!));
-    final blocks = ref.watch(GetChildrenDataProvider(data.statementUIDs!));
+    final data = ref.watch(getSelfDataProvider(widget.data.uid));
+    final blocks = ref.watch(getChildrenDataProvider(data!.statementUIDs));
     // debugPrint(blocks.toString());
     // debugPrint('${widget.data.name} ${widget.data.statementUIDs}');
 
@@ -32,7 +32,7 @@ class _StatementBoxState extends ConsumerState<StatementBox> {
         mainAxisSize: MainAxisSize.min,
         children: [
           ...List.generate(
-            blocks.length,
+            blocks!.length,
             (i) => Padding(
               padding: const EdgeInsets.symmetric(horizontal: 3),
               child: GameBlock(data: blocks[i]),
@@ -44,13 +44,13 @@ class _StatementBoxState extends ConsumerState<StatementBox> {
               // return AddNewBlockBox();
             },
             onAcceptWithDetails: (initData, manager) {
-              debugPrint(initData.state.toString());
+              debugPrint(initData.toString());
               if (initData.state == CodeBlockState.inEditor) {
-                gameManager.moveData(initData.uid!, widget.data.uid!);
+                gameManager.moveData(initData.uid!, data.uid!);
               } else {
                 debugPrint('parent id: ${widget.data.uid}');
                 debugPrint('initData name: ${initData.name}');
-                gameManager.addData(initData, widget.data.uid!, ChildrenData.statement);
+                gameManager.addData(initData, data.uid!, ChildrenData.statement);
               }
               ref.invalidate(getRootDataProvider);
               ref.invalidate(getSelfDataProvider);
@@ -59,9 +59,9 @@ class _StatementBoxState extends ConsumerState<StatementBox> {
               setState(() {});
             },
             onWillAcceptWithDetails: (initData) {
-              if (widget.data.statementUIDs!.contains(initData.uid) ||
-                  initData.uid == widget.data.uid ||
-                  initData.uid == widget.data.parentUID) {
+              if (data.statementUIDs!.contains(initData.uid) ||
+                  initData.uid == data.uid ||
+                  initData.uid == data.parentUID) {
                 return false;
               }
               return true;

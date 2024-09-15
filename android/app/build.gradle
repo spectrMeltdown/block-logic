@@ -46,10 +46,25 @@ android {
         versionName = flutterVersionName
     }
 
+    signingConfigs {
+        release {
+            keyAlias 'my-key-alias'
+            keyPassword 'willow123'
+            storeFile file('release-key.jks') // Adjust path if needed
+            storePassword 'willow123'
+        }
+    }
+
     buildTypes {
         release {
-            signingConfig = signingConfigs.debug
-        }
+            minifyEnabled true
+            shrinkResources true
+            debuggable false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            // signingConfig = signingConfigs.debug
+            signingConfig = signingConfigs.release
+            // proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro' 
+        } 
     }
 }
 

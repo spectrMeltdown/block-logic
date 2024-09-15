@@ -5,9 +5,9 @@ import 'package:block_logic/components/util/spaced_col.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_models/challenge.dart';
 import 'package:block_logic/logic/firebase_models/room.dart';
+import 'package:block_logic/logic/services/block_data_manager.dart';
 import 'package:block_logic/logic/services/error_handler.dart';
 import 'package:block_logic/logic/services/toast.dart';
-import 'package:block_logic/logic/testing.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -52,7 +52,7 @@ class TestingPage extends ConsumerWidget {
                         additionalInfo:
                             'A leap year has 366 days, with an extra day in February (29 days instead of 28). It occurs every four years to keep the calendar year aligned with the solar year.',
                         limitations: ['5 block lines', 'No functions', 'No classes'],
-                        blocks: AllBlocks.get(),
+                        blocks: AllBlocks().getAll(),
                         difficulty: Difficulty.intermediate,
                         tags: ['conditionals', ''],
                       ),
@@ -62,7 +62,7 @@ class TestingPage extends ConsumerWidget {
                         shortDescription: 'Count the number of vowels in a given string.',
                         additionalInfo: '',
                         limitations: ['2 block lines', 'Use one function', ''],
-                        blocks: AllBlocks.get(),
+                        blocks: AllBlocks().getAll(),
                         difficulty: Difficulty.beginner,
                         tags: [
                           'conditionals',

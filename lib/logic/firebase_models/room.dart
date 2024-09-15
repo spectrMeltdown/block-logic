@@ -12,10 +12,12 @@ class Room {
   final int? maxPlayers;
   final bool? adminLocked;
   final RoomStatus? status;
+  final String? currentLeaderboardID;
   Room({
     this.adminLocked,
     this.id,
     this.players,
+    this.currentLeaderboardID,
     //this.icon,
     this.hostID,
     this.challengeIDs,
@@ -50,6 +52,7 @@ class Room {
           data['challengeIDs'] == null ? null : (data['challengeIDs'] as List).map((item) => item as String).toList(),
       name: data['name'] ?? '',
       password: data['password'],
+      currentLeaderboardID: data['currentLeaderboardID'],
       maxPlayers: data['maxPlayers'],
       adminLocked: data['adminLocked'],
     );
@@ -107,6 +110,9 @@ class Room {
     }
     if (adminLocked != null) {
       toFirestoreMap.addAll({'adminLocked': adminLocked});
+    }
+    if (currentLeaderboardID != null) {
+      toFirestoreMap.addAll({'currentLeaderboardID': currentLeaderboardID});
     }
     return toFirestoreMap;
   }

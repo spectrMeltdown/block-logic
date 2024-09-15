@@ -2,8 +2,8 @@ import 'package:block_logic/components/dialog/dialog.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/game/block_data.dart';
+import 'package:block_logic/logic/services/block_data_manager.dart';
 import 'package:block_logic/logic/services/dialog.dart';
-import 'package:block_logic/logic/testing.dart';
 import 'package:block_logic/screens/game/wrapper_block_design.dart';
 import 'package:block_logic/web/components/back_btn.dart';
 import 'package:block_logic/web/components/button.dart';
@@ -21,7 +21,7 @@ class BlockSelectorDialog extends ConsumerStatefulWidget {
 }
 
 class _BlockSelectorDialogState extends ConsumerState<BlockSelectorDialog> with SingleTickerProviderStateMixin {
-  final Map<CodeBlockType, List<GameBlockData>> allBlocks = AllBlocks.get();
+  final Map<CodeBlockType, List<GameBlockData>> allBlocks = AllBlocks().getAll();
   late final List<Tab> tabs;
   late TabController tabController;
   bool processing = false;

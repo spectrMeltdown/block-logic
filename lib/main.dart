@@ -1,14 +1,15 @@
 import 'dart:async';
 
 import 'package:block_logic/app_theme.dart';
-import 'package:block_logic/logic/firebase_providers/auth.dart';
-import 'package:block_logic/logic/firebase_providers/selected_admin.dart';
+import 'package:block_logic/components/background.dart';
+import 'package:block_logic/logic/enums.dart';
+import 'package:block_logic/logic/firebase_models/challenge.dart';
 import 'package:block_logic/logic/services/audio.dart';
-import 'package:block_logic/logic/services/auth.dart';
+import 'package:block_logic/logic/services/block_data_manager.dart';
 import 'package:block_logic/logic/services/shared_pref.dart';
 import 'package:block_logic/route_observer.dart';
 import 'package:block_logic/router_config.dart';
-import 'package:block_logic/screens/checkpoint.dart';
+import 'package:block_logic/screens/game/game_challenge.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
@@ -64,38 +65,26 @@ class BlockLogic extends ConsumerWidget {
           debugShowCheckedModeBanner: false,
           theme: appTheme.theme(),
           darkTheme: appTheme.theme(),
-          home: const Checkpoint(),
-          // home: Scaffold(
-          //     body: Background(
-          //   child:
-          //       GameChallenge(updateChallenge: () {}, roomName: 'Testing', challenge: Challenge(), challengeCount: 1),
-          // )),
+          // home: const Checkpoint(),
+          home: Scaffold(
+              body: Background(
+            child: GameChallenge(
+              currentChallenge: 0,
+              updateChallenge: () {},
+              roomName: 'Testing',
+              challenge: Challenge(
+                name: 'Give me a five!',
+                shortDescription: 'Print the number 5',
+                additionalInfo: 'This should be a simple one..',
+                difficulty: Difficulty.beginner,
+                blocks: AllBlocks().beginnerTesting(),
+              ),
+              challengeCount: 1,
+            ),
+          )),
         ),
       );
     }
-    ref.watch(authChangesProvider);
-    Future<String?> redirect() async {
-      final auth = ref.read(authServiceProvider.notifier);
-      final user = await ref.watch(authChangesProvider.future);
-      if (user != null) {
-        if (user.emailVerified == false) {
-          /// go to email verification screen (after main menu finish building)
-          return '/verify-email';
-        }
-
-        final adminFirestore = await ref.watch(SelectedAdminProvider(auth.getUID()).future);
-        if (adminFirestore == null) {
-          return '/unauthorized';
-        }
-        if (adminFirestore.verificationID != null && adminFirestore.verificationID!.isEmpty) {
-          return '/verify-phone-num';
-        }
-        return null;
-      } else {
-        return '/login';
-      }
-    }
-
     return ToastificationWrapper(
       child: MaterialApp.router(
         // builder: (context, child) => ResponsiveBreakpoints.builder(
@@ -108,7 +97,7 @@ class BlockLogic extends ConsumerWidget {
         //   ],
         // ),
         builder: FToastBuilder(),
-        routerConfig: router(redirect()),
+        routerConfig: router(),
         title: 'Block-Logic',
         debugShowCheckedModeBanner: false,
         theme: appTheme.theme(),

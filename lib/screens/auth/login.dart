@@ -9,6 +9,7 @@ import 'package:block_logic/components/text/title.dart';
 import 'package:block_logic/components/textbox.dart';
 import 'package:block_logic/constants.dart';
 import 'package:block_logic/logic/enums.dart';
+import 'package:block_logic/logic/firebase_providers/auth.dart';
 import 'package:block_logic/logic/services/auth.dart';
 import 'package:block_logic/logic/services/login_alert.dart';
 import 'package:block_logic/logic/services/navigation.dart';
@@ -49,7 +50,7 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
 
     return PopScope(
       canPop: false,
-      onPopInvoked: (didPop) async {
+      onPopInvokedWithResult: (didPop, result) async {
         if (didPop) return;
         if (!processing) {
           nav.pop(context);
@@ -223,9 +224,11 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
     toggleProcessing(true);
     if (_loginFormKey.currentState!.validate()) {
       final error = await auth.login(email: emailController.text.trim(), password: passwordController.text.trim());
+      ref.invalidate(authServiceProvider);
+      ref.invalidate(authChangesProvider);
       if (error == null) {
         final loginAlert = ref.read(loginAlertProvider.notifier);
-        // await loginAlert.send();
+        await loginAlert.send();
         // if (result != null) {
         //   if (!context.mounted) return;
         //   toast.showToast(result, type: NotifType.error);

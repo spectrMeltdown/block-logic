@@ -23,6 +23,7 @@ class GameBlockData {
   final List<String>? conditionUIDs;
   final List<String>? bodyUIDs;
   final List<String>? statementUIDs;
+  final String? inSelectorUID;
   final int? inSelectorCount;
   final int? inSelectorIndex;
   final PyLiteral? value;
@@ -30,6 +31,7 @@ class GameBlockData {
 
   const GameBlockData({
     this.uid,
+    this.inSelectorUID,
     this.parentUID,
     this.inSelectorCount,
     this.inSelectorIndex,
@@ -93,6 +95,7 @@ class GameBlockData {
     // required String id,
     required String name,
     required int inSelectorIndex,
+    int? count,
   }) {
     const type = CodeBlockType.functions;
     return GameBlockData(
@@ -100,6 +103,7 @@ class GameBlockData {
       name: '$name ',
       inSelectorIndex: inSelectorIndex,
       argumentUIDs: const [],
+      inSelectorCount: count,
     );
   }
 
@@ -154,6 +158,7 @@ class GameBlockData {
     // required String id,
     required String name,
     required int inSelectorIndex,
+    int? count,
   }) {
     const type = CodeBlockType.objects;
     return GameBlockData(
@@ -161,6 +166,7 @@ class GameBlockData {
       name: '$name ',
       argumentUIDs: const [],
       inSelectorIndex: inSelectorIndex,
+      inSelectorCount: count,
     );
   }
   factory GameBlockData.createObjectDefinition({
@@ -178,7 +184,7 @@ class GameBlockData {
   }
 
   ///@operator
-  /// Specify either of the following:
+  /// Specify either of the following value from enum:
   /// - [PyOperatorsArithmetic]
   /// - [PyOperatorsComparison]
   /// - [PyOperatorsLogical]
@@ -263,6 +269,7 @@ class GameBlockData {
     required String name,
     required PyLiteral value,
     required int inSelectorIndex,
+    int? count,
   }) {
     const type = CodeBlockType.variables;
     return GameBlockData(
@@ -270,6 +277,7 @@ class GameBlockData {
       name: name,
       value: value,
       inSelectorIndex: inSelectorIndex,
+      inSelectorCount: count,
     );
   }
 
@@ -287,6 +295,7 @@ class GameBlockData {
     List<String>? statementUIDs,
     int? inSelectorCount,
     int? inSelectorIndex,
+    String? inSelectorUID,
     PyLiteral? value,
     PyKeyword? keyword,
   }) {
@@ -305,6 +314,7 @@ class GameBlockData {
       inSelectorCount: inSelectorCount ?? this.inSelectorCount,
       inSelectorIndex: inSelectorIndex ?? this.inSelectorIndex,
       value: value ?? this.value,
+      inSelectorUID: inSelectorUID ?? this.inSelectorUID,
       keyword: keyword ?? this.keyword,
     );
   }

@@ -6,11 +6,11 @@ targets:
         - $package$
         - lib/$lib$
     builders:
-      copy_with_extension_gen:
-        enabled: true
-        options:
-          copy_with_null: true # default is false
-          skip_fields: true # default is false
+      # copy_with_extension_gen:
+      #   enabled: true
+      #   options:
+      #     copy_with_null: true # default is false
+      #     skip_fields: true # default is false
       source_gen|combining_builder:
         generate_for:
           - lib/logic/firebase_providers/*.dart

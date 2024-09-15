@@ -3,6 +3,7 @@ import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/logic/firebase_models/challenge.dart';
 import 'package:block_logic/logic/services/dialog.dart';
 import 'package:block_logic/logic/services/game_manager.dart';
+import 'package:block_logic/logic/services/time_box.dart';
 import 'package:block_logic/logic/services/ui.dart';
 import 'package:block_logic/screens/game/dialog_challenge_info.dart';
 import 'package:flutter/material.dart';
@@ -22,8 +23,10 @@ class ChallengeBox extends ConsumerWidget {
     return GestureDetector(
       onTapUp: (details) async {
         gameManager.pauseTimer();
+        ref.invalidate(runTimerProvider);
         await challengeDialog.show(context, DialogChallengeInfo(challenge: challenge));
         gameManager.resumeTimer();
+        ref.invalidate(runTimerProvider);
       },
       child: BLPanel(
         child: SingleChildScrollView(

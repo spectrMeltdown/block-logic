@@ -1,13 +1,15 @@
+import 'package:block_logic/components/dialog/confirm.dart';
 import 'package:block_logic/components/panel/bordered.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/logic/firebase_models/challenge.dart';
 import 'package:block_logic/logic/services/audio.dart';
 import 'package:block_logic/logic/services/dialog.dart';
 import 'package:block_logic/logic/services/game_manager.dart';
+import 'package:block_logic/logic/services/navigation.dart';
+import 'package:block_logic/logic/services/time_box.dart';
 import 'package:block_logic/logic/services/ui.dart';
 import 'package:block_logic/screens/game/pause_dialog.dart';
 import 'package:block_logic/screens/game/time_box.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -21,7 +23,15 @@ import 'package:marquee/marquee.dart';
 class GameAppbar extends ConsumerStatefulWidget {
   final String roomName;
   final Challenge challenge;
-  const GameAppbar({required this.roomName, required this.challenge, super.key});
+  final int currentIndex;
+  final int maxIndex;
+  const GameAppbar({
+    required this.roomName,
+    required this.challenge,
+    required this.currentIndex,
+    required this.maxIndex,
+    super.key,
+  });
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _GameAppbarState();
@@ -30,9 +40,10 @@ class GameAppbar extends ConsumerStatefulWidget {
 class _GameAppbarState extends ConsumerState<GameAppbar> {
   late final BLAudioState audio;
   //late bool pauseTimer;
-  //late final GameState GameState;
-  late final DialogService pauseDialog;
+  //late final GameManager GameManager;
+  late final DialogService dialog;
   late final GameManager gameManager;
+  late final CustomNavigation nav;
   @override
   Widget build(BuildContext context) {
     ref.watch(gameManagerProvider);
@@ -43,35 +54,20 @@ class _GameAppbarState extends ConsumerState<GameAppbar> {
           onTapDown: (details) => audio.playBtn(),
           onTapUp: (details) async {
             gameManager.pauseTimer();
+            ref.invalidate(runTimerProvider);
             // debugPrint('pause timer: ${gameManager.getTimer()}');
-            await showGeneralDialog(
-                context: context,
-                transitionDuration: const Duration(milliseconds: 500),
-                transitionBuilder: (context, animation, secondaryAnimation, child) {
-                  final primaryCurve = CurvedAnimation(
-                    parent: animation,
-                    //     begin: const Offset(0, 1),
-                    //     end: const Offset(0, 0),
-                    //   ).animate(animation),
-                    //   child: child,
-                    // );
-                    curve: Curves.easeInOut,
-                    reverseCurve: Curves.easeInOut,
-                  );
-                  return SlideTransition(
-                    position: Tween<Offset>(
-                      begin: const Offset(0, 1),
-                      end: const Offset(0, 0),
-                    ).animate(primaryCurve),
-                    child: child,
-                  );
-                  // return SlideTransition(
-                  //   position: Tween<Offset>(
-                },
-                pageBuilder: (context, animation1, animation2) {
-                  return const PauseDialog();
-                });
+            final leave = await dialog.show(context, const PauseDialog());
+            if (leave is bool && leave) {
+              if (!context.mounted) return;
+              final result = await showDialog(context: context, builder: (context) => const ConfirmDialog());
+              if (result is bool && result) {
+                await gameManager.leaveGame(false);
+                if (!context.mounted) return;
+                nav.pop(context);
+              }
+            }
             gameManager.resumeTimer();
+            ref.invalidate(runTimerProvider);
             // debugPrint('pause timer: ${gameManager.getTimer()}');
           },
           child: const BLBorderedPanel(
@@ -90,7 +86,7 @@ class _GameAppbarState extends ConsumerState<GameAppbar> {
         const SizedBox(
           width: 10,
         ),
-        Expanded(child: TimeBox()),
+        const Expanded(child: TimeBox()),
       ],
     );
   }
@@ -98,12 +94,10 @@ class _GameAppbarState extends ConsumerState<GameAppbar> {
   Widget buildText([bool isChallenge = false]) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final text = kDebugMode
-            ?
-            //'This is to text the scrollable text widget'
-            'This is short'
-            : isChallenge
-                ? widget.challenge.name
+        final text = isChallenge
+            ? widget.challenge.name
+            : widget.maxIndex > 1
+                ? '${widget.roomName} (${widget.currentIndex + 1} / ${widget.maxIndex})'
                 : widget.roomName;
         final roomStyle = TextStyle(
           fontWeight: FontWeight.bold,
@@ -161,7 +155,8 @@ class _GameAppbarState extends ConsumerState<GameAppbar> {
 
   @override
   void initState() {
-    pauseDialog = ref.read(dialogServiceProvider.notifier);
+    nav = ref.read(customNavigationProvider.notifier);
+    dialog = ref.read(dialogServiceProvider.notifier);
     audio = ref.read(bLAudioStateProvider.notifier);
     gameManager = ref.read(gameManagerProvider.notifier);
     super.initState();

@@ -26,11 +26,11 @@ class _ParameterConditionBoxState extends ConsumerState<CustomBox> {
   Widget build(BuildContext context) {
     switch (widget.box) {
       case GameBox.parameters:
-        final data = ref.watch(GetSelfDataProvider(widget.data.uid!));
-        final parameters = ref.watch(GetChildrenDataProvider(data.parameterUIDs!));
+        final data = ref.watch(getSelfDataProvider(widget.data.uid!));
+        final parameters = ref.watch(getChildrenDataProvider(data!.parameterUIDs));
         return Row(
           children: [
-            ...List.generate(parameters.length, (index) {
+            ...List.generate(parameters!.length, (index) {
               return Padding(
                 padding: const EdgeInsets.all(3),
                 child: GameBlock(data: parameters[index]),
@@ -66,11 +66,11 @@ class _ParameterConditionBoxState extends ConsumerState<CustomBox> {
           ],
         );
       case GameBox.arguments:
-        final data = ref.watch(GetSelfDataProvider(widget.data.uid!));
-        final arguments = ref.watch(GetChildrenDataProvider(data.argumentUIDs!));
+        final data = ref.watch(getSelfDataProvider(widget.data.uid!));
+        final arguments = ref.watch(getChildrenDataProvider(data!.argumentUIDs!));
         return DragTargetWrapper(
           builderChild: () {
-            if (arguments.isNotEmpty) {
+            if (arguments!.isNotEmpty) {
               return Row(
                 children: List.generate(arguments.length, (index) {
                   return Padding(
@@ -104,12 +104,12 @@ class _ParameterConditionBoxState extends ConsumerState<CustomBox> {
           },
         );
       case GameBox.conditions:
-        final data = ref.watch(GetSelfDataProvider(widget.data.uid!));
-        final conditions = ref.watch(GetChildrenDataProvider(data.conditionUIDs!));
+        final data = ref.watch(getSelfDataProvider(widget.data.uid!));
+        final conditions = ref.watch(getChildrenDataProvider(data!.conditionUIDs!));
 
         return Row(
           children: [
-            ...List.generate(conditions.length, (index) {
+            ...List.generate(conditions!.length, (index) {
               return Padding(
                 padding: const EdgeInsets.all(3),
                 child: GameBlock(data: conditions[index]),

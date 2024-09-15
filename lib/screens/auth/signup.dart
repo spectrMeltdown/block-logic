@@ -51,7 +51,7 @@ class _SignupState extends ConsumerState<Signup> with RouteAware {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
-      onPopInvoked: (didPop) {
+      onPopInvokedWithResult: (didPop, result) {
         if (didPop) return;
         if (!processing) {
           nav.pop(context);

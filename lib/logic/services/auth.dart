@@ -4,6 +4,7 @@ import 'package:block_logic/logic/services/account.dart';
 import 'package:block_logic/logic/services/error_handler.dart';
 import 'package:block_logic/logic/services/shared_pref.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -149,7 +150,7 @@ class AuthService extends _$AuthService {
   /// logout
   Future<void> logout() async {
     //await state._sharedPref.setBool('loginAlertSent', false);
-    await state._auth.signOut();
+    await FirebaseAuth.instance.signOut();
   }
 
   /// display when the user has to reauthenticate themselves

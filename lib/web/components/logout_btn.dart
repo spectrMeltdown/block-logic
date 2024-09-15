@@ -1,8 +1,10 @@
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/logic/services/auth.dart';
 import 'package:block_logic/web/components/button.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class LogoutBtn extends ConsumerStatefulWidget {
   final double paddingX;
@@ -21,7 +23,7 @@ class _LogoutBtnState extends ConsumerState<LogoutBtn> {
         type: AdminBtnType.red,
         paddingX: widget.paddingX,
         paddingY: 20,
-        onPressed: () => logout(),
+        onPressed: () => logout(context),
         child: const Row(
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
@@ -42,10 +44,14 @@ class _LogoutBtnState extends ConsumerState<LogoutBtn> {
     super.initState();
   }
 
-  Future<void> logout() async {
+  Future<void> logout(BuildContext context) async {
     if (processing) return;
     processing = true;
-    auth.logout();
+    await auth.logout();
+    if (kIsWeb) {
+      if (!context.mounted) return;
+      context.go('/login');
+    }
     processing = false;
   }
 }

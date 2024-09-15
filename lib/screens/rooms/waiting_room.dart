@@ -33,27 +33,37 @@ class WaitingRoom extends ConsumerStatefulWidget {
 
 class _WaitingRoomState extends ConsumerState<WaitingRoom> {
   String? roomID;
+  bool processing = false;
   late final CustomNavigation nav;
   late final DialogService dialog;
   late final RoomManager roomManager;
   late final Toast toast;
   late final AuthService auth;
   late final LeaderboardManager leaderboardManager;
+
+  void toggleProcessing() {
+    setState(() {
+      processing = !processing;
+    });
+  }
+
+  void exit() async {
+    if (processing) return;
+    toggleProcessing();
+    final exit = await dialog.show(context, const ConfirmDialog());
+    if (mounted && exit is bool && exit) {
+      nav.pop(context);
+      if (roomID != null) await roomManager.leaveRoom(roomID!);
+    }
+    toggleProcessing();
+  }
+
   @override
   Widget build(BuildContext context) {
     final room = ref.watch(SelectedRoomProvider(widget.roomID));
-
-    void exit() async {
-      final exit = await dialog.show(context, const ConfirmDialog());
-      if (context.mounted && exit is bool && exit) {
-        nav.pop(context);
-        if (roomID != null) await roomManager.leaveRoom(roomID!);
-      }
-    }
-
     return PopScope(
       canPop: false,
-      onPopInvoked: (didPop) async {
+      onPopInvokedWithResult: (didPop, result) async {
         if (didPop) return;
         exit();
       },
@@ -74,11 +84,17 @@ class _WaitingRoomState extends ConsumerState<WaitingRoom> {
                       child: room.when(
                           data: (room) {
                             if (room == null) {
-                              debugPrint('room doesnt exist');
+                              debugPrint('Room doesn\'t exist');
                               return const BLError();
                             }
                             if (room.players!.isEmpty) {
                               return const Center(child: BLText('No players yet ...'));
+                            }
+                            if (room.status == RoomStatus.inGame) {
+                              Future.microtask(() async {
+                                if (!context.mounted) return;
+                                nav.pushReplace(context, GameRoom(room));
+                              });
                             }
                             roomID ??= room.id;
                             return Column(
@@ -125,7 +141,7 @@ class _WaitingRoomState extends ConsumerState<WaitingRoom> {
                                               child: Padding(
                                                 padding: const EdgeInsets.only(right: 5, bottom: 8),
                                                 child: BLButton(
-                                                    type: BtnType.normal,
+                                                    type: processing ? BtnType.grey : BtnType.normal,
                                                     onPressed: () {
                                                       start(context, room, true);
                                                     },
@@ -143,7 +159,7 @@ class _WaitingRoomState extends ConsumerState<WaitingRoom> {
                                               child: Padding(
                                                 padding: const EdgeInsets.only(bottom: 8.0),
                                                 child: BLButton(
-                                                    type: BtnType.green,
+                                                    type: processing ? BtnType.grey : BtnType.green,
                                                     onPressed: () {
                                                       start(context, room);
                                                     },
@@ -169,7 +185,7 @@ class _WaitingRoomState extends ConsumerState<WaitingRoom> {
                 ),
                 const SizedBox(height: 15),
                 BLButton(
-                    type: BtnType.red,
+                    type: processing ? BtnType.grey : BtnType.red,
                     paddingX: MediaQuery.of(context).size.width / 3,
                     onPressed: () {
                       exit();
@@ -194,25 +210,35 @@ class _WaitingRoomState extends ConsumerState<WaitingRoom> {
   }
 
   void start(BuildContext context, Room room, [bool startLeave = false]) async {
-    /// update room status
-    await roomManager.update(
-      Room(id: roomID, status: RoomStatus.inGame),
-    );
+    if (processing) return;
+    toggleProcessing();
+    final leaderboardID = '${room.id}${DateTime.now()}';
 
     /// create leaderboard ahead of time
-    final id = await leaderboardManager.create(
-        Leaderboard(
-          id: '${room.id}${DateTime.now()}',
-          roomID: room.id,
-          roomName: room.name,
-          totalScore: room.challengeIDs!.length,
-          status: LeaderboardStatus.pending,
-          date: DateTime.now(),
-        ),
-        true);
+    final result = await leaderboardManager.create(
+      Leaderboard(
+        id: leaderboardID,
+        roomID: room.id,
+        roomName: room.name,
+        players: room.players,
+        totalScore: room.challengeIDs!.length,
+        status: LeaderboardStatus.pending,
+        date: DateTime.now(),
+      ),
+    );
+
+    /// update room status
+    final result2 = await roomManager.update(
+      Room(
+        id: roomID,
+        status: RoomStatus.inGame,
+        currentLeaderboardID: leaderboardID,
+      ),
+    );
     // if id not returned, exit function
-    if (id == null || id == 'error') {
+    if (result != null || result2 != null) {
       toast.showToast('Error initiating game. Check connection..', type: NotifType.error);
+      toggleProcessing();
     }
     // else to game
     else {
@@ -222,7 +248,7 @@ class _WaitingRoomState extends ConsumerState<WaitingRoom> {
         nav.pop(context);
       } else {
         if (!context.mounted) return;
-        nav.pushReplace(context, GameRoom(room, id));
+        nav.pushReplace(context, GameRoom(room));
       }
     }
   }
