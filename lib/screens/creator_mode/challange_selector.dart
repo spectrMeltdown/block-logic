@@ -1,4 +1,5 @@
 import 'package:block_logic/components/text/text.dart';
+import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_models/challenge.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,6 +12,7 @@ class ChallengeSelector extends ConsumerStatefulWidget {
   final List<Challenge> availableChallenges;
   final int index;
   final String? initialSelection;
+  final Difficulty? initialSelectionDifficulty;
   const ChallengeSelector({
     required this.removeChallengeID,
     required this.availableChallenges,
@@ -19,6 +21,7 @@ class ChallengeSelector extends ConsumerStatefulWidget {
     required this.addChallengeSelector,
     required this.index,
     this.initialSelection,
+    this.initialSelectionDifficulty,
     super.key,
   });
 
@@ -29,18 +32,20 @@ class ChallengeSelector extends ConsumerStatefulWidget {
 class _ChallangeSelectorState extends ConsumerState<ChallengeSelector> {
   String? selectedChallengeID;
   String selectedChallengeName = '';
-
+  Difficulty? difficulty;
   @override
   void initState() {
     selectedChallengeID = widget.initialSelection;
+    difficulty = widget.initialSelectionDifficulty;
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+      padding: const EdgeInsets.symmetric(vertical: 5),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
             clipBehavior: Clip.antiAlias,
@@ -56,6 +61,11 @@ class _ChallangeSelectorState extends ConsumerState<ChallengeSelector> {
                   underline: const SizedBox.shrink(),
                   items: widget.availableChallenges.map((challenge) {
                     return DropdownMenuItem<String>(
+                      onTap: () {
+                        setState(() {
+                          difficulty = challenge.difficulty;
+                        });
+                      },
                       value: challenge.id,
                       child: BLText(challenge.name ?? '--'),
                     );
@@ -71,6 +81,7 @@ class _ChallangeSelectorState extends ConsumerState<ChallengeSelector> {
                   },
                   hint: const BLText('(Select challenge)'),
                 ),
+                BLText(difficulty?.name ?? '--'),
                 CloseButton(
                   onPressed: () {
                     if (selectedChallengeID != null) {

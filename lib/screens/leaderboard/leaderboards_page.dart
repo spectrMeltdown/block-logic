@@ -26,43 +26,46 @@ class _LeaderboardsPageState extends ConsumerState<LeaderboardsPage> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Background(
-          child: Column(
-        children: [
-          const Align(
-            alignment: Alignment.topLeft,
-            child: BLBackButton(),
-          ),
-          const BLSmallTitle('Leaderboards'),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: 10),
-              child: BLBorderedPanel(
-                child: userLeaderboards.when(
-                    data: (leaderboards) {
-                      if (leaderboards.isEmpty) {
-                        return const SizedBox.expand(
-                          child: Center(
-                            child: BLText('No leaderboards found.'),
-                          ),
-                        );
-                      }
-                      return ListView.builder(
-                        padding: EdgeInsets.zero,
-                        itemCount: leaderboards.length,
-                        itemBuilder: (context, i) {
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 5),
-                            child: LeaderboardItem(leaderboards[i]),
+          child: SafeArea(
+        child: Column(
+          children: [
+            const Align(
+              alignment: Alignment.topLeft,
+              child: BLBackButton(),
+            ),
+            const BLSmallTitle('Leaderboards'),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: BLBorderedPanel(
+                  child: userLeaderboards.when(
+                      data: (leaderboards) {
+                        if (leaderboards.isEmpty) {
+                          return const SizedBox.expand(
+                            child: Center(
+                              child: BLText('No leaderboards found.'),
+                            ),
                           );
-                        },
-                      );
-                    },
-                    error: genericError,
-                    loading: genericLoading),
+                        }
+                        return ListView.builder(
+                          padding: EdgeInsets.zero,
+                          itemCount: leaderboards.length,
+                          itemBuilder: (context, i) {
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 5),
+                              child: LeaderboardItem(leaderboards[i]),
+                            );
+                          },
+                        );
+                      },
+                      error: genericError,
+                      loading: genericLoading),
+                ),
               ),
             ),
-          )
-        ],
+            SizedBox(height: 30)
+          ],
+        ),
       )),
     );
   }

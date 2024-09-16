@@ -14,17 +14,6 @@ class PyLiteral {
     }
   }
 
-  // fromJson factory method
-  factory PyLiteral.fromJson(Map<String, dynamic> json) {
-    return PyLiteral._(
-      json['dataType'] != null
-          ? PyDataType.values
-              .firstWhere((e) => e.toString() == json['dataType'])
-          : null,
-      json['value'] as String,
-    );
-  }
-
   factory PyLiteral.none() {
     const dataType = PyDataType.none_;
     return PyLiteral._(dataType, 'None');
@@ -47,6 +36,20 @@ class PyLiteral {
   factory PyLiteral.string(String string) {
     const dataType = PyDataType.string_;
     return PyLiteral._(dataType, '"$string"');
+  }
+
+  factory PyLiteral.fromJSON(Map<String, dynamic> json) {
+    return PyLiteral._(
+      json['dataType'] != null ? PyDataType.values.firstWhere((e) => e.name == json['dataType']) : null,
+      json['value'] as String,
+    );
+  }
+
+  Map<String, dynamic> toJSON() {
+    return {
+      'dataType': dataType?.name,
+      'value': value,
+    };
   }
 
   PyLiteral._(this.dataType, this.value);

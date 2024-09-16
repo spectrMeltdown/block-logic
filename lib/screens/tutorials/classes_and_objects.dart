@@ -20,35 +20,37 @@ class _ClassesAndObjectsState extends ConsumerState<ClassesAndObjects> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Background(
-          child: Column(
-        children: [
-          const Align(
-            alignment: Alignment.centerLeft,
-            child: BLBackButton(),
-          ),
-          const Center(
-            child: BLSmallTitle('Classes & Objects'),
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    BLRichText([
-                      TextSpan(text: '''
-Classes provide a way to create custom data types by bundling data and methods (functions) that operate on that data. \n\nA class defines the structure and behavior of the objects created from it. For instance, you might define a Dog class to represent dogs in a program:\n\n
-''', style: tutorialData.paragraphStyle),
-                      const TextSpan(text: '''
-class Dog:    def __init__(self, name, age):        self.name = name        self.age = age    def bark(self):        print("Woof!")
-''')
-                    ])
-                  ],
+          child: SafeArea(
+        child: Column(
+          children: [
+            const Align(
+              alignment: Alignment.centerLeft,
+              child: BLBackButton(),
+            ),
+            const Center(
+              child: BLSmallTitle('Classes & Objects'),
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      BLRichText([
+                        TextSpan(text: '''
+            Classes provide a way to create custom data types by bundling data and methods (functions) that operate on that data. \n\nA class defines the structure and behavior of the objects created from it. For instance, you might define a Dog class to represent dogs in a program:\n\n
+            ''', style: tutorialData.paragraphStyle),
+                        const TextSpan(text: '''
+            class Dog:    def __init__(self, name, age):        self.name = name        self.age = age    def bark(self):        print("Woof!")
+            ''')
+                      ])
+                    ],
+                  ),
                 ),
               ),
-            ),
-          )
-        ],
+            )
+          ],
+        ),
       )),
     );
   }

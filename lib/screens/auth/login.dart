@@ -63,116 +63,119 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
           fit: StackFit.expand,
           children: [
             Background(
-              child: SingleChildScrollView(
-                child: Container(
-                  padding: EdgeInsets.only(bottom: mediaQ.viewInsets.bottom),
-                  height: kIsWeb ? mediaQ.size.height : null,
-                  child: Column(
-                    mainAxisAlignment: kIsWeb ? MainAxisAlignment.center : MainAxisAlignment.start,
-                    children: [
-                      if (!kIsWeb) const Align(child: Align(alignment: Alignment.centerLeft, child: BLBackButton())),
-                      Align(
-                        alignment: Alignment.center,
-                        child: Container(
-                          constraints: BoxConstraints(
-                              maxWidth: width <= mobileMax
-                                  ? kIsWeb
-                                      ? 450
-                                      : 330
-                                  : 600),
-                          child: BLPanel(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: kIsWeb ? 50 : 20,
-                                vertical: kIsWeb ? 50 : 35,
-                              ),
-                              child: Form(
-                                key: _loginFormKey,
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    const SizedBox(height: 5),
-                                    const BLTitle(
-                                      kIsWeb ? 'Welcome!' : 'Welcome back, dev!',
-                                      bottomPadding: 10,
-                                    ),
-                                    const SizedBox(height: 30),
-                                    BLTextBox(
-                                      controller: emailController,
-                                      hintText: 'Email',
-                                      onFieldSubmitted: (p0) => submit(context),
-                                      prefixIcon: const Icon(
-                                        FontAwesomeIcons.envelope,
-                                        color: Colors.white,
+              child: SafeArea(
+                child: SingleChildScrollView(
+                  child: Container(
+                    padding: EdgeInsets.only(bottom: mediaQ.viewInsets.bottom),
+                    height: kIsWeb ? mediaQ.size.height : null,
+                    child: Column(
+                      mainAxisAlignment: kIsWeb ? MainAxisAlignment.center : MainAxisAlignment.start,
+                      children: [
+                        if (!kIsWeb) const Align(child: Align(alignment: Alignment.centerLeft, child: BLBackButton())),
+                        Align(
+                          alignment: Alignment.center,
+                          child: Container(
+                            constraints: BoxConstraints(
+                                maxWidth: width <= mobileMax
+                                    ? kIsWeb
+                                        ? 450
+                                        : 330
+                                    : 600),
+                            child: BLPanel(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: kIsWeb ? 50 : 20,
+                                  vertical: kIsWeb ? 50 : 35,
+                                ),
+                                child: Form(
+                                  key: _loginFormKey,
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      const SizedBox(height: 5),
+                                      const BLTitle(
+                                        kIsWeb ? 'Welcome!' : 'Welcome back, dev!',
+                                        bottomPadding: 10,
                                       ),
-                                      keyboardType: TextInputType.emailAddress,
-                                      validator: (email) {
-                                        return validator.validateEmail(email?.trim());
-                                      },
-                                    ),
-                                    const SizedBox(height: 15),
-                                    BLTextBox(
-                                      controller: passwordController,
-                                      hintText: 'Password',
-                                      onFieldSubmitted: (p0) => submit(context),
-                                      prefixIcon: const Icon(
-                                        FontAwesomeIcons.lock,
-                                        color: Colors.white,
-                                      ),
-                                      isObscure: true,
-                                      keyboardType: TextInputType.visiblePassword,
-                                      validator: (password) {
-                                        return validator.validatePassword(password?.trim());
-                                      },
-                                    ),
-                                    Row(
-                                      children: [
-                                        BLTextButton(
-                                            onPressed: () async {
-                                              if (processing == true) return;
-                                              toggleProcessing(true);
-                                              bool? result = await showDialog(
-                                                  context: context, builder: (context) => const ForgotPasswordDialog());
-                                              if (result != null) {
-                                                toast.showToast('A reset link was sent to your email.',
-                                                    type: NotifType.info);
-                                              }
-                                              toggleProcessing(false);
-                                            },
-                                            child: const BLText(
-                                              'Forgot password?',
-                                              size: 15,
-                                            ))
-                                      ],
-                                    ),
-                                    const SizedBox(
-                                      height: 30,
-                                    ),
-                                    BLButton(
-                                        padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 10),
-                                        onPressed: () => submit(context),
-                                        child: const BLText(
-                                          'Login',
+                                      const SizedBox(height: 30),
+                                      BLTextBox(
+                                        controller: emailController,
+                                        hintText: 'Email',
+                                        onFieldSubmitted: (p0) => submit(context),
+                                        prefixIcon: const Icon(
+                                          FontAwesomeIcons.envelope,
                                           color: Colors.white,
-                                        )),
-                                    if (!kIsWeb)
+                                        ),
+                                        keyboardType: TextInputType.emailAddress,
+                                        validator: (email) {
+                                          return validator.validateEmail(email?.trim());
+                                        },
+                                      ),
+                                      const SizedBox(height: 15),
+                                      BLTextBox(
+                                        controller: passwordController,
+                                        hintText: 'Password',
+                                        onFieldSubmitted: (p0) => submit(context),
+                                        prefixIcon: const Icon(
+                                          FontAwesomeIcons.lock,
+                                          color: Colors.white,
+                                        ),
+                                        isObscure: true,
+                                        keyboardType: TextInputType.visiblePassword,
+                                        validator: (password) {
+                                          return validator.validatePassword(password?.trim());
+                                        },
+                                      ),
                                       Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
                                           BLTextButton(
-                                              onPressed: () => nav.pushReplace(context, const Signup()),
+                                              onPressed: () async {
+                                                if (processing == true) return;
+                                                toggleProcessing(true);
+                                                bool? result = await showDialog(
+                                                    context: context,
+                                                    builder: (context) => const ForgotPasswordDialog());
+                                                if (result != null) {
+                                                  toast.showToast('A reset link was sent to your email.',
+                                                      type: NotifType.info);
+                                                }
+                                                toggleProcessing(false);
+                                              },
                                               child: const BLText(
-                                                'Create an account instead',
-                                                underlined: true,
+                                                'Forgot password?',
                                                 size: 15,
                                               ))
                                         ],
                                       ),
-                                  ],
-                                ),
-                              )),
+                                      const SizedBox(
+                                        height: 30,
+                                      ),
+                                      BLButton(
+                                          padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 10),
+                                          onPressed: () => submit(context),
+                                          child: const BLText(
+                                            'Login',
+                                            color: Colors.white,
+                                          )),
+                                      if (!kIsWeb)
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            BLTextButton(
+                                                onPressed: () => nav.pushReplace(context, const Signup()),
+                                                child: const BLText(
+                                                  'Create an account instead',
+                                                  underlined: true,
+                                                  size: 15,
+                                                ))
+                                          ],
+                                        ),
+                                    ],
+                                  ),
+                                )),
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),

@@ -20,35 +20,37 @@ class _VariablesScreenState extends ConsumerState<Variables> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Background(
-          child: Column(
-        children: [
-          const Align(
-            alignment: Alignment.centerLeft,
-            child: BLBackButton(),
-          ),
-          const Center(
-            child: BLSmallTitle('Variables'),
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    BLRichText([
-                      TextSpan(text: '''
-Variables act as containers for storing data values. Each variable has a name, and it can be used to store information that can be referenced and manipulated in a program. \n\n
-''', style: tutorialData.paragraphStyle),
-                      const TextSpan(text: '''
-For example, in Python, you might write age = 25 to create a variable named age and assign it the value of 25. Variables make it easier to manage and update data within a program.
-''')
-                    ])
-                  ],
+          child: SafeArea(
+        child: Column(
+          children: [
+            const Align(
+              alignment: Alignment.centerLeft,
+              child: BLBackButton(),
+            ),
+            const Center(
+              child: BLSmallTitle('Variables'),
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      BLRichText([
+                        TextSpan(text: '''
+            Variables act as containers for storing data values. Each variable has a name, and it can be used to store information that can be referenced and manipulated in a program. \n\n
+            ''', style: tutorialData.paragraphStyle),
+                        const TextSpan(text: '''
+            For example, in Python, you might write age = 25 to create a variable named age and assign it the value of 25. Variables make it easier to manage and update data within a program.
+            ''')
+                      ])
+                    ],
+                  ),
                 ),
               ),
-            ),
-          )
-        ],
+            )
+          ],
+        ),
       )),
     );
   }

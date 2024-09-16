@@ -7,7 +7,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class BLBackButton extends ConsumerStatefulWidget {
   final VoidCallback? onPressed;
-  const BLBackButton({this.onPressed, super.key});
+  final double paddingY;
+  const BLBackButton({this.onPressed, this.paddingY = 7, super.key});
 
   @override
   ConsumerState<BLBackButton> createState() => _BLBackButtonState();
@@ -15,12 +16,19 @@ class BLBackButton extends ConsumerStatefulWidget {
 
 class _BLBackButtonState extends ConsumerState<BLBackButton> {
   BLAudioState? audio;
+  late final CustomNavigation nav;
+
+  @override
+  void initState() {
+    if (!kIsWeb) audio = ref.read(bLAudioStateProvider.notifier);
+    nav = ref.read(customNavigationProvider);
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    if (!kIsWeb) audio = ref.read(bLAudioStateProvider.notifier);
-    final nav = ref.read(customNavigationProvider);
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 10),
+      padding: EdgeInsets.symmetric(horizontal: widget.paddingY, vertical: 0),
       child: IconButton(
           onPressed: () {
             audio?.playBtn();

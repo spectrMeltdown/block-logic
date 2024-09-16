@@ -44,48 +44,53 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
           fit: StackFit.expand,
           children: [
             Background(
-              child: Column(
-                children: [
-                  const Row(children: [
-                    BLBackButton(),
-                  ]),
-                  const BLTitle(
-                    'Settings',
-                    bottomPadding: 10,
-                  ),
-                  Expanded(
-                    child: ListView(
-                      padding: const EdgeInsets.fromLTRB(15, 0, 15, 30),
-                      children: [
-                        AccountSettingsWidget(processing, toggleProcessing),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        BLPanel(
-                            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-                            child: user.when(
-                                data: (user) {
-                                  return Column(
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [const BLSmallTitle('System'), SystemSettings(isLoggedIn: user != null)],
-                                  );
-                                },
-                                error: genericError,
-                                loading: genericLoading)),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        BLTextButton(
-                            onPressed: () => nav.push(context, const AboutUs()),
-                            child: const BLText(
-                              'About Us',
-                              underlined: true,
-                            ))
-                      ],
+              child: SafeArea(
+                child: Column(
+                  children: [
+                    const Row(children: [
+                      BLBackButton(),
+                    ]),
+                    const BLTitle(
+                      'Settings',
+                      bottomPadding: 10,
                     ),
-                  )
-                ],
+                    Expanded(
+                      child: ListView(
+                        padding: const EdgeInsets.fromLTRB(15, 0, 15, 30),
+                        children: [
+                          AccountSettingsWidget(processing, toggleProcessing),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          BLPanel(
+                              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                              child: user.when(
+                                  data: (user) {
+                                    return Column(
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        const BLSmallTitle('System'),
+                                        SystemSettings(isLoggedIn: user != null)
+                                      ],
+                                    );
+                                  },
+                                  error: genericError,
+                                  loading: genericLoading)),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          BLTextButton(
+                              onPressed: () => nav.push(context, const AboutUs()),
+                              child: const BLText(
+                                'About Us',
+                                underlined: true,
+                              ))
+                        ],
+                      ),
+                    )
+                  ],
+                ),
               ),
             ),
             Visibility(

@@ -51,7 +51,6 @@ class CodeCompiler extends _$CodeCompiler {
         codeBuffer.writeln('}');
         break;
 
-      // Add more cases for other types as needed
       case CodeBlockType.literals:
       // TODO: Handle this case.
       case CodeBlockType.objects:
@@ -67,7 +66,6 @@ class CodeCompiler extends _$CodeCompiler {
     }
   }
 
-// Helper function to recursively process children blocks
   void _processChildren(Map<String, GameBlockData> dataTree, List<String>? childrenUIDs, StringBuffer codeBuffer) {
     if (childrenUIDs != null) {
       for (var childUID in childrenUIDs) {

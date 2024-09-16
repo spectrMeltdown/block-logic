@@ -108,41 +108,42 @@ class TermsAndConditions extends ConsumerWidget {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Background(
+        child: SafeArea(
           child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 40),
-        child: Column(
-          children: [
-            const BLSmallTitle('Terms & Conditions'),
-            Expanded(
-              child: SingleChildScrollView(
-                child: Center(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 20, vertical: 30),
-                    child: SpacedColumn(
-                      spacing: 20,
-                      children: [
-                        SingleChildScrollView(
-                          child: Text(getTC()),
+            padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 40),
+            child: Column(
+              children: [
+                const BLSmallTitle('Terms & Conditions'),
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Center(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+                        child: SpacedColumn(
+                          spacing: 20,
+                          children: [
+                            SingleChildScrollView(
+                              child: Text(getTC()),
+                            ),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
                   ),
                 ),
-              ),
+                const SizedBox(height: 20),
+                BLButton(
+                    padding: const EdgeInsets.symmetric(horizontal: 90, vertical: 10),
+                    onPressed: () => nav.pop(context),
+                    child: const BLText(
+                      'OK',
+                      color: Colors.white,
+                    ))
+              ],
             ),
-            const SizedBox(height: 20),
-            BLButton(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 90, vertical: 10),
-                onPressed: () => nav.pop(context),
-                child: const BLText(
-                  'OK',
-                  color: Colors.white,
-                ))
-          ],
+          ),
         ),
-      )),
+      ),
     );
   }
 }

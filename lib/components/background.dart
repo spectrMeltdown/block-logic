@@ -61,7 +61,7 @@ class _BackgroundState extends ConsumerState<Background> {
                         ], radius: 1.5),
                       )),
         Padding(
-            padding: kIsWeb ? EdgeInsets.zero : const EdgeInsets.symmetric(horizontal: 5, vertical: 15),
+            padding: kIsWeb ? EdgeInsets.zero : const EdgeInsets.symmetric(horizontal: 5, vertical: 0),
             child: widget.child)
       ],
     );

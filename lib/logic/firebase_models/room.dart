@@ -58,17 +58,21 @@ class Room {
     );
   }
 
-  Room copyWith(
-      {String? hostID,
-      String? name,
-      String? password,
-      List<String>? players,
-      List<String>? challengeIDs,
-      int? maxPlayers,
-      bool? adminLocked,
-      RoomStatus? status,
-      bool? leaderboardCreated}) {
+  Room copyWith({
+    String? id,
+    String? hostID,
+    String? name,
+    String? password,
+    List<String>? players,
+    List<String>? challengeIDs,
+    int? maxPlayers,
+    bool? adminLocked,
+    RoomStatus? status,
+    bool? leaderboardCreated,
+    String? currentLeaderboardID,
+  }) {
     return Room(
+      id: id ?? this.id,
       hostID: hostID ?? this.hostID,
       name: name ?? this.name,
       password: password ?? this.password,
@@ -77,6 +81,7 @@ class Room {
       maxPlayers: maxPlayers ?? this.maxPlayers,
       adminLocked: adminLocked ?? this.adminLocked,
       status: status ?? this.status,
+      currentLeaderboardID: currentLeaderboardID ?? this.currentLeaderboardID,
     );
   }
 

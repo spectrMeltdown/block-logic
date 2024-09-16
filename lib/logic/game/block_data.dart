@@ -319,40 +319,45 @@ class GameBlockData {
     );
   }
 
-  // Map<String, Map<String, dynamic>> toMap() {
-  //   late final Map<String, Map<String, dynamic>> map = {uid!: {}};
-  //   if (bodyUIDs != null) {
-  //     map[uid!]!.addAll({'bodyUIDs': bodyUIDs});
-  //   }
-  //   if (parameterUIDs != null) {
-  //     map[uid!]!.addAll({'parameterUIDs': parameterUIDs});
-  //   }
-  //   if (argumentUIDs != null) {
-  //     map[uid!]!.addAll({'argumentUIDs': argumentUIDs});
-  //   }
-  //   if (conditionUIDs != null) {
-  //     map[uid!]!.addAll({'conditionUIDs': conditionUIDs});
-  //   }
-  //   map[uid!]!.addAll({'data': conditionUIDs});
-  //   return map;
-  // }
+  factory GameBlockData.fromJSON(Map<String, dynamic> json) {
+    return GameBlockData(
+      uid: json['uid'] as String?,
+      parentUID: json['parentUID'] as String?,
+      type: CodeBlockType.values.firstWhere((e) => e.name == json['type']),
+      state: CodeBlockState.values.firstWhere((e) => e.name == json['state']),
+      name: json['name'] as String,
+      returnValue: json['returnValue'] != null ? PyLiteral.fromJSON(json['returnValue']) : null,
+      parameterUIDs: (json['parameterUIDs'] as List<dynamic>?)?.map((e) => e as String).toList(),
+      argumentUIDs: (json['argumentUIDs'] as List<dynamic>?)?.map((e) => e as String).toList(),
+      conditionUIDs: (json['conditionUIDs'] as List<dynamic>?)?.map((e) => e as String).toList(),
+      bodyUIDs: (json['bodyUIDs'] as List<dynamic>?)?.map((e) => e as String).toList(),
+      statementUIDs: (json['statementUIDs'] as List<dynamic>?)?.map((e) => e as String).toList(),
+      inSelectorUID: json['inSelectorUID'] as String?,
+      inSelectorCount: json['inSelectorCount'] as int?,
+      inSelectorIndex: json['inSelectorIndex'] as int?,
+      value: json['value'] != null ? PyLiteral.fromJSON(json['value']) : null,
+      keyword: json['keyword'] != null ? PyKeyword.values.firstWhere((e) => e.name == json['keyword']) : null,
+    );
+  }
 
-  // pass just the contents, no uid
-  // factory GameBlockData.fromMap(Map<String, dynamic> data) {
-  //   final gameBlock = data['data'] as GameBlockData;
-  //   GameBlockData newData = gameBlock.copyWith();
-  //   if (data['bodyUIDs'] != null) {
-  //     newData = newData.copyWith(bodyUIDs: data['bodyUIDs']);
-  //   }
-  //   if (data['parameterUIDs'] != null) {
-  //     newData = newData.copyWith(parameterUIDs: data['parameterUIDs']);
-  //   }
-  //   if (data['argumentUIDs'] != null) {
-  //     newData = newData.copyWith(argumentUIDs: data['argumentUIDs']);
-  //   }
-  //   if (data['conditionUIDs'] != null) {
-  //     newData = newData.copyWith(conditionUIDs: data['conditionUIDs']);
-  //   }
-  //   return newData;
-  // }
+  Map<String, dynamic> toJSON() {
+    return {
+      'uid': uid,
+      'parentUID': parentUID,
+      'type': type.name,
+      'state': state.name,
+      'name': name,
+      'returnValue': returnValue?.toJSON(),
+      'parameterUIDs': parameterUIDs,
+      'argumentUIDs': argumentUIDs,
+      'conditionUIDs': conditionUIDs,
+      'bodyUIDs': bodyUIDs,
+      'statementUIDs': statementUIDs,
+      'inSelectorUID': inSelectorUID,
+      'inSelectorCount': inSelectorCount,
+      'inSelectorIndex': inSelectorIndex,
+      'value': value?.toJSON(),
+      'keyword': keyword?.name,
+    };
+  }
 }

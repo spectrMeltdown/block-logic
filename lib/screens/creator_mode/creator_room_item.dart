@@ -3,7 +3,6 @@ import 'package:block_logic/components/util/provider_default.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_models/room.dart';
 import 'package:block_logic/logic/firebase_providers/selected_user.dart';
-import 'package:block_logic/logic/services/bottom_sheet.dart';
 import 'package:block_logic/logic/services/dialog.dart';
 import 'package:block_logic/logic/services/navigation.dart';
 import 'package:block_logic/logic/services/toast.dart';
@@ -22,7 +21,7 @@ class CreatorRoomItem extends ConsumerStatefulWidget {
 }
 
 class _CreatorRoomItemState extends ConsumerState<CreatorRoomItem> {
-  late final BottomSheetService bottomSheet;
+  // late final BottomSheetService bottomSheet;
   late final DialogService dialog;
   late final CustomNavigation nav;
   late final Toast toast;
@@ -37,7 +36,7 @@ class _CreatorRoomItemState extends ConsumerState<CreatorRoomItem> {
               if (widget.room.adminLocked != null && widget.room.adminLocked == true) {
                 toast.showToast('Cannot edit room, locked by admin', type: NotifType.error);
               } else {
-                bottomSheet.show(context, EditRoomBottomSheet(widget.room.id!), isScrollControlled: true);
+                nav.push(context, EditRoomBottomSheet(widget.room.id!));
               }
             },
             onLongPress: () {
@@ -56,7 +55,7 @@ class _CreatorRoomItemState extends ConsumerState<CreatorRoomItem> {
 
   @override
   void initState() {
-    bottomSheet = ref.read(bottomSheetServiceProvider.notifier);
+    // bottomSheet = ref.read(bottomSheetServiceProvider.notifier);
     nav = ref.read(customNavigationProvider.notifier);
     dialog = ref.read(dialogServiceProvider.notifier);
     toast = ref.read(toastProvider.notifier);

@@ -6,14 +6,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 part 'generated/audio.g.dart';
 
-@Riverpod(dependencies: [])
+@riverpod
 Future<void> audioInit(AudioInitRef ref) async {
   final assets = ref.read(assetsProvider);
 // cache assets for faster loading
   await FlameAudio.audioCache.loadAll([assets.audioBG1]);
 }
 
-@Riverpod(dependencies: [])
+@riverpod
 class BLAudioState extends _$BLAudioState {
   @override
   BLAudio build() {

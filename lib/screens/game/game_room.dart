@@ -1,17 +1,17 @@
+import 'package:block_logic/components/async/loading.dart';
 import 'package:block_logic/components/background.dart';
 import 'package:block_logic/components/dialog/confirm.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/util/provider_default.dart';
 import 'package:block_logic/logic/firebase_models/room.dart';
 import 'package:block_logic/logic/firebase_providers/selected_challenges.dart';
-import 'package:block_logic/logic/firebase_providers/selected_leaderboard.dart';
 import 'package:block_logic/logic/services/dialog.dart';
 import 'package:block_logic/logic/services/game_manager.dart';
 import 'package:block_logic/logic/services/navigation.dart';
 import 'package:block_logic/logic/services/room_manager.dart';
+import 'package:block_logic/screens/game/finalizing_results.dart';
 import 'package:block_logic/screens/game/game_challenge.dart';
 import 'package:block_logic/screens/game/pause_dialog.dart';
-import 'package:block_logic/screens/leaderboard/selected_leaderboard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -36,40 +36,50 @@ class _GameRoomState extends ConsumerState<GameRoom> with WidgetsBindingObserver
     // this is a Future, but it is set to ref.watch because read will return first value only, which may still be a loading/error state
     final challenges = ref.watch(SelectedChallengesProvider(widget.room.challengeIDs!));
     if (challengeLength != null && currentChallenge == challengeLength) {
-      return Scaffold(
-        body: Background(
-          child: FutureBuilder(
-              // future: finalizeGame(),
-              future: gameManager.leaveGame(true, true),
-              initialData: '',
-              builder: (context, snapshot) {
-                // if (snapshot.connectionState == ConnectionState.waiting) {
-                //   return Center(
-                //       child: BLLoading(
-                //     message: 'Loading leaderboard ..',
-                //   ));
-                // }
-                // if (snapshot.hasError) {
-                //   debugPrint(snapshot.error.toString());
-                //   return const BLText('Error!');
-                // }
-                final leaderboard = ref.watch(SelectedLeaderboardProvider(gameManager.getLeaderboardID()));
-                return leaderboard.when(
-                    data: (leaderboard) {
-                      if (leaderboard == null) {
-                        return const BLText('Couldn\'t load the leaderboard ...');
-                      }
-                      return SelectedLeaderboard(
-                        leaderboard,
-                        showBackButton: false,
-                        // roomTitle: widget.room.name!,
-                      );
-                    },
-                    error: genericError,
-                    loading: genericLoading);
-              }),
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        nav.pushReplace(context, FinalizingResults(widget.room.currentLeaderboardID!));
+      });
+      return PopScope(
+        onPopInvokedWithResult: (didPop, result) {
+          if (didPop) return;
+        },
+        child: Scaffold(
+          body: Background(child: SafeArea(child: BLLoading())),
         ),
       );
+      // Future.delayed(Duration.zero, () async {
+
+      // });
+
+      // return Scaffold(
+      //   body: Background(
+      //     child: FutureBuilder(
+      //         // future: finalizeGame(),
+      //         future: gameManager.leaveGame(true),
+      //         initialData: '',
+      //         builder: (context, snapshot) {
+      //           // if (snapshot.connectionState == ConnectionState.waiting) {
+      //           //   return Center(
+      //           //       child: BLLoading(
+      //           //     message: 'Loading leaderboard ..',
+      //           //   ));
+      //           // }
+      //           // if (snapshot.hasError) {
+      //           //   debugPrint(snapshot.error.toString());
+      //           //   return const BLText('Error!');
+      //           // }
+      //           final leaderboard = ref.watch(SelectedLeaderboardProvider(gameManager.getLeaderboardID()));
+      //           return leaderboard.when(
+      //               data: (leaderboard) {
+      //                 if (leaderboard == null) {
+      //                   return const BLText('Couldn\'t load the leaderboard ...');
+      //                 }
+      //               },
+      //               error: genericError,
+      //               loading: genericLoading);
+      //         }),
+      //   ),
+      // );
     }
     return PopScope(
       canPop: false,
@@ -89,29 +99,31 @@ class _GameRoomState extends ConsumerState<GameRoom> with WidgetsBindingObserver
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         body: Background(
-          child: challenges.when(
-              data: (challenges) {
-                if (challenges.isEmpty) {
-                  return const Center(
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 10),
-                      child: BLText('Sorry, there is a problem getting the challenges ...', softWrap: true),
-                    ),
+          child: SafeArea(
+            child: challenges.when(
+                data: (challenges) {
+                  if (challenges.isEmpty) {
+                    return const Center(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 10),
+                        child: BLText('Sorry, there is a problem getting the challenges ...', softWrap: true),
+                      ),
+                    );
+                  }
+                  challengeLength ??= challenges.length;
+                  // debugPrint('Challenge length: $challengeLength');
+                  // debugPrint('current challenge: $currentChallenge');
+                  return GameChallenge(
+                    currentChallenge: 0,
+                    roomName: widget.room.name ?? '',
+                    challenge: challenges[currentChallenge],
+                    challengeCount: challenges.length,
+                    updateChallenge: updateChallenge,
                   );
-                }
-                challengeLength ??= challenges.length;
-                // debugPrint('Challenge length: $challengeLength');
-                // debugPrint('current challenge: $currentChallenge');
-                return GameChallenge(
-                  currentChallenge: 0,
-                  roomName: widget.room.name ?? '',
-                  challenge: challenges[currentChallenge],
-                  challengeCount: challenges.length,
-                  updateChallenge: updateChallenge,
-                );
-              },
-              error: genericError,
-              loading: genericLoading),
+                },
+                error: genericError,
+                loading: genericLoading),
+          ),
         ),
       ),
     );

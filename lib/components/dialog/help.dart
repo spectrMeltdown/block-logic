@@ -1,8 +1,7 @@
-import 'package:block_logic/components/button/button.dart';
+import 'package:block_logic/components/button/text.dart';
 import 'package:block_logic/components/dialog/dialog.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/text/title_small.dart';
-import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/services/navigation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -44,11 +43,15 @@ class _BLHelpDialogState extends ConsumerState<BLHelpDialog> {
         ),
         const SizedBox(height: 10),
         widget.child,
-        const SizedBox(height: 10),
-        BLButton(
-          type: BtnType.red,
+        const SizedBox(height: 15),
+        BLTextButton(
           onPressed: () => nav.pop(context),
-          child: const BLText('Back'),
+          child: const BLText(
+            'Back',
+            color: Colors.red,
+            bold: true,
+            size: 18,
+          ),
         )
       ],
     ));

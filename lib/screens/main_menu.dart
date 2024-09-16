@@ -169,77 +169,79 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen>
             child: Image.asset(assets.feedback)),
       ),
       body: Background(
-        child: Center(
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  BLTextButton(
-                      onPressed: () {},
-                      child: Row(
-                        children: [
-                          BLAnimationPlayer(
-                            assets.premiumCrown,
-                            size: 50,
-                          ),
-                          const SizedBox(
-                            width: 5,
-                          ),
-                        ],
-                      ))
-                ],
-              ),
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  crossAxisAlignment: CrossAxisAlignment.center,
+        child: SafeArea(
+          child: Center(
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    Column(
-                      children: [
-                        SlideInLeft(
-                          duration: const Duration(milliseconds: 1000),
-                          child: AnimatedBuilder(
-                              animation: _titleAnimationController,
-                              builder: (context, child) {
-                                return Text('BLOCK',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontFamily: 'MajorMonoDisplay',
-                                      fontSize: 60,
-                                      height: 1.05,
-                                      shadows: <Shadow>[
-                                        Shadow(blurRadius: _blurRadiusAnimation.value, color: Colors.white),
-                                      ],
-                                    ));
-                              }),
-                        ),
-                        SlideInRight(
-                          duration: const Duration(milliseconds: 1300),
-                          child: AnimatedBuilder(
-                              animation: _titleAnimationController,
-                              builder: (context, child) {
-                                return Text('LOGIC',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontFamily: 'MajorMonoDisplay',
-                                      fontSize: 60,
-                                      height: 1.05,
-                                      shadows: <Shadow>[
-                                        Shadow(blurRadius: _blurRadiusAnimation.value, color: Colors.white),
-                                      ],
-                                    ));
-                              }),
-                        ),
-                      ],
-                    ),
-                    SpacedColumn(spacing: 10, children: [
-                      ...auth.isLoggedIn() ? loggedInMenu(context, nav) : loggedOutMenu(context, nav),
-                    ]),
+                    BLTextButton(
+                        onPressed: () {},
+                        child: Row(
+                          children: [
+                            BLAnimationPlayer(
+                              assets.premiumCrown,
+                              size: 50,
+                            ),
+                            const SizedBox(
+                              width: 5,
+                            ),
+                          ],
+                        ))
                   ],
                 ),
-              ),
-            ],
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Column(
+                        children: [
+                          SlideInLeft(
+                            duration: const Duration(milliseconds: 1000),
+                            child: AnimatedBuilder(
+                                animation: _titleAnimationController,
+                                builder: (context, child) {
+                                  return Text('BLOCK',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontFamily: 'MajorMonoDisplay',
+                                        fontSize: 60,
+                                        height: 1.05,
+                                        shadows: <Shadow>[
+                                          Shadow(blurRadius: _blurRadiusAnimation.value, color: Colors.white),
+                                        ],
+                                      ));
+                                }),
+                          ),
+                          SlideInRight(
+                            duration: const Duration(milliseconds: 1300),
+                            child: AnimatedBuilder(
+                                animation: _titleAnimationController,
+                                builder: (context, child) {
+                                  return Text('LOGIC',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontFamily: 'MajorMonoDisplay',
+                                        fontSize: 60,
+                                        height: 1.05,
+                                        shadows: <Shadow>[
+                                          Shadow(blurRadius: _blurRadiusAnimation.value, color: Colors.white),
+                                        ],
+                                      ));
+                                }),
+                          ),
+                        ],
+                      ),
+                      SpacedColumn(spacing: 10, children: [
+                        ...auth.isLoggedIn() ? loggedInMenu(context, nav) : loggedOutMenu(context, nav),
+                      ]),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

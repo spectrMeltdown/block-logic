@@ -32,7 +32,6 @@ class WaitingRoom extends ConsumerStatefulWidget {
 }
 
 class _WaitingRoomState extends ConsumerState<WaitingRoom> {
-  String? roomID;
   bool processing = false;
   late final CustomNavigation nav;
   late final DialogService dialog;
@@ -42,9 +41,11 @@ class _WaitingRoomState extends ConsumerState<WaitingRoom> {
   late final LeaderboardManager leaderboardManager;
 
   void toggleProcessing() {
-    setState(() {
-      processing = !processing;
-    });
+    if (mounted) {
+      setState(() {
+        processing = !processing;
+      });
+    }
   }
 
   void exit() async {
@@ -53,7 +54,7 @@ class _WaitingRoomState extends ConsumerState<WaitingRoom> {
     final exit = await dialog.show(context, const ConfirmDialog());
     if (mounted && exit is bool && exit) {
       nav.pop(context);
-      if (roomID != null) await roomManager.leaveRoom(roomID!);
+      await roomManager.leaveRoom(widget.roomID);
     }
     toggleProcessing();
   }
@@ -96,7 +97,6 @@ class _WaitingRoomState extends ConsumerState<WaitingRoom> {
                                 nav.pushReplace(context, GameRoom(room));
                               });
                             }
-                            roomID ??= room.id;
                             return Column(
                               children: [
                                 const SizedBox(
@@ -191,7 +191,7 @@ class _WaitingRoomState extends ConsumerState<WaitingRoom> {
                       exit();
                     },
                     child: const BLText('Leave')),
-                const SizedBox(height: 10),
+                const SizedBox(height: 30),
               ],
             ),
           ))),
@@ -230,14 +230,14 @@ class _WaitingRoomState extends ConsumerState<WaitingRoom> {
     /// update room status
     final result2 = await roomManager.update(
       Room(
-        id: roomID,
+        id: widget.roomID,
         status: RoomStatus.inGame,
         currentLeaderboardID: leaderboardID,
       ),
     );
     // if id not returned, exit function
     if (result != null || result2 != null) {
-      toast.showToast('Error initiating game. Check connection..', type: NotifType.error);
+      toast.showToast('Error starting the game.', type: NotifType.error);
       toggleProcessing();
     }
     // else to game
@@ -248,7 +248,12 @@ class _WaitingRoomState extends ConsumerState<WaitingRoom> {
         nav.pop(context);
       } else {
         if (!context.mounted) return;
-        nav.pushReplace(context, GameRoom(room));
+        final updatedRoom = room.copyWith(
+          id: widget.roomID,
+          status: RoomStatus.inGame,
+          currentLeaderboardID: leaderboardID,
+        );
+        nav.pushReplace(context, GameRoom(updatedRoom));
       }
     }
   }

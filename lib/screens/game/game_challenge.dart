@@ -52,7 +52,6 @@ class _GameChallengeState extends ConsumerState<GameChallenge> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        const SizedBox(height: 25),
         GameAppbar(
           roomName: widget.roomName,
           challenge: widget.challenge,

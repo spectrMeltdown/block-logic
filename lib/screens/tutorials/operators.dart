@@ -20,35 +20,37 @@ class _OperatorsState extends ConsumerState<Operators> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Background(
-          child: Column(
-        children: [
-          const Align(
-            alignment: Alignment.centerLeft,
-            child: BLBackButton(),
-          ),
-          const Center(
-            child: BLSmallTitle('Operators'),
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    BLRichText([
-                      TextSpan(text: '''
-Operators are special symbols that carry out operations on operands (variables and values). Common types of operators include:\n
-• Arithmetic operators: Perform basic mathematical operations (e.g., +, -, *, /).\n
-• Comparison operators: Compare two values and return a boolean result (e.g., ==, !=, <, >).\n
-• Logical operators: Combine multiple boolean expressions (e.g., and, or, not). For example, the expression 5 + 3 uses the arithmetic operator + to add two numbers.
-''', style: tutorialData.paragraphStyle),
-                    ])
-                  ],
+          child: SafeArea(
+        child: Column(
+          children: [
+            const Align(
+              alignment: Alignment.centerLeft,
+              child: BLBackButton(),
+            ),
+            const Center(
+              child: BLSmallTitle('Operators'),
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      BLRichText([
+                        TextSpan(text: '''
+            Operators are special symbols that carry out operations on operands (variables and values). Common types of operators include:\n
+            • Arithmetic operators: Perform basic mathematical operations (e.g., +, -, *, /).\n
+            • Comparison operators: Compare two values and return a boolean result (e.g., ==, !=, <, >).\n
+            • Logical operators: Combine multiple boolean expressions (e.g., and, or, not). For example, the expression 5 + 3 uses the arithmetic operator + to add two numbers.
+            ''', style: tutorialData.paragraphStyle),
+                      ])
+                    ],
+                  ),
                 ),
               ),
-            ),
-          )
-        ],
+            )
+          ],
+        ),
       )),
     );
   }

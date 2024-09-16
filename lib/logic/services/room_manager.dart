@@ -33,7 +33,7 @@ class RoomManager extends _$RoomManager {
       });
       return true;
     } catch (e) {
-      state._errorHandler.call(e, this);
+      debugPrint(state._errorHandler.call(e, this));
       return false;
     }
   }
@@ -52,10 +52,9 @@ class RoomManager extends _$RoomManager {
   Future<List<String>?> currentPlayers(String roomID) async {
     try {
       final doc = await state._db.doc(roomID).get();
-      return Room.fromFirestore(doc).players;
+      return Room.fromFirestore(doc).players ?? [];
     } catch (e) {
-      debugPrint(state._errorHandler.call(e, this));
-      return null;
+      return [state._errorHandler.call(e, this) ?? 'error'];
     }
   }
 

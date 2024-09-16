@@ -108,9 +108,10 @@ class Checkpoint extends ConsumerStatefulWidget {
 }
 
 class _CheckpointState extends ConsumerState<Checkpoint> {
+  late final AuthService auth;
+
   @override
   Widget build(BuildContext context) {
-    final auth = ref.read(authServiceProvider.notifier);
     final user = ref.watch(authChangesProvider);
     final userFirestore = ref.watch(SelectedUserProvider(auth.getUID()));
     return user.when(
@@ -151,7 +152,7 @@ class _CheckpointState extends ConsumerState<Checkpoint> {
       },
       error: genericError,
       loading: () {
-        debugPrint('Loading in checkpoint');
+        // debugPrint('Loading in checkpoint');
         return genericLoading();
       },
     );
@@ -159,6 +160,16 @@ class _CheckpointState extends ConsumerState<Checkpoint> {
 
   @override
   void initState() {
+    auth = ref.read(authServiceProvider.notifier);
+    // final manager = ref.read(challengeManagerProvider.notifier);
+    // manager.create(Challenge(
+    //   id: 'testing3',
+    //   name: 'Give me a five!',
+    //   shortDescription: 'Print the number 5',
+    //   additionalInfo: 'This should be a simple one..',
+    //   difficulty: Difficulty.beginner,
+    //   blocks: AllBlocks().beginnerTesting(),
+    // ));
     final sharedPref = ref.read(sharedPrefProvider);
     final assets = ref.read(assetsProvider);
     FlameAudio.bgm.initialize();

@@ -6,7 +6,7 @@ part of '../audio.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$audioInitHash() => r'3fab56d8309690b717093e50dd210cd0381599b2';
+String _$audioInitHash() => r'45c7c3fbed033069e5fd49f5ccf097ca6eb35686';
 
 /// See also [audioInit].
 @ProviderFor(audioInit)
@@ -15,12 +15,12 @@ final audioInitProvider = AutoDisposeFutureProvider<void>.internal(
   name: r'audioInitProvider',
   debugGetCreateSourceHash:
       const bool.fromEnvironment('dart.vm.product') ? null : _$audioInitHash,
-  dependencies: const <ProviderOrFamily>[],
-  allTransitiveDependencies: const <ProviderOrFamily>{},
+  dependencies: null,
+  allTransitiveDependencies: null,
 );
 
 typedef AudioInitRef = AutoDisposeFutureProviderRef<void>;
-String _$bLAudioStateHash() => r'7cc71320098af3d36b145d6fac9d4dc096acf92a';
+String _$bLAudioStateHash() => r'0729b59753e04d32804faec3b3f29b22b8747826';
 
 /// See also [BLAudioState].
 @ProviderFor(BLAudioState)
@@ -30,8 +30,8 @@ final bLAudioStateProvider =
   name: r'bLAudioStateProvider',
   debugGetCreateSourceHash:
       const bool.fromEnvironment('dart.vm.product') ? null : _$bLAudioStateHash,
-  dependencies: const <ProviderOrFamily>[],
-  allTransitiveDependencies: const <ProviderOrFamily>{},
+  dependencies: null,
+  allTransitiveDependencies: null,
 );
 
 typedef _$BLAudioState = AutoDisposeNotifier<BLAudio>;

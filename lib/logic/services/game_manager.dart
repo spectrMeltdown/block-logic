@@ -12,7 +12,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final gameManagerProvider = StateNotifierProvider.autoDispose<GameManager, GameState>((ref) {
+final gameManagerProvider = StateNotifierProvider<GameManager, GameState>((ref) {
   final errorHandler = ref.read(errorHandlerProvider.notifier);
   final leaderboardManager = ref.read(leaderboardManagerProvider.notifier);
   final scoreManager = ref.read(scoreManagerProvider.notifier);
@@ -41,6 +41,7 @@ class GameManager extends StateNotifier<GameState> {
           errorHandler: errorHandler,
           auth: auth,
         ));
+
   void toggleReturnBlock(bool newState) => state.returnBlock = newState;
 
   void incrementCategory(CodeBlockType type) {
@@ -104,7 +105,7 @@ class GameManager extends StateNotifier<GameState> {
     return null;
   }
 
-  Future<String?> leaveGame(bool isComplete, [bool returnValue = false]) async {
+  Future<String?> leaveGame(bool isComplete) async {
     if (state._processing) return '';
     state._processing = true;
     try {
@@ -116,16 +117,21 @@ class GameManager extends StateNotifier<GameState> {
         status: isComplete ? ScoreStatus.complete : ScoreStatus.incomplete,
       );
       // upload final score in db
-      await state.scoreManager.update(state._leaderboardID!, finalScore);
-
+      final scoreUpdate = await state.scoreManager.update(state._leaderboardID!, finalScore);
+      if (scoreUpdate != null) {
+        return scoreUpdate;
+      }
       // execute leaveRoom method
-      await state.roomManager.leaveRoom(state._roomID!);
+      final leaveRoomResult = await state.roomManager.leaveRoom(state._roomID!);
+      if (leaveRoomResult != null) {
+        return leaveRoomResult;
+      }
 
       // get current list of players after leaving
-      final playerList = await state.roomManager.currentPlayers(state._roomID!);
+      final playerListResult = await state.roomManager.currentPlayers(state._roomID!);
 
       // if this player is the last to leave the room
-      if (playerList == null || playerList.isEmpty) {
+      if (playerListResult!.isEmpty) {
         // finalize the leaderboard
         await state.leaderboardManager
             .update(Leaderboard(id: state._leaderboardID, status: LeaderboardStatus.complete));
@@ -134,12 +140,12 @@ class GameManager extends StateNotifier<GameState> {
         await state.roomManager.update(Room(
           id: state._roomID,
           status: RoomStatus.available,
+          currentLeaderboardID: null,
         ));
+      } else {
+        return playerListResult.first;
       }
       state._processing = false;
-      if (returnValue) {
-        return 'success';
-      }
       return null;
     } catch (e) {
       state._processing = false;

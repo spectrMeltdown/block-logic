@@ -29,21 +29,6 @@ class Challenge {
     if (doc.data() != null) {
       data = doc.data() as Map<String, dynamic>;
     }
-    Difficulty? difficultyFirestore;
-    if (data['difficulty'] != null) {
-      switch (data['difficulty']) {
-        case 'intermediate':
-          difficultyFirestore = Difficulty.intermediate;
-          break;
-        case 'beginner':
-          difficultyFirestore = Difficulty.beginner;
-          break;
-        case 'advanced':
-          difficultyFirestore = Difficulty.advanced;
-          break;
-        default:
-      }
-    }
 
     return Challenge(
       id: doc.id,
@@ -55,18 +40,19 @@ class Challenge {
           : (data['solution'] as Map<String, String>).map((key, value) => MapEntry(int.parse(key), value)),
       limitations:
           data['limitations'] == null ? [] : (data['limitations'] as List<dynamic>).map((i) => i as String).toList(),
-      // blocks: data['blocks'] == null
-      //     ? null
-      //     : data.map<CodeBlockType, List<GameBlockData>>((key, value) {
-      //         // Convert the key to CodeBlockType
-      //         CodeBlockType codeBlockType = CodeBlockType.values.firstWhere((e) => e.toString() == key.toString());
+      blocks: data['blocks'] == null
+          ? null
+          : (data['blocks'] as Map<String, dynamic>).map<CodeBlockType, List<GameBlockData>>((key, value) {
+              // Convert the key to CodeBlockType
+              CodeBlockType codeBlockType = CodeBlockType.values.firstWhere((e) => e.name == key);
 
-      //         // Convert the value (List<dynamic>) to List<GameBlockData>
-      //         List<GameBlockData> gameBlockDataList = value.map((item) => GameBlockData.fromJson(item)).toList();
+              // Convert the value (List<dynamic>) to List<GameBlockData>
+              List<GameBlockData> gameBlockDataList =
+                  (value as List<dynamic>).map((item) => GameBlockData.fromJSON(item)).toList();
 
-      //         return MapEntry(codeBlockType, gameBlockDataList);
-      //       }),
-      difficulty: difficultyFirestore,
+              return MapEntry(codeBlockType, gameBlockDataList);
+            }),
+      difficulty: data['difficulty'] != null ? Difficulty.values.firstWhere((e) => e.name == data['difficulty']) : null,
       tags: data['tags'] == null ? [] : (data['tags'] as List<dynamic>).map((i) => i as String).toList(),
     );
   }
@@ -77,7 +63,10 @@ class Challenge {
       toFirestoreMap.addAll({'additionalInfo': additionalInfo});
     }
     if (blocks != null) {
-      toFirestoreMap.addAll({'blocks': {}});
+      final blocksMap = blocks!.map((key, value) {
+        return MapEntry(key.name, value.map((data) => data.toJSON()).toList());
+      });
+      toFirestoreMap.addAll({'blocks': blocksMap});
     }
     if (difficulty != null) {
       toFirestoreMap.addAll({'difficulty': difficulty?.name});

@@ -54,54 +54,57 @@ class _VerifyEmailState extends ConsumerState<VerifyEmail> with TickerProviderSt
       resizeToAvoidBottomInset: false,
       body: Background(
           fit: StackFit.expand,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 40),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const BLSmallTitle('Please verify your email'),
-                const SizedBox(height: 30),
-                if (!kIsWeb)
-                  BLAnimationPlayer(
-                    assets.emailVerification,
-                    size: 150,
-                    controller: _controller,
-                    controllerActions: (emailAnimation) {
-                      _controller.duration = emailAnimation.duration;
-                      _controller.repeat(min: 0, max: 0.65);
-                    },
+          child: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 40),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const BLSmallTitle('Please verify your email'),
+                  const SizedBox(height: 30),
+                  if (!kIsWeb)
+                    BLAnimationPlayer(
+                      assets.emailVerification,
+                      size: 150,
+                      controller: _controller,
+                      controllerActions: (emailAnimation) {
+                        _controller.duration = emailAnimation.duration;
+                        _controller.repeat(min: 0, max: 0.65);
+                      },
+                    ),
+                  const SizedBox(height: 30),
+                  BLRichText(
+                    [
+                      const TextSpan(text: 'A link was sent to your email:\n'),
+                      TextSpan(
+                          text: auth.getEmail(), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                      const TextSpan(
+                          text:
+                              "\n\n Just click on the link in that email to complete your signup. \n\n It you don't see it, you may need to check your spam folder.")
+                    ],
+                    alignment: TextAlign.center,
                   ),
-                const SizedBox(height: 30),
-                BLRichText(
-                  [
-                    const TextSpan(text: 'A link was sent to your email:\n'),
-                    TextSpan(text: auth.getEmail(), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-                    const TextSpan(
-                        text:
-                            "\n\n Just click on the link in that email to complete your signup. \n\n It you don't see it, you may need to check your spam folder.")
-                  ],
-                  alignment: TextAlign.center,
-                ),
-                const SizedBox(height: 70),
-                const BLText('Email not received?'),
-                const SizedBox(height: 15),
-                getButton(),
-                const SizedBox(height: 10),
-                BLTextButton(
-                    onPressed: () => auth.logout(),
-                    child: const Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.logout, color: Colors.red),
-                        SizedBox(width: 10),
-                        BLText(
-                          'Logout instead',
-                          color: Colors.red,
-                        )
-                      ],
-                    ))
-              ],
+                  const SizedBox(height: 70),
+                  const BLText('Email not received?'),
+                  const SizedBox(height: 15),
+                  getButton(),
+                  const SizedBox(height: 10),
+                  BLTextButton(
+                      onPressed: () => auth.logout(),
+                      child: const Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.logout, color: Colors.red),
+                          SizedBox(width: 10),
+                          BLText(
+                            'Logout instead',
+                            color: Colors.red,
+                          )
+                        ],
+                      ))
+                ],
+              ),
             ),
           )),
     );

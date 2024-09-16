@@ -46,6 +46,7 @@ class _BtnState extends ConsumerState<BLButton> {
 
   @override
   Widget build(BuildContext context) {
+    getBtnColor();
     return GestureDetector(
       onTapDown: (details) {
         audio?.playBtn();
@@ -98,7 +99,6 @@ class _BtnState extends ConsumerState<BLButton> {
   void initState() {
     if (!kIsWeb) audio = ref.read(bLAudioStateProvider.notifier);
     blui = ref.read(bLUIProvider.notifier);
-    getBtnColor();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // Access the width after the first frame is rendered
       final RenderBox renderBox = containerKey.currentContext?.findRenderObject() as RenderBox;

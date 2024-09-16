@@ -46,7 +46,6 @@ class _GameAppbarState extends ConsumerState<GameAppbar> {
   late final CustomNavigation nav;
   @override
   Widget build(BuildContext context) {
-    ref.watch(gameManagerProvider);
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [

@@ -21,88 +21,90 @@ class TestingPage extends ConsumerWidget {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Background(
-        child: Center(
-          child: SpacedColumn(
-            mainAxisAlignment: MainAxisAlignment.center,
-            spacing: 20,
-            children: [
-              BLButton(
-                  onPressed: () {
-                    toast.showToast('Test notif', type: NotifType.info);
-                  },
-                  child: const BLText('Notif')),
-              BLButton(
-                onPressed: () async {
-                  final db = FirebaseFirestore.instance;
-                  try {
-                    final room = Room(
-                        id: 'testing',
-                        players: [],
-                        challengeIDs: ['testing1', 'testing2'],
-                        hostID: 'CVWQCLBCpSMr8t739d8xFlTMETF2',
-                        // icon: 'default',
-                        maxPlayers: 10,
-                        name: 'Testing room',
-                        status: RoomStatus.available);
-                    final challenges = [
-                      Challenge(
-                        id: 'testing1',
-                        name: 'Leap Year Check',
-                        shortDescription: 'Check if the given year is a leap year.',
-                        additionalInfo:
-                            'A leap year has 366 days, with an extra day in February (29 days instead of 28). It occurs every four years to keep the calendar year aligned with the solar year.',
-                        limitations: ['5 block lines', 'No functions', 'No classes'],
-                        blocks: AllBlocks().getAll(),
-                        difficulty: Difficulty.intermediate,
-                        tags: ['conditionals', ''],
-                      ),
-                      Challenge(
-                        id: 'testing2',
-                        name: 'Vowel Count',
-                        shortDescription: 'Count the number of vowels in a given string.',
-                        additionalInfo: '',
-                        limitations: ['2 block lines', 'Use one function', ''],
-                        blocks: AllBlocks().getAll(),
-                        difficulty: Difficulty.beginner,
-                        tags: [
-                          'conditionals',
-                          'functions',
-                        ],
-                      )
-                    ];
-                    await db.collection('rooms').doc('testing').update(room.toFirestore());
-                    for (int i = 0; i <= challenges.length - 1; i++) {
-                      await db
-                          .collection('challenges')
-                          .doc('testing$i')
-                          .set(challenges[i].toFirestore(), SetOptions(merge: true));
+        child: SafeArea(
+          child: Center(
+            child: SpacedColumn(
+              mainAxisAlignment: MainAxisAlignment.center,
+              spacing: 20,
+              children: [
+                BLButton(
+                    onPressed: () {
+                      toast.showToast('Test notif', type: NotifType.info);
+                    },
+                    child: const BLText('Notif')),
+                BLButton(
+                  onPressed: () async {
+                    final db = FirebaseFirestore.instance;
+                    try {
+                      final room = Room(
+                          id: 'testing',
+                          players: [],
+                          challengeIDs: ['testing1', 'testing2'],
+                          hostID: 'CVWQCLBCpSMr8t739d8xFlTMETF2',
+                          // icon: 'default',
+                          maxPlayers: 10,
+                          name: 'Testing room',
+                          status: RoomStatus.available);
+                      final challenges = [
+                        Challenge(
+                          id: 'testing1',
+                          name: 'Leap Year Check',
+                          shortDescription: 'Check if the given year is a leap year.',
+                          additionalInfo:
+                              'A leap year has 366 days, with an extra day in February (29 days instead of 28). It occurs every four years to keep the calendar year aligned with the solar year.',
+                          limitations: ['5 block lines', 'No functions', 'No classes'],
+                          blocks: AllBlocks().getAll(),
+                          difficulty: Difficulty.intermediate,
+                          tags: ['conditionals', ''],
+                        ),
+                        Challenge(
+                          id: 'testing2',
+                          name: 'Vowel Count',
+                          shortDescription: 'Count the number of vowels in a given string.',
+                          additionalInfo: '',
+                          limitations: ['2 block lines', 'Use one function', ''],
+                          blocks: AllBlocks().getAll(),
+                          difficulty: Difficulty.beginner,
+                          tags: [
+                            'conditionals',
+                            'functions',
+                          ],
+                        )
+                      ];
+                      await db.collection('rooms').doc('testing').update(room.toFirestore());
+                      for (int i = 0; i <= challenges.length - 1; i++) {
+                        await db
+                            .collection('challenges')
+                            .doc('testing$i')
+                            .set(challenges[i].toFirestore(), SetOptions(merge: true));
+                      }
+                      toast.showToast('Creating success', type: NotifType.success);
+                    } catch (e) {
+                      final errorHandler = ErrorHandler();
+                      errorHandler.call(e, this);
+                      toast.showToast('Creating failed', type: NotifType.error);
                     }
-                    toast.showToast('Creating success', type: NotifType.success);
-                  } catch (e) {
-                    final errorHandler = ErrorHandler();
-                    errorHandler.call(e, this);
-                    toast.showToast('Creating failed', type: NotifType.error);
-                  }
-                },
-                child: const BLText('Create test data'),
-              ),
-              BLButton(
-                onPressed: () async {
-                  final db = FirebaseFirestore.instance;
-                  try {
-                    await db.collection('rooms').doc('testing').delete();
-                    await db.collection('challenges').doc('testing1').delete();
-                    await db.collection('challenges').doc('testing2').delete();
-                    toast.showToast('Deleting success', type: NotifType.success);
-                  } catch (e) {
-                    final errorHandler = ErrorHandler();
-                    errorHandler.call(e, this);
-                    toast.showToast('Deleting failed', type: NotifType.error);
-                  }
-                },
-                child: const BLText('Delete test data'),
-              )
-            ],
+                  },
+                  child: const BLText('Create test data'),
+                ),
+                BLButton(
+                  onPressed: () async {
+                    final db = FirebaseFirestore.instance;
+                    try {
+                      await db.collection('rooms').doc('testing').delete();
+                      await db.collection('challenges').doc('testing1').delete();
+                      await db.collection('challenges').doc('testing2').delete();
+                      toast.showToast('Deleting success', type: NotifType.success);
+                    } catch (e) {
+                      final errorHandler = ErrorHandler();
+                      errorHandler.call(e, this);
+                      toast.showToast('Deleting failed', type: NotifType.error);
+                    }
+                  },
+                  child: const BLText('Delete test data'),
+                )
+              ],
+            ),
           ),
         ),
       ),

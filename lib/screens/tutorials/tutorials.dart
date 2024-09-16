@@ -22,30 +22,32 @@ class Tutorials extends ConsumerWidget {
     final nav = ref.read(customNavigationProvider);
     return Scaffold(
       body: Background(
-          child: Column(
-        children: [
-          const Align(
-            alignment: Alignment.centerLeft,
-            child: BLBackButton(),
-          ),
-          const BLTitle('Tutorials'),
-          const SizedBox(height: 10),
-          Expanded(
-              child: ListView.separated(
-            padding: EdgeInsets.zero,
-            itemBuilder: (context, i) {
-              var tutorial = getData(TutorialType.values[i]);
-              return TutorialItem(
-                  onPressed: () => nav.push(context, tutorial[0]),
-                  type: TutorialType.values[i],
-                  childText: tutorial[1]);
-            },
-            itemCount: TutorialType.values.length,
-            separatorBuilder: (context, index) {
-              return const SizedBox(height: 12);
-            },
-          )),
-        ],
+          child: SafeArea(
+        child: Column(
+          children: [
+            const Align(
+              alignment: Alignment.centerLeft,
+              child: BLBackButton(),
+            ),
+            const BLTitle('Tutorials'),
+            const SizedBox(height: 10),
+            Expanded(
+                child: ListView.separated(
+              padding: EdgeInsets.zero,
+              itemBuilder: (context, i) {
+                var tutorial = getData(TutorialType.values[i]);
+                return TutorialItem(
+                    onPressed: () => nav.push(context, tutorial[0]),
+                    type: TutorialType.values[i],
+                    childText: tutorial[1]);
+              },
+              itemCount: TutorialType.values.length,
+              separatorBuilder: (context, index) {
+                return const SizedBox(height: 12);
+              },
+            )),
+          ],
+        ),
       )),
     );
   }

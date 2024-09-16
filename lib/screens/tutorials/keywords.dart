@@ -20,35 +20,37 @@ class _KeywordsScreenState extends ConsumerState<Keywords> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Background(
-          child: Column(
-        children: [
-          const Align(
-            alignment: Alignment.centerLeft,
-            child: BLBackButton(),
-          ),
-          const Center(
-            child: BLSmallTitle('Keywords'),
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    BLRichText([
-                      TextSpan(text: '''
-Keywords. \n\n
-''', style: tutorialData.paragraphStyle),
-                      const TextSpan(text: '''
-
-''')
-                    ])
-                  ],
+          child: SafeArea(
+        child: Column(
+          children: [
+            const Align(
+              alignment: Alignment.centerLeft,
+              child: BLBackButton(),
+            ),
+            const Center(
+              child: BLSmallTitle('Keywords'),
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      BLRichText([
+                        TextSpan(text: '''
+            Keywords. \n\n
+            ''', style: tutorialData.paragraphStyle),
+                        const TextSpan(text: '''
+            
+            ''')
+                      ])
+                    ],
+                  ),
                 ),
               ),
-            ),
-          )
-        ],
+            )
+          ],
+        ),
       )),
     );
   }

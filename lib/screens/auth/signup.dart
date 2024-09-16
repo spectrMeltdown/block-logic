@@ -63,181 +63,183 @@ class _SignupState extends ConsumerState<Signup> with RouteAware {
           fit: StackFit.expand,
           children: [
             Background(
-                child: SingleChildScrollView(
-              child: Padding(
-                padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-                child: Column(
-                  children: [
-                    const Row(children: [BLBackButton()]),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          BLPanel(
-                              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
-                              child: Form(
-                                key: _signupFormKey,
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    const SizedBox(height: 5),
-                                    const BLTitle(
-                                      'Hello there, dev!',
-                                      bottomPadding: 10,
-                                    ),
-                                    const SizedBox(height: 30),
-                                    BLTextBox(
-                                      controller: displayNameController,
-                                      hintText: 'Display Name',
-                                      maxLength: 20,
-                                      prefixIcon: const Icon(
-                                        Icons.abc,
-                                        color: Colors.white,
+                child: SafeArea(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+                  child: Column(
+                    children: [
+                      const Row(children: [BLBackButton()]),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            BLPanel(
+                                padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
+                                child: Form(
+                                  key: _signupFormKey,
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      const SizedBox(height: 5),
+                                      const BLTitle(
+                                        'Hello there, dev!',
+                                        bottomPadding: 10,
                                       ),
-                                      keyboardType: TextInputType.name,
-                                      validator: (name) => validator.validateDisplayName(name),
-                                    ),
-                                    const SizedBox(height: 15),
-                                    BLTextBox(
-                                      prefixIcon: const Padding(
-                                        padding: EdgeInsets.only(top: 3),
-                                        child: BLText(
-                                          '+63',
-                                          bold: true,
+                                      const SizedBox(height: 30),
+                                      BLTextBox(
+                                        controller: displayNameController,
+                                        hintText: 'Display Name',
+                                        maxLength: 20,
+                                        prefixIcon: const Icon(
+                                          Icons.abc,
                                           color: Colors.white,
                                         ),
+                                        keyboardType: TextInputType.name,
+                                        validator: (name) => validator.validateDisplayName(name),
                                       ),
-                                      controller: phoneNumController,
-                                      maxLength: 10,
-                                      hintText: 'Phone number (optional)',
-                                      keyboardType: TextInputType.phone,
-                                      validator: (phoneNum) => validator.validatePhoneNum(phoneNum),
-                                    ),
-                                    const SizedBox(height: 15),
-                                    BLTextBox(
-                                      controller: emailController,
-                                      hintText: 'Email',
-                                      prefixIcon: const Icon(
-                                        FontAwesomeIcons.envelope,
-                                        color: Colors.white,
-                                      ),
-                                      keyboardType: TextInputType.emailAddress,
-                                      validator: (email) {
-                                        return validator.validateEmail(email?.trim());
-                                      },
-                                    ),
-                                    const SizedBox(height: 15),
-                                    BLTextBox(
-                                      controller: passwordController,
-                                      hintText: 'Password',
-                                      prefixIcon: const Icon(
-                                        FontAwesomeIcons.lock,
-                                        color: Colors.white,
-                                      ),
-                                      isObscure: true,
-                                      keyboardType: TextInputType.visiblePassword,
-                                      validator: (password) {
-                                        return validator.validatePassword(password?.trim());
-                                      },
-                                    ),
-                                    const SizedBox(height: 40),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        BLCheckbox(
-                                          onPressed: () => checkedTerms = !checkedTerms,
+                                      const SizedBox(height: 15),
+                                      BLTextBox(
+                                        prefixIcon: const Padding(
+                                          padding: EdgeInsets.only(top: 3),
+                                          child: BLText(
+                                            '+63',
+                                            bold: true,
+                                            color: Colors.white,
+                                          ),
                                         ),
-                                        const SizedBox(width: 10),
-                                        BLRichText([
-                                          const TextSpan(text: 'I agree to the '),
-                                          TextSpan(
-                                              style: const TextStyle(decoration: TextDecoration.underline),
-                                              text: 'terms & conditions',
-                                              recognizer: TapGestureRecognizer()
-                                                ..onTap = () => nav.push(context, const TermsAndConditions())),
-                                        ])
-                                      ],
-                                    ),
-                                    const SizedBox(height: 30),
-                                    msg,
-                                    const SizedBox(height: 15),
-                                    BLButton(
-                                        padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 10),
-                                        onPressed: () async {
-                                          if (processing == true) return;
-                                          setState(() {
-                                            processing = true;
-                                          });
-                                          if (_signupFormKey.currentState!.validate()) {
-                                            if (checkedTerms == false) {
-                                              setState(() {
-                                                msg = const BLText(
-                                                  'You must agree to terms and conditions.',
-                                                  color: Colors.deepOrange,
-                                                );
-                                              });
-                                              setState(() {
-                                                processing = false;
-                                              });
-                                              return;
-                                            } else {
-                                              setState(() {
-                                                msg = const BlankWidget();
-                                              });
-                                            }
-                                            if (!context.mounted) return;
-                                            final error = await auth.createAccount(
-                                                type: AccountType.user,
-                                                email: emailController.text.trim(),
-                                                password: passwordController.text.trim(),
-                                                phoneNum: phoneNumController.text.trim(),
-                                                displayName: displayNameController.text.trim());
-                                            if (error == null) {
-                                              await reportsManager.add(ReportType.users, 1);
-                                              if (!context.mounted) return;
-                                              nav.pushReplace(context, const Checkpoint());
-                                            } else {
-                                              if (!context.mounted) return;
-                                              toast.showToast(
-                                                error,
-                                                type: NotifType.error,
-                                              );
-                                            }
-                                          }
-                                          setState(() {
-                                            processing = false;
-                                          });
+                                        controller: phoneNumController,
+                                        maxLength: 10,
+                                        hintText: 'Phone number (optional)',
+                                        keyboardType: TextInputType.phone,
+                                        validator: (phoneNum) => validator.validatePhoneNum(phoneNum),
+                                      ),
+                                      const SizedBox(height: 15),
+                                      BLTextBox(
+                                        controller: emailController,
+                                        hintText: 'Email',
+                                        prefixIcon: const Icon(
+                                          FontAwesomeIcons.envelope,
+                                          color: Colors.white,
+                                        ),
+                                        keyboardType: TextInputType.emailAddress,
+                                        validator: (email) {
+                                          return validator.validateEmail(email?.trim());
                                         },
-                                        child: const BLText(
-                                          'Create account',
+                                      ),
+                                      const SizedBox(height: 15),
+                                      BLTextBox(
+                                        controller: passwordController,
+                                        hintText: 'Password',
+                                        prefixIcon: const Icon(
+                                          FontAwesomeIcons.lock,
                                           color: Colors.white,
-                                        )),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        BLTextButton(
-                                            onPressed: () => nav.pushReplace(
-                                                context,
-                                                const Login(
-                                                  accountType: FirestoreCollections.users,
-                                                )),
-                                            child: const BLText(
-                                              'Login to existing account',
-                                              underlined: true,
-                                              size: 15,
-                                            ))
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              )),
-                        ],
+                                        ),
+                                        isObscure: true,
+                                        keyboardType: TextInputType.visiblePassword,
+                                        validator: (password) {
+                                          return validator.validatePassword(password?.trim());
+                                        },
+                                      ),
+                                      const SizedBox(height: 40),
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          BLCheckbox(
+                                            onPressed: () => checkedTerms = !checkedTerms,
+                                          ),
+                                          const SizedBox(width: 10),
+                                          BLRichText([
+                                            const TextSpan(text: 'I agree to the '),
+                                            TextSpan(
+                                                style: const TextStyle(decoration: TextDecoration.underline),
+                                                text: 'terms & conditions',
+                                                recognizer: TapGestureRecognizer()
+                                                  ..onTap = () => nav.push(context, const TermsAndConditions())),
+                                          ])
+                                        ],
+                                      ),
+                                      const SizedBox(height: 30),
+                                      msg,
+                                      const SizedBox(height: 15),
+                                      BLButton(
+                                          padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 10),
+                                          onPressed: () async {
+                                            if (processing == true) return;
+                                            setState(() {
+                                              processing = true;
+                                            });
+                                            if (_signupFormKey.currentState!.validate()) {
+                                              if (checkedTerms == false) {
+                                                setState(() {
+                                                  msg = const BLText(
+                                                    'You must agree to terms and conditions.',
+                                                    color: Colors.deepOrange,
+                                                  );
+                                                });
+                                                setState(() {
+                                                  processing = false;
+                                                });
+                                                return;
+                                              } else {
+                                                setState(() {
+                                                  msg = const BlankWidget();
+                                                });
+                                              }
+                                              if (!context.mounted) return;
+                                              final error = await auth.createAccount(
+                                                  type: AccountType.user,
+                                                  email: emailController.text.trim(),
+                                                  password: passwordController.text.trim(),
+                                                  phoneNum: phoneNumController.text.trim(),
+                                                  displayName: displayNameController.text.trim());
+                                              if (error == null) {
+                                                await reportsManager.add(ReportType.users, 1);
+                                                if (!context.mounted) return;
+                                                nav.pushReplace(context, const Checkpoint());
+                                              } else {
+                                                if (!context.mounted) return;
+                                                toast.showToast(
+                                                  error,
+                                                  type: NotifType.error,
+                                                );
+                                              }
+                                            }
+                                            setState(() {
+                                              processing = false;
+                                            });
+                                          },
+                                          child: const BLText(
+                                            'Create account',
+                                            color: Colors.white,
+                                          )),
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          BLTextButton(
+                                              onPressed: () => nav.pushReplace(
+                                                  context,
+                                                  const Login(
+                                                    accountType: FirestoreCollections.users,
+                                                  )),
+                                              child: const BLText(
+                                                'Login to existing account',
+                                                underlined: true,
+                                                size: 15,
+                                              ))
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                )),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             )),
