@@ -16,7 +16,7 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.22.2'
+          flutter-version: '3.24.3'
       # - run: | 
       #   git config --global --add safe.directory /opt/hostedtoolcache/flutter/stable-3.3.10-x64 flutter build bundle
   
@@ -33,5 +33,3 @@ jobs:
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_BLOCK_LOGIC_1D051 }}
           channelId: live
           projectId: block-logic-1d051
-
-          name: Deploy to Firebase Hosting on merge
