@@ -5,7 +5,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'generated/navigation.g.dart';
 
-@Riverpod()
+@riverpod
 class CustomNavigation extends _$CustomNavigation {
   @override
   CustomNavigation build() => CustomNavigation();
@@ -14,11 +14,25 @@ class CustomNavigation extends _$CustomNavigation {
     Navigator.pop(context, result);
   }
 
-  void push(BuildContext context, Widget route, {VoidCallback? onPop}) {
+  void push(
+    BuildContext context,
+    Widget route, {
+    VoidCallback? onPop,
+    PageTransitionType transition = PageTransitionType.fade,
+    Widget? childCurrent,
+  }) {
     //Navigator.push(context, MaterialPageRoute(builder: (context) => route));
-    Navigator.push(context,
-            PageTransition(child: route, type: PageTransitionType.fade))
-        .then((value) {
+    Navigator.push(
+      context,
+      PageTransition(
+        child: route,
+        type: transition,
+        curve: Curves.easeInOutCubic,
+        childCurrent: childCurrent,
+        // reverseDuration: null,
+        // duration: Duration(milliseconds: transition != PageTransitionType.fade ? 300 : 300),
+      ),
+    ).then((value) {
       if (onPop != null) onPop.call();
     });
   }
@@ -32,7 +46,6 @@ class CustomNavigation extends _$CustomNavigation {
   }
 
   void pushReplace(BuildContext context, Widget route) {
-    Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => route));
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => route));
   }
 }

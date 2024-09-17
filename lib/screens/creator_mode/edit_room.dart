@@ -128,12 +128,12 @@ class _EditRoomBottomSheetState extends ConsumerState<EditRoomBottomSheet> {
             child: Padding(
           padding: const EdgeInsets.only(bottom: 10),
           child: Center(
-            child: SingleChildScrollView(
-              child: BLBorderedPanel(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 30),
+            child: Padding(
+              padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+              child: SingleChildScrollView(
+                child: BLBorderedPanel(
                   child: Padding(
-                    padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+                    padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 30),
                     child: selectedRoom.when(
                         data: (selectedRoom) {
                           if (selectedRoom == null) {
