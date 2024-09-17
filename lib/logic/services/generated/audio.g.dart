@@ -6,11 +6,11 @@ part of '../audio.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$audioInitHash() => r'45c7c3fbed033069e5fd49f5ccf097ca6eb35686';
+String _$audioInitHash() => r'20280d36643c56aa75739b3297f108c6d01540e9';
 
 /// See also [audioInit].
 @ProviderFor(audioInit)
-final audioInitProvider = AutoDisposeFutureProvider<void>.internal(
+final audioInitProvider = FutureProvider<void>.internal(
   audioInit,
   name: r'audioInitProvider',
   debugGetCreateSourceHash:
@@ -19,8 +19,8 @@ final audioInitProvider = AutoDisposeFutureProvider<void>.internal(
   allTransitiveDependencies: null,
 );
 
-typedef AudioInitRef = AutoDisposeFutureProviderRef<void>;
-String _$bLAudioStateHash() => r'0729b59753e04d32804faec3b3f29b22b8747826';
+typedef AudioInitRef = FutureProviderRef<void>;
+String _$bLAudioStateHash() => r'352a61d7f2985629404db60de314481b88b1be1a';
 
 /// See also [BLAudioState].
 @ProviderFor(BLAudioState)

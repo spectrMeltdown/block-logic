@@ -46,6 +46,7 @@ class _SignupState extends ConsumerState<Signup> with RouteAware {
   late final ReportsManager reportsManager;
   bool processing = false;
   bool checkedTerms = false;
+  bool useEmail = true;
 
   @override
   Widget build(BuildContext context) {
@@ -89,10 +90,68 @@ class _SignupState extends ConsumerState<Signup> with RouteAware {
                                         'Hello there, dev!',
                                         bottomPadding: 10,
                                       ),
-                                      const SizedBox(height: 30),
+                                      const SizedBox(height: 10),
+                                      BLTextButton(
+                                          onPressed: () {
+                                            setState(() {
+                                              useEmail = !useEmail;
+                                            });
+                                          },
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Icon(
+                                                FontAwesomeIcons.arrowRightArrowLeft,
+                                                color: Colors.white,
+                                                size: 16,
+                                              ),
+                                              SizedBox(
+                                                width: 10,
+                                              ),
+                                              BLText(
+                                                useEmail ? 'Signup with phone' : 'Signup with email',
+                                                color: Colors.amber,
+                                                bold: true,
+                                              ),
+                                            ],
+                                          )),
+                                      Visibility(
+                                        visible: useEmail,
+                                        child: BLTextBox(
+                                          controller: emailController,
+                                          labelText: 'Email',
+                                          prefixIcon: const Icon(
+                                            FontAwesomeIcons.envelope,
+                                            color: Colors.white,
+                                          ),
+                                          keyboardType: TextInputType.emailAddress,
+                                          validator: (email) {
+                                            return validator.validateEmail(email?.trim());
+                                          },
+                                        ),
+                                      ),
+                                      Visibility(
+                                        visible: !useEmail,
+                                        child: BLTextBox(
+                                          prefixIcon: const Padding(
+                                            padding: EdgeInsets.only(top: 3),
+                                            child: BLText(
+                                              '+63',
+                                              bold: true,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                          controller: phoneNumController,
+                                          maxLength: 10,
+                                          labelText: 'Phone number',
+                                          keyboardType: TextInputType.phone,
+                                          validator: (phoneNum) => validator.validatePhoneNum(phoneNum),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 15),
                                       BLTextBox(
                                         controller: displayNameController,
-                                        hintText: 'Display Name',
+                                        labelText: 'Display Name',
                                         maxLength: 20,
                                         prefixIcon: const Icon(
                                           Icons.abc,
@@ -103,37 +162,8 @@ class _SignupState extends ConsumerState<Signup> with RouteAware {
                                       ),
                                       const SizedBox(height: 15),
                                       BLTextBox(
-                                        prefixIcon: const Padding(
-                                          padding: EdgeInsets.only(top: 3),
-                                          child: BLText(
-                                            '+63',
-                                            bold: true,
-                                            color: Colors.white,
-                                          ),
-                                        ),
-                                        controller: phoneNumController,
-                                        maxLength: 10,
-                                        hintText: 'Phone number (optional)',
-                                        keyboardType: TextInputType.phone,
-                                        validator: (phoneNum) => validator.validatePhoneNum(phoneNum),
-                                      ),
-                                      const SizedBox(height: 15),
-                                      BLTextBox(
-                                        controller: emailController,
-                                        hintText: 'Email',
-                                        prefixIcon: const Icon(
-                                          FontAwesomeIcons.envelope,
-                                          color: Colors.white,
-                                        ),
-                                        keyboardType: TextInputType.emailAddress,
-                                        validator: (email) {
-                                          return validator.validateEmail(email?.trim());
-                                        },
-                                      ),
-                                      const SizedBox(height: 15),
-                                      BLTextBox(
                                         controller: passwordController,
-                                        hintText: 'Password',
+                                        labelText: 'Password',
                                         prefixIcon: const Icon(
                                           FontAwesomeIcons.lock,
                                           color: Colors.white,
@@ -153,7 +183,8 @@ class _SignupState extends ConsumerState<Signup> with RouteAware {
                                           ),
                                           const SizedBox(width: 10),
                                           BLRichText([
-                                            const TextSpan(text: 'I agree to the '),
+                                            const TextSpan(
+                                                text: 'I agree to the ', style: TextStyle(color: Colors.white)),
                                             TextSpan(
                                                 style: const TextStyle(decoration: TextDecoration.underline),
                                                 text: 'terms & conditions',
@@ -166,6 +197,7 @@ class _SignupState extends ConsumerState<Signup> with RouteAware {
                                       msg,
                                       const SizedBox(height: 15),
                                       BLButton(
+                                          type: BtnType.green,
                                           padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 10),
                                           onPressed: () async {
                                             if (processing == true) return;

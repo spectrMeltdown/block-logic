@@ -177,13 +177,13 @@ GoRouter router() {
         }
 
         final doc = await FirebaseFirestore.instance.collection('admins').doc(user.uid).get();
-        final adminFirestore = AdminAccount.fromFirestore(doc);
+        // final adminFirestore = AdminAccount.fromFirestore(doc);
         if (doc.exists == false) {
           return '/unauthorized';
         }
-        if (adminFirestore.verificationID != null && adminFirestore.verificationID!.isEmpty) {
-          return '/verify-phone-num';
-        }
+        // if (adminFirestore.verificationID != null && adminFirestore.verificationID!.isEmpty) {
+        //   return '/verify-phone-num';
+        // }
         return null;
       } else {
         return '/login';

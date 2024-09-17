@@ -66,23 +66,27 @@ class BlockLogic extends ConsumerWidget {
           debugShowCheckedModeBanner: false,
           theme: appTheme.theme(),
           darkTheme: appTheme.theme(),
+
+          // home: Login(accountType: FirestoreCollections.users),
           home: kDebugMode
               ? const Checkpoint()
               : Scaffold(
                   body: Background(
-                  child: GameChallenge(
-                    currentChallenge: 0,
-                    updateChallenge: () {},
-                    roomName: 'Testing',
-                    challenge: Challenge(
-                      id: 'testing2',
-                      name: 'Give me a five!',
-                      shortDescription: 'Print the number 5',
-                      additionalInfo: 'This should be a simple one..',
-                      difficulty: Difficulty.beginner,
-                      blocks: AllBlocks().beginnerTesting(),
+                  child: SafeArea(
+                    child: GameChallenge(
+                      currentChallenge: 0,
+                      updateChallenge: () {},
+                      roomName: 'Testing',
+                      challenge: Challenge(
+                        id: 'testing2',
+                        name: 'Give me a five!',
+                        shortDescription: 'Print the number 5',
+                        additionalInfo: 'This should be a simple one..',
+                        difficulty: Difficulty.beginner,
+                        blocks: AllBlocks().beginnerTesting(),
+                      ),
+                      challengeCount: 1,
                     ),
-                    challengeCount: 1,
                   ),
                 )),
         ),

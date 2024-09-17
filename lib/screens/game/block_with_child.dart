@@ -12,7 +12,7 @@ import 'package:block_logic/screens/game/wrapper_drag_target.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-enum GameBox { parameters, arguments, conditions }
+enum GameBox { parameters, arguments, conditions, array }
 
 class GameBlockWithChild extends ConsumerStatefulWidget {
   // final String uid;

@@ -14,10 +14,8 @@ class PyLiteral {
     }
   }
 
-  factory PyLiteral.none() {
-    const dataType = PyDataType.none_;
-    return PyLiteral._(dataType, 'None');
-  }
+  factory PyLiteral.none() => PyLiteral._(PyDataType.none_, 'None');
+
   factory PyLiteral.number({double? doubleNum, int? intNum}) {
     if (doubleNum == null && intNum == null) {
       throw ArgumentError('Must have at least one argument');
@@ -33,10 +31,9 @@ class PyLiteral {
     }
   }
 
-  factory PyLiteral.string(String string) {
-    const dataType = PyDataType.string_;
-    return PyLiteral._(dataType, '"$string"');
-  }
+  factory PyLiteral.string(String string) => PyLiteral._(PyDataType.string_, '"$string"');
+
+  factory PyLiteral.array() => PyLiteral._(PyDataType.array, '');
 
   factory PyLiteral.fromJSON(Map<String, dynamic> json) {
     return PyLiteral._(

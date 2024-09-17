@@ -71,7 +71,7 @@ class _ChangePhoneNumState extends ConsumerState<ChangePhoneNum> {
                         Icons.phone,
                         color: Colors.white,
                       ),
-                      validator: (value) => validator.validatePhoneNum(value, true),
+                      validator: (value) => validator.validatePhoneNum(value, required: true),
                     ),
                     const SizedBox(
                       height: 5,
