@@ -9,7 +9,6 @@ import 'package:block_logic/components/util/provider_default.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_providers/selected_rooms.dart';
 import 'package:block_logic/logic/services/auth.dart';
-import 'package:block_logic/logic/services/bottom_sheet.dart';
 import 'package:block_logic/logic/services/navigation.dart';
 import 'package:block_logic/logic/services/toast.dart';
 import 'package:block_logic/screens/creator_mode/add_new_room.dart';
@@ -17,6 +16,7 @@ import 'package:block_logic/screens/creator_mode/creator_room_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:page_transition/page_transition.dart';
 
 class CreatorMode extends ConsumerStatefulWidget {
   const CreatorMode({super.key});
@@ -150,7 +150,8 @@ class _CreatorModeState extends ConsumerState<CreatorMode> {
                         margin: const EdgeInsets.only(bottom: 60, left: 20, right: 20),
                         type: NotifType.error);
                   } else {
-                    nav.push(context, AddRoomBottomSheet());
+                    nav.push(context, AddRoomBottomSheet(),
+                        transition: PageTransitionType.rightToLeftJoined, childCurrent: CreatorMode());
                   }
                   processing = false;
                 },
@@ -181,6 +182,7 @@ class _CreatorModeState extends ConsumerState<CreatorMode> {
   void initState() {
     // addBottomSheet = ref.read(bottomSheetServiceProvider.notifier);
     toast = ref.read(toastProvider.notifier);
+    nav = ref.read(customNavigationProvider.notifier);
     super.initState();
   }
 }
