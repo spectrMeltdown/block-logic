@@ -59,63 +59,6 @@ class _EditRoomBottomSheetState extends ConsumerState<EditRoomBottomSheet> {
   late final CustomNavigation nav;
   late final Encryption encryption;
 
-  void initSelectors(List<String> challengeIDs) {
-    for (final id in challengeIDs) {
-      final challengeSelector = ChallengeSelector(
-        removeChallengeID: removeChallengeID,
-        availableChallenges: availableChallenges,
-        addChallengeID: addChallengeID,
-        removeChallengeSelector: removeChallengeSelector,
-        addChallengeSelector: addChallengeSelector,
-        index: challengeSelectors.length,
-        initialSelection: id,
-      );
-      setState(() {
-        challengeSelectors.add(challengeSelector);
-      });
-    }
-  }
-
-  void addChallengeSelector() {
-    if (maxChallenges != challengeSelectors.length) {
-      if (challengeSelectors.length < 5) {
-        final challengeSelector = ChallengeSelector(
-          removeChallengeID: removeChallengeID,
-          availableChallenges: availableChallenges,
-          addChallengeID: addChallengeID,
-          removeChallengeSelector: removeChallengeSelector,
-          addChallengeSelector: addChallengeSelector,
-          index: challengeSelectors.length,
-        );
-        setState(() {
-          challengeSelectors.add(challengeSelector);
-        });
-        return;
-      } else {
-        toast.showToast('Maximum of 5 only.', type: NotifType.error);
-      }
-    }
-    toast.showToast('Cannot exceed number of available challenges.', type: NotifType.error);
-  }
-
-  void removeChallengeSelector(int index) {
-    setState(() {
-      challengeSelectors.removeAt(index);
-    });
-  }
-
-  void addChallengeID(String challengeID) {
-    setState(() {
-      selectedChallengeIDs.add(challengeID);
-    });
-  }
-
-  void removeChallengeID(String challengeID) {
-    setState(() {
-      selectedChallengeIDs.remove(challengeID);
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     final roomsProvider = ref.watch(SelectedRoomsProvider(FirebaseAuth.instance.currentUser!.uid));
@@ -152,7 +95,7 @@ class _EditRoomBottomSheetState extends ConsumerState<EditRoomBottomSheet> {
                             });
                             isset = true;
                             originalRoomName ??= selectedRoom.name;
-                            initSelectors(selectedRoom.challengeIDs!);
+                            // TODO: set selected challenges
                           }
 
                           return roomsProvider.when(
@@ -276,7 +219,7 @@ class _EditRoomBottomSheetState extends ConsumerState<EditRoomBottomSheet> {
                                                   children: [
                                                     BLTextButton(
                                                         onPressed: () {
-                                                          addChallengeSelector();
+                                                          // addChallengeSelector();
                                                         },
                                                         child: const Row(
                                                           children: [
