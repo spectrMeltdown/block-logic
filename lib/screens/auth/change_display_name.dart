@@ -113,7 +113,7 @@ class _ChangeDisplayNameState extends ConsumerState<ChangeDisplayName> {
 
   @override
   void initState() {
-    nav = ref.read(customNavigationProvider);
+    nav = ref.read(customNavigationProvider.notifier);
     accountService = ref.read(accountServiceProvider.notifier);
     validator = ref.read(textValidatorProvider.notifier);
     auth = ref.read(authServiceProvider.notifier);

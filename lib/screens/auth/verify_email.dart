@@ -134,7 +134,7 @@ class _VerifyEmailState extends ConsumerState<VerifyEmail> with TickerProviderSt
   @override
   void initState() {
     auth = ref.read(authServiceProvider.notifier);
-    nav = ref.read(customNavigationProvider);
+    nav = ref.read(customNavigationProvider.notifier);
     assets = ref.read(assetsProvider);
     auth.sendEmailVerification(); // send one verification when first loaded
     if (!kIsWeb) _controller = AnimationController(vsync: this);

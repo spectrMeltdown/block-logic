@@ -38,59 +38,17 @@ class _AddRoomBottomSheetState extends ConsumerState<AddRoomBottomSheet> {
   late final roomNameController = TextEditingController();
   late final maxPlayersController = TextEditingController();
   late final passwordController = TextEditingController();
-  final List<Challenge> availableChallenges = [];
-  final List<String> selectedChallengeIDs = [];
-  final List<ChallengeSelector> challengeSelectors = [];
+  List<Challenge> availableChallenges = [];
+  List<Challenge> selectedChallenges = [];
   bool includesPassword = false;
   bool processing = false;
   bool issetChallenges = false;
-  int maxChallenges = 0;
   Widget errorMsg = const BlankWidget();
   final newRoomFormKey = GlobalKey<FormState>();
   late final TextValidator textValidator;
   late final Toast toast;
   late final CreatorModeManager creatorMode;
   late final CustomNavigation nav;
-
-  void addChallengeSelector() {
-    if (maxChallenges != challengeSelectors.length) {
-      if (challengeSelectors.length < 5) {
-        final challengeSelector = ChallengeSelector(
-          removeChallengeID: removeChallengeID,
-          availableChallenges: availableChallenges,
-          addChallengeID: addChallengeID,
-          removeChallengeSelector: removeChallengeSelector,
-          addChallengeSelector: addChallengeSelector,
-          index: challengeSelectors.length,
-        );
-        setState(() {
-          challengeSelectors.add(challengeSelector);
-        });
-        return;
-      } else {
-        toast.showToast('Maximum of 5 only.', type: NotifType.error);
-      }
-    }
-    toast.showToast('Cannot exceed number of available challenges.', type: NotifType.error);
-  }
-
-  void removeChallengeSelector(int index) {
-    setState(() {
-      challengeSelectors.removeAt(index);
-    });
-  }
-
-  void addChallengeID(String challengeID) {
-    setState(() {
-      selectedChallengeIDs.add(challengeID);
-    });
-  }
-
-  void removeChallengeID(String challengeID) {
-    setState(() {
-      selectedChallengeIDs.remove(challengeID);
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -116,10 +74,10 @@ class _AddRoomBottomSheetState extends ConsumerState<AddRoomBottomSheet> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Row(
+                                const Row(
                                   children: [
                                     BLBackButton(paddingY: 0),
-                                    const BLSmallTitle(
+                                    BLSmallTitle(
                                       'Create new room',
                                       bottomPadding: 0,
                                     ),
@@ -195,41 +153,67 @@ class _AddRoomBottomSheetState extends ConsumerState<AddRoomBottomSheet> {
                                     ),
                                   ),
                                 ),
-                                const BLText('Challenges (maximum of 5)'),
+                                const BLText('Selected Challenges'),
                                 challenges.when(
                                     data: (challenges) {
                                       if (challenges.isEmpty) {
                                         return const BLText('Sorry, there are no challenges available');
                                       }
-                                      if (!issetChallenges) {
-                                        maxChallenges = challenges.length;
-                                        issetChallenges = true;
-                                        availableChallenges.addAll(challenges);
-                                      }
+                                      availableChallenges = challenges;
                                       return Column(
                                         children: [
-                                          SizedBox(height: 15),
-                                          if (challengeSelectors.isNotEmpty)
-                                            ...List.generate(challengeSelectors.length, (i) {
-                                              return challengeSelectors[i];
+                                          const SizedBox(height: 15),
+                                          if (selectedChallenges.isNotEmpty)
+                                            ...List.generate(selectedChallenges.length, (i) {
+                                              final currentChallenge = selectedChallenges[i];
+                                              return Padding(
+                                                padding: const EdgeInsets.symmetric(vertical: 5),
+                                                child: Row(
+                                                  mainAxisAlignment: MainAxisAlignment.center,
+                                                  children: [
+                                                    Container(
+                                                      clipBehavior: Clip.antiAlias,
+                                                      decoration: const BoxDecoration(
+                                                          color: Colors.blueGrey,
+                                                          borderRadius: BorderRadius.all(Radius.circular(20))),
+                                                      child: Row(
+                                                        mainAxisSize: MainAxisSize.min,
+                                                        children: [
+                                                          const SizedBox(width: 10),
+                                                          BLText(currentChallenge.name ?? '--'),
+                                                          BLText(currentChallenge.difficulty?.name ?? '--'),
+                                                          CloseButton(
+                                                            onPressed: () {
+                                                              setState(() {
+                                                                selectedChallenges.removeWhere(
+                                                                    (challenge) => challenge.id == currentChallenge.id);
+                                                              });
+                                                            },
+                                                          )
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              );
                                             }),
                                           Row(
                                             mainAxisAlignment: MainAxisAlignment.center,
                                             children: [
                                               BLTextButton(
                                                   onPressed: () {
-                                                    addChallengeSelector();
+                                                    chooseChallenges(context);
                                                   },
                                                   child: const Row(
                                                     children: [
-                                                      Icon(
-                                                        Icons.add,
+                                                      BLText(
+                                                        'Choose challenges',
                                                         color: Colors.green,
                                                       ),
-                                                      BLText(
-                                                        'Add Challenge',
+                                                      Icon(
+                                                        Icons.arrow_forward,
                                                         color: Colors.green,
-                                                      )
+                                                      ),
                                                     ],
                                                   )),
                                             ],
@@ -263,7 +247,7 @@ class _AddRoomBottomSheetState extends ConsumerState<AddRoomBottomSheet> {
                                           }
 
                                           // check if no challenge ids are selected
-                                          if (selectedChallengeIDs.isEmpty) {
+                                          if (selectedChallenges.isEmpty) {
                                             processing = false;
                                             setState(() {
                                               errorMsg = const BLText(
@@ -282,7 +266,7 @@ class _AddRoomBottomSheetState extends ConsumerState<AddRoomBottomSheet> {
                                             status: RoomStatus.available,
                                             name: roomNameController.text.trim(),
                                             maxPlayers: int.parse(maxPlayersController.text.trim()),
-                                            challengeIDs: selectedChallengeIDs,
+                                            challengeIDs: selectedChallenges.map((challenge) => challenge.id!).toList(),
                                             password: includesPassword == false ? null : passwordController.text.trim(),
                                           ));
                                           if (error != null) {
@@ -335,7 +319,14 @@ class _AddRoomBottomSheetState extends ConsumerState<AddRoomBottomSheet> {
     textValidator = ref.read(textValidatorProvider.notifier);
     creatorMode = ref.read(creatorModeManagerProvider.notifier);
     toast = ref.read(toastProvider.notifier);
-    nav = ref.read(customNavigationProvider);
+    nav = ref.read(customNavigationProvider.notifier);
     super.initState();
+  }
+
+  void chooseChallenges(BuildContext context) async {
+    final List<Challenge> newSelectedChallenges = await nav.push(context, const ChallengeSelector()) as List<Challenge>;
+    setState(() {
+      selectedChallenges = List.from(newSelectedChallenges);
+    });
   }
 }

@@ -290,7 +290,7 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen>
     toast = ref.read(toastProvider.notifier);
     assets = ref.read(assetsProvider);
     auth = ref.read(authServiceProvider.notifier);
-    nav = ref.read(customNavigationProvider);
+    nav = ref.read(customNavigationProvider.notifier);
 
     /// for the entire title
     _titleAnimationController = AnimationController(

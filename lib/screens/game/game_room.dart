@@ -135,7 +135,7 @@ class _GameRoomState extends ConsumerState<GameRoom> with WidgetsBindingObserver
     gameManager.init(widget.room);
     roomManager = ref.read(roomManagerProvider.notifier);
     dialog = ref.read(dialogServiceProvider.notifier);
-    nav = ref.read(customNavigationProvider);
+    nav = ref.read(customNavigationProvider.notifier);
     WidgetsBinding.instance.addObserver(this);
     super.initState();
   }

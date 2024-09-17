@@ -49,9 +49,6 @@ class _PublicRoomItemState extends ConsumerState<PublicRoomItem> {
                   nav.push(
                     context,
                     WaitingRoom(widget.room.id!),
-                    onPop: () {
-                      // TODO: display feedback if popped from leaderboard
-                    },
                   );
                 }
               } else {
@@ -88,7 +85,7 @@ class _PublicRoomItemState extends ConsumerState<PublicRoomItem> {
 
   @override
   void initState() {
-    nav = ref.read(customNavigationProvider);
+    nav = ref.read(customNavigationProvider.notifier);
     dialog = ref.read(dialogServiceProvider.notifier);
     roomManager = ref.read(roomManagerProvider.notifier);
     toast = ref.read(toastProvider.notifier);

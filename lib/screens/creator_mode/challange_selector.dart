@@ -1,100 +1,25 @@
-import 'package:block_logic/components/text/text.dart';
-import 'package:block_logic/logic/enums.dart';
-import 'package:block_logic/logic/firebase_models/challenge.dart';
+import 'package:block_logic/components/background.dart';
+import 'package:block_logic/components/text/title_small.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ChallengeSelector extends ConsumerStatefulWidget {
-  final void Function() addChallengeSelector;
-  final void Function(int) removeChallengeSelector;
-  final void Function(String) addChallengeID;
-  final void Function(String) removeChallengeID;
-  final List<Challenge> availableChallenges;
-  final int index;
-  final String? initialSelection;
-  final Difficulty? initialSelectionDifficulty;
-  const ChallengeSelector({
-    required this.removeChallengeID,
-    required this.availableChallenges,
-    required this.addChallengeID,
-    required this.removeChallengeSelector,
-    required this.addChallengeSelector,
-    required this.index,
-    this.initialSelection,
-    this.initialSelectionDifficulty,
-    super.key,
-  });
+  const ChallengeSelector({super.key});
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _ChallangeSelectorState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _ChallengeSelectorState();
 }
 
-class _ChallangeSelectorState extends ConsumerState<ChallengeSelector> {
-  String? selectedChallengeID;
-  String selectedChallengeName = '';
-  Difficulty? difficulty;
-  @override
-  void initState() {
-    selectedChallengeID = widget.initialSelection;
-    difficulty = widget.initialSelectionDifficulty;
-    super.initState();
-  }
-
+class _ChallengeSelectorState extends ConsumerState<ChallengeSelector> {
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 5),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            clipBehavior: Clip.antiAlias,
-            decoration:
-                const BoxDecoration(color: Colors.blueGrey, borderRadius: BorderRadius.all(Radius.circular(20))),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const SizedBox(width: 10),
-                DropdownButton<String>(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  value: selectedChallengeID,
-                  underline: const SizedBox.shrink(),
-                  items: widget.availableChallenges.map((challenge) {
-                    return DropdownMenuItem<String>(
-                      onTap: () {
-                        setState(() {
-                          difficulty = challenge.difficulty;
-                        });
-                      },
-                      value: challenge.id,
-                      child: BLText(challenge.name ?? '--'),
-                    );
-                  }).toList(),
-                  onChanged: (newValue) {
-                    if (selectedChallengeID != null) {
-                      widget.removeChallengeID.call(selectedChallengeID!);
-                    }
-                    widget.addChallengeID.call(newValue!);
-                    setState(() {
-                      selectedChallengeID = newValue;
-                    });
-                  },
-                  hint: const BLText('(Select challenge)'),
-                ),
-                BLText(difficulty?.name ?? '--'),
-                CloseButton(
-                  onPressed: () {
-                    if (selectedChallengeID != null) {
-                      widget.removeChallengeID.call(selectedChallengeID!);
-                    }
-                    widget.removeChallengeSelector.call(widget.index);
-                  },
-                )
-              ],
-            ),
-          ),
-        ],
-      ),
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      body: Background(
+          child: SafeArea(
+              child: Column(
+        children: [BLSmallTitle('Select challenges')],
+      ))),
     );
   }
 }

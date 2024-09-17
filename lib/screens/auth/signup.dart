@@ -309,7 +309,7 @@ class _SignupState extends ConsumerState<Signup> with RouteAware {
   void initState() {
     toast = ref.read(toastProvider.notifier);
     validator = ref.read(textValidatorProvider.notifier);
-    nav = ref.read(customNavigationProvider);
+    nav = ref.read(customNavigationProvider.notifier);
     auth = ref.read(authServiceProvider.notifier);
     reportsManager = ref.read(reportsManagerProvider.notifier);
     msg = const BlankWidget();

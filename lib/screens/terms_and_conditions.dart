@@ -104,7 +104,7 @@ class TermsAndConditions extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final nav = ref.read(customNavigationProvider);
+    final nav = ref.read(customNavigationProvider.notifier);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Background(

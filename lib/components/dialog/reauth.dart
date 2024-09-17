@@ -89,7 +89,7 @@ class _ReauthDialogState extends ConsumerState<ReauthDialog> {
 
   @override
   void initState() {
-    nav = ref.read(customNavigationProvider);
+    nav = ref.read(customNavigationProvider.notifier);
     auth = ref.read(authServiceProvider.notifier);
     errorMessage = const BlankWidget();
     super.initState();

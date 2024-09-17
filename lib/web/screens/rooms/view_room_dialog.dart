@@ -30,7 +30,7 @@ class _SelectedRoomState extends ConsumerState<ViewRoomDialog> {
   List<String> challengeIDs = [];
   @override
   Widget build(BuildContext context) {
-    final nav = ref.read(customNavigationProvider);
+    final nav = ref.read(customNavigationProvider.notifier);
     final room = ref.watch(SelectedRoomProvider(widget.id));
     final challenges = ref.watch(SelectedChallengesProvider(challengeIDs));
     return BLDialog(

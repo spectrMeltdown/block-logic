@@ -29,7 +29,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   Widget build(BuildContext context) {
     // TODO: May need to change in the future
     final user = ref.read(authChangesProvider);
-    final nav = ref.read(customNavigationProvider);
+    final nav = ref.read(customNavigationProvider.notifier);
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {

@@ -4,7 +4,6 @@ import 'package:block_logic/components/dialog/dialog.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/text/title.dart';
 import 'package:block_logic/logic/enums.dart';
-import 'package:block_logic/logic/services/custom_tab.dart';
 import 'package:block_logic/logic/services/game_manager.dart';
 import 'package:block_logic/logic/services/game_provider.dart';
 import 'package:block_logic/logic/services/navigation.dart';
@@ -29,7 +28,7 @@ class _PauseDialogState extends ConsumerState<PauseDialog> {
   late final GameManager gameManager;
   @override
   void initState() {
-    nav = ref.read(customNavigationProvider);
+    nav = ref.read(customNavigationProvider.notifier);
     gameManager = ref.read(gameManagerProvider.notifier);
     super.initState();
   }

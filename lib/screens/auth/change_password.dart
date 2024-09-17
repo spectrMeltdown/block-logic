@@ -15,12 +15,18 @@ class ChangePassword extends ConsumerStatefulWidget {
 }
 
 class _ChangePasswordState extends ConsumerState<ChangePassword> {
-  final TextEditingController passController = TextEditingController();
+  final passController = TextEditingController();
+  late final CustomNavigation nav;
+  late final AuthService auth;
+  @override
+  void initState() {
+    nav = ref.read(customNavigationProvider.notifier);
+    auth = ref.read(authServiceProvider.notifier);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final nav = ref.read(customNavigationProvider);
-    final auth = ref.read(authServiceProvider.notifier);
     return BLDialog(
         child: Column(
       mainAxisSize: MainAxisSize.min,

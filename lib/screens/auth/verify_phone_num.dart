@@ -164,7 +164,7 @@ class _VerifyPhoneNumState extends ConsumerState<VerifyPhoneNum> {
   @override
   void initState() {
     auth = ref.read(authServiceProvider.notifier);
-    nav = ref.read(customNavigationProvider);
+    nav = ref.read(customNavigationProvider.notifier);
     accountService = ref.read(accountServiceProvider.notifier);
     toast = ref.read(toastProvider.notifier);
     // sms = ref.read(smsServiceProvider.notifier);

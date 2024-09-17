@@ -21,7 +21,7 @@ class _BLBackButtonState extends ConsumerState<BLBackButton> {
   @override
   void initState() {
     if (!kIsWeb) audio = ref.read(bLAudioStateProvider.notifier);
-    nav = ref.read(customNavigationProvider);
+    nav = ref.read(customNavigationProvider.notifier);
     super.initState();
   }
 

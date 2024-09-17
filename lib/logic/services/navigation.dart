@@ -8,21 +8,21 @@ part 'generated/navigation.g.dart';
 @riverpod
 class CustomNavigation extends _$CustomNavigation {
   @override
-  CustomNavigation build() => CustomNavigation();
+  void build() {}
 
   void pop(BuildContext context, [Object? result]) {
     Navigator.pop(context, result);
   }
 
-  void push(
+  Future<Object?> push(
     BuildContext context,
     Widget route, {
-    VoidCallback? onPop,
+    // VoidCallback? onPop,
     PageTransitionType transition = PageTransitionType.fade,
     Widget? childCurrent,
   }) {
     //Navigator.push(context, MaterialPageRoute(builder: (context) => route));
-    Navigator.push(
+    return Navigator.push<Object>(
       context,
       PageTransition(
         child: route,
@@ -32,9 +32,10 @@ class CustomNavigation extends _$CustomNavigation {
         // reverseDuration: null,
         // duration: Duration(milliseconds: transition != PageTransitionType.fade ? 300 : 300),
       ),
-    ).then((value) {
-      if (onPop != null) onPop.call();
-    });
+    );
+    // .then((value) {
+    //   if (onPop != null) onPop.call();
+    // });
   }
 
   void pushAndRemove(BuildContext context, Widget route) {

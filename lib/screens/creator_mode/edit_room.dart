@@ -394,7 +394,7 @@ class _EditRoomBottomSheetState extends ConsumerState<EditRoomBottomSheet> {
     textValidator = ref.read(textValidatorProvider.notifier);
     creatorMode = ref.read(creatorModeManagerProvider.notifier);
     toast = ref.read(toastProvider.notifier);
-    nav = ref.read(customNavigationProvider);
+    nav = ref.read(customNavigationProvider.notifier);
     encryption = ref.read(encryptionProvider.notifier);
     super.initState();
   }

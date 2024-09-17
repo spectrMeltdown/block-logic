@@ -336,7 +336,7 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
     validator = ref.read(textValidatorProvider.notifier);
     auth = ref.read(authServiceProvider.notifier);
     toast = ref.read(toastProvider.notifier);
-    nav = ref.read(customNavigationProvider);
+    nav = ref.read(customNavigationProvider.notifier);
     super.initState();
   }
 

@@ -19,7 +19,7 @@ class Tutorials extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final nav = ref.read(customNavigationProvider);
+    final nav = ref.read(customNavigationProvider.notifier);
     return Scaffold(
       body: Background(
           child: SafeArea(
