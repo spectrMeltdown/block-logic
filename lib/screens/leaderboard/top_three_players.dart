@@ -4,6 +4,7 @@ import 'package:block_logic/components/util/blank_widget.dart';
 import 'package:block_logic/logic/services/assets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:widget_and_text_animator/widget_and_text_animator.dart';
 
 class TopThreePlayers extends ConsumerStatefulWidget {
@@ -15,8 +16,8 @@ class TopThreePlayers extends ConsumerStatefulWidget {
 }
 
 class _TopThreePlayersState extends ConsumerState<TopThreePlayers> {
-  final Duration picStartDelay = const Duration(milliseconds: 500);
-  final Duration picDelay = const Duration(milliseconds: 300);
+  final picStartDelay = const Duration(milliseconds: 500);
+  final picDelay = const Duration(milliseconds: 300);
   late final Duration iconStartDelay;
   late final Duration iconDelay;
   late final Assets assets;
@@ -40,10 +41,22 @@ class _TopThreePlayersState extends ConsumerState<TopThreePlayers> {
                 children: [
                   WidgetAnimator(
                     incomingEffect: WidgetTransitionEffects.incomingSlideInFromBottom(delay: picStartDelay),
-                    child: BLCircular(
-                      url: widget.playerPhotoURL[i],
-                      iconSize: 100,
-                    ),
+                    child: widget.playerPhotoURL[i].isEmpty
+                        ? FittedBox(
+                            fit: BoxFit.contain,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                  color: Colors.grey, borderRadius: BorderRadius.all(Radius.circular(20))),
+                              child: Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child: Icon(FontAwesomeIcons.user),
+                              ),
+                            ),
+                          )
+                        : BLCircular(
+                            url: widget.playerPhotoURL[i],
+                            iconSize: 100,
+                          ),
                   ),
                   Positioned(
                       left: 20,
@@ -71,10 +84,18 @@ class _TopThreePlayersState extends ConsumerState<TopThreePlayers> {
                 WidgetAnimator(
                   incomingEffect: WidgetTransitionEffects.incomingSlideInFromBottom(
                       delay: i == 0 ? picStartDelay + picDelay : picStartDelay + picDelay + picDelay),
-                  child: BLCircular(
-                    url: widget.playerPhotoURL[i],
-                    iconSize: 60,
-                  ),
+                  child: widget.playerPhotoURL[i].isEmpty
+                      ? const FittedBox(
+                          fit: BoxFit.contain,
+                          child: Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Icon(FontAwesomeIcons.user),
+                          ),
+                        )
+                      : BLCircular(
+                          url: widget.playerPhotoURL[i],
+                          iconSize: 60,
+                        ),
                 ),
                 Positioned(
                     bottom: -30,

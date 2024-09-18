@@ -7,15 +7,21 @@ part 'generated/selected_room.g.dart';
 @riverpod
 Stream<Room?> selectedRoom(
   SelectedRoomRef ref,
-  String roomID,
-) async* {
+  String roomID, {
+  bool futureOnly = false,
+}) async* {
   final db = FirebaseFirestore.instance;
-  final stream = db.collection('rooms').doc(roomID).snapshots();
-  await for (final doc in stream) {
-    if (doc.exists) {
-      yield Room.fromFirestore(doc);
-    } else {
-      yield null;
+  final ref = db.collection('rooms').doc(roomID);
+  if (futureOnly) {
+    yield Room.fromFirestore(await ref.get());
+  } else {
+    final stream = ref.snapshots();
+    await for (final doc in stream) {
+      if (doc.exists) {
+        yield Room.fromFirestore(doc);
+      } else {
+        yield null;
+      }
     }
   }
 }

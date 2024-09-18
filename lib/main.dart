@@ -68,7 +68,7 @@ class BlockLogic extends ConsumerWidget {
           darkTheme: appTheme.theme(),
 
           // home: Login(accountType: FirestoreCollections.users),
-          home: kDebugMode
+          home: true
               ? const Checkpoint()
               : Scaffold(
                   body: Background(

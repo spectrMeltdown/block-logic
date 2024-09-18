@@ -171,7 +171,10 @@ class _CreatorModeState extends ConsumerState<CreatorMode> {
                   ],
                 ),
               ),
-            )
+            ),
+            SizedBox(
+              height: 10,
+            ),
           ],
         ),
       )),

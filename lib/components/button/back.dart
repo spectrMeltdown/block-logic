@@ -8,7 +8,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 class BLBackButton extends ConsumerStatefulWidget {
   final VoidCallback? onPressed;
   final double paddingY;
-  const BLBackButton({this.onPressed, this.paddingY = 7, super.key});
+  final bool disabled;
+  const BLBackButton({this.onPressed, this.paddingY = 7, this.disabled = false, super.key});
 
   @override
   ConsumerState<BLBackButton> createState() => _BLBackButtonState();
@@ -31,6 +32,7 @@ class _BLBackButtonState extends ConsumerState<BLBackButton> {
       padding: EdgeInsets.symmetric(horizontal: widget.paddingY, vertical: 0),
       child: IconButton(
           onPressed: () {
+            if (widget.disabled) return;
             audio?.playBtn();
             if (widget.onPressed != null) {
               widget.onPressed?.call();

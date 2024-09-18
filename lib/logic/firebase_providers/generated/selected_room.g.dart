@@ -6,7 +6,7 @@ part of '../selected_room.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$selectedRoomHash() => r'44e3b51c9a288fc7f0b0fa7179086154db2a7660';
+String _$selectedRoomHash() => r'244eef1233ed74033a332255e3d6b25545233a34';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -40,10 +40,12 @@ class SelectedRoomFamily extends Family<AsyncValue<Room?>> {
 
   /// See also [selectedRoom].
   SelectedRoomProvider call(
-    String roomID,
-  ) {
+    String roomID, {
+    bool futureOnly = false,
+  }) {
     return SelectedRoomProvider(
       roomID,
+      futureOnly: futureOnly,
     );
   }
 
@@ -53,6 +55,7 @@ class SelectedRoomFamily extends Family<AsyncValue<Room?>> {
   ) {
     return call(
       provider.roomID,
+      futureOnly: provider.futureOnly,
     );
   }
 
@@ -75,11 +78,13 @@ class SelectedRoomFamily extends Family<AsyncValue<Room?>> {
 class SelectedRoomProvider extends AutoDisposeStreamProvider<Room?> {
   /// See also [selectedRoom].
   SelectedRoomProvider(
-    String roomID,
-  ) : this._internal(
+    String roomID, {
+    bool futureOnly = false,
+  }) : this._internal(
           (ref) => selectedRoom(
             ref as SelectedRoomRef,
             roomID,
+            futureOnly: futureOnly,
           ),
           from: selectedRoomProvider,
           name: r'selectedRoomProvider',
@@ -91,6 +96,7 @@ class SelectedRoomProvider extends AutoDisposeStreamProvider<Room?> {
           allTransitiveDependencies:
               SelectedRoomFamily._allTransitiveDependencies,
           roomID: roomID,
+          futureOnly: futureOnly,
         );
 
   SelectedRoomProvider._internal(
@@ -101,9 +107,11 @@ class SelectedRoomProvider extends AutoDisposeStreamProvider<Room?> {
     required super.debugGetCreateSourceHash,
     required super.from,
     required this.roomID,
+    required this.futureOnly,
   }) : super.internal();
 
   final String roomID;
+  final bool futureOnly;
 
   @override
   Override overrideWith(
@@ -119,6 +127,7 @@ class SelectedRoomProvider extends AutoDisposeStreamProvider<Room?> {
         allTransitiveDependencies: null,
         debugGetCreateSourceHash: null,
         roomID: roomID,
+        futureOnly: futureOnly,
       ),
     );
   }
@@ -130,13 +139,16 @@ class SelectedRoomProvider extends AutoDisposeStreamProvider<Room?> {
 
   @override
   bool operator ==(Object other) {
-    return other is SelectedRoomProvider && other.roomID == roomID;
+    return other is SelectedRoomProvider &&
+        other.roomID == roomID &&
+        other.futureOnly == futureOnly;
   }
 
   @override
   int get hashCode {
     var hash = _SystemHash.combine(0, runtimeType.hashCode);
     hash = _SystemHash.combine(hash, roomID.hashCode);
+    hash = _SystemHash.combine(hash, futureOnly.hashCode);
 
     return _SystemHash.finish(hash);
   }
@@ -145,6 +157,9 @@ class SelectedRoomProvider extends AutoDisposeStreamProvider<Room?> {
 mixin SelectedRoomRef on AutoDisposeStreamProviderRef<Room?> {
   /// The parameter `roomID` of this provider.
   String get roomID;
+
+  /// The parameter `futureOnly` of this provider.
+  bool get futureOnly;
 }
 
 class _SelectedRoomProviderElement
@@ -153,6 +168,8 @@ class _SelectedRoomProviderElement
 
   @override
   String get roomID => (origin as SelectedRoomProvider).roomID;
+  @override
+  bool get futureOnly => (origin as SelectedRoomProvider).futureOnly;
 }
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/game/block_data.dart';
 import 'package:block_logic/logic/jdoodle.dart';
 import 'package:block_logic/logic/services/error_handler.dart';
@@ -10,8 +11,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'generated/solution_checker.g.dart';
 
-@riverpod
-Future<String?> solutionCheck(SolutionCheckRef ref) async {
+final solutionCheckProvider = FutureProvider.autoDispose<String?>((ref) async {
   final errorHandler = ref.read(errorHandlerProvider.notifier);
   final solutionChecker = ref.read(solutionCheckerProvider.notifier);
   try {
@@ -19,7 +19,7 @@ Future<String?> solutionCheck(SolutionCheckRef ref) async {
   } catch (e) {
     return errorHandler.call(e, 'solutionCheck');
   }
-}
+});
 
 @riverpod
 class SolutionChecker extends _$SolutionChecker {
@@ -76,18 +76,19 @@ class SolutionChecker extends _$SolutionChecker {
   Future<String?> check() async {
     final gameState = ref.read(gameManagerProvider);
     String compiledCode = compileCode(gameState.dataTree);
-    String? result = await onlineResult(compiledCode);
+    String? result = compiledCode; // await onlineResult(compiledCode);
     return result;
   }
 
-  // Function to compile the dataTree into Dart code string
+  // compile the dataTree into Dart code string
   String compileCode(Map<String, GameBlockData> dataTree) {
     // Find root blocks (those without a parent)
-    List<String> rootBlocks = dataTree.keys.where((key) => dataTree[key]?.parentUID == '').toList();
+    final rootBlocks = dataTree.values.where((value) => value.parentUID == 'root').toList();
 
+    // the buffer which is the result
     StringBuffer codeBuffer = StringBuffer();
 
-    for (var root in rootBlocks) {
+    for (final root in rootBlocks) {
       _processBlock(dataTree, root, codeBuffer);
     }
 
@@ -95,41 +96,58 @@ class SolutionChecker extends _$SolutionChecker {
   }
 
 // Recursive function to process each block and generate code
-  void _processBlock(Map<String, GameBlockData> dataTree, String blockUID, StringBuffer codeBuffer) {
-    GameBlockData? block = dataTree[blockUID];
+  void _processBlock(Map<String, GameBlockData> dataTree, GameBlockData data, StringBuffer codeBuffer) {
+    GameBlockData? block = dataTree[data.uid];
     if (block == null) return;
 
-    // switch (block.type) {
-    //   case CodeBlockType.conditionals:
-    //     codeBuffer.writeln('void ${block.name}() {');
-    //     _processChildren(dataTree, block.bodyUIDs, codeBuffer);
-    //     codeBuffer.writeln('}');
-    //     break;
+    switch (block.type) {
+      case CodeBlockType.variables:
+      case CodeBlockType.operators:
+      case CodeBlockType.literals:
+      case CodeBlockType.keywords:
+        codeBuffer.write(' block.name ');
+        break;
+      case CodeBlockType.conditionals:
+        codeBuffer.write(' block.name ');
+        break;
+      case CodeBlockType.functions:
+      case CodeBlockType.objects:
+      case CodeBlockType.loops:
+      case CodeBlockType.statement:
+        for (final child in data.statementUIDs!) {
+          switch (data.type) {
+            case CodeBlockType.variables:
+            case CodeBlockType.operators:
+            case CodeBlockType.literals:
+            case CodeBlockType.keywords:
+              codeBuffer.write(' ${block.name} ');
+              break;
+            case CodeBlockType.conditionals:
+            if (data.conditionUIDs != null && data.conditionUIDs!.isNotEmpty) {
+              for (final condition in conditionalUIDs) {
 
-    //   case CodeBlockType.ifStatement:
-    //     codeBuffer.writeln('if (${block.name}) {');
-    //     _processChildren(dataTree, block.bodyUIDs, codeBuffer);
-    //     codeBuffer.writeln('}');
-    //     break;
-
-    //   case CodeBlockType.forLoop:
-    //     codeBuffer.writeln('for (${block.name}) {');
-    //     _processChildren(dataTree, block.bodyUIDs, codeBuffer);
-    //     codeBuffer.writeln('}');
-    //     break;
-
-    //   // Add more cases for other types as needed
-    // }
-  }
-
-// Helper function to recursively process children blocks
-  void _processChildren(Map<String, GameBlockData> dataTree, List<String>? childrenUIDs, StringBuffer codeBuffer) {
-    if (childrenUIDs != null) {
-      for (var childUID in childrenUIDs) {
-        _processBlock(dataTree, childUID, codeBuffer);
-      }
+              }
+            }
+              _processBlock(dataTree, data, codeBuffer);
+              break;
+            case CodeBlockType.functions:
+            case CodeBlockType.objects:
+            case CodeBlockType.loops:
+            case CodeBlockType.statement:
+          }
+        }
+        codeBuffer.writeln('');
     }
   }
+
+// // Helper function to recursively process children blocks
+//   void _processChildren(Map<String, GameBlockData> dataTree, List<String>? childrenUIDs, StringBuffer codeBuffer) {
+//     if (childrenUIDs != null) {
+//       for (var childUID in childrenUIDs) {
+//         _processBlock(dataTree, childUID, codeBuffer);
+//       }
+//     }
+//   }
 }
 
 class SolutionCheckerState {
