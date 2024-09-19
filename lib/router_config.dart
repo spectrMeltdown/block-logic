@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:block_logic/components/button/text.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/logic/enums.dart';
-import 'package:block_logic/logic/firebase_models/admin_account.dart';
 import 'package:block_logic/route_observer.dart';
 import 'package:block_logic/screens/auth/login.dart';
 import 'package:block_logic/screens/auth/verify_email.dart';
@@ -124,43 +123,34 @@ GoRouter router() {
               builder: (context, state) => shellRoutes['dashboard']![1],
             ),
             GoRoute(path: shellRoutes['reports']![0], builder: (context, state) => shellRoutes['reports']![1]),
-            GoRoute(
-                path: shellRoutes['feedback']![0],
-                builder: (context, state) => shellRoutes['feedback']![1],
-                routes: [
-                  GoRoute(
-                    path: 'view/:id',
-                    builder: (context, state) => ViewFeedback(state.pathParameters['id']!),
-                  )
-                ]),
-            GoRoute(
-                path: shellRoutes['challenges']![0],
-                builder: (context, state) => shellRoutes['challenges']![1],
-                routes: [
-                  GoRoute(
-                    path: 'edit/:id',
-                    builder: (context, state) => EditChallenge(state.pathParameters['id']!),
-                    // onExit: onExitEdit,
-                  ),
-                  GoRoute(
-                    path: 'create',
-                    builder: (context, state) => const CreateChallenge(),
-                    // onExit: onExitCreate,
-                  ),
-                ]),
+            GoRoute(path: shellRoutes['feedback']![0], builder: (context, state) => shellRoutes['feedback']![1], routes: [
+              GoRoute(
+                path: 'view/:id',
+                builder: (context, state) => ViewFeedback(state.pathParameters['id']!),
+              )
+            ]),
+            GoRoute(path: shellRoutes['challenges']![0], builder: (context, state) => shellRoutes['challenges']![1], routes: [
+              GoRoute(
+                path: 'edit/:id',
+                builder: (context, state) => EditChallenge(state.pathParameters['id']!),
+                // onExit: onExitEdit,
+              ),
+              GoRoute(
+                path: 'create',
+                builder: (context, state) => const CreateChallenge(),
+                // onExit: onExitCreate,
+              ),
+            ]),
             GoRoute(
               path: shellRoutes['settings']![0],
               builder: (context, state) => shellRoutes['settings']![1],
             ),
-            GoRoute(
-                path: shellRoutes['accounts']![0],
-                builder: (context, state) => shellRoutes['accounts']![1],
-                routes: [
-                  GoRoute(
-                    path: 'create-admin',
-                    builder: (context, state) => const CreateAdmin(),
-                  )
-                ]),
+            GoRoute(path: shellRoutes['accounts']![0], builder: (context, state) => shellRoutes['accounts']![1], routes: [
+              GoRoute(
+                path: 'create-admin',
+                builder: (context, state) => const CreateAdmin(),
+              )
+            ]),
             GoRoute(
               path: shellRoutes['rooms']![0],
               builder: (context, state) => shellRoutes['rooms']![1],

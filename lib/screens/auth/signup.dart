@@ -51,13 +51,7 @@ class _SignupState extends ConsumerState<Signup> with RouteAware {
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      canPop: false,
-      onPopInvokedWithResult: (didPop, result) {
-        if (didPop) return;
-        if (!processing) {
-          nav.pop(context);
-        }
-      },
+      canPop: processing,
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         body: Stack(
@@ -100,12 +94,12 @@ class _SignupState extends ConsumerState<Signup> with RouteAware {
                                           child: Row(
                                             mainAxisSize: MainAxisSize.min,
                                             children: [
-                                              Icon(
+                                              const Icon(
                                                 FontAwesomeIcons.arrowRightArrowLeft,
                                                 color: Colors.white,
                                                 size: 16,
                                               ),
-                                              SizedBox(
+                                              const SizedBox(
                                                 width: 10,
                                               ),
                                               BLText(
@@ -183,13 +177,8 @@ class _SignupState extends ConsumerState<Signup> with RouteAware {
                                           ),
                                           const SizedBox(width: 10),
                                           BLRichText([
-                                            const TextSpan(
-                                                text: 'I agree to the ', style: TextStyle(color: Colors.white)),
-                                            TextSpan(
-                                                style: const TextStyle(decoration: TextDecoration.underline),
-                                                text: 'terms & conditions',
-                                                recognizer: TapGestureRecognizer()
-                                                  ..onTap = () => nav.push(context, const TermsAndConditions())),
+                                            const TextSpan(text: 'I agree to the ', style: TextStyle(color: Colors.white)),
+                                            TextSpan(style: const TextStyle(decoration: TextDecoration.underline), text: 'terms & conditions', recognizer: TapGestureRecognizer()..onTap = () => nav.push(context, const TermsAndConditions())),
                                           ])
                                         ],
                                       ),
@@ -222,12 +211,7 @@ class _SignupState extends ConsumerState<Signup> with RouteAware {
                                                 });
                                               }
                                               if (!context.mounted) return;
-                                              final error = await auth.createAccount(
-                                                  type: AccountType.user,
-                                                  email: emailController.text.trim(),
-                                                  password: passwordController.text.trim(),
-                                                  phoneNum: phoneNumController.text.trim(),
-                                                  displayName: displayNameController.text.trim());
+                                              final error = await auth.createAccount(type: AccountType.user, email: emailController.text.trim(), password: passwordController.text.trim(), phoneNum: phoneNumController.text.trim(), displayName: displayNameController.text.trim());
                                               if (error == null) {
                                                 await reportsManager.add(ReportType.users, 1);
                                                 if (!context.mounted) return;

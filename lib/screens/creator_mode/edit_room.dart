@@ -80,11 +80,7 @@ class _EditRoomBottomSheetState extends ConsumerState<EditRoomBottomSheet> {
     final selectedRoom = ref.watch(SelectedRoomProvider(widget.roomID, futureOnly: true)); // set to future only, to avoid showing changes when updating
     final challenges = ref.watch(challengesProvider); // to get challenges from challenge ids
     return PopScope(
-      onPopInvokedWithResult: (didPop, result) {
-        if (didPop) return;
-        if (processing) return;
-        nav.pop(context);
-      },
+      canPop: processing,
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         body: Background(
@@ -138,7 +134,7 @@ class _EditRoomBottomSheetState extends ConsumerState<EditRoomBottomSheet> {
                                                     paddingY: 0,
                                                     disabled: processing,
                                                   ),
-                                                  SizedBox(
+                                                  const SizedBox(
                                                     width: 10,
                                                   ),
                                                   const BLSmallTitle(
@@ -231,7 +227,7 @@ class _EditRoomBottomSheetState extends ConsumerState<EditRoomBottomSheet> {
                                                     }
                                                     return Column(
                                                       children: [
-                                                        SizedBox(
+                                                        const SizedBox(
                                                           height: 10,
                                                         ),
                                                         if (selectedChallenges.isNotEmpty)
@@ -409,7 +405,7 @@ class _EditRoomBottomSheetState extends ConsumerState<EditRoomBottomSheet> {
                 visible: processing,
                 child: Container(
                   color: Colors.black.withOpacity(0.7),
-                  child: BLLoading(
+                  child: const BLLoading(
                     message: 'Processing ...',
                   ),
                 ),

@@ -150,8 +150,8 @@ class _CreatorModeState extends ConsumerState<CreatorMode> {
                         margin: const EdgeInsets.only(bottom: 60, left: 20, right: 20),
                         type: NotifType.error);
                   } else {
-                    nav.push(context, AddRoomBottomSheet(),
-                        transition: PageTransitionType.rightToLeftJoined, childCurrent: CreatorMode());
+                    nav.push(context, const AddRoomBottomSheet(),
+                        transition: PageTransitionType.rightToLeftJoined, childCurrent: const CreatorMode());
                   }
                   processing = false;
                 },
@@ -172,7 +172,7 @@ class _CreatorModeState extends ConsumerState<CreatorMode> {
                 ),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
           ],

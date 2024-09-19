@@ -1,8 +1,6 @@
 import 'package:block_logic/components/button/toggle.dart';
 import 'package:block_logic/components/text/text.dart';
-import 'package:block_logic/logic/services/account.dart';
 import 'package:block_logic/logic/services/audio.dart';
-import 'package:block_logic/logic/services/persistent_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -16,10 +14,7 @@ class SystemSetting extends ConsumerWidget {
     final mediaQuery = MediaQuery.of(context);
     return SizedBox(
       width: mediaQuery.size.width / 1.4,
-      child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: children),
+      child: Row(crossAxisAlignment: CrossAxisAlignment.center, mainAxisAlignment: MainAxisAlignment.spaceBetween, children: children),
     );
   }
 }
@@ -31,8 +26,6 @@ class SystemSettings extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // final userSettings = ref.watch(SettingsProvider(FirestoreCollections.users));
-    final accountService = ref.read(accountServiceProvider.notifier);
-    final persistentDataNotifier = ref.read(persistentDataStateProvider.notifier);
     final gameAudio = ref.watch(bLAudioStateProvider);
     final gameAudioNotifier = ref.read(bLAudioStateProvider.notifier);
 
@@ -73,23 +66,6 @@ class SystemSettings extends ConsumerWidget {
             debugPrint('bg music switch');
             gameAudioNotifier.toggleBG();
             //bLAudioManager.playBG(false);
-          },
-        )
-      ]),
-
-      /// NOTIFICATIONS
-      SystemSetting(children: [
-        const Row(
-          children: [
-            Icon(FontAwesomeIcons.bell),
-            SizedBox(width: 20),
-            BLText('Notifications'),
-          ],
-        ),
-        BLSwitch(
-          state: persistentDataNotifier.shouldDisplayNotifications(),
-          onPressed: (newValue) {
-            persistentDataNotifier.toggleNotifications();
           },
         )
       ]),

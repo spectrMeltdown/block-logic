@@ -63,7 +63,7 @@ class _LeaderboardsPageState extends ConsumerState<LeaderboardsPage> {
                 ),
               ),
             ),
-            SizedBox(height: 30)
+            const SizedBox(height: 30)
           ],
         ),
       )),

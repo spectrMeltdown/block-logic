@@ -59,13 +59,7 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
     final width = mediaQ.size.width;
 
     return PopScope(
-      canPop: false,
-      onPopInvokedWithResult: (didPop, result) async {
-        if (didPop) return;
-        if (!processing) {
-          nav.pop(context);
-        }
-      },
+      canPop: processing,
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         body: Stack(
@@ -110,7 +104,7 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
                                       Row(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
-                                          Icon(
+                                          const Icon(
                                             FontAwesomeIcons.arrowRightArrowLeft,
                                             color: Colors.white,
                                             size: 16,
@@ -205,8 +199,7 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
                                                           useEmail: useEmail,
                                                         ));
                                                 if (result != null) {
-                                                  toast.showToast('A reset link was sent to your email.',
-                                                      type: NotifType.info);
+                                                  toast.showToast('A reset link was sent to your email.', type: NotifType.info);
                                                 }
                                               },
                                               child: const BLText(
@@ -217,10 +210,8 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
                                             visible: !useEmail,
                                             child: BLTextButton(
                                               onPressed: () {
-                                                if (validator.validatePhoneNum(phoneController.text, required: true) !=
-                                                    null) {
-                                                  toast.showToast('Please provide phone number.',
-                                                      type: NotifType.error);
+                                                if (validator.validatePhoneNum(phoneController.text, required: true) != null) {
+                                                  toast.showToast('Please provide phone number.', type: NotifType.error);
                                                 } else if (!otpCooldownTimer.isActive) {
                                                   sendOTP(context);
                                                 }
@@ -401,7 +392,7 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
       otpCooldownTimer = createTimer();
     });
     toast.showToast('OTP sent!', type: NotifType.info);
-    final verificationID = '';
+    const verificationID = '';
     setState(() {
       this.verificationID = verificationID;
     });

@@ -6,22 +6,7 @@ part of '../solution_checker.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$solutionCheckHash() => r'4b4ded51dafe57c4fa2444e6f99b88042f9ea6f6';
-
-/// See also [solutionCheck].
-@ProviderFor(solutionCheck)
-final solutionCheckProvider = AutoDisposeFutureProvider<String?>.internal(
-  solutionCheck,
-  name: r'solutionCheckProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$solutionCheckHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
-
-typedef SolutionCheckRef = AutoDisposeFutureProviderRef<String?>;
-String _$solutionCheckerHash() => r'189e3abbf1be56c52ba1a1b89352d80e371649f5';
+String _$solutionCheckerHash() => r'2da33f2da39f5a196d3f2e59e685f9d5d5eb7aad';
 
 /// See also [SolutionChecker].
 @ProviderFor(SolutionChecker)

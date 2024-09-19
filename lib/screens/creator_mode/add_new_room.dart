@@ -52,11 +52,7 @@ class _AddRoomBottomSheetState extends ConsumerState<AddRoomBottomSheet> {
   Widget build(BuildContext context) {
     final ownRooms = ref.watch(SelectedRoomsProvider(FirebaseAuth.instance.currentUser!.uid));
     return PopScope(
-      onPopInvokedWithResult: (didPop, result) {
-        if (didPop) return;
-        if (processing) return;
-        nav.pop(context);
-      },
+      canPop: processing,
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         body: Background(
@@ -89,7 +85,7 @@ class _AddRoomBottomSheetState extends ConsumerState<AddRoomBottomSheet> {
                                             paddingY: 0,
                                             disabled: processing,
                                           ),
-                                          BLSmallTitle(
+                                          const BLSmallTitle(
                                             'Create new room',
                                             bottomPadding: 0,
                                           ),
@@ -335,7 +331,7 @@ class _AddRoomBottomSheetState extends ConsumerState<AddRoomBottomSheet> {
                 visible: processing,
                 child: Container(
                   color: Colors.black.withOpacity(0.7),
-                  child: BLLoading(
+                  child: const BLLoading(
                     message: 'Processing ...',
                   ),
                 ),

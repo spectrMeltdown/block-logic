@@ -29,6 +29,7 @@ class _GameRoomState extends ConsumerState<GameRoom> with WidgetsBindingObserver
   // late final AsyncValue<List<Challenge>> challenges;
   late final DialogService dialog;
   late final RoomManager roomManager;
+  bool processing = false;
   int currentChallenge = 0;
   int? challengeLength;
   @override
@@ -40,10 +41,8 @@ class _GameRoomState extends ConsumerState<GameRoom> with WidgetsBindingObserver
         nav.pushReplace(context, FinalizingResults(widget.room.currentLeaderboardID!));
       });
       return PopScope(
-        onPopInvokedWithResult: (didPop, result) {
-          if (didPop) return;
-        },
-        child: Scaffold(
+        canPop: processing,
+        child: const Scaffold(
           body: Background(child: SafeArea(child: BLLoading())),
         ),
       );
@@ -82,10 +81,13 @@ class _GameRoomState extends ConsumerState<GameRoom> with WidgetsBindingObserver
       // );
     }
     return PopScope(
-      canPop: false,
+      canPop: processing,
       onPopInvokedWithResult: (didPop, result) async {
         if (didPop) return;
         final leave = await dialog.show(context, const PauseDialog());
+        setState(() {
+          processing = true;
+        });
         if (leave is bool && leave) {
           if (!context.mounted) return;
           final result = await showDialog(context: context, builder: (context) => const ConfirmDialog());
@@ -95,6 +97,9 @@ class _GameRoomState extends ConsumerState<GameRoom> with WidgetsBindingObserver
             nav.pop(context);
           }
         }
+        setState(() {
+          processing = false;
+        });
       },
       child: Scaffold(
         resizeToAvoidBottomInset: false,

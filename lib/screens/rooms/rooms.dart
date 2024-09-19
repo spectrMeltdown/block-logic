@@ -62,7 +62,7 @@ class _RoomSelectorState extends ConsumerState<RoomSelector> with TickerProvider
                     icon: const Icon(FontAwesomeIcons.circleQuestion))
               ]),
             ),
-            BLTitle('Rooms'),
+            const BLTitle('Rooms'),
             Expanded(
               child: Column(
                 children: [
@@ -82,31 +82,19 @@ class _RoomSelectorState extends ConsumerState<RoomSelector> with TickerProvider
                       ),
                     ),
                   ),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   Expanded(
                     child: Padding(
-                      padding: EdgeInsets.only(bottom: 30),
+                      padding: const EdgeInsets.only(bottom: 30),
                       child: BLBorderedPanel(
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            TabBar(
-                                indicatorColor: BLUI().getAppColor(''),
-                                labelColor: BLUI().getAppColor(''),
-                                dividerColor: BLUI().getAppColor(''),
-                                controller: tabController,
-                                tabs: const [Tab(text: 'Available rooms'), Tab(text: 'Your rooms')]),
+                            TabBar(indicatorColor: BLUI().getAppColor(''), labelColor: BLUI().getAppColor(''), dividerColor: BLUI().getAppColor(''), controller: tabController, tabs: const [Tab(text: 'Available rooms'), Tab(text: 'Your rooms')]),
                             SizedBox(
                               width: double.maxFinite,
                               height: mediaQuery.size.height / 1.6,
-                              child: TabBarView(
-                                  clipBehavior: Clip.antiAlias,
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  controller: tabController,
-                                  children: [
-                                    PublicRooms(searchQuery: searchQuery),
-                                    UserRooms(searchQuery: searchQuery)
-                                  ]),
+                              child: TabBarView(clipBehavior: Clip.antiAlias, physics: const NeverScrollableScrollPhysics(), controller: tabController, children: [PublicRooms(searchQuery: searchQuery), UserRooms(searchQuery: searchQuery)]),
                             )
                           ],
                         ),

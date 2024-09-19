@@ -37,7 +37,7 @@ class AboutUs extends ConsumerWidget {
                   child: Column(
                     children: [
                       WidgetAnimator(
-                        incomingEffect: WidgetTransitionEffects.incomingScaleUp(delay: Duration(milliseconds: 300)),
+                        incomingEffect: WidgetTransitionEffects.incomingScaleUp(delay: const Duration(milliseconds: 300)),
                         child: Image.asset(
                           assets.logo,
                           width: 250,

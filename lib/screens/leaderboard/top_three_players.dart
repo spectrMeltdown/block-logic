@@ -45,9 +45,8 @@ class _TopThreePlayersState extends ConsumerState<TopThreePlayers> {
                         ? FittedBox(
                             fit: BoxFit.contain,
                             child: Container(
-                              decoration: BoxDecoration(
-                                  color: Colors.grey, borderRadius: BorderRadius.all(Radius.circular(20))),
-                              child: Padding(
+                              decoration: const BoxDecoration(color: Colors.grey, borderRadius: BorderRadius.all(Radius.circular(20))),
+                              child: const Padding(
                                 padding: EdgeInsets.all(8.0),
                                 child: Icon(FontAwesomeIcons.user),
                               ),
@@ -82,8 +81,7 @@ class _TopThreePlayersState extends ConsumerState<TopThreePlayers> {
               clipBehavior: Clip.none,
               children: [
                 WidgetAnimator(
-                  incomingEffect: WidgetTransitionEffects.incomingSlideInFromBottom(
-                      delay: i == 0 ? picStartDelay + picDelay : picStartDelay + picDelay + picDelay),
+                  incomingEffect: WidgetTransitionEffects.incomingSlideInFromBottom(delay: i == 0 ? picStartDelay + picDelay : picStartDelay + picDelay + picDelay),
                   child: widget.playerPhotoURL[i].isEmpty
                       ? const FittedBox(
                           fit: BoxFit.contain,
@@ -101,8 +99,7 @@ class _TopThreePlayersState extends ConsumerState<TopThreePlayers> {
                     bottom: -30,
                     left: i == 0 ? -20 : 30,
                     child: WidgetAnimator(
-                      incomingEffect: WidgetTransitionEffects.incomingOffsetThenScale(
-                          delay: i == 0 ? iconStartDelay + iconDelay : iconStartDelay + iconDelay + iconDelay),
+                      incomingEffect: WidgetTransitionEffects.incomingOffsetThenScale(delay: i == 0 ? iconStartDelay + iconDelay : iconStartDelay + iconDelay + iconDelay),
                       child: BLCircular(
                         width: 50,
                         height: 50,

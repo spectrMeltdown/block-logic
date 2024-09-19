@@ -1,6 +1,9 @@
 import 'package:block_logic/components/button/button.dart';
 import 'package:block_logic/components/text/text.dart';
+import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/services/game_manager.dart';
+import 'package:block_logic/logic/services/game_provider.dart';
+import 'package:block_logic/logic/services/toast.dart';
 import 'package:block_logic/screens/game/test_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -16,10 +19,12 @@ class GameTestBtn extends ConsumerStatefulWidget {
 class _GameRunButtonState extends ConsumerState<GameTestBtn> {
   bool processing = false;
   late final GameManager manager;
+  late final Toast toast;
 
   @override
   void initState() {
     manager = ref.read(gameManagerProvider.notifier);
+    toast = ref.read(toastProvider.notifier);
     super.initState();
   }
 
@@ -30,8 +35,14 @@ class _GameRunButtonState extends ConsumerState<GameTestBtn> {
     //   crossAxisAlignment: CrossAxisAlignment.start,
     //   children: [BLText('Error Count: \n${errorCount == -1 ? '--' : errorCount.toString()}')],
     // );
+    final hasBlocks = ref.watch(getRootDataProvider).isNotEmpty;
     return BLButton(
+        type: hasBlocks ? BtnType.normal : BtnType.grey,
         onPressed: () async {
+          if (!hasBlocks) {
+            toast.showToast('Place a block first.', type: NotifType.error);
+            return;
+          }
           if (processing) return;
           processing = true;
           await showDialog(

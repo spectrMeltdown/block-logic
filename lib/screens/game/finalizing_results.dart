@@ -42,9 +42,7 @@ class _FinalizingResultsState extends ConsumerState<FinalizingResults> {
         const SizedBox(
           height: 20,
         ),
-        BLButton(
-            onPressed: () => nav.pushAndRemove(context, const MainMenuScreen()),
-            child: const BLText('Return to Main Menu'))
+        BLButton(onPressed: () => nav.pushAndRemove(context, const MainMenuScreen()), child: const BLText('Return to Main Menu'))
       ],
     );
     super.initState();
@@ -67,9 +65,7 @@ class _FinalizingResultsState extends ConsumerState<FinalizingResults> {
   Widget build(BuildContext context) {
     final leaderboard = ref.watch(SelectedLeaderboardProvider(leaderboardID));
     return PopScope(
-      onPopInvokedWithResult: (didPop, result) {
-        if (didPop) return;
-      },
+      canPop: false,
       child: Scaffold(
         body: Background(
           child: SafeArea(

@@ -32,8 +32,39 @@ class _TestDialogState extends ConsumerState<TestDialog> {
   Widget build(BuildContext context) {
     final solutionCheck = ref.watch(solutionCheckProvider);
     return BLDialog(
-      child: solutionCheck.when(data: (solution) {
-        if (solution == null || solution.isEmpty) {
+      child: solutionCheck.when(
+        data: (solution) {
+          if (solution == null || solution.isEmpty) {
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const BLText(
+                  'Failed to test solution ...',
+                  size: 18,
+                ),
+                const BLText('Internet problem?'),
+                const SizedBox(
+                  height: 15,
+                ),
+                BLButton(type: BtnType.red, onPressed: () => nav.pop(context), child: const BLText('Close'))
+              ],
+            );
+          }
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const BLSmallTitle('Result:'),
+              BLText(solution),
+              BLButton(
+                type: BtnType.red,
+                onPressed: () => nav.pop(context),
+                child: const BLText('Close'),
+              )
+            ],
+          );
+        },
+        error: (error, stackTrace) {
+          genericError(error, stackTrace);
           return Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -48,48 +79,21 @@ class _TestDialogState extends ConsumerState<TestDialog> {
               BLButton(type: BtnType.red, onPressed: () => nav.pop(context), child: const BLText('Close'))
             ],
           );
-        }
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const BLSmallTitle('Result:'),
-            BLText(solution),
-            BLButton(
-              type: BtnType.red,
-              onPressed: () => nav.pop(context),
-              child: const BLText('Close'),
-            )
-          ],
-        );
-      }, error: (error, stackTrace) {
-        genericError(error, stackTrace);
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const BLText(
-              'Failed to test solution ...',
-              size: 18,
-            ),
-            const BLText('Internet problem?'),
-            const SizedBox(
-              height: 15,
-            ),
-            BLButton(type: BtnType.red, onPressed: () => nav.pop(context), child: const BLText('Close'))
-          ],
-        );
-      }, loading: () {
-        genericLoading();
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            BLAnimationPlayer(assets.testLoading),
-            const SizedBox(
-              height: 15,
-            ),
-            const BLSmallTitle('Running your code ...')
-          ],
-        );
-      }),
+        },
+        loading: () {
+          genericLoading();
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              BLAnimationPlayer(assets.testLoading),
+              const SizedBox(
+                height: 15,
+              ),
+              const BLSmallTitle('Running your code ...')
+            ],
+          );
+        },
+      ),
     );
   }
 }
