@@ -123,11 +123,9 @@ class SolutionChecker extends _$SolutionChecker {
               codeBuffer.write(' ${block.name} ');
               break;
             case CodeBlockType.conditionals:
-            if (data.conditionUIDs != null && data.conditionUIDs!.isNotEmpty) {
-              for (final condition in conditionalUIDs) {
-
+              if (data.conditionUIDs != null && data.conditionUIDs!.isNotEmpty) {
+                for (final condition in data.conditionUIDs!) {}
               }
-            }
               _processBlock(dataTree, data, codeBuffer);
               break;
             case CodeBlockType.functions:
