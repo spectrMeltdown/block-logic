@@ -322,7 +322,7 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
 
   @override
   void initState() {
-    otpCooldownTimer = createTimer();
+    otpCooldownTimer = Timer(Duration.zero, () {});
     otpCooldownTimer.cancel();
     validator = ref.read(textValidatorProvider.notifier);
     auth = ref.read(authServiceProvider.notifier);

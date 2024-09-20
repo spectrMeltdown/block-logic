@@ -37,16 +37,15 @@ class _VerifyPhoneNumState extends ConsumerState<VerifyPhoneNum> {
   late final Toast toast;
   late final TextValidator validator;
   late final AccountService accountService;
-  Timer? timer;
+  late Timer timer;
   int seconds = 30;
-  bool displayDelay = false;
   final formKey = GlobalKey<FormState>();
   bool processing = false;
   String phoneNum = '';
+  String verificationID = '';
   int? resendToken;
   // String otp = '';
   bool initSent = false;
-  String verificationID = '';
   final otpInput = TextEditingController();
   late AsyncValue<UserAccount?> account;
   late final AuthService auth;
@@ -122,8 +121,8 @@ class _VerifyPhoneNumState extends ConsumerState<VerifyPhoneNum> {
                                     BLTextButton(
                                         onPressed: () => sendOTP(),
                                         child: BLText(
-                                          displayDelay ? 'Send OTP ($seconds)' : 'Send OTP',
-                                          color: displayDelay ? Colors.grey : null,
+                                          timer.isActive ? 'Send OTP ($seconds)' : 'Send OTP',
+                                          color: timer.isActive ? Colors.grey : null,
                                         )),
                                     BLButton(
                                         onPressed: () => verifyOTP(context, account),
@@ -170,46 +169,53 @@ class _VerifyPhoneNumState extends ConsumerState<VerifyPhoneNum> {
     // sms = ref.read(smsServiceProvider.notifier);
     // otpService = ref.read(otpServiceProvider.notifier);
     validator = ref.read(textValidatorProvider.notifier);
+    timer = Timer(Duration.zero, () {});
+    timer.cancel();
     super.initState();
   }
 
   @override
   void dispose() {
-    timer?.cancel();
+    timer.cancel();
     super.dispose();
   }
 
   void sendOTP() async {
-    if (processing || displayDelay) return;
+    if (processing || timer.isActive) return;
     processing = true;
 
-    final result =
-        await accountService.verifyPhoneNumber(phoneNum, kIsWeb ? AccountType.admin : AccountType.user, resendToken);
+    final result = await accountService.verifyPhoneNumber(
+      phoneNum,
+      kIsWeb ? AccountType.admin : AccountType.user,
+      resendToken,
+    );
     if (result != null) {
       toast.showToast(result, type: NotifType.error);
     } else {
       toast.showToast('OTP sent!', type: NotifType.success);
       setState(() {
-        displayDelay = true;
-        timer = Timer.periodic(const Duration(seconds: 1), (time) {
-          if (seconds != 0) {
-            setState(() {
-              seconds--;
-            });
-          } else {
-            setState(() {
-              seconds = 30;
-              displayDelay = false;
-            });
-            timer!.cancel();
-          }
-        });
+        timer = createTimer();
       });
     }
     // otp = otpService.getOTP().toString();
     // final result = await sms.send(phoneNum, otp!);
 
     processing = false;
+  }
+
+  Timer createTimer() {
+    return Timer.periodic(const Duration(seconds: 1), (time) {
+      if (seconds != 0) {
+        setState(() {
+          seconds--;
+        });
+      } else {
+        setState(() {
+          seconds = 30;
+        });
+        timer.cancel();
+      }
+    });
   }
 
   void verifyOTP(BuildContext context, AccountModel account) async {

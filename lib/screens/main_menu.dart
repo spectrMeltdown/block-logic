@@ -144,9 +144,9 @@ class MainMenuScreen extends ConsumerStatefulWidget {
   ConsumerState<MainMenuScreen> createState() => _MainMenuScreenState();
 }
 
-class _MainMenuScreenState extends ConsumerState<MainMenuScreen>
-    with WidgetsBindingObserver, SingleTickerProviderStateMixin, RouteAware {
+class _MainMenuScreenState extends ConsumerState<MainMenuScreen> with WidgetsBindingObserver, TickerProviderStateMixin, RouteAware {
   late final AnimationController _titleAnimationController;
+  late final AnimationController _premiumCrown;
   late final Animation<double> _blurRadiusAnimation;
   final menuController = MenuController();
   late final Assets assets;
@@ -183,6 +183,11 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen>
                             BLAnimationPlayer(
                               assets.premiumCrown,
                               size: 50,
+                              controller: _premiumCrown,
+                              controllerActions: (premiumCrown) {
+                                _premiumCrown.duration = premiumCrown.duration;
+                                _premiumCrown.repeat(min: 0.5, max: 1);
+                              },
                             ),
                             const SizedBox(
                               width: 5,
@@ -282,6 +287,7 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen>
   void dispose() {
     toast.dismissAllToast();
     _titleAnimationController.dispose();
+    _premiumCrown.dispose();
     super.dispose();
   }
 
@@ -306,6 +312,8 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen>
       parent: _titleAnimationController,
       curve: Curves.easeInOut,
     ));
+
+    _premiumCrown = AnimationController(vsync: this);
 
     /// video bg
     // _controller = VideoPlayerController.asset(assets.bg1,
