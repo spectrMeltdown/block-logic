@@ -6,7 +6,7 @@ part of '../solution_checker.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$solutionCheckerHash() => r'2da33f2da39f5a196d3f2e59e685f9d5d5eb7aad';
+String _$solutionCheckerHash() => r'e3b872012f2ae502b1123fe321a7b03cd0c9e89c';
 
 /// See also [SolutionChecker].
 @ProviderFor(SolutionChecker)
