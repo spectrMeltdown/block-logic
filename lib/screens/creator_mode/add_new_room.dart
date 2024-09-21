@@ -165,9 +165,50 @@ class _AddRoomBottomSheetState extends ConsumerState<AddRoomBottomSheet> {
                                       Column(
                                         children: [
                                           SizedBox(height: 15),
-                                          if (challengeSelectors.isNotEmpty)
-                                            ...List.generate(challengeSelectors.length, (i) {
-                                              return challengeSelectors[i];
+                                          if (selectedChallenges.isNotEmpty)
+                                            ...List.generate(selectedChallenges.length, (i) {
+                                              final currentChallenge = selectedChallenges[i];
+                                              return Padding(
+                                                padding: const EdgeInsets.symmetric(vertical: 5),
+                                                child: Row(
+                                                  mainAxisAlignment: MainAxisAlignment.center,
+                                                  children: [
+                                                    Container(
+                                                      clipBehavior: Clip.antiAlias,
+                                                      decoration: const BoxDecoration(
+                                                        color: Colors.blueGrey,
+                                                        borderRadius: BorderRadius.all(
+                                                          Radius.circular(20),
+                                                        ),
+                                                      ),
+                                                      child: Row(
+                                                        mainAxisSize: MainAxisSize.min,
+                                                        children: [
+                                                          const SizedBox(width: 10),
+                                                          BLText(currentChallenge.name ?? '--'),
+                                                          const SizedBox(width: 10),
+                                                          BLText(
+                                                            currentChallenge.difficulty?.name ?? '--',
+                                                            bold: true,
+                                                            color: currentChallenge.difficulty == Difficulty.beginner
+                                                                ? Colors.green
+                                                                : currentChallenge.difficulty == Difficulty.intermediate
+                                                                    ? Colors.amber
+                                                                    : Colors.deepOrange,
+                                                          ),
+                                                          CloseButton(
+                                                            onPressed: () {
+                                                              setState(() {
+                                                                selectedChallenges.removeWhere((challenge) => challenge.id == currentChallenge.id);
+                                                              });
+                                                            },
+                                                          )
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              );
                                             }),
                                           Row(
                                             mainAxisAlignment: MainAxisAlignment.center,

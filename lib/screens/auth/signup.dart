@@ -330,6 +330,8 @@ class _SignupState extends ConsumerState<Signup> with RouteAware {
                                                   password: passwordController.text.trim(),
                                                   phoneNum: phoneNumController.text.trim(),
                                                   displayName: displayNameController.text.trim(),
+                                                  smsCode: otpController.text.trim(),
+                                                  verificationId: verificationID,
                                                 );
                                               }
                                               if (error == null) {
