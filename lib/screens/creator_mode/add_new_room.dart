@@ -116,10 +116,10 @@ class _AddRoomBottomSheetState extends ConsumerState<AddRoomBottomSheet> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Row(
+                                const Row(
                                   children: [
                                     BLBackButton(paddingY: 0),
-                                    const BLSmallTitle(
+                                    BLSmallTitle(
                                       'Create new room',
                                       bottomPadding: 0,
                                     ),
@@ -208,7 +208,7 @@ class _AddRoomBottomSheetState extends ConsumerState<AddRoomBottomSheet> {
                                       }
                                       return Column(
                                         children: [
-                                          SizedBox(height: 15),
+                                          const SizedBox(height: 15),
                                           if (challengeSelectors.isNotEmpty)
                                             ...List.generate(challengeSelectors.length, (i) {
                                               return challengeSelectors[i];

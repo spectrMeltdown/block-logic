@@ -12,14 +12,15 @@ class BLButton extends ConsumerStatefulWidget {
   final EdgeInsets? padding;
   final double? paddingX;
   final double? paddingY;
-  const BLButton(
-      {required this.onPressed,
-      required this.child,
-      this.type = BtnType.normal,
-      this.padding,
-      this.paddingX,
-      this.paddingY,
-      super.key});
+  const BLButton({
+    required this.onPressed,
+    required this.child,
+    this.type = BtnType.normal,
+    this.padding,
+    this.paddingX,
+    this.paddingY,
+    super.key,
+  });
 
   @override
   ConsumerState<BLButton> createState() => _BtnState();
@@ -28,12 +29,12 @@ class BLButton extends ConsumerStatefulWidget {
 class _BtnState extends ConsumerState<BLButton> {
   BLAudioState? audio;
   late final BLUI blui;
-  bool _isTapped = false;
   late List<Color> btnPressedColor;
   late List<Color> btnColor;
   final Color darkerShade = Colors.blueGrey.shade900;
   final Color darkShade = Colors.blueGrey.shade800;
   final containerKey = GlobalKey();
+  bool _isTapped = false;
   double width = 10;
   final List<BoxShadow> btnShadow = [
     BoxShadow(
@@ -57,13 +58,18 @@ class _BtnState extends ConsumerState<BLButton> {
       child: Container(
           key: containerKey,
           padding: widget.padding ??
-              EdgeInsets.symmetric(horizontal: widget.paddingX ?? 30, vertical: widget.paddingY ?? 10),
+              EdgeInsets.symmetric(
+                horizontal: widget.paddingX ?? 30,
+                vertical: widget.paddingY ?? 10,
+              ),
           decoration: BoxDecoration(
             shape: BoxShape.rectangle,
             borderRadius: BorderRadius.circular(12.0),
             border: Border.all(color: Colors.white, width: 2.0),
-            gradient:
-                RadialGradient(colors: _isTapped ? btnPressedColor : btnColor, radius: blui.getRadius(context, width)),
+            gradient: RadialGradient(
+              colors: _isTapped ? btnPressedColor : btnColor,
+              radius: blui.getRadius(context, width),
+            ),
             boxShadow: (_isTapped ? btnShadow : null),
           ),
           child: widget.child),

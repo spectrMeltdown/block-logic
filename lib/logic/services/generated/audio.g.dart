@@ -20,12 +20,11 @@ final audioInitProvider = AutoDisposeFutureProvider<void>.internal(
 );
 
 typedef AudioInitRef = AutoDisposeFutureProviderRef<void>;
-String _$bLAudioStateHash() => r'0729b59753e04d32804faec3b3f29b22b8747826';
+String _$bLAudioStateHash() => r'176634f11d017bc09831de3dc5818a66d1fc712e';
 
 /// See also [BLAudioState].
 @ProviderFor(BLAudioState)
-final bLAudioStateProvider =
-    AutoDisposeNotifierProvider<BLAudioState, BLAudio>.internal(
+final bLAudioStateProvider = NotifierProvider<BLAudioState, BLAudio>.internal(
   BLAudioState.new,
   name: r'bLAudioStateProvider',
   debugGetCreateSourceHash:
@@ -34,6 +33,6 @@ final bLAudioStateProvider =
   allTransitiveDependencies: null,
 );
 
-typedef _$BLAudioState = AutoDisposeNotifier<BLAudio>;
+typedef _$BLAudioState = Notifier<BLAudio>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

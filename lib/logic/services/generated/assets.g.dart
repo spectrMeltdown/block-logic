@@ -6,11 +6,11 @@ part of '../assets.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$assetsHash() => r'99203fe4f1338968091b3093dc4501d599f165ee';
+String _$assetsHash() => r'32d84280183ff393b6c5921384bdbdbb22b2662f';
 
 /// See also [assets].
 @ProviderFor(assets)
-final assetsProvider = AutoDisposeProvider<Assets>.internal(
+final assetsProvider = Provider<Assets>.internal(
   assets,
   name: r'assetsProvider',
   debugGetCreateSourceHash:
@@ -19,6 +19,6 @@ final assetsProvider = AutoDisposeProvider<Assets>.internal(
   allTransitiveDependencies: null,
 );
 
-typedef AssetsRef = AutoDisposeProviderRef<Assets>;
+typedef AssetsRef = ProviderRef<Assets>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

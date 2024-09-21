@@ -2,7 +2,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'generated/assets.g.dart';
 
-@riverpod
+@Riverpod(keepAlive: true)
 Assets assets(AssetsRef ref) => Assets();
 
 class Assets {

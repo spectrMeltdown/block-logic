@@ -3,5 +3,5 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 part 'generated/shared_pref.g.dart';
 
-@riverpod
+@Riverpod(keepAlive: true)
 SharedPreferences sharedPref(SharedPrefRef ref) => throw UnimplementedError();

@@ -62,7 +62,7 @@ class _RoomSelectorState extends ConsumerState<RoomSelector> with TickerProvider
                     icon: const Icon(FontAwesomeIcons.circleQuestion))
               ]),
             ),
-            BLTitle('Rooms'),
+            const BLTitle('Rooms'),
             Expanded(
               child: Column(
                 children: [
@@ -82,10 +82,10 @@ class _RoomSelectorState extends ConsumerState<RoomSelector> with TickerProvider
                       ),
                     ),
                   ),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   Expanded(
                     child: Padding(
-                      padding: EdgeInsets.only(bottom: 30),
+                      padding: const EdgeInsets.only(bottom: 30),
                       child: BLBorderedPanel(
                         child: Column(
                           mainAxisSize: MainAxisSize.min,

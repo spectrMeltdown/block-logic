@@ -13,7 +13,7 @@ Future<void> audioInit(AudioInitRef ref) async {
   await FlameAudio.audioCache.loadAll([assets.audioBG1]);
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 class BLAudioState extends _$BLAudioState {
   @override
   BLAudio build() {
@@ -22,13 +22,17 @@ class BLAudioState extends _$BLAudioState {
     final soundEffects = sharedPref.getBool('soundEffects') ?? true;
     final backgroundMusic = sharedPref.getBool('backgroundMusic') ?? true;
     return BLAudio(
-        soundEffects: soundEffects, backgroundMusic: backgroundMusic, sharedPref: sharedPref, assets: assets);
+      soundEffects: soundEffects,
+      backgroundMusic: backgroundMusic,
+      sharedPref: sharedPref,
+      assets: assets,
+    );
     // return BLAudio(
     //     soundEffects: soundEffects, backgroundMusic: backgroundMusic);
   }
 
   void playBtn() {
-    if (state.soundEffects == true) FlameAudio.play(state._assets.btn1);
+    if (state.soundEffects) FlameAudio.play(state._assets.btn1);
   }
 
   void toggleSoundEffects() {

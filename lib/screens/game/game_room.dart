@@ -43,7 +43,7 @@ class _GameRoomState extends ConsumerState<GameRoom> with WidgetsBindingObserver
         onPopInvokedWithResult: (didPop, result) {
           if (didPop) return;
         },
-        child: Scaffold(
+        child: const Scaffold(
           body: Background(child: SafeArea(child: BLLoading())),
         ),
       );
