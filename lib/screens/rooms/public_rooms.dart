@@ -3,6 +3,7 @@ import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/util/provider_default.dart';
 import 'package:block_logic/logic/firebase_providers/all_rooms.dart';
 import 'package:block_logic/screens/rooms/public_room_item.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -19,7 +20,12 @@ class _PublicRoomsState extends ConsumerState<PublicRooms> {
 
   @override
   Widget build(BuildContext context) {
-    final roomsProvider = ref.watch(RoomsProvider(widget.searchQuery));
+    final roomsProvider = ref.watch(
+      RoomsProvider(
+        searchQuery: widget.searchQuery,
+        uid: FirebaseAuth.instance.currentUser!.uid,
+      ),
+    );
 
     return roomsProvider.when(
       data: (rooms) {
@@ -34,7 +40,7 @@ class _PublicRoomsState extends ConsumerState<PublicRooms> {
         if (rooms.isEmpty) {
           return const Center(
             child: BLText(
-              'There are no available rooms\nat the moment.',
+              'There are no public rooms\nat the moment.',
               alignCenter: true,
             ),
           );

@@ -29,84 +29,89 @@ class _RoomSelectorState extends ConsumerState<RoomSelector> with TickerProvider
     final mediaQuery = MediaQuery.of(context);
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      body: Background(
-          child: SafeArea(
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 5, right: 5),
-              child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                const BLBackButton(),
-                IconButton(
-                    onPressed: () {
-                      showDialog(
-                          context: context,
-                          builder: (context) => const BLHelpDialog(
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    BLText(
-                                      'Can\'t find your room?',
-                                      bold: true,
-                                    ),
-                                    BLText(
-                                      '- It is possible that your room has been locked by the admin.\n\nPlease message the admin through feedback in the main menu screen if you think this is a mistake.',
-                                      softWrap: true,
-                                      color: Colors.white,
-                                    )
-                                  ],
-                                ),
-                              ));
-                    },
-                    icon: const Icon(FontAwesomeIcons.circleQuestion))
-              ]),
-            ),
-            const BLTitle('Rooms'),
-            Expanded(
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 30),
-                    child: BLTextBox(
-                      controller: searchController,
-                      prefixIcon: const Icon(
-                        Icons.search_rounded,
-                        color: Colors.white,
-                      ),
-                      labelText: 'Search ...',
-                      suffixIcon: const Icon(
-                        FontAwesomeIcons.arrowRightLong,
-                        color: Colors.white,
-                        size: 20,
+      body: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).unfocus();
+        },
+        child: Background(
+            child: SafeArea(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 5, right: 5),
+                child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                  const BLBackButton(),
+                  IconButton(
+                      onPressed: () {
+                        showDialog(
+                            context: context,
+                            builder: (context) => const BLHelpDialog(
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      BLText(
+                                        'Can\'t find your room?',
+                                        bold: true,
+                                      ),
+                                      BLText(
+                                        '- It is possible that your room has been locked by the admin.\n\nPlease message the admin through feedback in the main menu screen if you think this is a mistake.',
+                                        softWrap: true,
+                                        color: Colors.white,
+                                      )
+                                    ],
+                                  ),
+                                ));
+                      },
+                      icon: const Icon(FontAwesomeIcons.circleQuestion))
+                ]),
+              ),
+              const BLTitle('Rooms'),
+              Expanded(
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 30),
+                      child: BLTextBox(
+                        controller: searchController,
+                        prefixIcon: const Icon(
+                          Icons.search_rounded,
+                          color: Colors.white,
+                        ),
+                        labelText: 'Search ...',
+                        // suffixIcon: const Icon(
+                        //   FontAwesomeIcons.arrowRightLong,
+                        //   color: Colors.white,
+                        //   size: 20,
+                        // ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 15),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(bottom: 30),
-                      child: BLBorderedPanel(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            TabBar(indicatorColor: BLUI().getAppColor(''), labelColor: BLUI().getAppColor(''), dividerColor: BLUI().getAppColor(''), controller: tabController, tabs: const [Tab(text: 'Available rooms'), Tab(text: 'Your rooms')]),
-                            SizedBox(
-                              width: double.maxFinite,
-                              height: mediaQuery.size.height / 1.6,
-                              child: TabBarView(clipBehavior: Clip.antiAlias, physics: const NeverScrollableScrollPhysics(), controller: tabController, children: [PublicRooms(searchQuery: searchQuery), UserRooms(searchQuery: searchQuery)]),
-                            )
-                          ],
+                    const SizedBox(height: 15),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.only(bottom: 30),
+                        child: BLBorderedPanel(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              TabBar(indicatorColor: BLUI().getAppColor(''), labelColor: BLUI().getAppColor(''), dividerColor: BLUI().getAppColor(''), controller: tabController, tabs: const [Tab(text: 'Public rooms'), Tab(text: 'Your rooms')]),
+                              SizedBox(
+                                width: double.maxFinite,
+                                height: mediaQuery.size.height / 1.6,
+                                child: TabBarView(clipBehavior: Clip.antiAlias, physics: const NeverScrollableScrollPhysics(), controller: tabController, children: [PublicRooms(searchQuery: searchQuery), UserRooms(searchQuery: searchQuery)]),
+                              )
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  )
-                ],
+                    )
+                  ],
+                ),
               ),
-            ),
-          ],
-        ),
-      )),
+            ],
+          ),
+        )),
+      ),
     );
   }
 

@@ -28,17 +28,25 @@ class _RoomsManagerState extends ConsumerState<RoomsManager> {
   final pageScrollController = ScrollController();
   String searchQuery = '';
   bool processing = false;
+  late final Toast toast;
+  late final AdminRoomManager roomManager;
+  late final DialogService dialog;
   late List<Room> roomsList;
   final List<String> roomHeaders = ['Name', 'Host', 'Max Players', 'Status', 'Actions'];
+
+  @override
+  void initState() {
+    toast = ref.read(toastProvider.notifier);
+    roomManager = ref.read(adminRoomManagerProvider.notifier);
+    dialog = ref.read(dialogServiceProvider.notifier);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     // double width = MediaQuery.of(context).size.width;
     // double height = MediaQuery.of(context).size.height;
-    final rooms = ref.watch(RoomsProvider(searchQuery));
-    final toast = ref.read(toastProvider.notifier);
-    final roomManager = ref.read(adminRoomManagerProvider.notifier);
-    final dialog = ref.read(dialogServiceProvider.notifier);
+    final rooms = ref.watch(RoomsProvider(searchQuery: searchQuery));
     return ListView(
       controller: pageScrollController,
       padding: EdgeInsets.zero,
@@ -63,8 +71,7 @@ class _RoomsManagerState extends ConsumerState<RoomsManager> {
                         }
                         roomsList = rooms;
                         return BLTable(
-                            columns:
-                                List.generate(roomHeaders.length, (i) => DataColumn(label: BLText(roomHeaders[i]))),
+                            columns: List.generate(roomHeaders.length, (i) => DataColumn(label: BLText(roomHeaders[i]))),
                             rows: List.generate(
                                 roomsList.length,
                                 (i) => DataRow(
@@ -76,37 +83,27 @@ class _RoomsManagerState extends ConsumerState<RoomsManager> {
                                         },
                                         cells: [
                                           DataCell(BLText(roomsList[i].name ?? '--')),
-                                          DataCell(roomsList[i].hostID != null
-                                              ? BLDisplayName(roomsList[i].hostID!, AccountType.user)
-                                              : const BLText('--')),
-                                          DataCell(BLText(roomsList[i].maxPlayers != null
-                                              ? roomsList[i].maxPlayers.toString()
-                                              : '--')),
-                                          DataCell(BLText(
-                                              roomsList[i].status != null ? getStatus(roomsList[i].status!) : '--')),
+                                          DataCell(roomsList[i].hostID != null ? BLDisplayName(roomsList[i].hostID!, AccountType.user) : const BLText('--')),
+                                          DataCell(BLText(roomsList[i].maxPlayers != null ? roomsList[i].maxPlayers.toString() : '--')),
+                                          DataCell(BLText(roomsList[i].status != null ? getStatus(roomsList[i].status!) : '--')),
                                           DataCell(SpacedRow(
                                             spacing: 10,
                                             children: [
                                               BLAdminButton(
                                                   type: processing == true ? AdminBtnType.grey : AdminBtnType.orange,
-                                                  child: BLText(roomsList[i].adminLocked != null
-                                                      ? (roomsList[i].adminLocked == true ? 'Unlock' : 'Lock')
-                                                      : 'Lock'),
+                                                  child: BLText(roomsList[i].adminLocked != null ? (roomsList[i].adminLocked == true ? 'Unlock' : 'Lock') : 'Lock'),
                                                   onPressed: () async {
                                                     if (processing) return;
                                                     setState(() {
                                                       processing = true;
                                                     });
-                                                    if (roomsList[i].adminLocked != null &&
-                                                        roomsList[i].adminLocked == true) {
-                                                      final result =
-                                                          await roomManager.setLock(roomsList[i].id ?? '', false);
+                                                    if (roomsList[i].adminLocked != null && roomsList[i].adminLocked == true) {
+                                                      final result = await roomManager.setLock(roomsList[i].id ?? '', false);
                                                       if (result != null) {
                                                         toast.showToast(result, type: NotifType.error);
                                                       }
                                                     } else {
-                                                      final result =
-                                                          await roomManager.setLock(roomsList[i].id ?? '', true);
+                                                      final result = await roomManager.setLock(roomsList[i].id ?? '', true);
                                                       if (result != null) {
                                                         toast.showToast(result, type: NotifType.error);
                                                       }

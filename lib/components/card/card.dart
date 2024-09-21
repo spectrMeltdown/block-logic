@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class BLCard extends ConsumerStatefulWidget {
   final VoidCallback onPressed;
+  final VoidCallback? onLongPress;
   final Widget child;
   final EdgeInsets innerPadding;
   final EdgeInsets outerPadding;
@@ -15,12 +16,15 @@ class BLCard extends ConsumerStatefulWidget {
   final List<BoxShadow>? pressedOverlayColor;
   final double? height;
   final double? width;
+  final Color? borderColor;
   const BLCard({
     super.key,
     required this.color,
     required this.onPressed,
     required this.child,
+    this.borderColor,
     this.glow,
+    this.onLongPress,
     this.height,
     this.width,
     this.pressedOverlayColor,
@@ -35,6 +39,8 @@ class BLCard extends ConsumerStatefulWidget {
 
 class _BLCardState extends ConsumerState<BLCard> {
   bool _isTapped = false;
+  late final BLAudioState audio;
+  late final BLUI blui;
   late final List<Color> colorPressed;
   late final List<Color> color;
   double width = 10;
@@ -42,11 +48,10 @@ class _BLCardState extends ConsumerState<BLCard> {
 
   @override
   Widget build(BuildContext context) {
-    final audio = ref.read(bLAudioStateProvider.notifier);
-    final blui = ref.read(bLUIProvider.notifier);
     return Container(
       padding: widget.outerPadding,
       child: GestureDetector(
+        onLongPress: widget.onLongPress,
         onTapDown: (details) {
           audio.playBtn();
           _onTapDown();
@@ -60,9 +65,8 @@ class _BLCardState extends ConsumerState<BLCard> {
             padding: widget.innerPadding,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12.0),
-              border: Border.all(color: Colors.white, width: 3.0),
-              gradient:
-                  RadialGradient(colors: _isTapped ? colorPressed : color, radius: blui.getRadius(context, width)),
+              border: Border.all(color: widget.borderColor ?? Colors.white, width: 3.0),
+              gradient: RadialGradient(colors: _isTapped ? colorPressed : color, radius: blui.getRadius(context, width)),
               boxShadow: (_isTapped
                   ? <BoxShadow>[
                       ...widget.pressedOverlayColor ?? [],
@@ -84,6 +88,8 @@ class _BLCardState extends ConsumerState<BLCard> {
 
   @override
   void initState() {
+    audio = ref.read(bLAudioStateProvider.notifier);
+    blui = ref.read(bLUIProvider.notifier);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // Access the width after the first frame is rendered
       final RenderBox renderBox = containerKey.currentContext?.findRenderObject() as RenderBox;

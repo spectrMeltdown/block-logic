@@ -164,7 +164,7 @@ class _AddRoomBottomSheetState extends ConsumerState<AddRoomBottomSheet> {
                                       const BLText('Selected Challenges: '),
                                       Column(
                                         children: [
-                                          SizedBox(height: 15),
+                                          const SizedBox(height: 15),
                                           if (selectedChallenges.isNotEmpty)
                                             ...List.generate(selectedChallenges.length, (i) {
                                               final currentChallenge = selectedChallenges[i];

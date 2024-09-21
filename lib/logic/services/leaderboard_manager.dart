@@ -52,8 +52,13 @@ class LeaderboardManager extends _$LeaderboardManager {
   }
 
   Future<String?> updatePlayers(String leaderboardID, Map<String, dynamic> players) async {
+    final ref = state._db.doc(leaderboardID);
     try {
-      await state._db.doc(leaderboardID).set(players, SetOptions(merge: true));
+      await ref.set(players, SetOptions(merge: true));
+      final leaderboard = Leaderboard.fromFirestore(await ref.get());
+      if (leaderboard.players!.isEmpty) {
+        ref.delete();
+      }
       return null;
     } catch (e) {
       return state._errorHandler.call(e, this);

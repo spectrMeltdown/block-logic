@@ -5,7 +5,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'generated/all_rooms.g.dart';
 
 @riverpod
-Stream<List<Room>> rooms(RoomsRef ref, [String? searchQuery]) async* {
+Stream<List<Room>> rooms(RoomsRef ref, {String? searchQuery, String? uid}) async* {
   final db = FirebaseFirestore.instance;
   final stream = db.collection('rooms').snapshots();
   await for (final query in stream) {
@@ -63,6 +63,13 @@ Stream<List<Room>> rooms(RoomsRef ref, [String? searchQuery]) async* {
     result.removeWhere((room) {
       return room.adminLocked == true;
     });
+
+    /// remove own rooms
+    if (uid != null && uid.isNotEmpty) {
+      result.removeWhere((room) {
+        return room.hostID == uid;
+      });
+    }
     yield result;
   }
 }

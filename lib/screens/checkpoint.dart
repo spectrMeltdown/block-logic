@@ -92,6 +92,7 @@ import 'package:block_logic/logic/firebase_providers/selected_user.dart';
 import 'package:block_logic/logic/services/account.dart';
 import 'package:block_logic/logic/services/assets.dart';
 import 'package:block_logic/logic/services/auth.dart';
+import 'package:block_logic/logic/services/login_check.dart';
 import 'package:block_logic/logic/services/shared_pref.dart';
 import 'package:block_logic/screens/auth/verify_email.dart';
 import 'package:block_logic/screens/auth/verify_phone_num.dart';
@@ -113,7 +114,6 @@ class _CheckpointState extends ConsumerState<Checkpoint> {
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(authChangesProvider);
-    final userFirestore = ref.watch(SelectedUserProvider(auth.getUID()));
     return user.when(
       data: (user) {
         final accountService = ref.read(accountServiceProvider.notifier);
@@ -126,27 +126,35 @@ class _CheckpointState extends ConsumerState<Checkpoint> {
             return const VerifyEmail();
           }
 
-          /// check if user is initialized in firestore
-          return userFirestore.when(
-              data: (userAccount) {
-                /// if not initialized
-                if (userAccount == null) {
-                  debugPrint('account not initialized');
-
-                  /// initialize user details in firestore
-                  accountService.initFirestoreData(type: AccountType.user);
+          final dupLoginCheck = ref.watch(loginCheckProvider);
+          return dupLoginCheck.when(
+              data: (loggedIn) {
+                if (loggedIn != null && loggedIn) {
+                  // change loggedIn to sessionID string, generate using uuid
                 }
+                final userFirestore = ref.watch(SelectedUserProvider(auth.getUID()));
 
-                if (userAccount?.verificationID != null) {
-                  return const VerifyPhoneNum();
-                }
-                return const MainMenuScreen();
+                /// check if user is initialized in firestore
+                return userFirestore.when(
+                    data: (userAccount) {
+                      /// if not initialized
+                      if (userAccount == null) {
+                        debugPrint('account not initialized');
+
+                        /// initialize user details in firestore
+                        accountService.initFirestoreData(type: AccountType.user);
+                      }
+
+                      if (userAccount?.verificationID != null) {
+                        return const VerifyPhoneNum();
+                      }
+                      return const MainMenuScreen();
+                    },
+                    error: genericError,
+                    loading: genericLoading);
               },
               error: genericError,
-              loading: () {
-                debugPrint('Loading in checkpoint');
-                return genericLoading();
-              });
+              loading: genericLoading);
         }
         return const MainMenuScreen();
       },

@@ -1,3 +1,4 @@
+import 'package:block_logic/components/async/loading.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/util/provider_default.dart';
 import 'package:block_logic/logic/firebase_providers/selected_rooms.dart';
@@ -39,18 +40,30 @@ class _UserRoomsState extends ConsumerState<UserRooms> {
             ),
           );
         }
-        return ListView.builder(
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            itemCount: rooms.length,
-            itemBuilder: (context, i) {
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
-                child: UserRoomItem(
-                  room: rooms[i],
-                  toggleProcessing: toggleProcessing,
-                ),
-              );
-            });
+        return Stack(
+          children: [
+            ListView.builder(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                itemCount: rooms.length,
+                itemBuilder: (context, i) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+                    child: UserRoomItem(
+                      room: rooms[i],
+                      toggleProcessing: toggleProcessing,
+                    ),
+                  );
+                }),
+            Visibility(
+                visible: processing,
+                child: Positioned.fill(
+                    child: Container(
+                        color: Colors.black.withOpacity(0.6),
+                        child: const BLLoading(
+                          message: 'Joining room...',
+                        ))))
+          ],
+        );
       },
       error: genericError,
       loading: genericLoading,

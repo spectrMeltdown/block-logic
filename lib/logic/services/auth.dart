@@ -1,8 +1,10 @@
 import 'package:block_logic/logic/enums.dart';
+import 'package:block_logic/logic/firebase_models/user_account.dart';
 import 'package:block_logic/logic/firebase_providers/auth.dart';
 import 'package:block_logic/logic/services/account.dart';
 import 'package:block_logic/logic/services/error_handler.dart';
 import 'package:block_logic/logic/services/shared_pref.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -44,8 +46,22 @@ class AuthService extends _$AuthService {
     final account = ref.read(accountServiceProvider.notifier);
     final user = ref.watch(authChangesProvider);
     return switch (user) {
-      AsyncValue<User?>() => AuthServiceState(errorHandler: errorHandler, sharedPref: sharedPref, account: account),
+      AsyncValue<User?>() => AuthServiceState(
+          errorHandler: errorHandler,
+          sharedPref: sharedPref,
+          account: account,
+        ),
     };
+  }
+
+  Future<String?> loginCheck(String uid) async {
+    try {
+      final result = UserAccount.fromFirestore(await state._db.doc(uid).get());
+      if (result.isLoggedIn ?? false) return 'You are already logged in another device.';
+      return null;
+    } catch (e) {
+      return state._errorHandler.call(e, this);
+    }
   }
 
   Future<String?> changeEmail(String email) async {
@@ -271,6 +287,7 @@ class AuthServiceState {
   final ErrorHandler _errorHandler;
   final SharedPreferences _sharedPref;
   final _auth = FirebaseAuth.instance;
+  final _db = FirebaseFirestore.instance.collection('users');
   final AccountService _account;
   AuthServiceState({
     required AccountService account,

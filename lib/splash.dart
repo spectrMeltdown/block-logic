@@ -21,7 +21,7 @@ class _Splash extends ConsumerState<Splash> {
 
   @override
   Widget build(BuildContext context) {
-    final assets = ref.read(assetsProvider);
+    // final assets = ref.read(assetsProvider);
     return const Placeholder();
   }
 }

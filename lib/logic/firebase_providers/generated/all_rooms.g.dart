@@ -6,7 +6,7 @@ part of '../all_rooms.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$roomsHash() => r'c84e491e01123b715d700cbde7f0e5627dae8737';
+String _$roomsHash() => r'dfad25ecec3a870f75e8cc682cf8b418fbf45d10';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -39,11 +39,13 @@ class RoomsFamily extends Family<AsyncValue<List<Room>>> {
   const RoomsFamily();
 
   /// See also [rooms].
-  RoomsProvider call([
+  RoomsProvider call({
     String? searchQuery,
-  ]) {
+    String? uid,
+  }) {
     return RoomsProvider(
-      searchQuery,
+      searchQuery: searchQuery,
+      uid: uid,
     );
   }
 
@@ -52,7 +54,8 @@ class RoomsFamily extends Family<AsyncValue<List<Room>>> {
     covariant RoomsProvider provider,
   ) {
     return call(
-      provider.searchQuery,
+      searchQuery: provider.searchQuery,
+      uid: provider.uid,
     );
   }
 
@@ -74,12 +77,14 @@ class RoomsFamily extends Family<AsyncValue<List<Room>>> {
 /// See also [rooms].
 class RoomsProvider extends AutoDisposeStreamProvider<List<Room>> {
   /// See also [rooms].
-  RoomsProvider([
+  RoomsProvider({
     String? searchQuery,
-  ]) : this._internal(
+    String? uid,
+  }) : this._internal(
           (ref) => rooms(
             ref as RoomsRef,
-            searchQuery,
+            searchQuery: searchQuery,
+            uid: uid,
           ),
           from: roomsProvider,
           name: r'roomsProvider',
@@ -90,6 +95,7 @@ class RoomsProvider extends AutoDisposeStreamProvider<List<Room>> {
           dependencies: RoomsFamily._dependencies,
           allTransitiveDependencies: RoomsFamily._allTransitiveDependencies,
           searchQuery: searchQuery,
+          uid: uid,
         );
 
   RoomsProvider._internal(
@@ -100,9 +106,11 @@ class RoomsProvider extends AutoDisposeStreamProvider<List<Room>> {
     required super.debugGetCreateSourceHash,
     required super.from,
     required this.searchQuery,
+    required this.uid,
   }) : super.internal();
 
   final String? searchQuery;
+  final String? uid;
 
   @override
   Override overrideWith(
@@ -118,6 +126,7 @@ class RoomsProvider extends AutoDisposeStreamProvider<List<Room>> {
         allTransitiveDependencies: null,
         debugGetCreateSourceHash: null,
         searchQuery: searchQuery,
+        uid: uid,
       ),
     );
   }
@@ -129,13 +138,16 @@ class RoomsProvider extends AutoDisposeStreamProvider<List<Room>> {
 
   @override
   bool operator ==(Object other) {
-    return other is RoomsProvider && other.searchQuery == searchQuery;
+    return other is RoomsProvider &&
+        other.searchQuery == searchQuery &&
+        other.uid == uid;
   }
 
   @override
   int get hashCode {
     var hash = _SystemHash.combine(0, runtimeType.hashCode);
     hash = _SystemHash.combine(hash, searchQuery.hashCode);
+    hash = _SystemHash.combine(hash, uid.hashCode);
 
     return _SystemHash.finish(hash);
   }
@@ -144,6 +156,9 @@ class RoomsProvider extends AutoDisposeStreamProvider<List<Room>> {
 mixin RoomsRef on AutoDisposeStreamProviderRef<List<Room>> {
   /// The parameter `searchQuery` of this provider.
   String? get searchQuery;
+
+  /// The parameter `uid` of this provider.
+  String? get uid;
 }
 
 class _RoomsProviderElement extends AutoDisposeStreamProviderElement<List<Room>>
@@ -152,6 +167,8 @@ class _RoomsProviderElement extends AutoDisposeStreamProviderElement<List<Room>>
 
   @override
   String? get searchQuery => (origin as RoomsProvider).searchQuery;
+  @override
+  String? get uid => (origin as RoomsProvider).uid;
 }
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
