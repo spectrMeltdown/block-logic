@@ -127,7 +127,7 @@ class _CreateAdminState extends ConsumerState<CreateAdmin> {
     validator = ref.read(textValidatorProvider.notifier);
     account = ref.read(accountsManagerProvider.notifier);
     toast = ref.read(toastProvider.notifier);
-    nav = ref.read(customNavigationProvider);
+    nav = ref.read(customNavigationProvider.notifier);
     super.initState();
   }
 

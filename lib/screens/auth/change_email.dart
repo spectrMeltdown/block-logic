@@ -18,10 +18,9 @@ class _ChangeEmailState extends ConsumerState<ChangeEmail> {
   late final String oldEmail;
   late final TextEditingController emailController;
   late final AuthService auth;
-
+  late final CustomNavigation nav;
   @override
   Widget build(BuildContext context) {
-    final nav = ref.watch(customNavigationProvider);
     return BLDialog(
         child: Column(
       mainAxisSize: MainAxisSize.min,
@@ -77,6 +76,7 @@ class _ChangeEmailState extends ConsumerState<ChangeEmail> {
   @override
   void initState() {
     final auth = ref.read(authServiceProvider.notifier);
+    nav = ref.watch(customNavigationProvider.notifier);
     oldEmail = auth.getEmail();
     emailController = TextEditingController(text: oldEmail);
     super.initState();

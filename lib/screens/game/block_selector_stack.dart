@@ -1,10 +1,13 @@
 import 'package:block_logic/components/text/text.dart';
+import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/game/block_data.dart';
 import 'package:block_logic/logic/services/game_manager.dart';
 import 'package:block_logic/logic/services/should_reset_all_blocks.dart';
+import 'package:block_logic/logic/services/should_reset_block.dart';
 import 'package:block_logic/screens/game/block.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tuple/tuple.dart';
 
 class BlockSelectorStack extends ConsumerStatefulWidget {
   final GameBlockData data;
@@ -17,6 +20,7 @@ class BlockSelectorStack extends ConsumerStatefulWidget {
 class _BlockSelectorStackState extends ConsumerState<BlockSelectorStack> {
   late int count;
   late final GameManager gameManager;
+  Tuple2<CodeBlockType, String>? currentTuple;
   @override
   void initState() {
     count = widget.data.inSelectorCount!;
@@ -47,9 +51,13 @@ class _BlockSelectorStackState extends ConsumerState<BlockSelectorStack> {
   @override
   Widget build(BuildContext context) {
     final shouldReset = ref.watch(shouldResetAllBlocksProvider);
+    final shouldResetBlock = ref.watch(shouldResetBlockProvider(currentTuple));
     if (shouldReset) {
       resetCount();
       // no need to ref.invalidate because the GameBlock will do so.
+    }
+    if (shouldResetBlock) {
+      updateStackCount(add: true);
     }
     return Visibility(
         visible: count > 0,

@@ -14,7 +14,7 @@ class DialogChallengeInfo extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final nav = ref.read(customNavigationProvider);
+    final nav = ref.read(customNavigationProvider.notifier);
     return BLDialog(
         child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,

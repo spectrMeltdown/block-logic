@@ -1,17 +1,17 @@
 import 'dart:convert';
 
+import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/game/block_data.dart';
 import 'package:block_logic/logic/jdoodle.dart';
 import 'package:block_logic/logic/services/error_handler.dart';
 import 'package:block_logic/logic/services/game_manager.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'generated/solution_checker.g.dart';
 
-@riverpod
-Future<String?> solutionCheck(SolutionCheckRef ref) async {
+final solutionCheckProvider = FutureProvider.autoDispose<String?>((ref) async {
   final errorHandler = ref.read(errorHandlerProvider.notifier);
   final solutionChecker = ref.read(solutionCheckerProvider.notifier);
   try {
@@ -19,7 +19,7 @@ Future<String?> solutionCheck(SolutionCheckRef ref) async {
   } catch (e) {
     return errorHandler.call(e, 'solutionCheck');
   }
-}
+});
 
 @riverpod
 class SolutionChecker extends _$SolutionChecker {
@@ -76,60 +76,147 @@ class SolutionChecker extends _$SolutionChecker {
   Future<String?> check() async {
     final gameState = ref.read(gameManagerProvider);
     String compiledCode = compileCode(gameState.dataTree);
-    String? result = await onlineResult(compiledCode);
+    String? result = compiledCode; // await onlineResult(compiledCode);
     return result;
   }
 
-  // Function to compile the dataTree into Dart code string
+  // compile the dataTree into Dart code string
   String compileCode(Map<String, GameBlockData> dataTree) {
     // Find root blocks (those without a parent)
-    List<String> rootBlocks = dataTree.keys.where((key) => dataTree[key]?.parentUID == '').toList();
+    final rootBlocks = dataTree.values.where((value) => value.parentUID == 'root').toList();
 
+    // the buffer which is the result
     StringBuffer codeBuffer = StringBuffer();
 
-    for (var root in rootBlocks) {
-      _processBlock(dataTree, root, codeBuffer);
+    for (final root in rootBlocks) {
+      _processBlock(dataTree, root.uid!, codeBuffer);
     }
 
     return codeBuffer.toString();
   }
 
 // Recursive function to process each block and generate code
-  void _processBlock(Map<String, GameBlockData> dataTree, String blockUID, StringBuffer codeBuffer) {
-    GameBlockData? block = dataTree[blockUID];
-    if (block == null) return;
+  void _processBlock(Map<String, GameBlockData> dataTree, String uid, StringBuffer codeBuffer) {
+    GameBlockData? block = dataTree[uid];
+    if (block == null) {
+      if (kDebugMode) throw ('Block was empty!');
+      return;
+    }
 
-    // switch (block.type) {
-    //   case CodeBlockType.conditionals:
-    //     codeBuffer.writeln('void ${block.name}() {');
-    //     _processChildren(dataTree, block.bodyUIDs, codeBuffer);
-    //     codeBuffer.writeln('}');
-    //     break;
+    switch (block.type) {
+      case CodeBlockType.variables:
+      case CodeBlockType.operators:
+      case CodeBlockType.keywords:
+      case CodeBlockType.literals:
+        if (block.arrayUIDs != null && block.arrayUIDs!.isEmpty) {
+          codeBuffer.write('[');
+          for (int i = 0; i < block.arrayUIDs!.length; i++) {
+            _processBlock(dataTree, block.arrayUIDs![i], codeBuffer);
+            codeBuffer.write(',');
+          }
+          codeBuffer.write(']');
+        } else {
+          codeBuffer.write('${block.name} ');
+        }
+        break;
+      case CodeBlockType.conditionals:
+        codeBuffer.write('${block.name} ');
+        if (block.conditionUIDs != null) {
+          for (int i = 0; i < block.conditionUIDs!.length; i++) {
+            _processBlock(dataTree, block.conditionUIDs![i], codeBuffer);
+            if (i == block.conditionUIDs!.length - 1) {
+              codeBuffer.write(':');
+            }
+          }
+        }
+        _processBody(dataTree, uid, codeBuffer);
+        break;
+      case CodeBlockType.functions:
+        // if body is null, it is a function call
+        if (block.bodyUIDs != null) {
+          codeBuffer.writeln('${block.name} ');
+        } else {
+          codeBuffer.write('${block.name} ');
+        }
 
-    //   case CodeBlockType.ifStatement:
-    //     codeBuffer.writeln('if (${block.name}) {');
-    //     _processChildren(dataTree, block.bodyUIDs, codeBuffer);
-    //     codeBuffer.writeln('}');
-    //     break;
-
-    //   case CodeBlockType.forLoop:
-    //     codeBuffer.writeln('for (${block.name}) {');
-    //     _processChildren(dataTree, block.bodyUIDs, codeBuffer);
-    //     codeBuffer.writeln('}');
-    //     break;
-
-    //   // Add more cases for other types as needed
-    // }
+        if (block.argumentUIDs != null) {
+          codeBuffer.write('(');
+          for (final uid in block.argumentUIDs!) {
+            _processBlock(dataTree, uid, codeBuffer);
+          }
+          codeBuffer.write(')');
+        }
+        if (block.parameterUIDs != null) {
+          codeBuffer.write('(');
+          for (final uid in block.parameterUIDs!) {
+            _processBlock(dataTree, uid, codeBuffer);
+          }
+          codeBuffer.write('):');
+        }
+        _processBody(dataTree, uid, codeBuffer);
+        break;
+      case CodeBlockType.objects:
+        // if body is null, it is a instance
+        if (block.bodyUIDs != null) {
+          codeBuffer.write('${block.name} ');
+        } else {
+          codeBuffer.writeln('${block.name} ');
+        }
+        if (block.argumentUIDs != null) {
+          for (final uid in block.conditionUIDs!) {
+            _processBlock(dataTree, uid, codeBuffer);
+          }
+        }
+        codeBuffer.write(':');
+        _processBody(dataTree, uid, codeBuffer);
+        break;
+      case CodeBlockType.loops:
+        codeBuffer.writeln('${block.name} ');
+        if (block.conditionUIDs != null) {
+          for (final uid in block.conditionUIDs!) {
+            _processBlock(dataTree, uid, codeBuffer);
+          }
+        }
+        codeBuffer.write(':');
+        _processBody(dataTree, uid, codeBuffer);
+        break;
+      case CodeBlockType.statement:
+        if (block.statementUIDs != null) {
+          for (final uid in block.statementUIDs!) {
+            _processBlock(dataTree, uid, codeBuffer);
+          }
+          codeBuffer.writeln('');
+        }
+        break;
+      // for (final block in data.statementUIDs!) {
+      //   _processBlock(dataTree, data, codeBuffer);
+      // }
+    }
   }
 
-// Helper function to recursively process children blocks
-  void _processChildren(Map<String, GameBlockData> dataTree, List<String>? childrenUIDs, StringBuffer codeBuffer) {
-    if (childrenUIDs != null) {
-      for (var childUID in childrenUIDs) {
-        _processBlock(dataTree, childUID, codeBuffer);
+  void _processBody(Map<String, GameBlockData> dataTree, String uid, StringBuffer codeBuffer) {
+    GameBlockData? block = dataTree[uid];
+    if (block == null) {
+      if (kDebugMode) throw ('Block was empty!');
+      return;
+    }
+    if (block.bodyUIDs != null) {
+      codeBuffer.writeln('');
+      for (final uid in block.bodyUIDs!) {
+        codeBuffer.write('\t');
+        _processBlock(dataTree, uid, codeBuffer);
       }
     }
   }
+
+// // Helper function to recursively process children blocks
+//   void _processChildren(Map<String, GameBlockData> dataTree, List<String>? childrenUIDs, StringBuffer codeBuffer) {
+//     if (childrenUIDs != null) {
+//       for (var childUID in childrenUIDs) {
+//         _processBlock(dataTree, childUID, codeBuffer);
+//       }
+//     }
+//   }
 }
 
 class SolutionCheckerState {

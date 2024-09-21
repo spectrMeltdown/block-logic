@@ -9,12 +9,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class BLLoginSignupBtns extends ConsumerWidget {
   final MainAxisAlignment mainAxisAlignment;
-  const BLLoginSignupBtns(
-      {super.key, this.mainAxisAlignment = MainAxisAlignment.center});
+  const BLLoginSignupBtns({super.key, this.mainAxisAlignment = MainAxisAlignment.center});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final nav = ref.watch(customNavigationProvider);
+    final nav = ref.read(customNavigationProvider.notifier);
     return Row(
       mainAxisAlignment: mainAxisAlignment,
       children: [

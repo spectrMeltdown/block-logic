@@ -201,7 +201,7 @@ class _WaitingRoomState extends ConsumerState<WaitingRoom> {
   @override
   void initState() {
     toast = ref.read(toastProvider.notifier);
-    nav = ref.read(customNavigationProvider);
+    nav = ref.read(customNavigationProvider.notifier);
     dialog = ref.read(dialogServiceProvider.notifier);
     roomManager = ref.read(roomManagerProvider.notifier);
     auth = ref.read(authServiceProvider.notifier);

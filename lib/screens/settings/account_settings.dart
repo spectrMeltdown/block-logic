@@ -301,7 +301,7 @@ class _AccountSettingsWidgetState extends ConsumerState<AccountSettingsWidget> {
   @override
   void initState() {
     auth = ref.read(authServiceProvider.notifier);
-    nav = ref.read(customNavigationProvider);
+    nav = ref.read(customNavigationProvider.notifier);
     toast = ref.read(toastProvider.notifier);
     accountService = ref.read(accountServiceProvider.notifier);
     super.initState();

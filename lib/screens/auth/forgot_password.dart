@@ -8,48 +8,79 @@ import 'package:block_logic/logic/services/auth.dart';
 import 'package:block_logic/logic/services/navigation.dart';
 import 'package:block_logic/logic/services/toast.dart';
 import 'package:block_logic/logic/services/validator_text.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class ForgotPasswordDialog extends ConsumerStatefulWidget {
-  const ForgotPasswordDialog({super.key});
+  final bool useEmail;
+  const ForgotPasswordDialog({required this.useEmail, super.key});
 
   @override
   ConsumerState<ForgotPasswordDialog> createState() => _ForgotPasswordDialogState();
 }
 
 class _ForgotPasswordDialogState extends ConsumerState<ForgotPasswordDialog> {
-  final TextEditingController emailController = TextEditingController();
+  final emailController = TextEditingController();
+  final phoneController = TextEditingController();
   final formKey = GlobalKey<FormState>();
   Widget errorMsg = const BlankWidget();
   bool processing = false;
   late final AuthService auth;
   late final CustomNavigation nav;
   late final Toast toast;
+  late final TextValidator validator;
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
-    final validator = ref.read(textValidatorProvider.notifier);
     return BLDialog(
         child: Form(
       key: formKey,
       child: ConstrainedBox(
         constraints: BoxConstraints(maxWidth: width * 0.3, maxHeight: height * 0.25),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            const BLSmallTitle('Enter your email:'),
+            BLSmallTitle('Enter your ${widget.useEmail ? 'email' : 'phone'}:'),
             const SizedBox(height: 10),
-            BLTextBox(
-              controller: emailController,
-              keyboardType: TextInputType.emailAddress,
-              labelText: 'Email address',
-              onFieldSubmitted: (p0) => sendLink(),
-              prefixIcon: const Icon(
-                Icons.mail,
+            Visibility(
+              visible: widget.useEmail,
+              child: BLTextBox(
+                controller: emailController,
+                labelText: 'Email',
+                onFieldSubmitted: (p0) => sendLink(),
+                prefixIcon: const Icon(
+                  FontAwesomeIcons.envelope,
+                  color: Colors.white,
+                ),
+                keyboardType: TextInputType.emailAddress,
+                validator: (email) {
+                  return validator.validateEmail(email?.trim());
+                },
               ),
-              validator: (email) => validator.validateEmail(email),
             ),
+            if (!kIsWeb)
+              Visibility(
+                visible: !widget.useEmail,
+                child: BLTextBox(
+                  prefixIcon: const Padding(
+                    padding: EdgeInsets.only(top: 3),
+                    child: BLText(
+                      '+63',
+                      bold: true,
+                      color: Colors.white,
+                    ),
+                  ),
+                  onFieldSubmitted: (p0) => sendLink(),
+                  controller: phoneController,
+                  maxLength: 10,
+                  labelText: 'Phone number',
+                  keyboardType: TextInputType.phone,
+                  validator: (phoneNum) => validator.validatePhoneNum(phoneNum),
+                ),
+              ),
             const SizedBox(height: 10),
             errorMsg,
             Row(
@@ -80,20 +111,29 @@ class _ForgotPasswordDialogState extends ConsumerState<ForgotPasswordDialog> {
 
   @override
   void initState() {
+    validator = ref.read(textValidatorProvider.notifier);
     auth = ref.read(authServiceProvider.notifier);
-    nav = ref.read(customNavigationProvider);
+    nav = ref.read(customNavigationProvider.notifier);
     toast = ref.read(toastProvider.notifier);
     super.initState();
   }
 
+  void toggleProcessing() {
+    setState(() {
+      processing = !processing;
+    });
+  }
+
   Future<void> sendLink() async {
     if (processing) return;
-    processing = true;
+    toggleProcessing();
     if (!formKey.currentState!.validate()) {
-      processing = false;
+      toggleProcessing();
       return;
     }
-    String? result = await auth.forgotPass(emailController.text.trim());
+    String? result = widget.useEmail
+        ? await auth.forgotPass(emailController.text.trim())
+        : await auth.forgotPass(phoneController.text.trim(), useEmail: false);
     if (result != null) {
       setState(() {
         errorMsg = BLText(
@@ -102,11 +142,13 @@ class _ForgotPasswordDialogState extends ConsumerState<ForgotPasswordDialog> {
         );
       });
     } else {
-      processing = false;
+      toggleProcessing();
       if (!mounted) return;
       nav.pop(context);
-      toast.showToast('A password reset link was sent to ${emailController.text}.', type: NotifType.info);
+      toast.showToast(
+          'A password reset link was sent to ${widget.useEmail ? emailController.text : phoneController.text}.',
+          type: NotifType.info);
     }
-    processing = false;
+    toggleProcessing();
   }
 }

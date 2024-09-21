@@ -293,6 +293,9 @@ class GameManager extends StateNotifier<GameState> {
         // debugPrint('Parent parentUID: ${parent.parentUID}');
         // debugPrint('Parent children: ${parent.statementUIDs}');
         break;
+      case ChildrenData.array:
+        parent = parent.copyWith(arrayUIDs: [...parent.arrayUIDs!, newDataUID]);
+        state.dataTree[parentUID] = parent;
     }
     debugPrint('New data uid: ${newData.uid}');
     debugPrint('New data parent: ${newData.parentUID}');
@@ -483,10 +486,15 @@ class GameManager extends StateNotifier<GameState> {
         }
         break;
     }
-    // if data is the last element in a statement, remove the statement as well.
+    // if data is in statement, update the statment
+    // if data is the last element in a statement, remove the statement.
     if (parent.type == CodeBlockType.statement) {
       if (parent.statementUIDs!.length == 1) {
         state.dataTree.remove(parent.uid);
+      } else {
+        final newParent = parent.copyWith();
+        newParent.statementUIDs!.removeWhere((uid) => uid == data.uid);
+        state.dataTree[parent.uid!] = newParent;
       }
     }
   }
@@ -508,7 +516,7 @@ class GameManager extends StateNotifier<GameState> {
       state.inSelectorUIDs[type]!.removeWhere((item) => item == uid);
 }
 
-enum ChildrenData { body, arguments, parameters, condition, statement }
+enum ChildrenData { body, arguments, parameters, condition, statement, array }
 
 class GameState {
   // used when opening/closing pause menu

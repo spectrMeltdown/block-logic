@@ -121,7 +121,7 @@ class _CheckpointState extends ConsumerState<Checkpoint> {
         /// check if logged in
         if (auth.isLoggedIn()) {
           /// check if email is not verified
-          if (!auth.isEmailVerified()) {
+          if (auth.getEmail().isNotEmpty && !auth.isEmailVerified()) {
             /// go to email verification screen (after main menu finish building)
             return const VerifyEmail();
           }

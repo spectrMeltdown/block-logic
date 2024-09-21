@@ -11,18 +11,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widget_and_text_animator/widget_and_text_animator.dart';
 
-class AboutUs extends ConsumerStatefulWidget {
+class AboutUs extends ConsumerWidget {
   const AboutUs({super.key});
 
   @override
-  ConsumerState<AboutUs> createState() => _AboutUsState();
-}
-
-class _AboutUsState extends ConsumerState<AboutUs> {
-  @override
-  Widget build(BuildContext context) {
-    final assets = ref.watch(assetsProvider);
-    final nav = ref.watch(customNavigationProvider);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final assets = ref.read(assetsProvider);
+    final nav = ref.read(customNavigationProvider.notifier);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Background(

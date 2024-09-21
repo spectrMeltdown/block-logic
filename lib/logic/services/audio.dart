@@ -1,12 +1,13 @@
 import 'package:block_logic/logic/services/assets.dart';
 import 'package:block_logic/logic/services/shared_pref.dart';
 import 'package:flame_audio/flame_audio.dart';
+import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 part 'generated/audio.g.dart';
 
-@riverpod
+@Riverpod(keepAlive: true)
 Future<void> audioInit(AudioInitRef ref) async {
   final assets = ref.read(assetsProvider);
 // cache assets for faster loading
@@ -21,6 +22,7 @@ class BLAudioState extends _$BLAudioState {
     final sharedPref = ref.watch(sharedPrefProvider);
     final soundEffects = sharedPref.getBool('soundEffects') ?? true;
     final backgroundMusic = sharedPref.getBool('backgroundMusic') ?? true;
+    debugPrint('rebuild on blaudio');
     return BLAudio(
       soundEffects: soundEffects,
       backgroundMusic: backgroundMusic,
@@ -38,6 +40,7 @@ class BLAudioState extends _$BLAudioState {
   void toggleSoundEffects() {
     /// toggle the sound effects
     state.soundEffects = !state.soundEffects;
+    debugPrint(state.soundEffects.toString());
 
     /// save the user preference
     state._sharedPref.setBool('soundEffects', state.soundEffects);

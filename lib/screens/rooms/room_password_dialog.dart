@@ -36,7 +36,7 @@ class RoomPasswordDialogState extends ConsumerState<RoomPasswordDialog> {
 
   @override
   void initState() {
-    nav = ref.read(customNavigationProvider);
+    nav = ref.read(customNavigationProvider.notifier);
     validator = ref.read(textValidatorProvider.notifier);
     roomManager = ref.read(roomManagerProvider.notifier);
     super.initState();

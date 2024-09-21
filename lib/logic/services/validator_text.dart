@@ -57,7 +57,7 @@ class TextValidator extends _$TextValidator {
     return null;
   }
 
-  String? validatePhoneNum(String? value, [bool required = false]) {
+  String? validatePhoneNum(String? value, {bool required = false}) {
     if (value == null || value.isEmpty) {
       if (required) return 'Cannot be empty.';
       return null;

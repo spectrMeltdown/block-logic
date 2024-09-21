@@ -23,6 +23,7 @@ class GameBlockData {
   final List<String>? conditionUIDs;
   final List<String>? bodyUIDs;
   final List<String>? statementUIDs;
+  final List<String>? arrayUIDs;
   final String? inSelectorUID;
   final int? inSelectorCount;
   final int? inSelectorIndex;
@@ -33,6 +34,7 @@ class GameBlockData {
     this.uid,
     this.inSelectorUID,
     this.parentUID,
+    this.arrayUIDs,
     this.inSelectorCount,
     this.inSelectorIndex,
     required this.type,
@@ -52,14 +54,14 @@ class GameBlockData {
 
   factory GameBlockData.createConditional({
     required PyConditional conditional,
-    required int inSelectorIndex,
+    // required int inSelectorIndex,
     int? count,
     // required String id,
   }) {
     const type = CodeBlockType.conditionals;
     return GameBlockData(
       type: type,
-      inSelectorIndex: inSelectorIndex,
+      // inSelectorIndex: inSelectorIndex,
       name: conditional.name.replaceFirst(RegExp(r'_'), ''),
       conditionUIDs: conditional == PyConditional.else_ ? null : [],
       bodyUIDs: const [],
@@ -79,13 +81,13 @@ class GameBlockData {
 
   factory GameBlockData.createKeyword({
     required PyKeyword keyword,
-    required int inSelectorIndex,
+    // required int inSelectorIndex,
     int? count,
   }) {
     const type = CodeBlockType.keywords;
     return GameBlockData(
       type: type,
-      inSelectorIndex: inSelectorIndex,
+      // inSelectorIndex: inSelectorIndex,
       name: keyword.name.replaceFirst(RegExp(r'_'), ''),
       inSelectorCount: count,
     );
@@ -94,14 +96,14 @@ class GameBlockData {
   factory GameBlockData.createFunction({
     // required String id,
     required String name,
-    required int inSelectorIndex,
+    // required int inSelectorIndex,
     int? count,
   }) {
     const type = CodeBlockType.functions;
     return GameBlockData(
       type: type,
       name: '$name ',
-      inSelectorIndex: inSelectorIndex,
+      // inSelectorIndex: inSelectorIndex,
       argumentUIDs: const [],
       inSelectorCount: count,
     );
@@ -110,13 +112,13 @@ class GameBlockData {
   factory GameBlockData.createFunctionDefinition({
     // required String id,
     required String name,
-    required int inSelectorIndex,
+    // required int inSelectorIndex,
   }) {
     const type = CodeBlockType.functions;
     return GameBlockData(
       type: type,
       name: 'def $name',
-      inSelectorIndex: inSelectorIndex,
+      // inSelectorIndex: inSelectorIndex,
       parameterUIDs: const [],
       bodyUIDs: const [],
     );
@@ -125,14 +127,15 @@ class GameBlockData {
   factory GameBlockData.createLiteral({
     // required String id,
     required PyLiteral literal,
-    required int inSelectorIndex,
+    // required int inSelectorIndex,
     int? count,
   }) {
     const type = CodeBlockType.literals;
     return GameBlockData(
       type: type,
       name: literal.value,
-      inSelectorIndex: inSelectorIndex,
+      arrayUIDs: const [],
+      // inSelectorIndex: inSelectorIndex,
       inSelectorCount: count,
     );
   }
@@ -140,7 +143,7 @@ class GameBlockData {
   factory GameBlockData.createLoop({
     // required String id,
     required PyLoop loop,
-    required int inSelectorIndex,
+    // required int inSelectorIndex,
     int? count,
   }) {
     const type = CodeBlockType.loops;
@@ -150,14 +153,14 @@ class GameBlockData {
       conditionUIDs: const [],
       bodyUIDs: const [],
       inSelectorCount: count,
-      inSelectorIndex: inSelectorIndex,
+      // inSelectorIndex: inSelectorIndex,
     );
   }
 
   factory GameBlockData.createObject({
     // required String id,
     required String name,
-    required int inSelectorIndex,
+    // required int inSelectorIndex,
     int? count,
   }) {
     const type = CodeBlockType.objects;
@@ -165,21 +168,21 @@ class GameBlockData {
       type: type,
       name: '$name ',
       argumentUIDs: const [],
-      inSelectorIndex: inSelectorIndex,
+      // inSelectorIndex: inSelectorIndex,
       inSelectorCount: count,
     );
   }
   factory GameBlockData.createObjectDefinition({
     // required String id,
     required String name,
-    required int inSelectorIndex,
+    // required int inSelectorIndex,
   }) {
     const type = CodeBlockType.objects;
     return GameBlockData(
       type: type,
       name: 'class $name',
       bodyUIDs: const [],
-      inSelectorIndex: inSelectorIndex,
+      // inSelectorIndex: inSelectorIndex,
     );
   }
 
@@ -195,7 +198,7 @@ class GameBlockData {
     // required String id,
     required PyOperatorTypes operatorType,
     required Object operator,
-    required int inSelectorIndex,
+    // required int inSelectorIndex,
     int? count,
   }) {
     const type = CodeBlockType.operators;
@@ -207,7 +210,7 @@ class GameBlockData {
             type: type,
             name: PyOperator.arithmetic(dataValue).operator,
             inSelectorCount: count,
-            inSelectorIndex: inSelectorIndex,
+            // inSelectorIndex: inSelectorIndex,
           );
         }
       case PyOperatorTypes.comparison:
@@ -217,7 +220,7 @@ class GameBlockData {
             type: type,
             name: PyOperator.comparison(dataValue).operator,
             inSelectorCount: count,
-            inSelectorIndex: inSelectorIndex,
+            // inSelectorIndex: inSelectorIndex,
           );
         }
       case PyOperatorTypes.assignment:
@@ -227,7 +230,7 @@ class GameBlockData {
             type: type,
             name: PyOperator.assignment(dataValue).operator,
             inSelectorCount: count,
-            inSelectorIndex: inSelectorIndex,
+            // inSelectorIndex: inSelectorIndex,
           );
         }
       case PyOperatorTypes.identity:
@@ -237,7 +240,7 @@ class GameBlockData {
             type: type,
             name: PyOperator.identity(dataValue).operator,
             inSelectorCount: count,
-            inSelectorIndex: inSelectorIndex,
+            // inSelectorIndex: inSelectorIndex,
           );
         }
       case PyOperatorTypes.logical:
@@ -247,7 +250,7 @@ class GameBlockData {
             type: type,
             name: PyOperator.logical(dataValue).operator,
             inSelectorCount: count,
-            inSelectorIndex: inSelectorIndex,
+            // inSelectorIndex: inSelectorIndex,
           );
         }
       case PyOperatorTypes.membership:
@@ -257,7 +260,7 @@ class GameBlockData {
             type: type,
             name: PyOperator.membership(dataValue).operator,
             inSelectorCount: count,
-            inSelectorIndex: inSelectorIndex,
+            // inSelectorIndex: inSelectorIndex,
           );
         }
     }
@@ -268,7 +271,7 @@ class GameBlockData {
     // required String id,
     required String name,
     required PyLiteral value,
-    required int inSelectorIndex,
+    // required int inSelectorIndex,
     int? count,
   }) {
     const type = CodeBlockType.variables;
@@ -276,7 +279,7 @@ class GameBlockData {
       type: type,
       name: name,
       value: value,
-      inSelectorIndex: inSelectorIndex,
+      // inSelectorIndex: inSelectorIndex,
       inSelectorCount: count,
     );
   }
@@ -293,6 +296,7 @@ class GameBlockData {
     List<String>? conditionUIDs,
     List<String>? bodyUIDs,
     List<String>? statementUIDs,
+    List<String>? arrayUIDs,
     int? inSelectorCount,
     int? inSelectorIndex,
     String? inSelectorUID,
@@ -316,6 +320,7 @@ class GameBlockData {
       value: value ?? this.value,
       inSelectorUID: inSelectorUID ?? this.inSelectorUID,
       keyword: keyword ?? this.keyword,
+      arrayUIDs: arrayUIDs ?? this.arrayUIDs,
     );
   }
 
@@ -332,6 +337,7 @@ class GameBlockData {
       conditionUIDs: (json['conditionUIDs'] as List<dynamic>?)?.map((e) => e as String).toList(),
       bodyUIDs: (json['bodyUIDs'] as List<dynamic>?)?.map((e) => e as String).toList(),
       statementUIDs: (json['statementUIDs'] as List<dynamic>?)?.map((e) => e as String).toList(),
+      arrayUIDs: (json['arrayUIDs'] as List<dynamic>?)?.map((e) => e as String).toList(),
       inSelectorUID: json['inSelectorUID'] as String?,
       inSelectorCount: json['inSelectorCount'] as int?,
       inSelectorIndex: json['inSelectorIndex'] as int?,
@@ -358,6 +364,7 @@ class GameBlockData {
       'inSelectorIndex': inSelectorIndex,
       'value': value?.toJSON(),
       'keyword': keyword?.name,
+      'arrayUIDs': arrayUIDs,
     };
   }
 }

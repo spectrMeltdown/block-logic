@@ -24,6 +24,7 @@ class _ReportsState extends ConsumerState<Reports> {
     'Users',
     'Challenges',
     'Rooms',
+    'Leaderboards',
   ];
   late String selectedReport;
   String searchQuery = '';

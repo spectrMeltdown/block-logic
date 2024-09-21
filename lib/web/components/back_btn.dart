@@ -11,7 +11,7 @@ class AdminBackBtn extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final nav = ref.read(customNavigationProvider);
+    final nav = ref.read(customNavigationProvider.notifier);
     return BLAdminButton(
         type: AdminBtnType.red,
         child: const BLText('Back'),

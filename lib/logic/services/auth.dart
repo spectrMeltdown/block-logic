@@ -67,16 +67,42 @@ class AuthService extends _$AuthService {
     }
   }
 
-  Future<String?> createAccount({
+  Future<String?> createAccountWithEmail({
     required String email,
     required String password,
     required String displayName,
-    required String phoneNum,
     required AccountType type,
   }) async {
     try {
       /// create account
       await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
+
+      assert(FirebaseAuth.instance.currentUser != null);
+      await FirebaseAuth.instance.currentUser!.updateDisplayName(displayName);
+
+      await state._account.initFirestoreData(displayName: displayName, phoneNum: null, type: type);
+      return null;
+    } catch (e) {
+      return state._errorHandler.call(e, this);
+    }
+  }
+
+  Future<String?> createAccountWithPhone({
+    required String phoneNum,
+    required String password,
+    required String displayName,
+    required AccountType type,
+    required String smsCode,
+    required String verificationId,
+  }) async {
+    try {
+      /// sign in after creating account with phone
+      await FirebaseAuth.instance.signInWithCredential(
+        PhoneAuthProvider.credential(
+          verificationId: verificationId,
+          smsCode: smsCode,
+        ),
+      );
 
       assert(FirebaseAuth.instance.currentUser != null);
       await FirebaseAuth.instance.currentUser!.updateDisplayName(displayName);
@@ -112,9 +138,11 @@ class AuthService extends _$AuthService {
     }
   }
 
-  Future<String?> forgotPass(String email) async {
+  Future<String?> forgotPass(String email, {bool useEmail = true}) async {
     try {
-      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+      if (useEmail) {
+        await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+      }
       return null;
     } catch (e) {
       return state._errorHandler.call(e, this);
@@ -135,12 +163,30 @@ class AuthService extends _$AuthService {
   /// logged in or not
   bool isLoggedIn() => state._auth.currentUser != null;
 
-  Future<String?> login({
+  Future<String?> loginEmail({
     required String email,
     required String password,
   }) async {
     try {
       await state._auth.signInWithEmailAndPassword(email: email, password: password);
+      return null;
+    } catch (e) {
+      return state._errorHandler.call(e, this);
+    }
+  }
+
+  Future<String?> loginPhone({
+    required String phone,
+    required String code,
+    required String verificationID,
+  }) async {
+    try {
+      await state._auth.signInWithCredential(
+        PhoneAuthProvider.credential(
+          verificationId: verificationID,
+          smsCode: code,
+        ),
+      );
       return null;
     } catch (e) {
       return state._errorHandler.call(e, this);

@@ -31,13 +31,13 @@ class _ChangePhoneNumState extends ConsumerState<ChangePhoneNum> {
   late final AsyncValue<UserAccount?> user;
   late final TextValidator validator;
   late final AuthService authService;
+  late final CustomNavigation nav;
   final formKey = GlobalKey<FormState>();
   Widget msg = const BlankWidget();
   bool processing = false;
   bool set = false;
   @override
   Widget build(BuildContext context) {
-    final nav = ref.watch(customNavigationProvider);
     return BLDialog(
         child: Stack(
       children: [
@@ -71,7 +71,7 @@ class _ChangePhoneNumState extends ConsumerState<ChangePhoneNum> {
                         Icons.phone,
                         color: Colors.white,
                       ),
-                      validator: (value) => validator.validatePhoneNum(value, true),
+                      validator: (value) => validator.validatePhoneNum(value, required: true),
                     ),
                     const SizedBox(
                       height: 5,
@@ -158,6 +158,7 @@ class _ChangePhoneNumState extends ConsumerState<ChangePhoneNum> {
   void initState() {
     accountService = ref.read(accountServiceProvider.notifier);
     authService = ref.read(authServiceProvider.notifier);
+    nav = ref.read(customNavigationProvider.notifier);
     user = ref.read(SelectedUserProvider(FirebaseAuth.instance.currentUser!.uid));
     validator = ref.read(textValidatorProvider.notifier);
     super.initState();

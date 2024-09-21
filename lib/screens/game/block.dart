@@ -24,7 +24,7 @@ class GameBlock extends ConsumerStatefulWidget {
 class GameCodeBlockState extends ConsumerState<GameBlock> with TickerProviderStateMixin {
   late final GameManager gameManager;
   late final BLUI blui;
-  bool firstBuild = true;
+  // bool firstBuild = true;
   bool shouldBounce = false;
   bool shouldResetSelf = false;
   // late final String id;
@@ -54,7 +54,7 @@ class GameCodeBlockState extends ConsumerState<GameBlock> with TickerProviderSta
       child: BlockRender(widget.data, refresh),
     );
     if (widget.data.state == CodeBlockState.inSelector) {
-      debugPrint('Built as inSelector');
+      // debugPrint('Built as inSelector');
       block = defaultWithPadding;
       finalData = widget.data.copyWith(inSelectorUID: gameManager.getUID());
       gameManager.addInSelectorUIDs(finalData!.type, finalData!.inSelectorUID!);
@@ -66,14 +66,14 @@ class GameCodeBlockState extends ConsumerState<GameBlock> with TickerProviderSta
 
   @override
   Widget build(BuildContext context) {
-    if (widget.data.state == CodeBlockState.inSelector && firstBuild) {
-      debugPrint('firstBuild');
-      gameManager.incrementCategory(widget.data.type);
-      ref.invalidate(customTabProvider);
-      setState(() {
-        firstBuild = false;
-      });
-    }
+    // if (widget.data.state == CodeBlockState.inSelector && firstBuild) {
+    //   debugPrint('firstBuild');
+    //   gameManager.incrementCategory(widget.data.type);
+    //   ref.invalidate(customTabProvider);
+    //   setState(() {
+    //     firstBuild = false;
+    //   });
+    // }
     final shouldResetFromAll = ref.watch(shouldResetAllBlocksProvider);
     if (widget.data.state == CodeBlockState.inSelector) {
       shouldResetSelf = ref.watch(

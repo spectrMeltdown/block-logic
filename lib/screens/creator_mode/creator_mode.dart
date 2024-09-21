@@ -171,7 +171,10 @@ class _CreatorModeState extends ConsumerState<CreatorMode> {
                   ],
                 ),
               ),
-            )
+            ),
+            const SizedBox(
+              height: 10,
+            ),
           ],
         ),
       )),

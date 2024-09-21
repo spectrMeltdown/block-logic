@@ -28,7 +28,7 @@ class _PauseDialogState extends ConsumerState<PauseDialog> {
   late final GameManager gameManager;
   @override
   void initState() {
-    nav = ref.read(customNavigationProvider);
+    nav = ref.read(customNavigationProvider.notifier);
     gameManager = ref.read(gameManagerProvider.notifier);
     super.initState();
   }

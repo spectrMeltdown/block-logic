@@ -144,6 +144,47 @@ class _ParameterConditionBoxState extends ConsumerState<CustomBox> {
             )
           ],
         );
+      case GameBox.array:
+        final data = ref.watch(getSelfDataProvider(widget.data.uid!));
+        final items = ref.watch(getChildrenDataProvider(data!.arrayUIDs!));
+
+        return Row(
+          children: [
+            ...List.generate(items!.length, (index) {
+              return Padding(
+                padding: const EdgeInsets.all(3),
+                child: GameBlock(data: items[index]),
+              );
+            }),
+            DragTargetWrapper(
+              builderChild: () {
+                return AddNewBlockBox(
+                  height: 35,
+                  width: items.isEmpty ? 100 : 30,
+                );
+              },
+              onAcceptWithDetails: (data, manager) {
+                if (data.state == CodeBlockState.inEditor) {
+                  gameManager.moveData(data.uid!, widget.data.uid!);
+                } else {
+                  gameManager.addData(data, widget.data.uid!, ChildrenData.array);
+                }
+                ref.invalidate(getRootDataProvider);
+                ref.invalidate(getSelfDataProvider);
+                ref.invalidate(getChildrenDataProvider);
+                setState(() {});
+              },
+              onWillAcceptWithDetails: (data) {
+                if (widget.data.arrayUIDs!.contains(data.uid) ||
+                    data.uid == widget.data.uid ||
+                    data.uid == widget.data.parentUID) {
+                  return false;
+                }
+                return validator.conditionBox(data: widget.data, dataToAccept: data);
+              },
+            )
+          ],
+        );
     }
   }
 

@@ -20,12 +20,21 @@ class GameBlocks extends ConsumerStatefulWidget {
 class _GameBlocksState extends ConsumerState<GameBlocks> with TickerProviderStateMixin {
   late TabController blocksTabController;
   late GameManager gameManager;
+  Map<CodeBlockType, int> countPerCategory = {};
+  // bool firstBuild = true;
   // late List<String> topBlocksList;
   // late List<String> bottomBlocksList;
   late Map<CodeBlockType, List<GameBlockData>> blocks;
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
+    // if (firstBuild) {
+    //   WidgetsBinding.instance.addPostFrameCallback((duration) {
+    //     setState(() {
+    //       firstBuild = false;
+    //     });
+    //   });
+    // }
     return Column(
       children: [
         Padding(
@@ -92,10 +101,25 @@ class _GameBlocksState extends ConsumerState<GameBlocks> with TickerProviderStat
   @override
   void initState() {
     gameManager = ref.read(gameManagerProvider.notifier);
+    final gameManagerState = ref.read(gameManagerProvider);
     // topBlocksList = blocksTabList.where((a) => a == 'Variables' || a == 'Literals' || a == 'Keywords').toList();
-    // TODO: get Map<CodeBlockType[], List<GameBlockData>> from challenge data
     blocks = widget.blocks;
+
     // blocksTabList.remove('FunctionDefinition');
+    for (final entry in blocks.entries) {
+      int count = 0;
+      for (final block in entry.value) {
+        if (block.inSelectorCount == null) {
+          count++;
+        } else {
+          count += block.inSelectorCount!;
+        }
+      }
+      countPerCategory[entry.key] = count;
+    }
+    for (final entry in countPerCategory.entries) {
+      gameManagerState.categoryCount[entry.key] = entry.value;
+    }
     blocksTabController = TabController(length: blocks.keys.length, vsync: this);
     blocksTabController.addListener(() {
       setState(() {});

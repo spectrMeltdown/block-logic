@@ -36,7 +36,7 @@ class _LeaderboardItemState extends ConsumerState<LeaderboardItem> {
 
   @override
   void initState() {
-    nav = ref.read(customNavigationProvider);
+    nav = ref.read(customNavigationProvider.notifier);
     super.initState();
   }
 }

@@ -6,12 +6,12 @@ part of '../navigation.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$customNavigationHash() => r'ac12db9cdb121e7db6165cc62de52696f8f5d585';
+String _$customNavigationHash() => r'010ed2731e48597a388c28b83cf953b79959220a';
 
 /// See also [CustomNavigation].
 @ProviderFor(CustomNavigation)
 final customNavigationProvider =
-    AutoDisposeNotifierProvider<CustomNavigation, CustomNavigation>.internal(
+    AutoDisposeNotifierProvider<CustomNavigation, void>.internal(
   CustomNavigation.new,
   name: r'customNavigationProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
@@ -21,6 +21,6 @@ final customNavigationProvider =
   allTransitiveDependencies: null,
 );
 
-typedef _$CustomNavigation = AutoDisposeNotifier<CustomNavigation>;
+typedef _$CustomNavigation = AutoDisposeNotifier<void>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

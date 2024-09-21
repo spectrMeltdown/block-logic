@@ -141,7 +141,7 @@ class _FeedbackDialogState extends ConsumerState<FeedbackDialog> {
   @override
   void initState() {
     auth = ref.read(authServiceProvider.notifier);
-    nav = ref.read(customNavigationProvider);
+    nav = ref.read(customNavigationProvider.notifier);
     toast = ref.read(toastProvider.notifier);
     feedbackManager = ref.read(feedbackManagerProvider.notifier);
     super.initState();

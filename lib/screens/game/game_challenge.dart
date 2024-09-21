@@ -102,38 +102,35 @@ class _GameChallengeState extends ConsumerState<GameChallenge> {
                 child: WidgetAnimator(
                   incomingEffect: WidgetTransitionEffects.incomingScaleUp(),
                   outgoingEffect: WidgetTransitionEffects.outgoingScaleDown(),
-                  child: SizedBox(
+                  child: Container(
+                    margin: const EdgeInsets.only(bottom: 20, left: 10, right: 10),
                     height: 120,
                     width: double.maxFinite,
                     child: DragTargetWrapper(
                       builderChild: () {
                         return Container(
-                          margin: const EdgeInsets.only(bottom: 20),
-                          child: Container(
-                            margin: const EdgeInsets.symmetric(horizontal: 10),
-                            decoration: BoxDecoration(
-                              borderRadius: const BorderRadius.all(Radius.circular(20)),
-                              color: Colors.red.withOpacity(0.9),
-                              border: Border.all(
-                                color: Colors.black12,
-                                width: 2,
-                              ),
+                          decoration: BoxDecoration(
+                            borderRadius: const BorderRadius.all(Radius.circular(10)),
+                            color: Colors.red.withOpacity(0.9),
+                            border: Border.all(
+                              color: Colors.black12,
+                              width: 2,
                             ),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                WidgetAnimator(
-                                    atRestEffect: WidgetRestingEffects.bounce(
-                                        effectStrength: 0.5, delay: const Duration(milliseconds: 500)),
-                                    child: const Icon(
-                                      Icons.download,
-                                      size: 40,
-                                    )),
-                                const SizedBox(width: 5),
-                                const BLText('Return to selector'),
-                              ],
-                            ),
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              WidgetAnimator(
+                                  atRestEffect: WidgetRestingEffects.bounce(
+                                      effectStrength: 0.5, delay: const Duration(milliseconds: 500)),
+                                  child: const Icon(
+                                    Icons.download,
+                                    size: 40,
+                                  )),
+                              const SizedBox(width: 5),
+                              const BLText('Return to selector'),
+                            ],
                           ),
                         );
                       },
@@ -142,6 +139,8 @@ class _GameChallengeState extends ConsumerState<GameChallenge> {
                         gameManager.deleteData(data);
                         gameManager.removeInSelectorUIDs(data.type, data.inSelectorUID!);
                         ref.invalidate(shouldResetBlockProvider);
+                        ref.invalidate(getChildrenDataProvider);
+                        ref.invalidate(getSelfDataProvider);
                         ref.invalidate(getRootDataProvider);
                         switch (data.type) {
                           case CodeBlockType.functions:
@@ -150,8 +149,6 @@ class _GameChallengeState extends ConsumerState<GameChallenge> {
                           case CodeBlockType.conditionals:
                           case CodeBlockType.loops:
                           case CodeBlockType.statement:
-                            ref.invalidate(getSelfDataProvider);
-                            ref.invalidate(getChildrenDataProvider);
                           default:
                         }
                         setState(() {});

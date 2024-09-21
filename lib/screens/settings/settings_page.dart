@@ -24,20 +24,19 @@ class SettingsPage extends ConsumerStatefulWidget {
 
 class _SettingsPageState extends ConsumerState<SettingsPage> {
   bool processing = false;
+  late final CustomNavigation nav;
+
+  @override
+  void initState() {
+    nav = ref.read(customNavigationProvider.notifier);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    // TODO: May need to change in the future
-    final user = ref.read(authChangesProvider);
-    final nav = ref.read(customNavigationProvider);
+    final user = ref.watch(authChangesProvider);
     return PopScope(
-      canPop: false,
-      onPopInvokedWithResult: (didPop, result) {
-        if (didPop) return;
-        if (!processing) {
-          nav.pop(context);
-        }
-      },
+      canPop: processing,
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         body: Stack(
@@ -69,10 +68,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                     return Column(
                                       crossAxisAlignment: CrossAxisAlignment.center,
                                       mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        const BLSmallTitle('System'),
-                                        SystemSettings(isLoggedIn: user != null)
-                                      ],
+                                      children: [const BLSmallTitle('System'), SystemSettings(isLoggedIn: user != null)],
                                     );
                                   },
                                   error: genericError,
