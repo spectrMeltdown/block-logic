@@ -27,6 +27,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
+import 'package:uuid/v4.dart';
 
 class Login extends ConsumerStatefulWidget {
   final FirestoreCollections accountType;
@@ -347,6 +348,10 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
             );
       ref.invalidate(authServiceProvider);
       ref.invalidate(authChangesProvider);
+      if (!kIsWeb) {
+        final sessionID = const UuidV4().generate();
+        auth.saveSessionID(sessionID);
+      }
       if (error == null) {
         final loginAlert = ref.read(loginAlertProvider.notifier);
         await loginAlert.send();

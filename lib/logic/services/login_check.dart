@@ -6,7 +6,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'generated/login_check.g.dart';
 
 @riverpod
-Future<bool?> loginCheck(LoginCheckRef ref) async {
+Future<String?> loginCheck(LoginCheckRef ref) async {
   final account = await FirebaseFirestore.instance.collection('admins').doc(FirebaseAuth.instance.currentUser!.uid).get();
-  return UserAccount.fromFirestore(account).isLoggedIn;
+  return UserAccount.fromFirestore(account).sessionID;
 }

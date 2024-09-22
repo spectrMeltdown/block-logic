@@ -97,11 +97,11 @@ class _LeaderboardsPageState extends ConsumerState<LeaderboardsPage> {
                                 selectedLeaderboards.clear();
                               });
                             },
-                            child: BLText(
+                            child: const BLText(
                               'Cancel',
                               bold: true,
                             )),
-                        SizedBox(
+                        const SizedBox(
                           width: 20,
                         ),
                         BLTextButton(
@@ -122,7 +122,7 @@ class _LeaderboardsPageState extends ConsumerState<LeaderboardsPage> {
                                 processing = false;
                               });
                             },
-                            child: BLText(
+                            child: const BLText(
                               'Delete',
                               bold: true,
                               color: Colors.red,
@@ -136,7 +136,7 @@ class _LeaderboardsPageState extends ConsumerState<LeaderboardsPage> {
             if (processing)
               Container(
                 color: Colors.black.withOpacity(0.8),
-                child: BLLoading(
+                child: const BLLoading(
                   message: 'Processing ...',
                 ),
               )

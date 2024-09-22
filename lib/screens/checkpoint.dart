@@ -94,6 +94,7 @@ import 'package:block_logic/logic/services/assets.dart';
 import 'package:block_logic/logic/services/auth.dart';
 import 'package:block_logic/logic/services/login_check.dart';
 import 'package:block_logic/logic/services/shared_pref.dart';
+import 'package:block_logic/screens/auth/duplicate_login.dart';
 import 'package:block_logic/screens/auth/verify_email.dart';
 import 'package:block_logic/screens/auth/verify_phone_num.dart';
 import 'package:block_logic/screens/main_menu.dart';
@@ -128,9 +129,11 @@ class _CheckpointState extends ConsumerState<Checkpoint> {
 
           final dupLoginCheck = ref.watch(loginCheckProvider);
           return dupLoginCheck.when(
-              data: (loggedIn) {
-                if (loggedIn != null && loggedIn) {
-                  // change loggedIn to sessionID string, generate using uuid
+              data: (sessionID) {
+                if (sessionID != null && sessionID.isNotEmpty) {
+                  return const DuplicateLogin();
+                } else {
+                  auth.uploadSessionID(sessionID!);
                 }
                 final userFirestore = ref.watch(SelectedUserProvider(auth.getUID()));
 

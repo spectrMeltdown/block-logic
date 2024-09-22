@@ -56,8 +56,8 @@ class AuthService extends _$AuthService {
 
   Future<String?> loginCheck(String uid) async {
     try {
-      final result = UserAccount.fromFirestore(await state._db.doc(uid).get());
-      if (result.isLoggedIn ?? false) return 'You are already logged in another device.';
+      final result = UserAccount.fromFirestore(await state._db.collection('users').doc(uid).get());
+      if (result.sessionID != null && result.sessionID!.isNotEmpty) return 'You are already logged in on another device.';
       return null;
     } catch (e) {
       return state._errorHandler.call(e, this);
@@ -238,6 +238,20 @@ class AuthService extends _$AuthService {
     }
   }
 
+  void saveSessionID(String sessionID) async {
+    await state._sharedPref.setString('sessionID', sessionID);
+  }
+
+  Future<void> uploadSessionID(String sessionID) async {
+    try {
+      await state._db.collection('users').doc(getUID()).set({
+        'sessionID': sessionID,
+      }, SetOptions(merge: true));
+    } catch (e) {
+      debugPrint(state._errorHandler.call(e, this));
+    }
+  }
+
   // Future<String?> verifyOTP({
   //   required String verificationId,
   //   required AccountType type,
@@ -287,7 +301,7 @@ class AuthServiceState {
   final ErrorHandler _errorHandler;
   final SharedPreferences _sharedPref;
   final _auth = FirebaseAuth.instance;
-  final _db = FirebaseFirestore.instance.collection('users');
+  final _db = FirebaseFirestore.instance;
   final AccountService _account;
   AuthServiceState({
     required AccountService account,

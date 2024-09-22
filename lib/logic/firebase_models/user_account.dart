@@ -2,7 +2,7 @@ import 'package:block_logic/logic/firebase_models/account_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UserAccount extends AccountModel {
-  final bool? isLoggedIn;
+  final String? sessionID;
   UserAccount({
     super.id,
     super.phoneNum,
@@ -11,7 +11,7 @@ class UserAccount extends AccountModel {
     super.createdAt,
     super.verificationID,
     super.resendToken,
-    this.isLoggedIn,
+    this.sessionID,
   });
 
   factory UserAccount.fromFirestore(DocumentSnapshot doc) {
@@ -28,7 +28,7 @@ class UserAccount extends AccountModel {
       phoneNum: data['phoneNum'] ?? '',
       verificationID: data['verificationID'],
       resendToken: data['resendToken'],
-      isLoggedIn: data['isLoggedIn'],
+      sessionID: data['sessionID'],
     );
   }
   Map<String, dynamic> toFirestore() {
@@ -48,8 +48,8 @@ class UserAccount extends AccountModel {
     if (resendToken != null) {
       toFirestoreMap.addAll({'resendToken': resendToken});
     }
-    if (resendToken != null) {
-      toFirestoreMap.addAll({'isLoggedIn': isLoggedIn});
+    if (sessionID != null) {
+      toFirestoreMap.addAll({'sessionID': sessionID});
     }
     return toFirestoreMap;
   }
