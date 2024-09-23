@@ -76,7 +76,13 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
                     child: Column(
                       mainAxisAlignment: kIsWeb ? MainAxisAlignment.center : MainAxisAlignment.start,
                       children: [
-                        if (!kIsWeb) const Align(child: Align(alignment: Alignment.centerLeft, child: BLBackButton())),
+                        if (!kIsWeb)
+                          const Align(
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: BLBackButton(),
+                            ),
+                          ),
                         Align(
                           alignment: Alignment.center,
                           child: Container(
@@ -129,7 +135,7 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
                                         child: BLTextBox(
                                           controller: emailController,
                                           labelText: 'Email',
-                                          onFieldSubmitted: (p0) => submit(context),
+                                          onFieldSubmitted: (p0) => submit(),
                                           prefixIcon: const Icon(
                                             FontAwesomeIcons.envelope,
                                             color: Colors.white,
@@ -151,7 +157,7 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
                                               color: Colors.white,
                                             ),
                                           ),
-                                          onFieldSubmitted: (p0) => submit(context),
+                                          onFieldSubmitted: (p0) => submit(),
                                           controller: phoneController,
                                           maxLength: 10,
                                           labelText: 'Phone number',
@@ -165,7 +171,7 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
                                         child: BLTextBox(
                                           controller: passwordController,
                                           labelText: 'Password',
-                                          onFieldSubmitted: (p0) => submit(context),
+                                          onFieldSubmitted: (p0) => submit(),
                                           prefixIcon: const Icon(
                                             FontAwesomeIcons.lock,
                                             color: Colors.white,
@@ -242,7 +248,7 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
                                               toast.showToast('Send OTP first', type: NotifType.error);
                                               return;
                                             }
-                                            submit(context);
+                                            submit();
                                           },
                                           child: const BLText(
                                             'Login',
@@ -332,7 +338,7 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
     super.initState();
   }
 
-  Future<void> submit(BuildContext context) async {
+  Future<void> submit() async {
     if (processing) return;
     toggleProcessing(true);
     if (_loginFormKey.currentState!.validate()) {
@@ -348,11 +354,12 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
             );
       ref.invalidate(authServiceProvider);
       ref.invalidate(authChangesProvider);
-      if (!kIsWeb) {
-        final sessionID = const UuidV4().generate();
-        auth.saveSessionID(sessionID);
-      }
       if (error == null) {
+        if (!kIsWeb) {
+          final sessionID = const UuidV4().generate();
+          // save sessionID to shared_pref
+          auth.saveSessionID(sessionID);
+        }
         final loginAlert = ref.read(loginAlertProvider.notifier);
         await loginAlert.send();
         // if (result != null) {
@@ -360,12 +367,12 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
         //   toast.showToast(result, type: NotifType.error);
         // }
         if (kIsWeb) {
-          if (!context.mounted) return;
+          if (!mounted) return;
           context.go('/dashboard');
         } else {
           // final settings = await ref.read(SettingsProvider(widget.accountType).future);
 
-          if (!context.mounted) return;
+          if (!mounted) return;
           nav.pushAndRemove(context, const Checkpoint());
         }
       } else {

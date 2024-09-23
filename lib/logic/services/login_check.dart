@@ -7,6 +7,6 @@ part 'generated/login_check.g.dart';
 
 @riverpod
 Future<String?> loginCheck(LoginCheckRef ref) async {
-  final account = await FirebaseFirestore.instance.collection('admins').doc(FirebaseAuth.instance.currentUser!.uid).get();
+  final account = await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).get();
   return UserAccount.fromFirestore(account).sessionID;
 }

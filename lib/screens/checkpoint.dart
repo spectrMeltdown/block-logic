@@ -101,6 +101,7 @@ import 'package:block_logic/screens/main_menu.dart';
 import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Checkpoint extends ConsumerStatefulWidget {
   const Checkpoint({super.key});
@@ -111,7 +112,7 @@ class Checkpoint extends ConsumerStatefulWidget {
 
 class _CheckpointState extends ConsumerState<Checkpoint> {
   late final AuthService auth;
-
+  late final SharedPreferences sharedPref;
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(authChangesProvider);
@@ -133,7 +134,10 @@ class _CheckpointState extends ConsumerState<Checkpoint> {
                 if (sessionID != null && sessionID.isNotEmpty) {
                   return const DuplicateLogin();
                 } else {
-                  auth.uploadSessionID(sessionID!);
+                  // get the saved sessionID
+                  final savedSessionID = sharedPref.getString('sessionID');
+                  // upload sessionID to prevent login on other devices
+                  auth.uploadSessionID(savedSessionID!);
                 }
                 final userFirestore = ref.watch(SelectedUserProvider(auth.getUID()));
 
@@ -181,7 +185,7 @@ class _CheckpointState extends ConsumerState<Checkpoint> {
     //   difficulty: Difficulty.beginner,
     //   blocks: AllBlocks().beginnerTesting(),
     // ));
-    final sharedPref = ref.read(sharedPrefProvider);
+    sharedPref = ref.read(sharedPrefProvider);
     final assets = ref.read(assetsProvider);
     FlameAudio.bgm.initialize();
 

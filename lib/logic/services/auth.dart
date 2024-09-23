@@ -54,16 +54,6 @@ class AuthService extends _$AuthService {
     };
   }
 
-  Future<String?> loginCheck(String uid) async {
-    try {
-      final result = UserAccount.fromFirestore(await state._db.collection('users').doc(uid).get());
-      if (result.sessionID != null && result.sessionID!.isNotEmpty) return 'You are already logged in on another device.';
-      return null;
-    } catch (e) {
-      return state._errorHandler.call(e, this);
-    }
-  }
-
   Future<String?> changeEmail(String email) async {
     try {
       await FirebaseAuth.instance.currentUser!.verifyBeforeUpdateEmail(email.trim());

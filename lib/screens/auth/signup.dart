@@ -30,6 +30,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:uuid/v4.dart';
 
 class Signup extends ConsumerStatefulWidget {
   const Signup({super.key});
@@ -57,6 +58,7 @@ class _SignupState extends ConsumerState<Signup> with RouteAware {
   bool processing = false;
   bool checkedTerms = false;
   bool useEmail = true;
+  bool firstOTPSent = false;
   String phoneNum = '';
   String verificationID = '';
   int resendToken = 0;
@@ -81,7 +83,7 @@ class _SignupState extends ConsumerState<Signup> with RouteAware {
 
     final result = await accountService.verifyPhoneNumber(
       phoneNum,
-      kIsWeb ? AccountType.admin : AccountType.user,
+      AccountType.user,
       resendToken,
     );
     if (result != null) {
@@ -265,7 +267,28 @@ class _SignupState extends ConsumerState<Signup> with RouteAware {
                                           validator: (otp) => validator.validateOtp(otp),
                                         ),
                                       ),
-                                      const SizedBox(height: 40),
+                                      const SizedBox(height: 10),
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Visibility(
+                                            visible: !useEmail,
+                                            child: BLTextButton(
+                                              onPressed: () {
+                                                if (validator.validatePhoneNum(phoneNumController.text, required: true) != null) {
+                                                  toast.showToast('Please provide phone number.', type: NotifType.error);
+                                                } else if (!timer.isActive) {
+                                                  sendOTP();
+                                                }
+                                              },
+                                              child: BLText(
+                                                'Send OTP ${timer.isActive ? '($seconds)' : ''}',
+                                                color: timer.isActive ? Colors.grey : null,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                       Row(
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
@@ -291,14 +314,22 @@ class _SignupState extends ConsumerState<Signup> with RouteAware {
                                       msg,
                                       const SizedBox(height: 15),
                                       BLButton(
-                                          type: BtnType.green,
+                                          type: useEmail
+                                              ? BtnType.green
+                                              : !firstOTPSent
+                                                  ? BtnType.grey
+                                                  : processing
+                                                      ? BtnType.grey
+                                                      : BtnType.green,
                                           padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 10),
                                           onPressed: () async {
                                             if (processing == true) return;
                                             setState(() {
                                               processing = true;
                                             });
-                                            if (_signupFormKey.currentState!.validate()) {
+                                            if (firstOTPSent == false && !useEmail) {
+                                              toast.showToast('Send OTP first', type: NotifType.error);
+                                            } else if (_signupFormKey.currentState!.validate()) {
                                               if (checkedTerms == false) {
                                                 setState(() {
                                                   msg = const BLText(
@@ -335,6 +366,11 @@ class _SignupState extends ConsumerState<Signup> with RouteAware {
                                                 );
                                               }
                                               if (error == null) {
+                                                if (!kIsWeb) {
+                                                  final sessionID = const UuidV4().generate();
+                                                  // save sessionID to shared_pref
+                                                  auth.saveSessionID(sessionID);
+                                                }
                                                 await reportsManager.add(ReportType.users, 1);
                                                 if (!context.mounted) return;
                                                 nav.pushReplace(context, const Checkpoint());

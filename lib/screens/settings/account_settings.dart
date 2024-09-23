@@ -15,6 +15,7 @@ import 'package:block_logic/logic/firebase_providers/auth.dart';
 import 'package:block_logic/logic/services/account.dart';
 import 'package:block_logic/logic/services/auth.dart';
 import 'package:block_logic/logic/services/navigation.dart';
+import 'package:block_logic/logic/services/shared_pref.dart';
 import 'package:block_logic/logic/services/toast.dart';
 import 'package:block_logic/screens/auth/change_display_name.dart';
 import 'package:block_logic/screens/auth/change_email.dart';
@@ -24,6 +25,7 @@ import 'package:block_logic/screens/checkpoint.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AccountSettingsWidget extends ConsumerStatefulWidget {
   final Widget editIcon = const Padding(
@@ -46,6 +48,7 @@ class _AccountSettingsWidgetState extends ConsumerState<AccountSettingsWidget> {
   late final AccountService accountService;
   late final Toast toast;
   late final CustomNavigation nav;
+  late final SharedPreferences sharedPref;
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(authChangesProvider);
@@ -120,13 +123,7 @@ class _AccountSettingsWidgetState extends ConsumerState<AccountSettingsWidget> {
                           },
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Icon(FontAwesomeIcons.envelope, color: Colors.white),
-                              const SizedBox(width: 15),
-                              const Flexible(child: BLEmail()),
-                              const SizedBox(width: 5),
-                              widget.editIcon
-                            ],
+                            children: [const Icon(FontAwesomeIcons.envelope, color: Colors.white), const SizedBox(width: 15), const Flexible(child: BLEmail()), const SizedBox(width: 5), widget.editIcon],
                           )),
                       BLTextButton(
                           onPressed: () {
@@ -134,13 +131,7 @@ class _AccountSettingsWidgetState extends ConsumerState<AccountSettingsWidget> {
                           },
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Icon(Icons.numbers, color: Colors.white),
-                              const SizedBox(width: 15),
-                              const Flexible(child: BLPhoneNum()),
-                              const SizedBox(width: 5),
-                              widget.editIcon
-                            ],
+                            children: [const Icon(Icons.numbers, color: Colors.white), const SizedBox(width: 15), const Flexible(child: BLPhoneNum()), const SizedBox(width: 5), widget.editIcon],
                           )),
                       BLTextButton(
                           onPressed: () {
@@ -148,13 +139,7 @@ class _AccountSettingsWidgetState extends ConsumerState<AccountSettingsWidget> {
                           },
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Icon(FontAwesomeIcons.lock, color: Colors.white),
-                              const SizedBox(width: 15),
-                              const BLText('Change password'),
-                              const SizedBox(width: 5),
-                              widget.editIcon
-                            ],
+                            children: [const Icon(FontAwesomeIcons.lock, color: Colors.white), const SizedBox(width: 15), const BLText('Change password'), const SizedBox(width: 5), widget.editIcon],
                           )),
                       const SizedBox(height: 20),
                       Column(
@@ -206,7 +191,10 @@ class _AccountSettingsWidgetState extends ConsumerState<AccountSettingsWidget> {
                                 // 1. nav to a logging out screen using nav.pushAndRemove
                                 // 2. invalidate all firebase providers
                                 // 3. log out the user
+                                await sharedPref.remove('sessionID');
+                                await auth.uploadSessionID('');
                                 await auth.logout();
+                                ref.invalidate(authServiceProvider);
                                 widget.toggleProcessing.call(false);
                                 if (!context.mounted) return;
                                 nav.pushAndRemove(context, const Checkpoint());
@@ -304,6 +292,7 @@ class _AccountSettingsWidgetState extends ConsumerState<AccountSettingsWidget> {
     nav = ref.read(customNavigationProvider.notifier);
     toast = ref.read(toastProvider.notifier);
     accountService = ref.read(accountServiceProvider.notifier);
+    sharedPref = ref.read(sharedPrefProvider);
     super.initState();
   }
 }
