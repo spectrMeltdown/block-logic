@@ -13,6 +13,8 @@ import 'package:block_logic/logic/services/shared_pref.dart';
 import 'package:block_logic/screens/auth/duplicate_login.dart';
 import 'package:block_logic/screens/auth/verify_email.dart';
 import 'package:block_logic/screens/main_menu.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -25,15 +27,16 @@ class Checkpoint extends ConsumerStatefulWidget {
   ConsumerState<Checkpoint> createState() => _CheckpointState();
 }
 
-class _CheckpointState extends ConsumerState<Checkpoint> {
+class _CheckpointState extends ConsumerState<Checkpoint> with WidgetsBindingObserver {
   late final AuthService auth;
   late final SharedPreferences sharedPref;
-  final Widget errorWidget = Scaffold(
+  String sessionID = '';
+  final Widget errorWidget = const Scaffold(
     body: Background(
       child: BLError(),
     ),
   );
-  final Widget loadingWidget = Scaffold(
+  final Widget loadingWidget = const Scaffold(
     body: Background(
       child: BLLoading(
         message: 'Loading...',
@@ -53,14 +56,16 @@ class _CheckpointState extends ConsumerState<Checkpoint> {
           return dupLoginCheck.when(
             data: (sessionID) {
               if (sessionID != null && sessionID.isNotEmpty) {
+                this.sessionID = sessionID;
                 if (sessionID != sharedPref.getString('sessionID')) {
                   return const DuplicateLogin();
                 }
               } else {
                 // get the saved sessionID
-                final savedSessionID = sharedPref.getString('sessionID');
+                final savedSessionID = sharedPref.getString('sessionID') ?? '';
+                this.sessionID = savedSessionID;
                 // upload sessionID to prevent login on other devices
-                auth.uploadSessionID(savedSessionID!);
+                auth.uploadSessionID(savedSessionID);
               }
 
               /// check if email is not verified
@@ -147,6 +152,29 @@ class _CheckpointState extends ConsumerState<Checkpoint> {
       /// pause after track loaded
       FlameAudio.bgm.pause();
     }
+    WidgetsBinding.instance.addObserver(this);
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // debugPrint(state.toString());
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (state == AppLifecycleState.paused || state == AppLifecycleState.detached) {
+      if (uid != null) {
+        FirebaseFirestore.instance.collection('users').doc(uid).update({'sessionID': FieldValue.delete()});
+      }
+    }
+    if (state == AppLifecycleState.resumed) {
+      if (uid != null) {
+        FirebaseFirestore.instance.collection('users').doc(uid).update({'sessionID': sessionID});
+      }
+    }
   }
 }

@@ -41,7 +41,7 @@ class DialogChallengeInfo extends ConsumerWidget {
         Padding(
           padding: const EdgeInsets.only(left: 8),
           child: challenge.limitations == null || challenge.limitations!.isEmpty
-              ? BLText('No limitations set.')
+              ? const BLText('No limitations set.')
               : Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: List.generate(challenge.limitations!.length, (i) {

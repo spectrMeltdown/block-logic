@@ -34,7 +34,7 @@ class _TestDialogState extends ConsumerState<TestDialog> {
     return BLDialog(
       child: solutionCheck.when(
         data: (solution) {
-          if (solution == null || solution.isEmpty) {
+          if (solution == null) {
             return Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -54,7 +54,14 @@ class _TestDialogState extends ConsumerState<TestDialog> {
             mainAxisSize: MainAxisSize.min,
             children: [
               const BLSmallTitle('Result:'),
-              BLText(solution),
+              Flexible(
+                  child: BLText(
+                solution,
+                softWrap: true,
+              )),
+              const SizedBox(
+                height: 15,
+              ),
               BLButton(
                 type: BtnType.red,
                 onPressed: () => nav.pop(context),

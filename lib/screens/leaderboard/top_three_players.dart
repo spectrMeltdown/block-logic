@@ -103,7 +103,7 @@ class _TopThreePlayersState extends ConsumerState<TopThreePlayers> {
                                   Radius.circular(20),
                                 ),
                               ),
-                              child: Padding(
+                              child: const Padding(
                                 padding: EdgeInsets.all(8.0),
                                 child: Icon(FontAwesomeIcons.user),
                               ),

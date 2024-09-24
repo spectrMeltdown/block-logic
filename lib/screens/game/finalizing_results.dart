@@ -95,10 +95,17 @@ class _FinalizingResultsState extends ConsumerState<FinalizingResults> {
           if (leaderboard == null) {
             return errorWidget;
           }
-          return SelectedLeaderboard(
-            leaderboard,
-            showBackButton: false,
-            // roomTitle: widget.room.name!,
+          WidgetsBinding.instance.addPostFrameCallback((duration) {
+            nav.pushReplace(
+                context,
+                SelectedLeaderboard(
+                  leaderboard,
+                  showBackButton: false,
+                  // roomTitle: widget.room.name!,
+                ));
+          });
+          return Scaffold(
+            body: Background(child: loading),
           );
         },
         error: (error, stackTrace) {

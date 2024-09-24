@@ -45,6 +45,7 @@ class _GameChallengeState extends ConsumerState<GameChallenge> {
   @override
   void initState() {
     gameManager = ref.read(gameManagerProvider.notifier);
+    gameManager.updateSolution(widget.challenge.solutionMatch!);
     if (!kDebugMode) {
       // gameManager.updateSolution(widget.challenge.solution!);
     }
@@ -55,6 +56,8 @@ class _GameChallengeState extends ConsumerState<GameChallenge> {
   Widget build(BuildContext context) {
     final returnBlock = ref.watch(returnBlockProvider);
     final processing = ref.watch(processingProvider);
+    debugPrint(widget.challengeCount.toString());
+    debugPrint(widget.currentChallenge.toString());
     return Stack(
       fit: StackFit.expand,
       children: [
@@ -150,15 +153,15 @@ class _GameChallengeState extends ConsumerState<GameChallenge> {
                             ref.invalidate(getChildrenDataProvider);
                             ref.invalidate(getSelfDataProvider);
                             ref.invalidate(getRootDataProvider);
-                            switch (data.type) {
-                              case CodeBlockType.functions:
-                              case CodeBlockType.objects:
-                              case CodeBlockType.operators:
-                              case CodeBlockType.conditionals:
-                              case CodeBlockType.loops:
-                              case CodeBlockType.statement:
-                              default:
-                            }
+                            // switch (data.type) {
+                            //   case CodeBlockType.functions:
+                            //   case CodeBlockType.objects:
+                            //   case CodeBlockType.operators:
+                            //   case CodeBlockType.conditionals:
+                            //   case CodeBlockType.loops:
+                            //   case CodeBlockType.statement:
+                            //   default:
+                            // }
                             setState(() {});
                           },
                           onWillAcceptWithDetails: (data) {
@@ -177,8 +180,8 @@ class _GameChallengeState extends ConsumerState<GameChallenge> {
         Visibility(
             visible: processing,
             child: Container(
-              color: Colors.black.withOpacity(0.3),
-              child: BLLoading(
+              color: Colors.black.withOpacity(0.8),
+              child: const BLLoading(
                 message: 'Processing...',
               ),
             ))

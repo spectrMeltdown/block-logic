@@ -61,7 +61,7 @@ class _SignupState extends ConsumerState<Signup> with RouteAware {
   bool firstOTPSent = false;
   String phoneNum = '';
   String verificationID = '';
-  int resendToken = 0;
+  String resendToken = '';
 
   @override
   void initState() {
@@ -135,7 +135,7 @@ class _SignupState extends ConsumerState<Signup> with RouteAware {
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      canPop: processing,
+      canPop: !processing,
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         body: Stack(

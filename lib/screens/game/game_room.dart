@@ -44,7 +44,7 @@ class _GameRoomState extends ConsumerState<GameRoom> with WidgetsBindingObserver
         nav.pushReplace(context, FinalizingResults(widget.room.currentLeaderboardID!));
       });
       return PopScope(
-        canPop: processing,
+        canPop: !processing,
         child: const Scaffold(
           body: Background(child: SafeArea(child: BLLoading())),
         ),
@@ -84,7 +84,7 @@ class _GameRoomState extends ConsumerState<GameRoom> with WidgetsBindingObserver
       // );
     }
     return PopScope(
-      canPop: processing,
+      canPop: !processing,
       onPopInvokedWithResult: (didPop, result) async {
         if (didPop) return;
         final leave = await dialog.show(context, const PauseDialog());
@@ -126,7 +126,7 @@ class _GameRoomState extends ConsumerState<GameRoom> with WidgetsBindingObserver
                       // debugPrint('Challenge length: $challengeLength');
                       // debugPrint('current challenge: $currentChallenge');
                       return GameChallenge(
-                        currentChallenge: 0,
+                        currentChallenge: currentChallenge,
                         roomName: widget.room.name ?? '',
                         challenge: challenges[currentChallenge],
                         challengeCount: challenges.length,
@@ -141,7 +141,7 @@ class _GameRoomState extends ConsumerState<GameRoom> with WidgetsBindingObserver
                 visible: processing,
                 child: Container(
                   color: Colors.black.withOpacity(0.6),
-                  child: BLLoading(
+                  child: const BLLoading(
                     message: 'Loading ...',
                   ),
                 ))
@@ -180,13 +180,14 @@ class _GameRoomState extends ConsumerState<GameRoom> with WidgetsBindingObserver
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+
     super.dispose();
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) async {
     /// this code runs whenever the user closes the app without properly exiting the game.
-    if (state == AppLifecycleState.detached) {
+    if (state == AppLifecycleState.paused || state == AppLifecycleState.detached) {
       await gameManager.leaveGame(false);
     }
   }

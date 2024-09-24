@@ -60,7 +60,7 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
     final width = mediaQ.size.width;
 
     return PopScope(
-      canPop: processing,
+      canPop: !processing,
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         body: Stack(

@@ -37,11 +37,13 @@ class _BlockDesignWrapperState extends ConsumerState<BlockDesignWrapper> {
       color: Colors.transparent,
       child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-          decoration: BoxDecoration(
-              border: widget.data.state == CodeBlockState.inEditor ? Border.all(color: Colors.grey.shade700) : null,
-              borderRadius: const BorderRadius.all(Radius.circular(10)),
-              color: blui.getBlockColor(widget.data.type)),
-          child: widget.updateSelection != null ? BLText(widget.text!) : widget.child),
+          decoration: BoxDecoration(border: widget.data.state == CodeBlockState.inEditor ? Border.all(color: Colors.grey.shade700) : null, borderRadius: const BorderRadius.all(Radius.circular(10)), color: blui.getBlockColor(widget.data.type)),
+          child: widget.updateSelection != null
+              ? BLText(
+                  widget.text!,
+                  color: Colors.white,
+                )
+              : widget.child),
     );
   }
 }

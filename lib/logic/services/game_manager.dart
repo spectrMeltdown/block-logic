@@ -58,7 +58,7 @@ class GameManager extends StateNotifier<GameState> {
     }
   }
 
-  void updateSolution(Map<int, String> solution) => solution = solution;
+  void updateSolution(List<dynamic> solution) => state.solution = solution;
 
 // void removeFromSelector(Map<CodeBlockType, int> ) =>
 
@@ -384,7 +384,8 @@ class GameManager extends StateNotifier<GameState> {
               case CodeBlockType.conditionals:
               case CodeBlockType.loops:
               case CodeBlockType.statement:
-                deleteData(data);
+                final child = state.dataTree[uid];
+                deleteData(child!);
               default:
             }
             // if data has no children, delete it
@@ -401,7 +402,8 @@ class GameManager extends StateNotifier<GameState> {
               case CodeBlockType.conditionals:
               case CodeBlockType.loops:
               case CodeBlockType.statement:
-                deleteData(data);
+                final child = state.dataTree[uid];
+                deleteData(child!);
               default:
             }
             // if data has no children, delete it
@@ -418,7 +420,8 @@ class GameManager extends StateNotifier<GameState> {
               case CodeBlockType.conditionals:
               case CodeBlockType.loops:
               case CodeBlockType.statement:
-                deleteData(data);
+                final child = state.dataTree[uid];
+                deleteData(child!);
               default:
             }
             // if data has no children, delete it
@@ -438,7 +441,8 @@ class GameManager extends StateNotifier<GameState> {
               case CodeBlockType.conditionals:
               case CodeBlockType.loops:
               case CodeBlockType.statement:
-                deleteData(data);
+                final child = state.dataTree[uid];
+                deleteData(child!);
               default:
             }
             // if data has no children, delete it
@@ -456,7 +460,8 @@ class GameManager extends StateNotifier<GameState> {
               case CodeBlockType.conditionals:
               case CodeBlockType.loops:
               case CodeBlockType.statement:
-                deleteData(data);
+                final child = state.dataTree[uid];
+                deleteData(child!);
               default:
             }
             // if data has no children, delete it
@@ -476,7 +481,8 @@ class GameManager extends StateNotifier<GameState> {
               case CodeBlockType.conditionals:
               case CodeBlockType.loops:
               case CodeBlockType.statement:
-                deleteData(data);
+                final child = state.dataTree[uid];
+                deleteData(child!);
               default:
             }
             // if data has no children, delete it
@@ -509,12 +515,6 @@ class GameManager extends StateNotifier<GameState> {
     }
   }
 
-  Future<void> endGame() async {
-    state.dataTree.clear();
-    // finalize own score
-    // leave game
-  }
-
   void addInSelectorUIDs(CodeBlockType type, String uid) => state.inSelectorUIDs[type]!.add(uid);
 
   void removeInSelectorUIDs(CodeBlockType type, String uid) => state.inSelectorUIDs[type]!.removeWhere((item) => item == uid);
@@ -545,7 +545,7 @@ class GameState {
   // bool shouldSetState;
 
 // for checking the challenge
-  Map<int, String> solution = {};
+  List<dynamic> solution = [];
   int errorCount = -1;
 
 // for async tasks

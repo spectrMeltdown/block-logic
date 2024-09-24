@@ -37,7 +37,7 @@ class _LeaderboardsPageState extends ConsumerState<LeaderboardsPage> {
   Widget build(BuildContext context) {
     final userLeaderboards = ref.watch(SelectedUserLeaderboardsProvider(auth.getUID()));
     return PopScope(
-      canPop: processing,
+      canPop: !processing,
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         body: Background(
@@ -50,7 +50,7 @@ class _LeaderboardsPageState extends ConsumerState<LeaderboardsPage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      BLBackButton(),
+                      const BLBackButton(),
                       Padding(
                         padding: const EdgeInsets.only(right: 10),
                         child: IconButton(

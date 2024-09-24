@@ -35,9 +35,7 @@ class _BLProfilePicState extends ConsumerState<BLProfilePic> {
 
   @override
   Widget build(BuildContext context) {
-    final account = widget.type == AccountType.admin
-        ? ref.watch(SelectedAdminProvider(widget.id))
-        : ref.watch(SelectedUserProvider(widget.id));
+    final account = widget.type == AccountType.admin ? ref.watch(SelectedAdminProvider(widget.id)) : ref.watch(SelectedUserProvider(widget.id));
     return GestureDetector(
         onTapDown: kIsWeb
             ? null
@@ -75,9 +73,7 @@ class _BLProfilePicState extends ConsumerState<BLProfilePic> {
                       child: Container(
                         width: widget.size,
                         height: widget.size,
-                        decoration: BoxDecoration(
-                            color: Colors.black.withAlpha(100),
-                            borderRadius: const BorderRadius.all(Radius.circular(100))),
+                        decoration: BoxDecoration(color: Colors.black.withAlpha(100), borderRadius: const BorderRadius.all(Radius.circular(100))),
                       )),
                 ],
               )
@@ -117,7 +113,10 @@ class _BLProfilePicState extends ConsumerState<BLProfilePic> {
               fit: BoxFit.contain,
               child: Padding(
                 padding: EdgeInsets.all(8.0),
-                child: Icon(FontAwesomeIcons.user),
+                child: Icon(
+                  FontAwesomeIcons.user,
+                  color: Colors.white,
+                ),
               ),
             );
           }

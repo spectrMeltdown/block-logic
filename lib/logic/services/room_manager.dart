@@ -85,6 +85,25 @@ class RoomManager extends _$RoomManager {
   }) async {
     return input == state._encryption.decryptString(encrypted: pass, key: hostID);
   }
+
+  Future<String?> removePlayers(String roomID, List<String> selectedIDs, {bool removeAll = false}) async {
+    if (roomID.isEmpty) throw ('Room ID was blank!');
+    try {
+      final room = Room.fromFirestore(await state._db.doc(roomID).get());
+      if (room.players != null) {
+        // if same length meaning remove all players
+        if (room.players!.length == selectedIDs.length || removeAll) {
+          await state._db.doc(roomID).update({'players': [], 'status': 'available'});
+        }
+        await state._db.doc(roomID).update({'players': FieldValue.arrayRemove(selectedIDs)});
+      } else {
+        return 'No players found!';
+      }
+      return null;
+    } catch (e) {
+      return state._errorHandler.call(e, this) ?? 'error';
+    }
+  }
 }
 
 class RoomManagerState {

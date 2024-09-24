@@ -65,7 +65,7 @@ class _PublicRoomItemState extends ConsumerState<PublicRoomItem> {
             color: Colors.black,
             //icon: room.icon ?? '',
             title: widget.room.name ?? '',
-            subTitle: hostData?.displayName ?? '',
+            subTitle: hostData?.displayName ?? '--',
             bottomRowStart: BLRoomState(widget.room.status),
             bottomRowEnd: BLText(
               '${widget.room.players?.length ?? '--'}/${widget.room.maxPlayers ?? '--'}',

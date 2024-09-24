@@ -36,7 +36,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   Widget build(BuildContext context) {
     final user = ref.watch(authChangesProvider);
     return PopScope(
-      canPop: processing,
+      canPop: !processing,
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         body: Stack(
@@ -96,7 +96,9 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                 visible: processing,
                 child: Container(
                   color: Colors.black.withOpacity(0.4),
-                  child: const BLLoading(),
+                  child: const BLLoading(
+                    message: 'Loading ...',
+                  ),
                 ))
           ],
         ),

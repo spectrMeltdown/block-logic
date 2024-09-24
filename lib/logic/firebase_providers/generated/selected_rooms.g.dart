@@ -6,7 +6,7 @@ part of '../selected_rooms.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$selectedRoomsHash() => r'cd69cb6fe4e179799f360eae52a8e28ff130b82f';
+String _$selectedRoomsHash() => r'bcdca29f10560d766b7cc0bdefb837f7c2954f6d';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -40,10 +40,12 @@ class SelectedRoomsFamily extends Family<AsyncValue<List<Room>>> {
 
   /// See also [selectedRooms].
   SelectedRoomsProvider call(
-    String accountID,
-  ) {
+    String accountID, {
+    String? searchQuery,
+  }) {
     return SelectedRoomsProvider(
       accountID,
+      searchQuery: searchQuery,
     );
   }
 
@@ -53,6 +55,7 @@ class SelectedRoomsFamily extends Family<AsyncValue<List<Room>>> {
   ) {
     return call(
       provider.accountID,
+      searchQuery: provider.searchQuery,
     );
   }
 
@@ -75,11 +78,13 @@ class SelectedRoomsFamily extends Family<AsyncValue<List<Room>>> {
 class SelectedRoomsProvider extends AutoDisposeStreamProvider<List<Room>> {
   /// See also [selectedRooms].
   SelectedRoomsProvider(
-    String accountID,
-  ) : this._internal(
+    String accountID, {
+    String? searchQuery,
+  }) : this._internal(
           (ref) => selectedRooms(
             ref as SelectedRoomsRef,
             accountID,
+            searchQuery: searchQuery,
           ),
           from: selectedRoomsProvider,
           name: r'selectedRoomsProvider',
@@ -91,6 +96,7 @@ class SelectedRoomsProvider extends AutoDisposeStreamProvider<List<Room>> {
           allTransitiveDependencies:
               SelectedRoomsFamily._allTransitiveDependencies,
           accountID: accountID,
+          searchQuery: searchQuery,
         );
 
   SelectedRoomsProvider._internal(
@@ -101,9 +107,11 @@ class SelectedRoomsProvider extends AutoDisposeStreamProvider<List<Room>> {
     required super.debugGetCreateSourceHash,
     required super.from,
     required this.accountID,
+    required this.searchQuery,
   }) : super.internal();
 
   final String accountID;
+  final String? searchQuery;
 
   @override
   Override overrideWith(
@@ -119,6 +127,7 @@ class SelectedRoomsProvider extends AutoDisposeStreamProvider<List<Room>> {
         allTransitiveDependencies: null,
         debugGetCreateSourceHash: null,
         accountID: accountID,
+        searchQuery: searchQuery,
       ),
     );
   }
@@ -130,13 +139,16 @@ class SelectedRoomsProvider extends AutoDisposeStreamProvider<List<Room>> {
 
   @override
   bool operator ==(Object other) {
-    return other is SelectedRoomsProvider && other.accountID == accountID;
+    return other is SelectedRoomsProvider &&
+        other.accountID == accountID &&
+        other.searchQuery == searchQuery;
   }
 
   @override
   int get hashCode {
     var hash = _SystemHash.combine(0, runtimeType.hashCode);
     hash = _SystemHash.combine(hash, accountID.hashCode);
+    hash = _SystemHash.combine(hash, searchQuery.hashCode);
 
     return _SystemHash.finish(hash);
   }
@@ -145,6 +157,9 @@ class SelectedRoomsProvider extends AutoDisposeStreamProvider<List<Room>> {
 mixin SelectedRoomsRef on AutoDisposeStreamProviderRef<List<Room>> {
   /// The parameter `accountID` of this provider.
   String get accountID;
+
+  /// The parameter `searchQuery` of this provider.
+  String? get searchQuery;
 }
 
 class _SelectedRoomsProviderElement
@@ -153,6 +168,8 @@ class _SelectedRoomsProviderElement
 
   @override
   String get accountID => (origin as SelectedRoomsProvider).accountID;
+  @override
+  String? get searchQuery => (origin as SelectedRoomsProvider).searchQuery;
 }
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

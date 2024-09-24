@@ -2,8 +2,10 @@ import 'dart:io';
 
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_models/admin_account.dart';
+import 'package:block_logic/logic/firebase_models/leaderboard.dart';
 import 'package:block_logic/logic/firebase_models/user_account.dart';
 import 'package:block_logic/logic/services/error_handler.dart';
+import 'package:block_logic/logic/services/leaderboard_manager.dart';
 import 'package:block_logic/logic/services/shared_pref.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
@@ -102,18 +104,29 @@ class AccountService extends _$AccountService {
     }
   }
 
-  Future<void> deleteAll() async {
-    //TODO: finalize flow
-
-    /// get and delete rooms
-    /// get and delete leaderboards rooms
-    /// get and delete
-  }
-
   Future<String?> deleteFirestoreData(String uid, AccountType type) async {
+    final leaderboardManager = ref.read(leaderboardManagerProvider.notifier);
     try {
-      if (type == AccountType.admin) {
+      if (type == AccountType.user) {
         await state._db.collection('users').doc(uid).delete();
+        final rooms = await state._db.collection('rooms').where('hostID', isEqualTo: uid).get();
+        for (final room in rooms.docs) {
+          room.reference.delete();
+        }
+        var leaderboards = await state._db.collection('leaderboards').where('players', arrayContains: uid).get();
+        for (final leaderboard in leaderboards.docs) {
+          // if only player on the leaderboard, delete it
+          final leaderboardObj = Leaderboard.fromFirestore(leaderboard);
+          if (leaderboardObj.players?.length == 1) {
+            leaderboard.reference.delete();
+          }
+          // if not the only player, then remove self
+          else {
+            await leaderboardManager.updatePlayers(leaderboard.id, {
+              'players': FieldValue.arrayRemove([uid])
+            });
+          }
+        }
       } else {
         await state._db.collection('admins').doc(uid).delete();
       }
@@ -194,7 +207,7 @@ class AccountService extends _$AccountService {
     }
   }
 
-  Future<String?> verifyPhoneNumber(String phoneNumber, AccountType type, int? resendToken) async {
+  Future<String?> verifyPhoneNumber(String phoneNumber, AccountType type, String? resendToken) async {
     String? error;
     try {
       await FirebaseAuth.instance.verifyPhoneNumber(
@@ -221,7 +234,7 @@ class AccountService extends _$AccountService {
             // await update(admin: AdminAccount(id: state._auth!.uid, verificationID: verificationId, resendToken: resendToken));
           }
         },
-        forceResendingToken: resendToken,
+        forceResendingToken: int.parse(resendToken!),
         codeAutoRetrievalTimeout: (String verificationId) {},
       );
       return error;

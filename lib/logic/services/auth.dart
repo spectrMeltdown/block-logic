@@ -130,8 +130,7 @@ class AuthService extends _$AuthService {
       if (isAdmin is bool && isAdmin == true) {
         await state._account.deleteFirestoreData(uid, AccountType.admin);
       } else {
-        /// do not await, this could take some time (especially if user has lots of data)
-        state._account.deleteFirestoreData(uid, AccountType.user);
+        await state._account.deleteFirestoreData(uid, AccountType.user);
       }
 
       /// delete account in firebase _auth

@@ -32,14 +32,14 @@ class _DuplicateLoginState extends ConsumerState<DuplicateLogin> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Center(
-                  child: const BLText(
+                const Center(
+                  child: BLText(
                     'You are already logged in\n on another device.',
                     alignCenter: true,
                     size: 20,
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 30,
                 ),
                 BLButton(

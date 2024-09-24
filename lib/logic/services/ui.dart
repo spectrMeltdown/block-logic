@@ -9,7 +9,7 @@ class BlockColors {
   Color variables = const Color(0xFFA77D00);
   Color literals = const Color(0xFFEB3223);
   Color condLoops = const Color(0xFF37225C);
-  Color functions = const Color(0xFFAC6363);
+  Color functions = Colors.blue.shade800; // const Color(0xFFAC6363);
   Color classes = const Color(0xFF347E77);
   Color operators = const Color(0xFF2C612E);
   Color keywords = const Color.fromARGB(255, 221, 221, 221);

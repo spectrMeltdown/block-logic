@@ -8,6 +8,8 @@ import 'package:block_logic/logic/services/dialog.dart';
 import 'package:block_logic/logic/services/navigation.dart';
 import 'package:block_logic/logic/services/room_manager.dart';
 import 'package:block_logic/logic/services/toast.dart';
+import 'package:block_logic/screens/rooms/in_game_controls_dialog.dart';
+import 'package:block_logic/screens/rooms/kick_player_bottom_sheet.dart';
 import 'package:block_logic/screens/rooms/room_state.dart';
 import 'package:block_logic/screens/rooms/waiting_room.dart';
 import 'package:flutter/material.dart';
@@ -39,6 +41,11 @@ class _UserRoomItemState extends ConsumerState<UserRoomItem> {
           return BLTranslucentCard(
             onPressed: () async {
               if (widget.room.status != null && widget.room.status == RoomStatus.inGame) {
+                final result = await showDialog(context: context, builder: (context) => InGameControlsDialog(widget.room.id!));
+                if (result is String && result == 'kickPlayer') {
+                  if (!context.mounted) return;
+                  showBottomSheet(context: context, builder: (context) => KickPlayerBottomSheet(widget.room.id!));
+                }
                 return;
               }
               widget.toggleProcessing();

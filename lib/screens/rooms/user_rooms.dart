@@ -16,15 +16,22 @@ class UserRooms extends ConsumerStatefulWidget {
 }
 
 class _UserRoomsState extends ConsumerState<UserRooms> {
+  late final AuthService auth;
   bool processing = false;
+
+  @override
+  void initState() {
+    auth = ref.read(authServiceProvider.notifier);
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final auth = ref.read(authServiceProvider.notifier);
-    final ownRooms = ref.watch(SelectedRoomsProvider(auth.getUID()));
+    final ownRooms = ref.watch(SelectedRoomsProvider(auth.getUID(), searchQuery: widget.searchQuery));
 
     return ownRooms.when(
       data: (rooms) {
-        if (widget.searchQuery != null && widget.searchQuery!.isNotEmpty) {
+        if (widget.searchQuery != null && widget.searchQuery!.isNotEmpty && rooms.isEmpty) {
           return const Center(
             child: BLText(
               'Sorry, we couldn\'t find that..',

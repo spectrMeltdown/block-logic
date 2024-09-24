@@ -29,7 +29,7 @@ class _BlockRenderState extends ConsumerState<BlockRender> {
             child: BLText(
               widget.data.name,
               size: 14,
-              color: widget.data.type == CodeBlockType.keywords ? Colors.black : null,
+              color: widget.data.type == CodeBlockType.keywords ? Colors.black : Colors.white,
             ),
           ),
         );
@@ -100,7 +100,7 @@ class _BlockRenderState extends ConsumerState<BlockRender> {
                 child: BLText(
                   widget.data.name,
                   size: 14,
-                  color: widget.data.type == CodeBlockType.keywords ? Colors.black : null,
+                  color: widget.data.type == CodeBlockType.keywords ? Colors.black : Colors.white,
                 ),
               ),
             );

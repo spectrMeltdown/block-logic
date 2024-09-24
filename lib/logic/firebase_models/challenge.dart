@@ -10,14 +10,14 @@ class Challenge {
   final Difficulty? difficulty;
   final List<String>? limitations;
   final Map<CodeBlockType, List<GameBlockData>>? blocks;
-  final List<String>? solutionCheck;
+  final List<dynamic>? solutionMatch;
   final List<String>? tags;
   Challenge({
     this.id,
     this.name,
     this.shortDescription,
     this.additionalInfo,
-    this.solutionCheck,
+    this.solutionMatch,
     this.limitations,
     this.blocks,
     this.difficulty,
@@ -35,7 +35,7 @@ class Challenge {
       name: data['name'] ?? '',
       shortDescription: data['shortDescription'] ?? '',
       additionalInfo: data['additionalInfo'] ?? '',
-      solutionCheck: data['solutionCheck'] == null ? [] : (data['solutionCheck'] as List<dynamic>).map((i) => i as String).toList(),
+      solutionMatch: data['solutionMatch'],
       limitations: data['limitations'] == null ? [] : (data['limitations'] as List<dynamic>).map((i) => i as String).toList(),
       blocks: data['blocks'] == null
           ? null
@@ -63,6 +63,9 @@ class Challenge {
         return MapEntry(key.name, value.map((data) => data.toJSON()).toList());
       });
       toFirestoreMap.addAll({'blocks': blocksMap});
+    }
+    if (solutionMatch != null) {
+      toFirestoreMap.addAll({'solutionMatch': solutionMatch});
     }
     if (difficulty != null) {
       toFirestoreMap.addAll({'difficulty': difficulty?.name});

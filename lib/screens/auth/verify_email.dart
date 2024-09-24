@@ -10,6 +10,7 @@ import 'package:block_logic/components/util/animation_player.dart';
 import 'package:block_logic/logic/services/assets.dart';
 import 'package:block_logic/logic/services/auth.dart';
 import 'package:block_logic/logic/services/navigation.dart';
+import 'package:block_logic/logic/services/shared_pref.dart';
 import 'package:block_logic/screens/checkpoint.dart';
 import 'package:block_logic/web/components/button.dart';
 import 'package:flutter/foundation.dart';
@@ -75,14 +76,7 @@ class _VerifyEmailState extends ConsumerState<VerifyEmail> with TickerProviderSt
                     ),
                   const SizedBox(height: 30),
                   BLRichText(
-                    [
-                      const TextSpan(text: 'A link was sent to your email:\n'),
-                      TextSpan(
-                          text: auth.getEmail(), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-                      const TextSpan(
-                          text:
-                              "\n\n Just click on the link in that email to complete your signup. \n\n It you don't see it, you may need to check your spam folder.")
-                    ],
+                    [const TextSpan(text: 'A link was sent to your email:\n'), TextSpan(text: auth.getEmail(), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)), const TextSpan(text: "\n\n Just click on the link in that email to complete your signup. \n\n It you don't see it, you may need to check your spam folder.")],
                     alignment: TextAlign.center,
                   ),
                   const SizedBox(height: 70),
@@ -119,24 +113,21 @@ class _VerifyEmailState extends ConsumerState<VerifyEmail> with TickerProviderSt
 
   Widget getButton() {
     if (kIsWeb) {
-      return BLAdminButton(
-          paddingX: 30,
-          paddingY: 20,
-          type: AdminBtnType.teal,
-          onPressed: () => auth.sendEmailVerification(),
-          child: const BLText('Resend verification email', color: Colors.white));
+      return BLAdminButton(paddingX: 30, paddingY: 20, type: AdminBtnType.teal, onPressed: () => auth.sendEmailVerification(), child: const BLText('Resend verification email', color: Colors.white));
     }
-    return BLButton(
-        onPressed: () => auth.sendEmailVerification(),
-        child: const BLText('Resend verification email', color: Colors.white));
+    return BLButton(onPressed: () => auth.sendEmailVerification(), child: const BLText('Resend verification email', color: Colors.white));
   }
 
   @override
   void initState() {
+    final sharedPref = ref.read(sharedPrefProvider);
     auth = ref.read(authServiceProvider.notifier);
     nav = ref.read(customNavigationProvider.notifier);
     assets = ref.read(assetsProvider);
-    auth.sendEmailVerification(); // send one verification when first loaded
+    if (sharedPref.getBool('emailSent') == null) {
+      auth.sendEmailVerification();
+      sharedPref.setBool('emailSent', true);
+    }
     if (!kIsWeb) _controller = AnimationController(vsync: this);
     timer = Timer.periodic(const Duration(seconds: 5), (_) async {
       if (!context.mounted) return;
@@ -148,6 +139,7 @@ class _VerifyEmailState extends ConsumerState<VerifyEmail> with TickerProviderSt
       }
       if (isEmailVerified) {
         timer.cancel();
+        sharedPref.remove('emailSent');
         WidgetsBinding.instance.addPostFrameCallback((_) {
           // toast.showToast('Email verified successfully');
           if (kIsWeb) {

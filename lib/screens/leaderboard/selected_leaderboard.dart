@@ -11,6 +11,7 @@ import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_models/leaderboard.dart';
 import 'package:block_logic/logic/firebase_providers/all_scores.dart';
 import 'package:block_logic/logic/firebase_providers/selected_users.dart';
+import 'package:block_logic/logic/services/game_manager.dart';
 import 'package:block_logic/logic/services/navigation.dart';
 import 'package:block_logic/logic/services/ui.dart';
 import 'package:block_logic/screens/leaderboard/top_three_players.dart';
@@ -49,6 +50,13 @@ class _LeaderboardState extends ConsumerState<SelectedLeaderboard> {
   }
 
   @override
+  void initState() {
+    blui = ref.read(bLUIProvider.notifier);
+    nav = ref.read(customNavigationProvider.notifier);
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     final players = ref.watch(SelectedUsersProvider(widget.leaderboard.players!));
@@ -59,7 +67,17 @@ class _LeaderboardState extends ConsumerState<SelectedLeaderboard> {
           child: SafeArea(
         child: Column(
           children: [
-            if (widget.showBackButton) const Align(alignment: Alignment.centerLeft, child: BLBackButton()),
+            if (widget.showBackButton)
+              Align(
+                  alignment: Alignment.centerLeft,
+                  child: BLBackButton(
+                    onPressed: () async {
+                      ref.invalidate(gameManagerProvider);
+                      nav.pop(context);
+                      // TODO: rate on playstore!
+                      // showDialog(context: context, builder: );
+                    },
+                  )),
             if (!widget.showBackButton) const SizedBox(height: 20),
             const BLTitle('Leaderboard'),
             BLBorderedPanel(
@@ -310,12 +328,5 @@ class _LeaderboardState extends ConsumerState<SelectedLeaderboard> {
         ),
       )),
     );
-  }
-
-  @override
-  void initState() {
-    blui = ref.read(bLUIProvider.notifier);
-    nav = ref.read(customNavigationProvider.notifier);
-    super.initState();
   }
 }

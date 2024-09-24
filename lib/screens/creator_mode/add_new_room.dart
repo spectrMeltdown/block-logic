@@ -52,7 +52,7 @@ class _AddRoomBottomSheetState extends ConsumerState<AddRoomBottomSheet> {
   Widget build(BuildContext context) {
     final ownRooms = ref.watch(SelectedRoomsProvider(FirebaseAuth.instance.currentUser!.uid));
     return PopScope(
-      canPop: processing,
+      canPop: !processing,
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         body: Background(

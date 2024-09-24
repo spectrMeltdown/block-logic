@@ -98,7 +98,15 @@ class _RoomSelectorState extends ConsumerState<RoomSelector> with TickerProvider
                               SizedBox(
                                 width: double.maxFinite,
                                 height: mediaQuery.size.height / 1.6,
-                                child: TabBarView(clipBehavior: Clip.antiAlias, physics: const NeverScrollableScrollPhysics(), controller: tabController, children: [PublicRooms(searchQuery: searchQuery), UserRooms(searchQuery: searchQuery)]),
+                                child: TabBarView(
+                                  clipBehavior: Clip.antiAlias,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  controller: tabController,
+                                  children: [
+                                    PublicRooms(searchQuery: searchQuery),
+                                    UserRooms(searchQuery: searchQuery),
+                                  ],
+                                ),
                               )
                             ],
                           ),

@@ -29,7 +29,7 @@ class _PublicRoomsState extends ConsumerState<PublicRooms> {
 
     return roomsProvider.when(
       data: (rooms) {
-        if (widget.searchQuery != null && widget.searchQuery!.isNotEmpty) {
+        if (widget.searchQuery != null && widget.searchQuery!.isNotEmpty && rooms.isEmpty) {
           return const Center(
             child: BLText(
               'Sorry, we couldn\'t find that..',
