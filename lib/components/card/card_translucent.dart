@@ -83,9 +83,7 @@ class _BLCardState extends ConsumerState<BLTranslucentCard> {
                     shape: BoxShape.rectangle,
                     borderRadius: BorderRadius.circular(12.0),
                     border: Border.all(color: Colors.white, width: 3.0),
-                    gradient: RadialGradient(
-                        colors: _isTapped ? cardColorPressed : cardColor,
-                        radius: (widget.padding != null) ? getRadius(widget.padding) : 5),
+                    gradient: RadialGradient(colors: _isTapped ? cardColorPressed : cardColor, radius: (widget.padding != null) ? getRadius(widget.padding) : 5),
                     boxShadow: (_isTapped ? cardShadow : null),
                   ),
                   child: Row(
@@ -112,21 +110,19 @@ class _BLCardState extends ConsumerState<BLTranslucentCard> {
                                       : const BlankWidget()
                             ],
                           ),
-                          Row(
-                            children: [
-                              BLText(
-                                widget.subTitle,
-                                color: BLUI().getAppColor(''),
-                                size: 16,
-                              )
-                            ],
-                          ),
+                          if (widget.subTitle.isNotEmpty)
+                            Row(
+                              children: [
+                                BLText(
+                                  widget.subTitle,
+                                  color: BLUI().getAppColor(''),
+                                  size: 16,
+                                )
+                              ],
+                            ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              widget.bottomRowStart ?? const BlankWidget(),
-                              widget.bottomRowEnd ?? const BlankWidget()
-                            ],
+                            children: [widget.bottomRowStart ?? const BlankWidget(), widget.bottomRowEnd ?? const BlankWidget()],
                           )
                         ]),
                       ),

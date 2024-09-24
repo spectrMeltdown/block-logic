@@ -10,14 +10,14 @@ class Challenge {
   final Difficulty? difficulty;
   final List<String>? limitations;
   final Map<CodeBlockType, List<GameBlockData>>? blocks;
-  final Map<int, String>? solution;
+  final List<String>? solutionCheck;
   final List<String>? tags;
   Challenge({
     this.id,
     this.name,
     this.shortDescription,
     this.additionalInfo,
-    this.solution,
+    this.solutionCheck,
     this.limitations,
     this.blocks,
     this.difficulty,
@@ -35,11 +35,8 @@ class Challenge {
       name: data['name'] ?? '',
       shortDescription: data['shortDescription'] ?? '',
       additionalInfo: data['additionalInfo'] ?? '',
-      solution: data['solution'] == null
-          ? null
-          : (data['solution'] as Map<String, String>).map((key, value) => MapEntry(int.parse(key), value)),
-      limitations:
-          data['limitations'] == null ? [] : (data['limitations'] as List<dynamic>).map((i) => i as String).toList(),
+      solutionCheck: data['solutionCheck'] == null ? [] : (data['solutionCheck'] as List<dynamic>).map((i) => i as String).toList(),
+      limitations: data['limitations'] == null ? [] : (data['limitations'] as List<dynamic>).map((i) => i as String).toList(),
       blocks: data['blocks'] == null
           ? null
           : (data['blocks'] as Map<String, dynamic>).map<CodeBlockType, List<GameBlockData>>((key, value) {
@@ -47,8 +44,7 @@ class Challenge {
               CodeBlockType codeBlockType = CodeBlockType.values.firstWhere((e) => e.name == key);
 
               // Convert the value (List<dynamic>) to List<GameBlockData>
-              List<GameBlockData> gameBlockDataList =
-                  (value as List<dynamic>).map((item) => GameBlockData.fromJSON(item)).toList();
+              List<GameBlockData> gameBlockDataList = (value as List<dynamic>).map((item) => GameBlockData.fromJSON(item)).toList();
 
               return MapEntry(codeBlockType, gameBlockDataList);
             }),

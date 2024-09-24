@@ -7,7 +7,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Returns the user phone num as BLText
 class BLPhoneNum extends ConsumerWidget {
-  const BLPhoneNum({super.key});
+  final String? nullMessage;
+  const BLPhoneNum({this.nullMessage, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -17,10 +18,17 @@ class BLPhoneNum extends ConsumerWidget {
           final user = ref.watch(SelectedUserProvider(authData?.uid ?? ''));
           return user.when(
               data: (user) {
-                if (user != null) {
-                  return BLText(user.phoneNum == null ? '' : '+63 ${user.phoneNum}');
+                // if (user != null) {
+                //   return BLText(null == null ? nullMessage ?? '' : '+63 ${user.phoneNum}');
+                // }
+                if (authData != null && authData.phoneNumber != null && authData.phoneNumber!.isNotEmpty) {
+                  final firstSegment = authData.phoneNumber!.substring(0, 3);
+                  final secondSegment = authData.phoneNumber!.substring(3, 6);
+                  final thirdSegment = authData.phoneNumber!.substring(6, 9);
+                  final fourthSegment = authData.phoneNumber!.substring(9, 13);
+                  return BLText('$firstSegment $secondSegment $thirdSegment $fourthSegment');
                 }
-                return BLText(authData?.phoneNumber == null ? '' : '+63 ${authData!.phoneNumber}');
+                return BLText(nullMessage ?? '');
               },
               error: blankError,
               loading: blankLoading);

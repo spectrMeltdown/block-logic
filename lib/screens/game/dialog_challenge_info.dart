@@ -40,16 +40,18 @@ class DialogChallengeInfo extends ConsumerWidget {
         const BLSmallTitle('Limitations:'),
         Padding(
           padding: const EdgeInsets.only(left: 8),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: List.generate(challenge.limitations?.length ?? 1, (i) {
-              return Wrap(
-                children: [
-                  BLText('• ${challenge.limitations?[i] ?? 'No limitations provided.'}'),
-                ],
-              );
-            }),
-          ),
+          child: challenge.limitations == null || challenge.limitations!.isEmpty
+              ? BLText('No limitations set.')
+              : Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: List.generate(challenge.limitations!.length, (i) {
+                    return Wrap(
+                      children: [
+                        BLText('• ${challenge.limitations?[i] ?? 'No limitations provided.'}'),
+                      ],
+                    );
+                  }),
+                ),
         ),
         const SizedBox(
           height: 20,

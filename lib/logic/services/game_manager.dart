@@ -70,7 +70,7 @@ class GameManager extends StateNotifier<GameState> {
   // when pausing game
   void pauseTimer() => state.runTimer = true;
   void resumeTimer() => state.runTimer = false;
-  void updateTimeElapsed(int seconds) => state._timeElapsed = seconds;
+  void updateTimeElapsed() => state._timeElapsed++;
 
 // initiate the manager and game
   Future<String?> init(Room room) async {
@@ -113,7 +113,7 @@ class GameManager extends StateNotifier<GameState> {
       final finalScore = Score(
         id: FirebaseAuth.instance.currentUser!.uid,
         playerScore: state._score ?? 0,
-        timeElapsed: state._timeElapsed ?? 0,
+        timeElapsed: state._timeElapsed,
         status: isComplete ? ScoreStatus.complete : ScoreStatus.incomplete,
       );
       // upload final score in db
@@ -133,8 +133,7 @@ class GameManager extends StateNotifier<GameState> {
       // if this player is the last to leave the room
       if (playerListResult!.isEmpty) {
         // finalize the leaderboard
-        await state.leaderboardManager
-            .update(Leaderboard(id: state._leaderboardID, status: LeaderboardStatus.complete));
+        await state.leaderboardManager.update(Leaderboard(id: state._leaderboardID, status: LeaderboardStatus.complete));
 
         // reset the room status to available
         await state.roomManager.update(Room(
@@ -501,19 +500,24 @@ class GameManager extends StateNotifier<GameState> {
 
   String getUID() => DateTime.now().microsecondsSinceEpoch.toString();
 
-  void checkSolution() {
-    // convert the blocks to code, check on jsdoodle, print result
+  void toggleProcessingOverlay() {
+    state.processingOverlay = !state.processingOverlay;
+    if (state.processingOverlay) {
+      pauseTimer();
+    } else {
+      resumeTimer();
+    }
   }
 
   Future<void> endGame() async {
+    state.dataTree.clear();
     // finalize own score
     // leave game
   }
 
   void addInSelectorUIDs(CodeBlockType type, String uid) => state.inSelectorUIDs[type]!.add(uid);
 
-  void removeInSelectorUIDs(CodeBlockType type, String uid) =>
-      state.inSelectorUIDs[type]!.removeWhere((item) => item == uid);
+  void removeInSelectorUIDs(CodeBlockType type, String uid) => state.inSelectorUIDs[type]!.removeWhere((item) => item == uid);
 }
 
 enum ChildrenData { body, arguments, parameters, condition, statement, array }
@@ -525,14 +529,10 @@ class GameState {
   bool returnBlock = false;
 
 // id to tracks returning blocks to selector
-  Map<CodeBlockType, List<String>> inSelectorUIDs = {
-    for (var key in CodeBlockType.values.where((i) => i != CodeBlockType.statement).toList()) key: []
-  };
+  Map<CodeBlockType, List<String>> inSelectorUIDs = {for (var key in CodeBlockType.values.where((i) => i != CodeBlockType.statement).toList()) key: []};
 
 // count in tabs of selector
-  Map<CodeBlockType, int> categoryCount = {
-    for (var key in CodeBlockType.values.where((i) => i != CodeBlockType.statement).toList()) key: 0
-  };
+  Map<CodeBlockType, int> categoryCount = {for (var key in CodeBlockType.values.where((i) => i != CodeBlockType.statement).toList()) key: 0};
 
   // Track of the data in the tree
   Map<String, GameBlockData> dataTree = {};
@@ -550,6 +550,7 @@ class GameState {
 
 // for async tasks
   bool _processing;
+  bool processingOverlay = false;
 
   // for navigating the controller later on
   ScrollController? verticalScrollController;
@@ -566,7 +567,7 @@ class GameState {
   String? _leaderboardID;
   String? _roomID;
   int? _score;
-  int? _timeElapsed;
+  int _timeElapsed = 0;
 
   // constructor
   GameState({

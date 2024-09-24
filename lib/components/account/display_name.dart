@@ -31,6 +31,7 @@ class BLDisplayName extends ConsumerWidget {
         data: (user) => BLText(
               user?.displayName ?? '--',
               size: kIsWeb ? 16 : size,
+              overflow: false,
             ),
         error: blankError,
         loading: blankLoading);

@@ -45,8 +45,7 @@ class LoginAlert extends _$LoginAlert {
     Placemark place = placemark[0];
     String user = state._auth.getDisplayName();
     String receiverEmail = state._auth.getEmail();
-    String locationAddress =
-        '${place.street} ${place.locality} ${place.subAdministrativeArea} ${place.postalCode} ${place.administrativeArea} ${place.country}';
+    String locationAddress = '${place.street} ${place.locality} ${place.subAdministrativeArea} ${place.postalCode} ${place.administrativeArea} ${place.country}';
     //final settings = state._settings;
 
     /// check if login alerts are enabled, or if login alert was already sent
@@ -109,7 +108,7 @@ class LoginAlertState {
   final AuthService _auth;
   //final AccountSettings? _settings;
   final ErrorHandler _errorHandler;
-  final SharedPreferences _sharedPref;
+  // final SharedPreferences _sharedPref;
   final EmailService _emailService;
   LoginAlertState({
     required AuthService auth,
@@ -120,6 +119,6 @@ class LoginAlertState {
   })  : _auth = auth,
         // _settings = settings,
         _errorHandler = errorHandler,
-        _sharedPref = sharedPref,
+        // _sharedPref = sharedPref,
         _emailService = emailService;
 }

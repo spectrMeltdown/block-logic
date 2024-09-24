@@ -62,16 +62,17 @@ class _UserRoomItemState extends ConsumerState<UserRoomItem> {
             color: Colors.black,
             //icon: room.icon ?? '',
             title: widget.room.name ?? '',
-            subTitle: hostData?.displayName ?? '',
             bottomRowStart: BLRoomState(widget.room.status),
             bottomRowEnd: BLText(
               '${widget.room.players?.length ?? '--'}/${widget.room.maxPlayers ?? '--'}',
               bold: true,
-              color: widget.room.maxPlayers == null
-                  ? Colors.grey
-                  : widget.room.players!.length == widget.room.maxPlayers
-                      ? Colors.red
-                      : Colors.green,
+              color: widget.room.status == RoomStatus.inGame
+                  ? Colors.amber
+                  : widget.room.maxPlayers == null
+                      ? Colors.grey
+                      : widget.room.players!.length == widget.room.maxPlayers
+                          ? Colors.red
+                          : Colors.green,
             ),
           );
         },

@@ -5,10 +5,13 @@ import 'package:block_logic/components/error.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/util/provider_default.dart';
 import 'package:block_logic/logic/firebase_providers/selected_leaderboard.dart';
+import 'package:block_logic/logic/services/assets.dart';
 import 'package:block_logic/logic/services/game_manager.dart';
 import 'package:block_logic/logic/services/navigation.dart';
+import 'package:block_logic/logic/services/shared_pref.dart';
 import 'package:block_logic/screens/leaderboard/selected_leaderboard.dart';
 import 'package:block_logic/screens/main_menu.dart';
+import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -33,6 +36,21 @@ class _FinalizingResultsState extends ConsumerState<FinalizingResults> {
   void initState() {
     manager = ref.read(gameManagerProvider.notifier);
     nav = ref.read(customNavigationProvider.notifier);
+    final assets = ref.read(assetsProvider);
+    final sharedPref = ref.read(sharedPrefProvider);
+
+    /// check if a backgroundMusic setting exists
+    final backgroundMusic = sharedPref.getBool('backgroundMusic');
+    if (backgroundMusic == null || backgroundMusic == true) {
+      /// initialize the audio
+      FlameAudio.bgm.play(assets.audioBG1);
+    } else {
+      /// play silently to load the track
+      FlameAudio.bgm.play(assets.audioBG1, volume: 0);
+
+      /// pause after track loaded
+      FlameAudio.bgm.pause();
+    }
     leave();
     errorWidget = Column(
       children: [
@@ -42,17 +60,20 @@ class _FinalizingResultsState extends ConsumerState<FinalizingResults> {
         const SizedBox(
           height: 20,
         ),
-        BLButton(onPressed: () => nav.pushAndRemove(context, const MainMenuScreen()), child: const BLText('Return to Main Menu'))
+        BLButton(
+          onPressed: () => nav.pushAndRemove(context, const MainMenuScreen()),
+          child: const BLText('Return to Main Menu'),
+        )
       ],
     );
     super.initState();
   }
 
   void leave() async {
-    await manager.leaveGame(true);
     setState(() {
       leaderboardID = manager.getLeaderboardID();
     });
+    await manager.leaveGame(true);
   }
 
   @override
@@ -66,34 +87,32 @@ class _FinalizingResultsState extends ConsumerState<FinalizingResults> {
     final leaderboard = ref.watch(SelectedLeaderboardProvider(leaderboardID));
     return PopScope(
       canPop: false,
-      child: Scaffold(
-        body: Background(
-          child: SafeArea(
-            child: leaderboard.when(
-              data: (leaderboard) {
-                if (leaderboardID.isEmpty) {
-                  return loading;
-                }
-                if (leaderboard == null) {
-                  return errorWidget;
-                }
-                return SelectedLeaderboard(
-                  leaderboard,
-                  showBackButton: false,
-                  // roomTitle: widget.room.name!,
-                );
-              },
-              error: (error, stackTrace) {
-                genericError(error, stackTrace);
-                return errorWidget;
-              },
-              loading: () {
-                genericLoading();
-                return loading;
-              },
-            ),
-          ),
-        ),
+      child: leaderboard.when(
+        data: (leaderboard) {
+          if (leaderboardID.isEmpty) {
+            return loading;
+          }
+          if (leaderboard == null) {
+            return errorWidget;
+          }
+          return SelectedLeaderboard(
+            leaderboard,
+            showBackButton: false,
+            // roomTitle: widget.room.name!,
+          );
+        },
+        error: (error, stackTrace) {
+          genericError(error, stackTrace);
+          return Scaffold(
+            body: Background(child: errorWidget),
+          );
+        },
+        loading: () {
+          genericLoading();
+          return Scaffold(
+            body: Background(child: loading),
+          );
+        },
       ),
     );
   }

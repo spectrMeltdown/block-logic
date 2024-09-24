@@ -48,8 +48,7 @@ class Room {
       status: status,
       // icon: data['icon'],
       hostID: data['hostID'],
-      challengeIDs:
-          data['challengeIDs'] == null ? null : (data['challengeIDs'] as List).map((item) => item as String).toList(),
+      challengeIDs: data['challengeIDs'] == null ? null : (data['challengeIDs'] as List).map((item) => item as String).toList(),
       name: data['name'] ?? '',
       password: data['password'],
       currentLeaderboardID: data['currentLeaderboardID'],
@@ -68,7 +67,6 @@ class Room {
     int? maxPlayers,
     bool? adminLocked,
     RoomStatus? status,
-    bool? leaderboardCreated,
     String? currentLeaderboardID,
   }) {
     return Room(

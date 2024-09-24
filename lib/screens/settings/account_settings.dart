@@ -119,27 +119,54 @@ class _AccountSettingsWidgetState extends ConsumerState<AccountSettingsWidget> {
                           )),
                       BLTextButton(
                           onPressed: () {
-                            changeEmail(context);
+                            changeEmail();
                           },
                           child: Row(
+                            mainAxisSize: MainAxisSize.min,
                             mainAxisAlignment: MainAxisAlignment.center,
-                            children: [const Icon(FontAwesomeIcons.envelope, color: Colors.white), const SizedBox(width: 15), const Flexible(child: BLEmail()), const SizedBox(width: 5), widget.editIcon],
+                            children: [
+                              const Icon(FontAwesomeIcons.envelope, color: Colors.white),
+                              const SizedBox(width: 15),
+                              const Flexible(
+                                  child: BLEmail(
+                                nullMessage: 'Add email',
+                              )),
+                              const SizedBox(width: 5),
+                              widget.editIcon,
+                            ],
                           )),
                       BLTextButton(
                           onPressed: () {
-                            changePhoneNum(context);
+                            changePhoneNum();
                           },
                           child: Row(
+                            mainAxisSize: MainAxisSize.min,
                             mainAxisAlignment: MainAxisAlignment.center,
-                            children: [const Icon(Icons.numbers, color: Colors.white), const SizedBox(width: 15), const Flexible(child: BLPhoneNum()), const SizedBox(width: 5), widget.editIcon],
+                            children: [
+                              const Icon(Icons.numbers, color: Colors.white),
+                              const SizedBox(width: 15),
+                              const Flexible(
+                                  child: BLPhoneNum(
+                                nullMessage: 'Add phone',
+                              )),
+                              const SizedBox(width: 5),
+                              widget.editIcon,
+                            ],
                           )),
                       BLTextButton(
                           onPressed: () {
-                            changePass(context);
+                            changePass();
                           },
                           child: Row(
+                            mainAxisSize: MainAxisSize.min,
                             mainAxisAlignment: MainAxisAlignment.center,
-                            children: [const Icon(FontAwesomeIcons.lock, color: Colors.white), const SizedBox(width: 15), const BLText('Change password'), const SizedBox(width: 5), widget.editIcon],
+                            children: [
+                              const Icon(FontAwesomeIcons.lock, color: Colors.white),
+                              const SizedBox(width: 15),
+                              const BLText('Change password'),
+                              const SizedBox(width: 5),
+                              widget.editIcon,
+                            ],
                           )),
                       const SizedBox(height: 20),
                       Column(
@@ -173,6 +200,7 @@ class _AccountSettingsWidgetState extends ConsumerState<AccountSettingsWidget> {
                                   SizedBox(width: 10),
                                   BLText(
                                     'Delete account',
+                                    bold: true,
                                     color: Colors.red,
                                   )
                                 ],
@@ -229,7 +257,7 @@ class _AccountSettingsWidgetState extends ConsumerState<AccountSettingsWidget> {
     ));
   }
 
-  void changeEmail(BuildContext context) async {
+  void changeEmail() async {
     if (widget.processing) return;
     widget.toggleProcessing.call(true);
     String? reauth = await showDialog(
@@ -238,7 +266,7 @@ class _AccountSettingsWidgetState extends ConsumerState<AccountSettingsWidget> {
       builder: (BuildContext context) => const ReauthDialog(),
     );
     if (reauth == null) {
-      if (!context.mounted) {
+      if (!mounted) {
         widget.toggleProcessing.call(false);
         return;
       }
@@ -247,7 +275,7 @@ class _AccountSettingsWidgetState extends ConsumerState<AccountSettingsWidget> {
     widget.toggleProcessing.call(false);
   }
 
-  void changePass(BuildContext context) async {
+  void changePass() async {
     if (widget.processing) return;
     widget.toggleProcessing.call(true);
     String? reauth = await showDialog(
@@ -256,7 +284,7 @@ class _AccountSettingsWidgetState extends ConsumerState<AccountSettingsWidget> {
       builder: (BuildContext context) => const ReauthDialog(),
     );
     if (reauth == null) {
-      if (!context.mounted) {
+      if (!mounted) {
         widget.toggleProcessing.call(false);
         return;
       }
@@ -278,7 +306,7 @@ class _AccountSettingsWidgetState extends ConsumerState<AccountSettingsWidget> {
     widget.toggleProcessing.call(false);
   }
 
-  void changePhoneNum(BuildContext context) async {
+  void changePhoneNum() async {
     if (widget.processing) return;
     widget.toggleProcessing(true);
     final result = await showDialog(context: context, builder: (context) => const ChangePhoneNum(AccountType.user));

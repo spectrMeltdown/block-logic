@@ -1,5 +1,4 @@
 import 'package:block_logic/logic/enums.dart';
-import 'package:block_logic/logic/firebase_models/user_account.dart';
 import 'package:block_logic/logic/firebase_providers/auth.dart';
 import 'package:block_logic/logic/services/account.dart';
 import 'package:block_logic/logic/services/error_handler.dart';
@@ -160,6 +159,10 @@ class AuthService extends _$AuthService {
 
   /// user's email
   String getEmail() => state._auth.currentUser?.email ?? '';
+
+  /// phone
+  String getPhoneNum() => state._auth.currentUser?.phoneNumber ?? '';
+
   // user's uid
   String getUID() => state._auth.currentUser?.uid ?? '';
 

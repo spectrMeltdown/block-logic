@@ -17,11 +17,7 @@ class ScoreManager extends _$ScoreManager {
   Future<String?> create(String leaderboardID, Score score) async {
     if (leaderboardID.isEmpty) throw ('Must provide leaderboard id!');
     try {
-      await state._db
-          .doc(leaderboardID)
-          .collection('scores')
-          .doc(FirebaseAuth.instance.currentUser!.uid)
-          .set(score.toFirestore());
+      await state._db.doc(leaderboardID).collection('scores').doc(FirebaseAuth.instance.currentUser!.uid).set(score.toFirestore());
       return null;
     } catch (e) {
       return state._errorHandler.call(e, this);
@@ -32,6 +28,22 @@ class ScoreManager extends _$ScoreManager {
     if (score.id == null || score.id!.isEmpty) throw ('Score id not provided.');
     try {
       await state._db.doc(leaderboardID).collection('scores').doc(score.id).update(score.toFirestore());
+      return null;
+    } catch (e) {
+      return state._errorHandler.call(e, this);
+    }
+  }
+
+  Future<String?> increment({
+    required String leaderboardID,
+    required String uid,
+    required int value,
+  }) async {
+    if (leaderboardID.isEmpty || uid.isEmpty) throw ('Either leaderboardID or UID was blank.');
+    try {
+      await state._db.doc(leaderboardID).collection('scores').doc(uid).update({
+        'playerScore': FieldValue.increment(value),
+      });
       return null;
     } catch (e) {
       return state._errorHandler.call(e, this);

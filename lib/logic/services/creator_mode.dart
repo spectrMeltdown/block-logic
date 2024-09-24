@@ -2,7 +2,6 @@ import 'package:block_logic/logic/firebase_models/room.dart';
 import 'package:block_logic/logic/services/encryption.dart';
 import 'package:block_logic/logic/services/error_handler.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'generated/creator_mode.g.dart';
@@ -65,7 +64,7 @@ class CreatorModeManager extends _$CreatorModeManager {
 
 class CreatorModeState {
   final _rooms = FirebaseFirestore.instance.collection('rooms');
-  final _user = FirebaseAuth.instance.currentUser;
+  // final _user = FirebaseAuth.instance.currentUser;
   final ErrorHandler _errorHandler;
   final Encryption _encryption;
 

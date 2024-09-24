@@ -2,6 +2,7 @@ import 'package:block_logic/components/async/loading.dart';
 import 'package:block_logic/components/background.dart';
 import 'package:block_logic/components/button/back.dart';
 import 'package:block_logic/components/button/text.dart';
+import 'package:block_logic/components/dialog/help.dart';
 import 'package:block_logic/components/panel/bordered.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/text/title_small.dart';
@@ -14,6 +15,7 @@ import 'package:block_logic/screens/leaderboard/leaderboard_item.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class LeaderboardsPage extends ConsumerStatefulWidget {
   const LeaderboardsPage({super.key});
@@ -45,9 +47,37 @@ class _LeaderboardsPageState extends ConsumerState<LeaderboardsPage> {
             SafeArea(
               child: Column(
                 children: [
-                  const Align(
-                    alignment: Alignment.topLeft,
-                    child: BLBackButton(),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      BLBackButton(),
+                      Padding(
+                        padding: const EdgeInsets.only(right: 10),
+                        child: IconButton(
+                            onPressed: () {
+                              showDialog(
+                                  context: context,
+                                  builder: (context) => const BLHelpDialog(
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            BLText(
+                                              'Usage',
+                                              bold: true,
+                                            ),
+                                            BLText(
+                                              'Long-press - Delete leaderboards.',
+                                              softWrap: true,
+                                              color: Colors.white,
+                                            )
+                                          ],
+                                        ),
+                                      ));
+                            },
+                            icon: const Icon(FontAwesomeIcons.circleQuestion)),
+                      ),
+                    ],
                   ),
                   const BLSmallTitle('Leaderboards'),
                   Expanded(

@@ -39,35 +39,43 @@ class _TopThreePlayersState extends ConsumerState<TopThreePlayers> {
               child: Stack(
                 clipBehavior: Clip.none,
                 children: [
-                  WidgetAnimator(
-                    incomingEffect: WidgetTransitionEffects.incomingSlideInFromBottom(delay: picStartDelay),
-                    child: widget.playerPhotoURL[i].isEmpty
-                        ? FittedBox(
-                            fit: BoxFit.contain,
-                            child: Container(
-                              decoration: const BoxDecoration(color: Colors.grey, borderRadius: BorderRadius.all(Radius.circular(20))),
-                              child: const Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Icon(FontAwesomeIcons.user),
+                  SizedBox(
+                    height: 90,
+                    width: 90,
+                    child: WidgetAnimator(
+                      incomingEffect: WidgetTransitionEffects.incomingSlideInFromBottom(delay: picStartDelay),
+                      child: widget.playerPhotoURL[i].isEmpty
+                          ? FittedBox(
+                              fit: BoxFit.contain,
+                              child: Container(
+                                decoration: const BoxDecoration(
+                                  color: Colors.grey,
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(20),
+                                  ),
+                                ),
+                                child: const Padding(
+                                  padding: EdgeInsets.all(8.0),
+                                  child: Icon(FontAwesomeIcons.user),
+                                ),
                               ),
+                            )
+                          : BLCircular(
+                              url: widget.playerPhotoURL[i],
+                              iconSize: 100,
                             ),
-                          )
-                        : BLCircular(
-                            url: widget.playerPhotoURL[i],
-                            iconSize: 100,
-                          ),
+                    ),
                   ),
                   Positioned(
-                      left: 20,
+                      left: 17,
                       bottom: -40,
                       child: WidgetAnimator(
                         incomingEffect: WidgetTransitionEffects.incomingOffsetThenScale(delay: picStartDelay),
-                        child: BLCircular(
+                        child: Image.asset(
+                          assets.leadeboardFirst,
                           width: 60,
                           height: 60,
                           fit: BoxFit.scaleDown,
-                          asset: assets.leadeboardFirst,
-                          backgroundColor: Colors.transparent,
                         ),
                       ))
                 ],
@@ -80,33 +88,51 @@ class _TopThreePlayersState extends ConsumerState<TopThreePlayers> {
             child: Stack(
               clipBehavior: Clip.none,
               children: [
-                WidgetAnimator(
-                  incomingEffect: WidgetTransitionEffects.incomingSlideInFromBottom(delay: i == 0 ? picStartDelay + picDelay : picStartDelay + picDelay + picDelay),
-                  child: widget.playerPhotoURL[i].isEmpty
-                      ? const FittedBox(
-                          fit: BoxFit.contain,
-                          child: Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Icon(FontAwesomeIcons.user),
+                SizedBox(
+                  height: 60,
+                  width: 60,
+                  child: WidgetAnimator(
+                    incomingEffect: WidgetTransitionEffects.incomingSlideInFromBottom(delay: i == 0 ? picStartDelay + picDelay : picStartDelay + picDelay + picDelay),
+                    child: widget.playerPhotoURL[i].isEmpty
+                        ? FittedBox(
+                            fit: BoxFit.contain,
+                            child: Container(
+                              decoration: const BoxDecoration(
+                                color: Colors.grey,
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(20),
+                                ),
+                              ),
+                              child: Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child: Icon(FontAwesomeIcons.user),
+                              ),
+                            ),
+                          )
+                        : BLCircular(
+                            url: widget.playerPhotoURL[i],
+                            iconSize: 60,
                           ),
-                        )
-                      : BLCircular(
-                          url: widget.playerPhotoURL[i],
-                          iconSize: 60,
-                        ),
+                  ),
                 ),
                 Positioned(
                     bottom: -30,
                     left: i == 0 ? -20 : 30,
                     child: WidgetAnimator(
                       incomingEffect: WidgetTransitionEffects.incomingOffsetThenScale(delay: i == 0 ? iconStartDelay + iconDelay : iconStartDelay + iconDelay + iconDelay),
-                      child: BLCircular(
+                      child: Image.asset(
+                        i == 0 ? assets.leadeboardSecond : assets.leadeboardThird,
                         width: 50,
                         height: 50,
                         fit: BoxFit.scaleDown,
-                        asset: i == 0 ? assets.leadeboardSecond : assets.leadeboardThird,
-                        backgroundColor: Colors.transparent,
                       ),
+                      // BLCircular(
+                      //   width: 50,
+                      //   height: 50,
+                      //   fit: BoxFit.scaleDown,
+                      //   asset:
+                      //   backgroundColor: Colors.transparent,
+                      // ),
                     ))
               ],
             ),

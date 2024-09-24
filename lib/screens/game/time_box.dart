@@ -55,10 +55,10 @@ class _TimeBoxState extends ConsumerState<TimeBox> {
 
   Timer createTimer() {
     return Timer.periodic(const Duration(seconds: 1), (Timer t) {
+      gameManager.updateTimeElapsed();
       setState(() {
         seconds++;
       });
-      gameManager.updateTimeElapsed(seconds);
     });
   }
 

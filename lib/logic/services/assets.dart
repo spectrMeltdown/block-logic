@@ -24,6 +24,7 @@ class Assets {
   /// - leaderboard music (finished game)
   final String audioBG1 = 'bg1.mp3';
   final String btn1 = 'btn.mp3';
+  final String audioBGGame = 'game.ogg';
 
   /// fonts
   final String playFontRegular = 'assets/fonts/Play-Regular.ttf';

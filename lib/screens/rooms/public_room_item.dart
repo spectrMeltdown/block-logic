@@ -52,8 +52,7 @@ class _PublicRoomItemState extends ConsumerState<PublicRoomItem> {
                   );
                 }
               } else {
-                final result = await dialog.show(
-                    context, RoomPasswordDialog(pass: widget.room.password!, hostID: widget.room.hostID!));
+                final result = await dialog.show(context, RoomPasswordDialog(pass: widget.room.password!, hostID: widget.room.hostID!));
                 await roomManager.joinRoom(widget.room.id!);
                 if (result is bool && result) {
                   if (!context.mounted) return;
@@ -71,11 +70,13 @@ class _PublicRoomItemState extends ConsumerState<PublicRoomItem> {
             bottomRowEnd: BLText(
               '${widget.room.players?.length ?? '--'}/${widget.room.maxPlayers ?? '--'}',
               bold: true,
-              color: widget.room.maxPlayers == null
-                  ? Colors.grey
-                  : widget.room.players!.length == widget.room.maxPlayers
-                      ? Colors.red
-                      : Colors.green,
+              color: widget.room.status == RoomStatus.inGame
+                  ? Colors.amber
+                  : widget.room.maxPlayers == null
+                      ? Colors.grey
+                      : widget.room.players!.length == widget.room.maxPlayers
+                          ? Colors.red
+                          : Colors.green,
             ),
           );
         },

@@ -1,4 +1,3 @@
-import 'package:block_logic/logic/services/assets.dart';
 import 'package:flutter/material.dart';
 
 /// Displays a image in a circular cut.
@@ -54,14 +53,14 @@ class BLCircular extends StatelessWidget {
 
   ImageProvider buildImage() {
     //if (asset == null || asset!.isEmpty) throw (ArgumentError('asset was empty!!'));
-    final asset = Assets().backgroundGrid;
-    if (asset.contains('.svg')) {
+    // final asset = Assets().backgroundGrid;
+    if (asset!.contains('.svg')) {
       // return SvgAssetLoader(
       //   asset,
       // );
     }
     return AssetImage(
-      asset,
+      asset!,
     );
   }
 

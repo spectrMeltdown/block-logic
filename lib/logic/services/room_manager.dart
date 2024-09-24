@@ -1,3 +1,4 @@
+import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_models/room.dart';
 import 'package:block_logic/logic/services/encryption.dart';
 import 'package:block_logic/logic/services/error_handler.dart';
@@ -60,10 +61,17 @@ class RoomManager extends _$RoomManager {
 
   Future<String?> update(Room room) async {
     if (room.id == null) {
-      throw ('You must provide a room id for update()');
+      throw ('You must provide a room id!');
     }
     try {
-      await state._db.doc(room.id!).update(room.toFirestore());
+      // if adminlocked, don't overwrite it
+      final adminLocked = Room.fromFirestore(await state._db.doc(room.id).get()).adminLocked;
+      if (adminLocked!) {
+        final newRoom = room.copyWith(status: RoomStatus.locked);
+        await state._db.doc(newRoom.id!).update(newRoom.toFirestore());
+      } else {
+        await state._db.doc(room.id!).update(room.toFirestore());
+      }
       return null;
     } catch (e) {
       return state._errorHandler.call(e, this);

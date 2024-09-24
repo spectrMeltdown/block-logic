@@ -21,14 +21,13 @@ class _EditorState extends ConsumerState<Editor> with TickerProviderStateMixin {
     mainTabList.add('New ${mainTabList.length + 1}');
     // mainTabViewList.add(EditorView(parentConstraints: constraints!));
 
-    mainTabController =
-        TabController(length: mainTabList.length + 1, vsync: this, initialIndex: mainTabList.length - 1);
+    mainTabController = TabController(length: mainTabList.length + 1, vsync: this, initialIndex: mainTabList.length - 1);
     setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    final mediaQuery = MediaQuery.of(context);
+    // final mediaQuery = MediaQuery.of(context);
     return Column(
       children: [
         // Padding(
@@ -65,25 +64,21 @@ class _EditorState extends ConsumerState<Editor> with TickerProviderStateMixin {
           child: Padding(
             padding: const EdgeInsets.only(bottom: 20),
             child: BLBorderedPanel(
-              child: TabBarView(
-                  clipBehavior: Clip.antiAlias,
-                  physics: const NeverScrollableScrollPhysics(),
-                  controller: mainTabController,
-                  children: [
-                    LayoutBuilder(builder: (context, parentConstraints) {
-                      return EditorView(parentConstraints: parentConstraints);
-                    }),
-                    // ...List.generate(
-                    //     mainTabViewList.length,
-                    //     (index) => LayoutBuilder(builder: (context, thisConstraints) {
-                    //           constraints ??= thisConstraints;
-                    //           return buildTabView();
-                    //         })),
+              child: TabBarView(clipBehavior: Clip.antiAlias, physics: const NeverScrollableScrollPhysics(), controller: mainTabController, children: [
+                LayoutBuilder(builder: (context, parentConstraints) {
+                  return EditorView(parentConstraints: parentConstraints);
+                }),
+                // ...List.generate(
+                //     mainTabViewList.length,
+                //     (index) => LayoutBuilder(builder: (context, thisConstraints) {
+                //           constraints ??= thisConstraints;
+                //           return buildTabView();
+                //         })),
 
-                    /// placeholder since tabs & tabview length must match
-                    /// (tabs has an extra tab for add tab)
-                    const Placeholder()
-                  ]),
+                /// placeholder since tabs & tabview length must match
+                /// (tabs has an extra tab for add tab)
+                const Placeholder()
+              ]),
             ),
           ),
         )

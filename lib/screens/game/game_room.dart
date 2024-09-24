@@ -5,13 +5,16 @@ import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/util/provider_default.dart';
 import 'package:block_logic/logic/firebase_models/room.dart';
 import 'package:block_logic/logic/firebase_providers/selected_challenges.dart';
+import 'package:block_logic/logic/services/assets.dart';
 import 'package:block_logic/logic/services/dialog.dart';
 import 'package:block_logic/logic/services/game_manager.dart';
 import 'package:block_logic/logic/services/navigation.dart';
 import 'package:block_logic/logic/services/room_manager.dart';
+import 'package:block_logic/logic/services/shared_pref.dart';
 import 'package:block_logic/screens/game/finalizing_results.dart';
 import 'package:block_logic/screens/game/game_challenge.dart';
 import 'package:block_logic/screens/game/pause_dialog.dart';
+import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -85,6 +88,7 @@ class _GameRoomState extends ConsumerState<GameRoom> with WidgetsBindingObserver
       onPopInvokedWithResult: (didPop, result) async {
         if (didPop) return;
         final leave = await dialog.show(context, const PauseDialog());
+        if (processing) return;
         setState(() {
           processing = true;
         });
@@ -103,32 +107,45 @@ class _GameRoomState extends ConsumerState<GameRoom> with WidgetsBindingObserver
       },
       child: Scaffold(
         resizeToAvoidBottomInset: false,
-        body: Background(
-          child: SafeArea(
-            child: challenges.when(
-                data: (challenges) {
-                  if (challenges.isEmpty) {
-                    return const Center(
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 10),
-                        child: BLText('Sorry, there is a problem getting the challenges ...', softWrap: true),
-                      ),
-                    );
-                  }
-                  challengeLength ??= challenges.length;
-                  // debugPrint('Challenge length: $challengeLength');
-                  // debugPrint('current challenge: $currentChallenge');
-                  return GameChallenge(
-                    currentChallenge: 0,
-                    roomName: widget.room.name ?? '',
-                    challenge: challenges[currentChallenge],
-                    challengeCount: challenges.length,
-                    updateChallenge: updateChallenge,
-                  );
-                },
-                error: genericError,
-                loading: genericLoading),
-          ),
+        body: Stack(
+          fit: StackFit.expand,
+          children: [
+            Background(
+              child: SafeArea(
+                child: challenges.when(
+                    data: (challenges) {
+                      if (challenges.isEmpty) {
+                        return const Center(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 10),
+                            child: BLText('Sorry, there is a problem getting the challenges ...', softWrap: true),
+                          ),
+                        );
+                      }
+                      challengeLength ??= challenges.length;
+                      // debugPrint('Challenge length: $challengeLength');
+                      // debugPrint('current challenge: $currentChallenge');
+                      return GameChallenge(
+                        currentChallenge: 0,
+                        roomName: widget.room.name ?? '',
+                        challenge: challenges[currentChallenge],
+                        challengeCount: challenges.length,
+                        updateChallenge: updateChallenge,
+                      );
+                    },
+                    error: genericError,
+                    loading: genericLoading),
+              ),
+            ),
+            Visibility(
+                visible: processing,
+                child: Container(
+                  color: Colors.black.withOpacity(0.6),
+                  child: BLLoading(
+                    message: 'Loading ...',
+                  ),
+                ))
+          ],
         ),
       ),
     );
@@ -137,6 +154,21 @@ class _GameRoomState extends ConsumerState<GameRoom> with WidgetsBindingObserver
   @override
   void initState() {
     gameManager = ref.read(gameManagerProvider.notifier);
+    final assets = ref.read(assetsProvider);
+    final sharedPref = ref.read(sharedPrefProvider);
+
+    /// check if a backgroundMusic setting exists
+    final backgroundMusic = sharedPref.getBool('backgroundMusic');
+    if (backgroundMusic == null || backgroundMusic == true) {
+      /// initialize the audio
+      FlameAudio.bgm.play(assets.audioBGGame);
+    } else {
+      /// play silently to load the track
+      FlameAudio.bgm.play(assets.audioBGGame, volume: 0);
+
+      /// pause after track loaded
+      FlameAudio.bgm.pause();
+    }
     gameManager.init(widget.room);
     roomManager = ref.read(roomManagerProvider.notifier);
     dialog = ref.read(dialogServiceProvider.notifier);

@@ -5,9 +5,7 @@ import 'package:block_logic/components/textbox.dart';
 import 'package:block_logic/components/util/blank_widget.dart';
 import 'package:block_logic/components/util/provider_default.dart';
 import 'package:block_logic/logic/enums.dart';
-import 'package:block_logic/logic/firebase_models/admin_account.dart';
-import 'package:block_logic/logic/firebase_models/user_account.dart';
-import 'package:block_logic/logic/firebase_providers/selected_user.dart';
+import 'package:block_logic/logic/firebase_providers/auth.dart';
 import 'package:block_logic/logic/services/account.dart';
 import 'package:block_logic/logic/services/auth.dart';
 import 'package:block_logic/logic/services/navigation.dart';
@@ -28,7 +26,7 @@ class _ChangePhoneNumState extends ConsumerState<ChangePhoneNum> {
   String? oldPhoneNum;
   late TextEditingController phoneNumController;
   late final AccountService accountService;
-  late final AsyncValue<UserAccount?> user;
+  late final AsyncValue<User?> user;
   late final TextValidator validator;
   late final AuthService authService;
   late final CustomNavigation nav;
@@ -46,7 +44,7 @@ class _ChangePhoneNumState extends ConsumerState<ChangePhoneNum> {
               if (user == null) {
                 return const BLText('Couldn\'t find that user...');
               }
-              oldPhoneNum ??= user.phoneNum;
+              oldPhoneNum ??= user.phoneNumber?.substring(3, user.phoneNumber!.length);
               if (set == false) {
                 setState(() {
                   phoneNumController = TextEditingController(text: oldPhoneNum);
@@ -101,34 +99,26 @@ class _ChangePhoneNumState extends ConsumerState<ChangePhoneNum> {
                                 final newPhoneNum = phoneNumController.text.trim();
 
                                 if (oldPhoneNum != newPhoneNum) {
-                                  String? result;
+                                  // String? result;
                                   if (widget.type == AccountType.admin) {
                                     //result = await
 
-                                    result = await accountService.update(
-                                        admin: AdminAccount(
-                                            id: FirebaseAuth.instance.currentUser!.uid,
-                                            phoneNum: newPhoneNum,
-                                            verificationID: ''));
+                                    // result = await accountService.update(admin: AdminAccount(id: FirebaseAuth.instance.currentUser!.uid, phoneNum: newPhoneNum, verificationID: ''));
                                   } else {
                                     // result = await authService.addPhoneNumber(newPhoneNum);
-                                    result = await accountService.update(
-                                        user: UserAccount(
-                                            id: FirebaseAuth.instance.currentUser!.uid,
-                                            phoneNum: newPhoneNum,
-                                            verificationID: ''));
+                                    // result = await accountService.update(user: UserAccount(id: FirebaseAuth.instance.currentUser!.uid, phoneNum: newPhoneNum, verificationID: ''));
                                   }
-                                  if (result != null) {
-                                    setState(() {
-                                      msg = BLText(
-                                        result!,
-                                        color: Colors.deepOrange,
-                                      );
-                                    });
-                                  } else {
-                                    if (!context.mounted) return;
-                                    nav.pop(context);
-                                  }
+                                  // if (result != null) {
+                                  //   setState(() {
+                                  //     msg = BLText(
+                                  //       result!,
+                                  //       color: Colors.deepOrange,
+                                  //     );
+                                  //   });
+                                  // } else {
+                                  //   if (!context.mounted) return;
+                                  //   nav.pop(context);
+                                  // }
                                 }
                               }
                               setState(() {
@@ -159,7 +149,7 @@ class _ChangePhoneNumState extends ConsumerState<ChangePhoneNum> {
     accountService = ref.read(accountServiceProvider.notifier);
     authService = ref.read(authServiceProvider.notifier);
     nav = ref.read(customNavigationProvider.notifier);
-    user = ref.read(SelectedUserProvider(FirebaseAuth.instance.currentUser!.uid));
+    user = ref.read(authChangesProvider);
     validator = ref.read(textValidatorProvider.notifier);
     super.initState();
   }

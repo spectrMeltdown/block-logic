@@ -4,6 +4,7 @@ import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_models/admin_account.dart';
 import 'package:block_logic/logic/firebase_models/user_account.dart';
 import 'package:block_logic/logic/services/error_handler.dart';
+import 'package:block_logic/logic/services/shared_pref.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -11,6 +12,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:mime/mime.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 part 'generated/account.g.dart';
 
@@ -19,7 +21,9 @@ class AccountService extends _$AccountService {
   @override
   AccountServiceState build() {
     final errorHandler = ref.read(errorHandlerProvider.notifier);
+    final sharedPref = ref.read(sharedPrefProvider);
     return AccountServiceState(
+      sharedPref: sharedPref,
       errorHandler: errorHandler,
     );
   }
@@ -34,8 +38,7 @@ class AccountService extends _$AccountService {
   }
 
   Future<String?> changeProfilePic(FirestoreCollections collection) async {
-    FilePickerResult? img =
-        await FilePicker.platform.pickFiles(withData: true, type: FileType.custom, allowedExtensions: [
+    FilePickerResult? img = await FilePicker.platform.pickFiles(withData: true, type: FileType.custom, allowedExtensions: [
       'png',
       'jpg',
       'jpeg',
@@ -92,10 +95,7 @@ class AccountService extends _$AccountService {
     );
     try {
       await state._auth!.linkWithCredential(credential);
-      await state._db
-          .collection(kIsWeb ? 'admins' : 'users')
-          .doc(FirebaseAuth.instance.currentUser!.uid)
-          .update({'verificationID': null});
+      await state._db.collection(kIsWeb ? 'admins' : 'users').doc(FirebaseAuth.instance.currentUser!.uid).update({'verificationID': null});
       return null;
     } catch (e) {
       return state._errorHandler.call(e, this);
@@ -136,9 +136,9 @@ class AccountService extends _$AccountService {
         await state._db.collection('users').doc(createdID ?? FirebaseAuth.instance.currentUser!.uid).set(UserAccount(
               createdAt: DateTime.now(),
               displayName: displayName ?? state._auth!.displayName,
-              phoneNum: phoneNum,
+              // phoneNum: phoneNum,
               profilePicLink: 'default',
-              verificationID: (phoneNum == null || phoneNum.isEmpty) ? null : '',
+              // verificationID: (phoneNum == null || phoneNum.isEmpty) ? null : '',
               //isApproved: false,
             ).toFirestore());
 
@@ -155,9 +155,9 @@ class AccountService extends _$AccountService {
         await state._db.collection('admins').doc(createdID ?? FirebaseAuth.instance.currentUser!.uid).set(AdminAccount(
               createdAt: DateTime.now(),
               displayName: displayName ?? state._auth!.displayName,
-              phoneNum: phoneNum,
+              // phoneNum: phoneNum,
               profilePicLink: 'default',
-              verificationID: (phoneNum == null || phoneNum.isEmpty) ? null : '',
+              // verificationID: (phoneNum == null || phoneNum.isEmpty) ? null : '',
               //isApproved: false,
             ).toFirestore());
       }
@@ -200,11 +200,14 @@ class AccountService extends _$AccountService {
       await FirebaseAuth.instance.verifyPhoneNumber(
         phoneNumber: phoneNumber,
         verificationCompleted: (PhoneAuthCredential credential) async {
-          if (type == AccountType.user) {
-            await update(user: UserAccount(id: state._auth!.uid, verificationID: null, resendToken: null));
-          } else {
-            await update(admin: AdminAccount(id: state._auth!.uid, verificationID: null, resendToken: null));
-          }
+          await state.sharedPref.remove('resendToken');
+          await state.sharedPref.remove('verificationID');
+          // if (type == AccountType.user) {
+
+          //   await update(user: UserAccount(id: state._auth!.uid, verificationID: null, resendToken: null));
+          // } else {
+          //   await update(admin: AdminAccount(id: state._auth!.uid, verificationID: null, resendToken: null));
+          // }
           await state._auth!.linkWithCredential(credential);
         },
         verificationFailed: (FirebaseAuthException e) {
@@ -213,11 +216,9 @@ class AccountService extends _$AccountService {
         },
         codeSent: (String verificationId, int? resendToken) async {
           if (type == AccountType.user) {
-            await update(
-                user: UserAccount(id: state._auth!.uid, verificationID: verificationId, resendToken: resendToken));
+            // await update(user: UserAccount(id: state._auth!.uid, verificationID: verificationId, resendToken: resendToken));
           } else {
-            await update(
-                admin: AdminAccount(id: state._auth!.uid, verificationID: verificationId, resendToken: resendToken));
+            // await update(admin: AdminAccount(id: state._auth!.uid, verificationID: verificationId, resendToken: resendToken));
           }
         },
         forceResendingToken: resendToken,
@@ -245,9 +246,11 @@ class AccountServiceState {
   final _db = FirebaseFirestore.instance;
   final _userStorageRef = FirebaseStorage.instance.ref('users');
   final _adminStorageRef = FirebaseStorage.instance.ref('admins');
+  final SharedPreferences sharedPref;
   final _auth = FirebaseAuth.instance.currentUser;
   final ErrorHandler _errorHandler;
   AccountServiceState({
+    required this.sharedPref,
     required ErrorHandler errorHandler,
   }) : _errorHandler = errorHandler;
 }

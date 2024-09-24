@@ -5,13 +5,13 @@ class AdminAccount extends AccountModel {
   //final bool? isApproved;
   AdminAccount({
     super.id,
-    super.resendToken,
+    // super.resendToken,
     //this.isApproved,
     super.displayName,
-    super.phoneNum,
+    // super.phoneNum,
     super.profilePicLink,
     super.createdAt,
-    super.verificationID,
+    // super.verificationID,
   });
 
   factory AdminAccount.fromFirestore(DocumentSnapshot doc) {
@@ -21,15 +21,15 @@ class AdminAccount extends AccountModel {
     }
 
     return AdminAccount(
-        id: doc.id,
-        createdAt: data['createdAt'] == null ? null : (data['createdAt'] as Timestamp).toDate(),
-        displayName: data['displayName'] ?? '',
-        profilePicLink: data['profilePicLink'] ?? '',
-        phoneNum: data['phoneNum'],
-        verificationID: data['verificationID'],
-        resendToken: data['resendToken']
-        // isApproved: data['isApproved'],
-        );
+      id: doc.id,
+      createdAt: data['createdAt'] == null ? null : (data['createdAt'] as Timestamp).toDate(),
+      displayName: data['displayName'] ?? '',
+      profilePicLink: data['profilePicLink'] ?? '',
+      // phoneNum: data['phoneNum'],
+      // verificationID: data['verificationID'],
+      // resendToken: data['resendToken']
+      // isApproved: data['isApproved'],
+    );
   }
 
   Map<String, dynamic> toFirestore() {
@@ -40,18 +40,18 @@ class AdminAccount extends AccountModel {
     if (displayName != null) {
       toFirestoreMap.addAll({'displayName': displayName});
     }
-    if (phoneNum != null) {
-      toFirestoreMap.addAll({'phoneNum': phoneNum});
-    }
+    // if (phoneNum != null) {
+    //   toFirestoreMap.addAll({'phoneNum': phoneNum});
+    // }
     if (profilePicLink != null) {
       toFirestoreMap.addAll({'profilePicLink': profilePicLink});
     }
-    if (verificationID != null) {
-      toFirestoreMap.addAll({'verificationID': verificationID});
-    }
-    if (resendToken != null) {
-      toFirestoreMap.addAll({'resendToken': resendToken});
-    }
+    // if (verificationID != null) {
+    //   toFirestoreMap.addAll({'verificationID': verificationID});
+    // }
+    // if (resendToken != null) {
+    //   toFirestoreMap.addAll({'resendToken': resendToken});
+    // }
     // if (isApproved != null) {
     //   toFirestoreMap.addAll({'isApproved': isApproved});
     // }
