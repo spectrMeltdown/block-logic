@@ -5,7 +5,7 @@ class UserAccount extends AccountModel {
   final String? sessionID;
   UserAccount({
     super.id,
-    // super.phoneNum,
+    super.phoneNum,
     super.displayName,
     super.profilePicLink,
     super.createdAt,
@@ -25,7 +25,7 @@ class UserAccount extends AccountModel {
       createdAt: data['createdAt'] == null ? null : (data['createdAt'] as Timestamp).toDate(),
       displayName: data['displayName'] ?? '',
       profilePicLink: data['profilePicLink'] ?? '',
-      // phoneNum: data['phoneNum'] ?? '',
+      phoneNum: data['phoneNum'] ?? '',
       // verificationID: data['verificationID'],
       // resendToken: data['resendToken'],
       sessionID: data['sessionID'],
@@ -42,9 +42,9 @@ class UserAccount extends AccountModel {
     if (displayName != null) {
       toFirestoreMap.addAll({'displayName': displayName});
     }
-    // if (phoneNum != null) {
-    //   toFirestoreMap.addAll({'phoneNum': phoneNum});
-    // }
+    if (phoneNum != null) {
+      toFirestoreMap.addAll({'phoneNum': phoneNum});
+    }
     // if (verificationID != null) {
     //   toFirestoreMap.addAll({'verificationID': verificationID});
     // }

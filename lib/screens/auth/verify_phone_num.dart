@@ -15,8 +15,6 @@ import 'package:block_logic/logic/services/navigation.dart';
 import 'package:block_logic/logic/services/shared_pref.dart';
 import 'package:block_logic/logic/services/toast.dart';
 import 'package:block_logic/logic/services/validator_text.dart';
-import 'package:block_logic/screens/checkpoint.dart';
-import 'package:block_logic/screens/main_menu.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -26,7 +24,8 @@ import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class VerifyPhoneNum extends ConsumerStatefulWidget {
-  const VerifyPhoneNum({super.key});
+  final String phoneNum;
+  const VerifyPhoneNum(this.phoneNum, {super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _VerifyPhoneNumState();
@@ -42,7 +41,6 @@ class _VerifyPhoneNumState extends ConsumerState<VerifyPhoneNum> {
   int seconds = 30;
   final formKey = GlobalKey<FormState>();
   bool processing = false;
-  String phoneNum = '';
   String verificationID = '';
   String resendToken = '';
   // String otp = '';
@@ -75,7 +73,6 @@ class _VerifyPhoneNumState extends ConsumerState<VerifyPhoneNum> {
                             ),
                           );
                         }
-                        phoneNum = account.phoneNumber != null ? '+63${account.phoneNumber}' : '--';
                         if (!kDebugMode) {
                           if (initSent == false) {
                             sendOTP();
@@ -96,7 +93,7 @@ class _VerifyPhoneNumState extends ConsumerState<VerifyPhoneNum> {
                                     Padding(
                                       padding: const EdgeInsets.symmetric(horizontal: 20),
                                       child: BLText(
-                                        'We need to verify the phone number $phoneNum.\n',
+                                        'We need to verify the phone number ${widget.phoneNum}.\n',
                                         alignCenter: true,
                                         softWrap: true,
                                         color: Colors.white,
@@ -127,7 +124,7 @@ class _VerifyPhoneNumState extends ConsumerState<VerifyPhoneNum> {
                                     BLButton(
                                         onPressed: () => verifyOTP(account),
                                         child: const BLText(
-                                          'Submit',
+                                          'Verify',
                                           size: 18,
                                           color: Colors.white,
                                         )),
@@ -136,10 +133,11 @@ class _VerifyPhoneNumState extends ConsumerState<VerifyPhoneNum> {
                                     ),
                                     BLTextButton(
                                         onPressed: () {
-                                          nav.pushReplace(context, const MainMenuScreen());
+                                          // nav.pushReplace(context, const MainMenuScreen());
+                                          nav.pop(context);
                                         },
                                         child: const BLText(
-                                          'I\'ll do this later.',
+                                          'Cancel',
                                           color: Colors.deepOrange,
                                         ))
                                   ],
@@ -170,8 +168,6 @@ class _VerifyPhoneNumState extends ConsumerState<VerifyPhoneNum> {
     // sms = ref.read(smsServiceProvider.notifier);
     // otpService = ref.read(otpServiceProvider.notifier);
     validator = ref.read(textValidatorProvider.notifier);
-    resendToken = sharedPref.getString('resendToken') ?? '';
-    verificationID = sharedPref.getString('verificationID') ?? '';
     timer = Timer(Duration.zero, () {});
     timer.cancel();
     super.initState();
@@ -183,14 +179,23 @@ class _VerifyPhoneNumState extends ConsumerState<VerifyPhoneNum> {
     super.dispose();
   }
 
+  void updateCallBack({
+    required String resendToken,
+    required String verificationID,
+  }) async {
+    this.resendToken = resendToken;
+    this.verificationID = verificationID;
+  }
+
   void sendOTP() async {
     if (processing || timer.isActive) return;
     processing = true;
 
     final result = await accountService.verifyPhoneNumber(
-      phoneNum,
-      kIsWeb ? AccountType.admin : AccountType.user,
-      resendToken,
+      phoneNumber: widget.phoneNum,
+      resendToken: resendToken,
+      type: AccountType.user,
+      updateCallBack: updateCallBack,
     );
     if (result != null) {
       toast.showToast(result, type: NotifType.error);
@@ -199,6 +204,8 @@ class _VerifyPhoneNumState extends ConsumerState<VerifyPhoneNum> {
       setState(() {
         timer = createTimer();
       });
+      // resendToken = sharedPref.getString('resendToken')!;
+      // verificationID = sharedPref.getString('verificationID')!;
     }
     // otp = otpService.getOTP().toString();
     // final result = await sms.send(phoneNum, otp!);
@@ -226,6 +233,7 @@ class _VerifyPhoneNumState extends ConsumerState<VerifyPhoneNum> {
     processing = true;
 
     if (formKey.currentState!.validate()) {
+      // link it
       final result = await accountService.continuePhoneNumVerify(verificationID, otpInput.text.trim());
       if (result == null) {
         toast.showToast('Phone verified successfully.', type: NotifType.success);
@@ -234,7 +242,8 @@ class _VerifyPhoneNumState extends ConsumerState<VerifyPhoneNum> {
           context.go('/dashboard');
         } else {
           if (!mounted) return;
-          nav.pushAndRemove(context, const Checkpoint());
+          // nav.pushAndRemove(context, const Checkpoint());
+          nav.pop(context);
         }
       } else {
         toast.showToast(result, type: NotifType.error);

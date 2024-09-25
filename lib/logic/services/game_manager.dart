@@ -112,7 +112,7 @@ class GameManager extends StateNotifier<GameState> {
       // create final score
       final finalScore = Score(
         id: FirebaseAuth.instance.currentUser!.uid,
-        playerScore: state._score ?? 0,
+        // playerScore: state._score ?? 0, // score is now updated every next challenge or when submitting
         timeElapsed: state._timeElapsed,
         status: isComplete ? ScoreStatus.complete : ScoreStatus.incomplete,
       );

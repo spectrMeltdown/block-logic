@@ -22,6 +22,7 @@ import 'package:block_logic/screens/auth/change_email.dart';
 import 'package:block_logic/screens/auth/change_password.dart';
 import 'package:block_logic/screens/auth/change_phone_num.dart';
 import 'package:block_logic/screens/checkpoint.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -68,6 +69,7 @@ class _AccountSettingsWidgetState extends ConsumerState<AccountSettingsWidget> {
             if (user == null) {
               return const BLLoginSignupBtns();
             } else {
+              final email = FirebaseAuth.instance.currentUser?.email;
               return Column(
                 children: [
                   BLProfilePic(
@@ -153,21 +155,22 @@ class _AccountSettingsWidgetState extends ConsumerState<AccountSettingsWidget> {
                               widget.editIcon,
                             ],
                           )),
-                      BLTextButton(
-                          onPressed: () {
-                            changePass();
-                          },
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Icon(FontAwesomeIcons.lock, color: Colors.white),
-                              const SizedBox(width: 15),
-                              const BLText('Change password'),
-                              const SizedBox(width: 5),
-                              widget.editIcon,
-                            ],
-                          )),
+                      if (email != null && email.isNotEmpty)
+                        BLTextButton(
+                            onPressed: () {
+                              changePass();
+                            },
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Icon(FontAwesomeIcons.lock, color: Colors.white),
+                                const SizedBox(width: 15),
+                                const BLText('Change password'),
+                                const SizedBox(width: 5),
+                                widget.editIcon,
+                              ],
+                            )),
                       const SizedBox(height: 20),
                       Column(
                         children: [
@@ -259,8 +262,9 @@ class _AccountSettingsWidgetState extends ConsumerState<AccountSettingsWidget> {
 
   void changeEmail() async {
     if (widget.processing) return;
-    widget.toggleProcessing.call(true);
-    String? reauth = await showDialog(
+    // widget.toggleProcessing.call(true);
+    // final reauth = null;
+    final reauth = await showDialog(
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) => const ReauthDialog(),
@@ -278,7 +282,7 @@ class _AccountSettingsWidgetState extends ConsumerState<AccountSettingsWidget> {
   void changePass() async {
     if (widget.processing) return;
     widget.toggleProcessing.call(true);
-    String? reauth = await showDialog(
+    final reauth = await showDialog(
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) => const ReauthDialog(),
@@ -309,8 +313,32 @@ class _AccountSettingsWidgetState extends ConsumerState<AccountSettingsWidget> {
   void changePhoneNum() async {
     if (widget.processing) return;
     widget.toggleProcessing(true);
-    final result = await showDialog(context: context, builder: (context) => const ChangePhoneNum(AccountType.user));
-    if (result == null) {}
+
+    final reauth = await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) => const ReauthDialog(),
+    );
+    if (reauth == null) {
+      if (!mounted) {
+        widget.toggleProcessing.call(false);
+        return;
+      }
+      await showDialog(context: context, builder: (context) => const ChangePhoneNum(AccountType.user));
+    } else if (reauth == 'failed') {
+      if (!context.mounted) {
+        widget.toggleProcessing.call(false);
+        return;
+      }
+      toast.showToast('Wrong password', type: NotifType.error);
+    } else if (reauth == 'cancelled') {
+      if (!context.mounted) {
+        widget.toggleProcessing.call(true);
+        return;
+      }
+    } else if (reauth == 'TOA') {
+      toast.showToast('Too many attempts, try again later', type: NotifType.error);
+    }
     widget.toggleProcessing(false);
   }
 

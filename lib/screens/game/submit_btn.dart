@@ -23,6 +23,7 @@ class GameSubmitButton extends ConsumerWidget {
     // final check = ref.watch(solutionCheckProvider.future);
     final toast = ref.read(toastProvider.notifier);
     final solutionMatch = ref.read(gameManagerProvider).solution;
+    final gameState = ref.read(gameManagerProvider);
     final gameManager = ref.read(gameManagerProvider.notifier);
 
     void toggleProcessing() {
@@ -49,6 +50,7 @@ class GameSubmitButton extends ConsumerWidget {
           // if correct, add score
           if (correct) {
             debugPrint('Score incremented');
+
             result = await score.increment(
               leaderboardID: manager.getLeaderboardID(),
               uid: FirebaseAuth.instance.currentUser!.uid,

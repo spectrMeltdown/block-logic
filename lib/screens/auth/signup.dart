@@ -13,11 +13,11 @@ import 'package:block_logic/components/text/title.dart';
 import 'package:block_logic/components/textbox.dart';
 import 'package:block_logic/components/util/blank_widget.dart';
 import 'package:block_logic/logic/enums.dart';
-import 'package:block_logic/logic/firebase_models/account_model.dart';
 import 'package:block_logic/logic/services/account.dart';
 import 'package:block_logic/logic/services/auth.dart';
 import 'package:block_logic/logic/services/navigation.dart';
 import 'package:block_logic/logic/services/reports_manager.dart';
+import 'package:block_logic/logic/services/shared_pref.dart';
 import 'package:block_logic/logic/services/toast.dart';
 import 'package:block_logic/logic/services/validator_text.dart';
 import 'package:block_logic/route_observer.dart';
@@ -30,6 +30,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/v4.dart';
 
 class Signup extends ConsumerStatefulWidget {
@@ -47,8 +48,9 @@ class _SignupState extends ConsumerState<Signup> with RouteAware {
   final phoneNumController = TextEditingController();
   final _signupFormKey = GlobalKey<FormState>();
   late Widget msg;
-  late Toast toast;
   late Timer timer;
+  late final Toast toast;
+  late final SharedPreferences sharedPref;
   late final AccountService accountService;
   late final TextValidator validator;
   late final CustomNavigation nav;
@@ -59,7 +61,7 @@ class _SignupState extends ConsumerState<Signup> with RouteAware {
   bool checkedTerms = false;
   bool useEmail = true;
   bool firstOTPSent = false;
-  String phoneNum = '';
+  // String phoneNum = '';
   String verificationID = '';
   String resendToken = '';
 
@@ -71,28 +73,45 @@ class _SignupState extends ConsumerState<Signup> with RouteAware {
     auth = ref.read(authServiceProvider.notifier);
     reportsManager = ref.read(reportsManagerProvider.notifier);
     accountService = ref.read(accountServiceProvider.notifier);
+    sharedPref = ref.read(sharedPrefProvider);
     timer = Timer(Duration.zero, () {});
     timer.cancel();
     msg = const BlankWidget();
     super.initState();
   }
 
+  void updateCallBack({
+    required String resendToken,
+    required String verificationID,
+  }) async {
+    this.resendToken = resendToken;
+    this.verificationID = verificationID;
+  }
+
   void sendOTP() async {
     if (processing || timer.isActive) return;
     processing = true;
-
+    // var result = null;
     final result = await accountService.verifyPhoneNumber(
-      phoneNum,
-      AccountType.user,
-      resendToken,
+      phoneNumber: '+63${phoneNumController.text.trim()}',
+      resendToken: resendToken,
+      type: AccountType.user,
+      updateCallBack: updateCallBack,
     );
     if (result != null) {
       toast.showToast(result, type: NotifType.error);
     } else {
       toast.showToast('OTP sent!', type: NotifType.success);
+      if (firstOTPSent == false) {
+        setState(() {
+          firstOTPSent = true;
+        });
+      }
       setState(() {
         timer = createTimer();
       });
+      // resendToken = sharedPref.getString('resendToken')!;
+      // verificationID = sharedPref.getString('verificationID')!;
     }
     // otp = otpService.getOTP().toString();
     // final result = await sms.send(phoneNum, otp!);
@@ -115,22 +134,22 @@ class _SignupState extends ConsumerState<Signup> with RouteAware {
     });
   }
 
-  void verifyOTP(BuildContext context, AccountModel account) async {
-    if (processing) return;
-    processing = true;
+  // void verifyOTP(BuildContext context, AccountModel account) async {
+  //   if (processing) return;
+  //   processing = true;
 
-    if (_signupFormKey.currentState!.validate()) {
-      final result = await accountService.continuePhoneNumVerify(verificationID, otpController.text.trim());
-      if (result == null) {
-        toast.showToast('Phone verified successfully.', type: NotifType.success);
-        if (!context.mounted) return;
-        nav.pushAndRemove(context, const Checkpoint());
-      } else {
-        toast.showToast(result, type: NotifType.error);
-      }
-    }
-    processing = false;
-  }
+  //   if (_signupFormKey.currentState!.validate()) {
+  //     final result = await accountService.continuePhoneNumVerify(verificationID, otpController.text.trim());
+  //     if (result == null) {
+  //       toast.showToast('Phone verified successfully.', type: NotifType.success);
+  //       if (!context.mounted) return;
+  //       nav.pushAndRemove(context, const Checkpoint());
+  //     } else {
+  //       toast.showToast(result, type: NotifType.error);
+  //     }
+  //   }
+  //   processing = false;
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -219,6 +238,7 @@ class _SignupState extends ConsumerState<Signup> with RouteAware {
                                               color: Colors.white,
                                             ),
                                           ),
+                                          inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
                                           controller: phoneNumController,
                                           maxLength: 10,
                                           labelText: 'Phone number',
@@ -346,6 +366,16 @@ class _SignupState extends ConsumerState<Signup> with RouteAware {
                                                   msg = const BlankWidget();
                                                 });
                                               }
+                                              if (!useEmail) {
+                                                final phoneExists = await auth.checkPhoneNumDup(phoneNumController.text.trim());
+                                                if (phoneExists != null) {
+                                                  toast.showToast(phoneExists, type: NotifType.error);
+                                                  setState(() {
+                                                    processing = false;
+                                                  });
+                                                  return;
+                                                }
+                                              }
                                               if (!context.mounted) return;
                                               String? error;
                                               if (useEmail) {
@@ -366,6 +396,8 @@ class _SignupState extends ConsumerState<Signup> with RouteAware {
                                                 );
                                               }
                                               if (error == null) {
+                                                sharedPref.remove('resendToken');
+                                                sharedPref.remove('verificationID');
                                                 if (!kIsWeb) {
                                                   final sessionID = const UuidV4().generate();
                                                   // save sessionID to shared_pref

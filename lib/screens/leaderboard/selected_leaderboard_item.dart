@@ -11,10 +11,12 @@ class SelectedLeaderboardItem extends ConsumerStatefulWidget {
   final String playerUID;
   final DateTime? time;
   final int score;
+  // final String totalScore;
   const SelectedLeaderboardItem({
     required this.score,
     required this.rank,
     required this.playerUID,
+    // required this.totalScore,
     this.time,
     super.key,
   });
@@ -28,12 +30,7 @@ class _SelectedLeaderboardItemState extends ConsumerState<SelectedLeaderboardIte
   @override
   Widget build(BuildContext context) {
     return Row(
-      children: [
-        BLText(widget.rank.toString()),
-        BLProfilePic(widget.playerUID, type: type),
-        BLDisplayName(widget.playerUID, type),
-        BLText(widget.time == null ? '--' : DateFormat('hh:mm').format(widget.time!))
-      ],
+      children: [BLText(widget.rank.toString()), BLProfilePic(widget.playerUID, type: type), BLDisplayName(widget.playerUID, type), BLText(widget.time == null ? '--' : DateFormat('hh:mm').format(widget.time!))],
     );
   }
 }

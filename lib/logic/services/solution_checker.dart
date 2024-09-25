@@ -48,6 +48,12 @@ class SolutionChecker extends StateNotifier<SolutionCheckerState> {
         debugPrint('Response data: ${response.body}');
         final body = jsonDecode(response.body) as Map<String, dynamic>;
         final output = body['result'].toString();
+        // final output = 'Code execution success:\n\n${body['result']}';
+        return output;
+      } else if (response.statusCode == 500) {
+        debugPrint('Response data: ${response.body}');
+        final body = jsonDecode(response.body) as Map<String, dynamic>;
+        final output = 'Code execution failed:\n\n${body['details']}';
         return output;
       } else {
         debugPrint('Request failed with status: ${response.statusCode}');

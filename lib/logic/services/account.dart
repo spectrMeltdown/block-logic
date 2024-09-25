@@ -97,7 +97,7 @@ class AccountService extends _$AccountService {
     );
     try {
       await state._auth!.linkWithCredential(credential);
-      await state._db.collection(kIsWeb ? 'admins' : 'users').doc(FirebaseAuth.instance.currentUser!.uid).update({'verificationID': null});
+      // await state._db.collection(kIsWeb ? 'admins' : 'users').doc(FirebaseAuth.instance.currentUser!.uid).update({'verificationID': null});
       return null;
     } catch (e) {
       return state._errorHandler.call(e, this);
@@ -149,7 +149,7 @@ class AccountService extends _$AccountService {
         await state._db.collection('users').doc(createdID ?? FirebaseAuth.instance.currentUser!.uid).set(UserAccount(
               createdAt: DateTime.now(),
               displayName: displayName ?? state._auth!.displayName,
-              // phoneNum: phoneNum,
+              phoneNum: phoneNum,
               profilePicLink: 'default',
               // verificationID: (phoneNum == null || phoneNum.isEmpty) ? null : '',
               //isApproved: false,
@@ -207,14 +207,21 @@ class AccountService extends _$AccountService {
     }
   }
 
-  Future<String?> verifyPhoneNumber(String phoneNumber, AccountType type, String? resendToken) async {
+  Future<String?> verifyPhoneNumber({
+    required String phoneNumber,
+    required AccountType type,
+    required String resendToken,
+    required void Function({required String verificationID, required String resendToken}) updateCallBack,
+  }) async {
     String? error;
+    debugPrint(phoneNumber);
     try {
       await FirebaseAuth.instance.verifyPhoneNumber(
-        phoneNumber: phoneNumber,
+        phoneNumber: phoneNumber.trim(),
         verificationCompleted: (PhoneAuthCredential credential) async {
-          await state.sharedPref.remove('resendToken');
-          await state.sharedPref.remove('verificationID');
+          debugPrint('VERIFICATION COMPLETED');
+          // await state.sharedPref.remove('resendToken');
+          // await state.sharedPref.remove('verificationID');
           // if (type == AccountType.user) {
 
           //   await update(user: UserAccount(id: state._auth!.uid, verificationID: null, resendToken: null));
@@ -228,13 +235,21 @@ class AccountService extends _$AccountService {
           error = state._errorHandler.call(e, this);
         },
         codeSent: (String verificationId, int? resendToken) async {
-          if (type == AccountType.user) {
-            // await update(user: UserAccount(id: state._auth!.uid, verificationID: verificationId, resendToken: resendToken));
-          } else {
-            // await update(admin: AdminAccount(id: state._auth!.uid, verificationID: verificationId, resendToken: resendToken));
-          }
+          debugPrint('CODE SENT');
+          updateCallBack(resendToken: resendToken.toString(), verificationID: verificationId);
+          // final verify = await state.sharedPref.setString('verificationID', verificationId);
+          // final resend = await state.sharedPref.setString('resendToken', resendToken.toString());
+          // debugPrint('Verify saved: $verify');
+          // debugPrint('Resent saved: $resend');
+          // if (type == AccountType.user) {
+
+          //   // await update(user: UserAccount(id: state._auth!.uid, verificationID: verificationId, resendToken: resendToken));
+          // } else {
+
+          //   // await update(admin: AdminAccount(id: state._auth!.uid, verificationID: verificationId, resendToken: resendToken));
+          // }
         },
-        forceResendingToken: int.parse(resendToken!),
+        forceResendingToken: int.tryParse(resendToken),
         codeAutoRetrievalTimeout: (String verificationId) {},
       );
       return error;

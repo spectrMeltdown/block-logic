@@ -10,6 +10,7 @@ import 'package:block_logic/logic/services/account.dart';
 import 'package:block_logic/logic/services/auth.dart';
 import 'package:block_logic/logic/services/navigation.dart';
 import 'package:block_logic/logic/services/validator_text.dart';
+import 'package:block_logic/screens/auth/verify_phone_num.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -44,7 +45,7 @@ class _ChangePhoneNumState extends ConsumerState<ChangePhoneNum> {
               if (user == null) {
                 return const BLText('Couldn\'t find that user...');
               }
-              oldPhoneNum ??= user.phoneNumber?.substring(3, user.phoneNumber!.length);
+              oldPhoneNum ??= user.phoneNumber?.substring(3, user.phoneNumber!.length) ?? '';
               if (set == false) {
                 setState(() {
                   phoneNumController = TextEditingController(text: oldPhoneNum);
@@ -74,7 +75,12 @@ class _ChangePhoneNumState extends ConsumerState<ChangePhoneNum> {
                     const SizedBox(
                       height: 5,
                     ),
-                    msg,
+                    Center(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 15),
+                        child: msg,
+                      ),
+                    ),
                     const SizedBox(
                       height: 10,
                     ),
@@ -105,6 +111,24 @@ class _ChangePhoneNumState extends ConsumerState<ChangePhoneNum> {
 
                                     // result = await accountService.update(admin: AdminAccount(id: FirebaseAuth.instance.currentUser!.uid, phoneNum: newPhoneNum, verificationID: ''));
                                   } else {
+                                    final phoneNum = phoneNumController.text.trim();
+                                    // check if phone belongs to another account
+                                    final phoneExists = await authService.checkPhoneNumDup(phoneNum);
+                                    if (phoneExists != null) {
+                                      setState(() {
+                                        msg = BLText(
+                                          phoneExists,
+                                          color: Colors.red,
+                                          softWrap: true,
+                                          alignCenter: true,
+                                        );
+                                        processing = false;
+                                      });
+                                      return;
+                                    }
+                                    // go to otp verify
+                                    if (!context.mounted) return;
+                                    nav.pushReplace(context, VerifyPhoneNum(phoneNum));
                                     // result = await authService.addPhoneNumber(newPhoneNum);
                                     // result = await accountService.update(user: UserAccount(id: FirebaseAuth.instance.currentUser!.uid, phoneNum: newPhoneNum, verificationID: ''));
                                   }
@@ -119,6 +143,8 @@ class _ChangePhoneNumState extends ConsumerState<ChangePhoneNum> {
                                   //   if (!context.mounted) return;
                                   //   nav.pop(context);
                                   // }
+                                } else {
+                                  nav.pop(context);
                                 }
                               }
                               setState(() {
@@ -126,7 +152,7 @@ class _ChangePhoneNumState extends ConsumerState<ChangePhoneNum> {
                               });
                             },
                             child: BLText(
-                              'Save',
+                              'Proceed',
                               color: processing == true ? Colors.grey : Colors.green,
                             )),
                         const SizedBox(

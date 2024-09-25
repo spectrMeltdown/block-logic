@@ -12,9 +12,11 @@ import 'package:block_logic/components/textbox.dart';
 import 'package:block_logic/constants.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_providers/auth.dart';
+import 'package:block_logic/logic/services/account.dart';
 import 'package:block_logic/logic/services/auth.dart';
 import 'package:block_logic/logic/services/login_alert.dart';
 import 'package:block_logic/logic/services/navigation.dart';
+import 'package:block_logic/logic/services/shared_pref.dart';
 import 'package:block_logic/logic/services/toast.dart';
 import 'package:block_logic/logic/services/validator_text.dart';
 import 'package:block_logic/route_observer.dart';
@@ -27,6 +29,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/v4.dart';
 
 class Login extends ConsumerStatefulWidget {
@@ -43,12 +46,15 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
   final passwordController = TextEditingController();
   final otpController = TextEditingController();
   final _loginFormKey = GlobalKey<FormState>();
-  late Toast toast;
+  late final Toast toast;
+  late final SharedPreferences sharedPref;
   late final AuthService auth;
   late final CustomNavigation nav;
+  late final AccountService accountService;
   late final TextValidator validator;
   late Timer otpCooldownTimer;
   String verificationID = '';
+  String resendToken = '';
   bool processing = false;
   bool useEmail = true;
   bool firstOTPSent = false;
@@ -158,6 +164,7 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
                                             ),
                                           ),
                                           onFieldSubmitted: (p0) => submit(),
+                                          inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
                                           controller: phoneController,
                                           maxLength: 10,
                                           labelText: 'Phone number',
@@ -198,21 +205,22 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
                                       Row(
                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: [
-                                          BLTextButton(
-                                              onPressed: () async {
-                                                bool? result = await showDialog(
-                                                    context: context,
-                                                    builder: (context) => ForgotPasswordDialog(
-                                                          useEmail: useEmail,
-                                                        ));
-                                                if (result != null) {
-                                                  toast.showToast('A reset link was sent to your email.', type: NotifType.info);
-                                                }
-                                              },
-                                              child: const BLText(
-                                                'Forgot password?',
-                                                size: 15,
-                                              )),
+                                          if (!useEmail)
+                                            BLTextButton(
+                                                onPressed: () async {
+                                                  bool? result = await showDialog(
+                                                      context: context,
+                                                      builder: (context) => ForgotPasswordDialog(
+                                                            useEmail: useEmail,
+                                                          ));
+                                                  if (result != null) {
+                                                    toast.showToast('A reset link was sent to your email.', type: NotifType.info);
+                                                  }
+                                                },
+                                                child: const BLText(
+                                                  'Forgot password?',
+                                                  size: 15,
+                                                )),
                                           Visibility(
                                             visible: !useEmail,
                                             child: BLTextButton(
@@ -312,6 +320,12 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
     super.didPushNext();
   }
 
+  @override
+  void dispose() {
+    otpCooldownTimer.cancel();
+    super.dispose();
+  }
+
   Timer createTimer() {
     return Timer.periodic(const Duration(seconds: 1), (timer) {
       if (secondsLeft > 1) {
@@ -331,10 +345,12 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
   void initState() {
     otpCooldownTimer = Timer(Duration.zero, () {});
     otpCooldownTimer.cancel();
+    accountService = ref.read(accountServiceProvider.notifier);
     validator = ref.read(textValidatorProvider.notifier);
     auth = ref.read(authServiceProvider.notifier);
     toast = ref.read(toastProvider.notifier);
     nav = ref.read(customNavigationProvider.notifier);
+    sharedPref = ref.read(sharedPrefProvider);
     super.initState();
   }
 
@@ -342,19 +358,34 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
     if (processing) return;
     toggleProcessing(true);
     if (_loginFormKey.currentState!.validate()) {
+      if (!useEmail) {
+        final phoneExists = await auth.checkPhoneExists(phoneController.text.trim());
+        if (phoneExists != null) {
+          toast.showToast(phoneExists, type: NotifType.error);
+          toggleProcessing(false);
+          return;
+        }
+      }
       final error = useEmail
           ? await auth.loginEmail(
               email: emailController.text.trim(),
               password: passwordController.text.trim(),
             )
           : await auth.loginPhone(
-              phone: emailController.text.trim(),
+              // phone: phoneController.text.trim(),
               code: otpController.text.trim(),
               verificationID: verificationID,
             );
-      ref.invalidate(authServiceProvider);
-      ref.invalidate(authChangesProvider);
       if (error == null) {
+        // refresh auth providers
+        ref.invalidate(authServiceProvider);
+        ref.invalidate(authChangesProvider);
+
+        // remove used tokens
+        sharedPref.remove('resendToken');
+        sharedPref.remove('verificationID');
+
+        // create sessionID
         if (!kIsWeb) {
           final sessionID = const UuidV4().generate();
           // save sessionID to shared_pref
@@ -392,21 +423,44 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
     });
   }
 
-  void sendOTP(BuildContext context) {
+  void updateCallBack({
+    required String resendToken,
+    required String verificationID,
+  }) async {
+    this.resendToken = resendToken;
+    this.verificationID = verificationID;
+  }
+
+  void sendOTP(BuildContext context) async {
     // get from token firebase admin sdk
     // send sms using semaphore
-    if (firstOTPSent == false) {
+    if (processing || otpCooldownTimer.isActive) return;
+    processing = true;
+    // var result = null;
+    final result = await accountService.verifyPhoneNumber(
+      phoneNumber: '+63${phoneController.text.trim()}',
+      resendToken: resendToken,
+      type: AccountType.user,
+      updateCallBack: updateCallBack,
+    );
+    if (result != null) {
+      toast.showToast(result, type: NotifType.error);
+    } else {
+      toast.showToast('OTP sent!', type: NotifType.success);
+      if (firstOTPSent == false) {
+        setState(() {
+          firstOTPSent = true;
+        });
+      }
       setState(() {
-        firstOTPSent = true;
+        otpCooldownTimer = createTimer();
       });
+      // resendToken = sharedPref.getString('resendToken')!;
+      // verificationID = sharedPref.getString('verificationID')!;
     }
-    setState(() {
-      otpCooldownTimer = createTimer();
-    });
-    toast.showToast('OTP sent!', type: NotifType.info);
-    const verificationID = '';
-    setState(() {
-      this.verificationID = verificationID;
-    });
+    // otp = otpService.getOTP().toString();
+    // final result = await sms.send(phoneNum, otp!);
+
+    processing = false;
   }
 }

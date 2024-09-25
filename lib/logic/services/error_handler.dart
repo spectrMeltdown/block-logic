@@ -33,6 +33,9 @@ class ErrorHandler extends _$ErrorHandler {
       case 'captcha-check-failed':
         error = 'Captcha failed, Cannot proceed.';
         break;
+      case 'session-expired':
+        error = 'Code expired. Send OTP again.';
+        break;
       case 'expired-action-code':
         error = 'This code has expired. Try again.';
         break;
@@ -41,6 +44,9 @@ class ErrorHandler extends _$ErrorHandler {
         break;
       case 'quota-exceeded':
         error = 'Unknown error.';
+        break;
+      case 'credential-already-in-use':
+        error = 'This credential is already in use.';
         break;
       case 'network-request-failed':
         error = 'Network Problem!';
@@ -66,7 +72,7 @@ class ErrorHandler extends _$ErrorHandler {
         error = 'The verification ID was incorrect (please contact developer).';
         break;
       default:
-        return null;
+        return 'Unexpected error occurred.';
     }
     if (handleOverlay) {
       blShowNotifyDialog(context, title: 'Error', label: error);

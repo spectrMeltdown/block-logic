@@ -205,7 +205,7 @@ class _LeaderboardState extends ConsumerState<SelectedLeaderboard> {
                                             )),
                                             DataCell(Center(
                                               child: BLText(
-                                                completed[i].playerScore.toString(),
+                                                '${completed[i].playerScore}/${widget.leaderboard.totalScore}',
                                               ),
                                             )),
                                           ]);

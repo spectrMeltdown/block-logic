@@ -79,9 +79,9 @@ class _KickPlayerState extends ConsumerState<KickPlayerBottomSheet> with TickerP
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: const Row(
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 20),
+                        child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [BLSmallTitle('Select players:'), CloseButton()],
                         ),

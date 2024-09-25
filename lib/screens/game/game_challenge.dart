@@ -56,8 +56,8 @@ class _GameChallengeState extends ConsumerState<GameChallenge> {
   Widget build(BuildContext context) {
     final returnBlock = ref.watch(returnBlockProvider);
     final processing = ref.watch(processingProvider);
-    debugPrint(widget.challengeCount.toString());
-    debugPrint(widget.currentChallenge.toString());
+    // debugPrint(widget.challengeCount.toString());
+    // debugPrint(widget.currentChallenge.toString());
     return Stack(
       fit: StackFit.expand,
       children: [
@@ -150,9 +150,9 @@ class _GameChallengeState extends ConsumerState<GameChallenge> {
                             gameManager.deleteData(data);
                             gameManager.removeInSelectorUIDs(data.type, data.inSelectorUID!);
                             ref.invalidate(shouldResetBlockProvider);
-                            ref.invalidate(getChildrenDataProvider);
-                            ref.invalidate(getSelfDataProvider);
                             ref.invalidate(getRootDataProvider);
+                            ref.invalidate(getSelfDataProvider);
+                            ref.invalidate(getChildrenDataProvider);
                             // switch (data.type) {
                             //   case CodeBlockType.functions:
                             //   case CodeBlockType.objects:

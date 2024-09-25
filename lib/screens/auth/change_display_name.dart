@@ -67,26 +67,30 @@ class _ChangeDisplayNameState extends ConsumerState<ChangeDisplayName> {
                   children: [
                     BLTextButton(
                         onPressed: () {
+                          if (processing) return;
                           Navigator.pop(context);
                         },
-                        child: const BLText(
+                        child: BLText(
                           'Cancel',
-                          color: Colors.deepOrange,
+                          color: processing ? Colors.grey : Colors.deepOrange,
                         )),
                     BLTextButton(
                         onPressed: () async {
                           if (processing) return;
-                          processing = true;
+                          toggleProcessing();
                           if (formKey.currentState!.validate()) {
                             final newName = displayNameController.text.trim();
                             if (oldDisplayName != newName) {
-                              final result =
-                                  await accountService.changeDisplayName(newName, FirestoreCollections.users);
+                              final result = await accountService.changeDisplayName(newName, FirestoreCollections.users);
                               if (result != null) {
                                 setState(() {
-                                  msg = BLText(result);
+                                  msg = BLText(
+                                    result,
+                                    alignCenter: true,
+                                    color: Colors.red,
+                                  );
                                 });
-                                processing = false;
+                                toggleProcessing();
                                 return;
                               }
                               if (!context.mounted) return;
@@ -96,11 +100,11 @@ class _ChangeDisplayNameState extends ConsumerState<ChangeDisplayName> {
                               nav.pop(context);
                             }
                           }
-                          processing = false;
+                          toggleProcessing();
                         },
-                        child: const BLText(
+                        child: BLText(
                           'Save',
-                          color: Colors.green,
+                          color: processing ? Colors.grey : Colors.green,
                         )),
                     const SizedBox(width: 10)
                   ],
@@ -121,5 +125,11 @@ class _ChangeDisplayNameState extends ConsumerState<ChangeDisplayName> {
     oldDisplayName = user?.displayName ?? '';
     displayNameController = TextEditingController(text: oldDisplayName);
     super.initState();
+  }
+
+  void toggleProcessing() {
+    setState(() {
+      processing = !processing;
+    });
   }
 }

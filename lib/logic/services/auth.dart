@@ -1,4 +1,5 @@
 import 'package:block_logic/logic/enums.dart';
+import 'package:block_logic/logic/firebase_models/user_account.dart';
 import 'package:block_logic/logic/firebase_providers/auth.dart';
 import 'package:block_logic/logic/services/account.dart';
 import 'package:block_logic/logic/services/error_handler.dart';
@@ -72,6 +73,44 @@ class AuthService extends _$AuthService {
     }
   }
 
+// no area code
+  Future<String?> checkPhoneNumDup(String phoneNum) async {
+    if (phoneNum.isEmpty) throw ('Phone number was empty!');
+    try {
+      final query = await state._db.collection('users').where('phoneNum', isEqualTo: phoneNum).get();
+      if (query.docs.isNotEmpty) {
+        for (final doc in query.docs) {
+          final userData = UserAccount.fromFirestore(doc);
+          if (userData.phoneNum != null && userData.phoneNum == phoneNum) {
+            return 'An account with this phone already exists';
+          }
+        }
+      }
+      return null;
+    } catch (e) {
+      return state._errorHandler.call(e, this);
+    }
+  }
+
+  // no area code
+  Future<String?> checkPhoneExists(String phoneNum) async {
+    if (phoneNum.isEmpty) throw ('Phone number was empty!');
+    try {
+      final query = await state._db.collection('users').where('phoneNum', isEqualTo: phoneNum).get();
+      if (query.docs.isNotEmpty) {
+        for (final doc in query.docs) {
+          final userData = UserAccount.fromFirestore(doc);
+          if (userData.phoneNum != null && userData.phoneNum == phoneNum) {
+            return null;
+          }
+        }
+      }
+      return 'Phone number isn\'t linked to an account.\n Signup first.';
+    } catch (e) {
+      return state._errorHandler.call(e, this);
+    }
+  }
+
   Future<String?> createAccountWithEmail({
     required String email,
     required String password,
@@ -85,7 +124,11 @@ class AuthService extends _$AuthService {
       assert(FirebaseAuth.instance.currentUser != null);
       await FirebaseAuth.instance.currentUser!.updateDisplayName(displayName);
 
-      await state._account.initFirestoreData(displayName: displayName, phoneNum: null, type: type);
+      await state._account.initFirestoreData(
+        displayName: displayName,
+        // phoneNum: null,
+        type: type,
+      );
       return null;
     } catch (e) {
       return state._errorHandler.call(e, this);
@@ -112,7 +155,11 @@ class AuthService extends _$AuthService {
       assert(FirebaseAuth.instance.currentUser != null);
       await FirebaseAuth.instance.currentUser!.updateDisplayName(displayName);
 
-      await state._account.initFirestoreData(displayName: displayName, phoneNum: phoneNum, type: type);
+      await state._account.initFirestoreData(
+        displayName: displayName,
+        phoneNum: phoneNum,
+        type: type,
+      );
       return null;
     } catch (e) {
       return state._errorHandler.call(e, this);
@@ -184,17 +231,20 @@ class AuthService extends _$AuthService {
   }
 
   Future<String?> loginPhone({
-    required String phone,
+    // required String phone,
     required String code,
     required String verificationID,
   }) async {
     try {
+      // check if phone number exists in user database
+
       await state._auth.signInWithCredential(
         PhoneAuthProvider.credential(
           verificationId: verificationID,
           smsCode: code,
         ),
       );
+
       return null;
     } catch (e) {
       return state._errorHandler.call(e, this);
@@ -241,6 +291,25 @@ class AuthService extends _$AuthService {
       }, SetOptions(merge: true));
     } catch (e) {
       debugPrint(state._errorHandler.call(e, this));
+    }
+  }
+
+  Future<String?> linkEmailAndPass({
+    required String email,
+    required String pass,
+  }) async {
+    try {
+      FirebaseAuth auth = FirebaseAuth.instance;
+      User user = auth.currentUser!;
+      // Create email and password credential
+      AuthCredential credential = EmailAuthProvider.credential(
+        email: email,
+        password: pass,
+      );
+      await user.linkWithCredential(credential);
+      return null;
+    } catch (e) {
+      return state._errorHandler.call(e, this);
     }
   }
 

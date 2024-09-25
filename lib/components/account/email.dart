@@ -12,6 +12,10 @@ class BLEmail extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(authInfoChangesProvider);
-    return user.when(data: (user) => BLText(user?.email ?? nullMessage ?? ''), error: blankError, loading: blankLoading);
+    return user.when(
+      data: (user) => BLText(user?.email == null || user!.email!.isEmpty ? nullMessage ?? '' : user.email!),
+      error: blankError,
+      loading: blankLoading,
+    );
   }
 }

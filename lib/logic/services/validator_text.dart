@@ -25,7 +25,7 @@ class TextValidator extends _$TextValidator {
       return 'Have a higher number.';
     }
     if (int.parse(maxPlayers) > 20) {
-      return '20 is the highest.';
+      return '20 is the highest possible value.';
     }
     return null;
   }
@@ -241,8 +241,7 @@ class TextValidator extends _$TextValidator {
 //   }
 // }
 class TextValidatorState {
-  final _emailRegex =
-      RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+"); // follow email format
+  final _emailRegex = RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+"); // follow email format
 
   final _nameRegex = RegExp(r'^([a-zA-Z\.]+([.-]?[a-zA-Z]+)?(\s|$)){1,10}\.?$'); // no special symbols
   final _phoneNumRegex = RegExp(r'^[0-9]+$');

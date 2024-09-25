@@ -6,7 +6,7 @@ part of '../room_manager.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$roomManagerHash() => r'd8b68f659b0fcfe241a0d04735359e7d527a0674';
+String _$roomManagerHash() => r'950b28c3aedd8be120b39fc5dc3ab27d0903dc78';
 
 /// See also [RoomManager].
 @ProviderFor(RoomManager)

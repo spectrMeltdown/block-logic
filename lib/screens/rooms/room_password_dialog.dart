@@ -53,10 +53,13 @@ class RoomPasswordDialogState extends ConsumerState<RoomPasswordDialog> {
           const BLSmallTitle('Room password:'),
           const SizedBox(height: 10),
           BLTextBox(
-            validator: (pass) => validator.validatePassword(pass),
             controller: passController,
             isObscure: true,
-            prefixIcon: const Icon(FontAwesomeIcons.lock),
+            prefixIcon: const Icon(
+              FontAwesomeIcons.lock,
+              color: Colors.white,
+            ),
+            validator: (pass) => validator.validatePassword(pass),
           ),
           const SizedBox(height: 10),
           msg,
@@ -81,7 +84,10 @@ class RoomPasswordDialogState extends ConsumerState<RoomPasswordDialog> {
                     if (formKey.currentState!.validate()) {
                       debugPrint(widget.hostID);
                       final correctInput = await roomManager.validatePassword(
-                          input: passController.text.trim(), pass: widget.pass, hostID: widget.hostID);
+                        input: passController.text.trim(),
+                        pass: widget.pass,
+                        hostID: widget.hostID,
+                      );
                       if (correctInput) {
                         if (!context.mounted) return;
                         nav.pop(context, true);
