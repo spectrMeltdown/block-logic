@@ -61,9 +61,11 @@ class _UsersState extends ConsumerState<Users> {
                             });
                             final result = await accountsManager.deleteAccount(users[i].id!, AccountType.user);
                             if (result == null) {
-                              toast.showToast('Delete success.', type: NotifType.success);
+                              if (!context.mounted) return;
+                              toast.showToast(context, 'Delete success.', type: NotifType.success);
                             } else {
-                              toast.showToast(result, type: NotifType.error);
+                              if (!context.mounted) return;
+                              toast.showToast(context, result, type: NotifType.error);
                             }
                             setState(() {
                               processing = false;

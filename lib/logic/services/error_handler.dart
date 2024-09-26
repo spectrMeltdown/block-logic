@@ -26,7 +26,7 @@ class ErrorHandler extends _$ErrorHandler {
       return null;
     }
     if (context == null) handleOverlay = false;
-    //state.toast.dismissAllToast();
+    //state.toast.dismissAllToast(context);
     debugPrint('FirebaseException Code: ${e.code}');
     String? error;
     switch (e.code) {

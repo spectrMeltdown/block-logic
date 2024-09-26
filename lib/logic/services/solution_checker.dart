@@ -169,6 +169,7 @@ class SolutionChecker extends StateNotifier<SolutionCheckerState> {
       return null;
     }
     String compiledCode = compileCode(dataTree);
+    debugPrint(compiledCode);
     return await executePythonCode(compiledCode);
   }
 

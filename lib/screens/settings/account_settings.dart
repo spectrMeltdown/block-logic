@@ -298,14 +298,16 @@ class _AccountSettingsWidgetState extends ConsumerState<AccountSettingsWidget> {
         widget.toggleProcessing.call(false);
         return;
       }
-      toast.showToast('Wrong password', type: NotifType.error);
+      if (!mounted) return;
+      toast.showToast(context, 'Wrong password', type: NotifType.error);
     } else if (reauth == 'cancelled') {
       if (!context.mounted) {
         widget.toggleProcessing.call(true);
         return;
       }
     } else if (reauth == 'TOA') {
-      toast.showToast('Too many attempts, try again later', type: NotifType.error);
+      if (!mounted) return;
+      toast.showToast(context, 'Too many attempts, try again later', type: NotifType.error);
     }
     widget.toggleProcessing.call(false);
   }
@@ -330,14 +332,16 @@ class _AccountSettingsWidgetState extends ConsumerState<AccountSettingsWidget> {
         widget.toggleProcessing.call(false);
         return;
       }
-      toast.showToast('Wrong password', type: NotifType.error);
+      if (!mounted) return;
+      toast.showToast(context, 'Wrong password', type: NotifType.error);
     } else if (reauth == 'cancelled') {
       if (!context.mounted) {
         widget.toggleProcessing.call(true);
         return;
       }
     } else if (reauth == 'TOA') {
-      toast.showToast('Too many attempts, try again later', type: NotifType.error);
+      if (!mounted) return;
+      toast.showToast(context, 'Too many attempts, try again later', type: NotifType.error);
     }
     widget.toggleProcessing(false);
   }

@@ -1,6 +1,7 @@
 import 'package:block_logic/components/account/display_name.dart';
 import 'package:block_logic/components/dialog/dialog.dart';
 import 'package:block_logic/components/text/text.dart';
+import 'package:block_logic/components/text/title_small.dart';
 import 'package:block_logic/components/util/provider_default.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_providers/selected_challenges.dart';
@@ -37,6 +38,7 @@ class _SelectedRoomState extends ConsumerState<ViewRoomDialog> {
         child: Column(
       mainAxisSize: MainAxisSize.min,
       children: [
+        BLSmallTitle('Room Details'),
         room.when(
             data: (room) {
               if (room == null) {
@@ -54,23 +56,26 @@ class _SelectedRoomState extends ConsumerState<ViewRoomDialog> {
                       children: List.generate(roomProps.length, (i) => BLText('${roomProps[i]} :')),
                     ),
                     const SizedBox(width: 15),
-                    Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      BLText(room.name ?? '--'),
-                      BLDisplayName(room.hostID ?? '', AccountType.user),
-                      BLText(room.maxPlayers != null ? room.maxPlayers.toString() : '--'),
-                      challenges.when(
-                          data: (challenges) {
-                            if (challenges.isEmpty) {
-                              return const BLText('Challenges were not found..');
-                            }
-                            return Wrap(
-                              children: List.generate(challenges.length, (i) => BLText(challenges[i].name ?? '--')),
-                            );
-                          },
-                          error: genericError,
-                          loading: genericLoading),
-                      BLText(room.name ?? '--'),
-                    ])
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        BLText(room.name ?? '--'),
+                        BLDisplayName(room.hostID ?? '', AccountType.user),
+                        BLText(room.maxPlayers != null ? room.maxPlayers.toString() : '--'),
+                        challenges.when(
+                            data: (challenges) {
+                              if (challenges.isEmpty) {
+                                return const BLText('Challenges were not found..');
+                              }
+                              return Wrap(
+                                children: List.generate(challenges.length, (i) => BLText(challenges[i].name ?? '--')),
+                              );
+                            },
+                            error: genericError,
+                            loading: genericLoading),
+                        BLText(room.status?.name ?? '--'),
+                      ],
+                    )
                   ],
                 ),
               );

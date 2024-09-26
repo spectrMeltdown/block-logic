@@ -44,6 +44,13 @@ enum LoadingType { full, normal }
 
 enum NotifType { info, warning, error, success }
 
+enum TimePeriod {
+  yearly,
+  monthly,
+  weekly,
+  daily,
+}
+
 enum ReportType {
   users,
   rooms,

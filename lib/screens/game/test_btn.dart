@@ -41,7 +41,8 @@ class _GameRunButtonState extends ConsumerState<GameTestBtn> {
         type: hasBlocks ? BtnType.normal : BtnType.grey,
         onPressed: () async {
           if (!hasBlocks) {
-            toast.showToast('Place a block first.', type: NotifType.error);
+            if (!context.mounted) return;
+            toast.showToast(context, 'Place a block first.', type: NotifType.error);
             return;
           }
           if (processing) return;

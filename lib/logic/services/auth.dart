@@ -19,7 +19,7 @@ class AuthService extends _$AuthService {
   // Future<String?> addPhoneNumber(String phoneNumber) async {
   //   String? verificationID;
 
-  //   await state._auth.verifyPhoneNumber(
+  //   await state._auth.verifyPhoneNumber( context: context,
   //     phoneNumber: phoneNumber,
   //     verificationCompleted: (PhoneAuthCredential credential) async {
   //       // Automatic verification (e.g., on Android)
@@ -57,7 +57,7 @@ class AuthService extends _$AuthService {
   Future<String?> changeEmail(String email) async {
     try {
       await FirebaseAuth.instance.currentUser!.verifyBeforeUpdateEmail(email.trim());
-      // state._toast.showToast('A verification has been sent to your new email.');
+      // state._toast.showToast(context,'A verification has been sent to your new email.');
       return null;
     } catch (e) {
       return state._errorHandler.call(e, this);
@@ -322,7 +322,7 @@ class AuthService extends _$AuthService {
   //   try {
   //     /// first time verifying
   //     if (verificationId.isEmpty && otp.isEmpty) {
-  //       await state._auth.verifyPhoneNumber(
+  //       await state._auth.verifyPhoneNumber( context: context,
   //         phoneNumber: phoneNum,
   //         verificationCompleted: (PhoneAuthCredential credential) async {
   //           state._auth.currentUser!.linkWithCredential(credential);

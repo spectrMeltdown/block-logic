@@ -283,19 +283,19 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> with WidgetsBin
 
   @override
   void didPopNext() {
-    toast.dismissAllToast();
+    toast.dismissAllToast(context);
     super.didPop();
   }
 
   @override
   void didPushNext() {
-    toast.dismissAllToast();
+    toast.dismissAllToast(context);
     super.didPushNext();
   }
 
   @override
   void dispose() {
-    toast.dismissAllToast();
+    toast.dismissAllToast(context);
     _titleAnimationController.dispose();
     _premiumCrown.dispose();
     super.dispose();

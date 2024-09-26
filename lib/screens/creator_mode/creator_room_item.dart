@@ -34,7 +34,8 @@ class _CreatorRoomItemState extends ConsumerState<CreatorRoomItem> {
           return BLTranslucentCard(
             onPressed: () {
               if (widget.room.adminLocked != null && widget.room.adminLocked == true) {
-                toast.showToast('Cannot edit room, locked by admin', type: NotifType.error);
+                if (!context.mounted) return;
+                toast.showToast(context, 'Cannot edit room, locked by admin', type: NotifType.error);
               } else {
                 nav.push(context, EditRoomBottomSheet(widget.room.id!));
               }
@@ -45,8 +46,7 @@ class _CreatorRoomItemState extends ConsumerState<CreatorRoomItem> {
             color: Colors.black,
             //icon: room.icon ?? '',
             title: widget.room.name ?? '',
-            subTitle:
-                '${widget.room.maxPlayers == null ? '--' : 'Max players: ${widget.room.maxPlayers}'}, Challenges: ${widget.room.challengeIDs?.length}',
+            subTitle: '${widget.room.maxPlayers == null ? '--' : 'Max players: ${widget.room.maxPlayers}'}, Challenges: ${widget.room.challengeIDs?.length}',
           );
         },
         error: genericError,

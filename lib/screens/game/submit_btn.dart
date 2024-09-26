@@ -77,7 +77,8 @@ class GameSubmitButton extends ConsumerWidget {
             updateChallenge!();
           }
           if (result != null) {
-            toast.showToast(result, type: NotifType.error);
+            if (!context.mounted) return;
+            toast.showToast(context, result, type: NotifType.error);
           }
           toggleProcessing();
         },

@@ -95,7 +95,8 @@ class _ChallengeItemState extends ConsumerState<ChallengeItem> {
           debugPrint(value.toString());
           if (value) {
             if (widget.updateSelection(widget.challenge) == false) {
-              toast.showToast('Maximum challenges selected.', type: NotifType.error);
+              if (!context.mounted) return;
+              toast.showToast(context, 'Maximum challenges selected.', type: NotifType.error);
             } else {
               setState(() {
                 selected = value;

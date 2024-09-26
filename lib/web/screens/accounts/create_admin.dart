@@ -141,10 +141,12 @@ class _CreateAdminState extends ConsumerState<CreateAdmin> {
       if (result == null) {
         if (mounted) {
           nav.pop(context);
-          toast.showToast('Admin created successfully.', type: NotifType.success);
+          if (!context.mounted) return;
+          toast.showToast(context, 'Admin created successfully.', type: NotifType.success);
         }
       } else {
-        toast.showToast(result, type: NotifType.error);
+        if (!mounted) return;
+        toast.showToast(context, result, type: NotifType.error);
       }
     }
     if (!mounted) return;

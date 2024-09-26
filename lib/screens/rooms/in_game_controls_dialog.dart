@@ -63,7 +63,8 @@ class _InGameControlsState extends ConsumerState<InGameControlsDialog> {
               toggleProcessing();
               nav.pop(context);
               toggleProcessing();
-              toast.showToast('Room disbanded', type: NotifType.info);
+              if (!context.mounted) return;
+              toast.showToast(context, 'Room disbanded', type: NotifType.info);
             },
             child: const BLText('Disband room')),
         const SizedBox(

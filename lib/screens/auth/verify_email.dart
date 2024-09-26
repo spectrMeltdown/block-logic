@@ -42,7 +42,7 @@ class _VerifyEmailState extends ConsumerState<VerifyEmail> with TickerProviderSt
   //     if (context.mounted) {
   //       nav.push(context, const MainMenuScreen());
   //     }
-  //     showToast("Email verified successfully");
+  //     showToast(context,"Email verified successfully");
   //   });
   // }
 
@@ -141,7 +141,7 @@ class _VerifyEmailState extends ConsumerState<VerifyEmail> with TickerProviderSt
         timer.cancel();
         sharedPref.remove('emailSent');
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          // toast.showToast('Email verified successfully');
+          // if(!context.mounted) return; toast.showToast(context,'Email verified successfully');
           if (kIsWeb) {
             context.go('/dashboard');
           } else {

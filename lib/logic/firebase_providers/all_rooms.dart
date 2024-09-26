@@ -1,5 +1,6 @@
 import 'package:block_logic/logic/firebase_models/room.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'generated/all_rooms.g.dart';
@@ -59,17 +60,20 @@ Stream<List<Room>> rooms(RoomsRef ref, {String? searchQuery, String? uid}) async
       }
     }
 
-    /// remove rooms marked with admin lock
-    result.removeWhere((room) {
-      return room.adminLocked == true;
-    });
-
-    /// remove own rooms
-    if (uid != null && uid.isNotEmpty) {
+    if (!kIsWeb) {
+      /// remove rooms marked with admin lock
       result.removeWhere((room) {
-        return room.hostID == uid;
+        return room.adminLocked == true;
       });
+
+      /// remove own rooms
+      if (uid != null && uid.isNotEmpty) {
+        result.removeWhere((room) {
+          return room.hostID == uid;
+        });
+      }
     }
+
     yield result;
   }
 }

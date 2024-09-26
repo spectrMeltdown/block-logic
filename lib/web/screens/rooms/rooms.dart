@@ -100,12 +100,14 @@ class _RoomsManagerState extends ConsumerState<RoomsManager> {
                                                     if (roomsList[i].adminLocked != null && roomsList[i].adminLocked == true) {
                                                       final result = await roomManager.setLock(roomsList[i].id ?? '', false);
                                                       if (result != null) {
-                                                        toast.showToast(result, type: NotifType.error);
+                                                        if (!context.mounted) return;
+                                                        toast.showToast(context, result, type: NotifType.error);
                                                       }
                                                     } else {
                                                       final result = await roomManager.setLock(roomsList[i].id ?? '', true);
                                                       if (result != null) {
-                                                        toast.showToast(result, type: NotifType.error);
+                                                        if (!context.mounted) return;
+                                                        toast.showToast(context, result, type: NotifType.error);
                                                       }
                                                     }
                                                     setState(() {
@@ -131,9 +133,14 @@ class _RoomsManagerState extends ConsumerState<RoomsManager> {
                                                     setState(() {
                                                       processing = true;
                                                     });
-                                                    final result = await roomManager.delete(rooms[i].id ?? '');
-                                                    if (result != null) {
-                                                      toast.showToast(result, type: NotifType.error);
+                                                    if (roomsList[i].adminLocked != null && roomsList[i].adminLocked == false) {
+                                                      toast.showToast(context, 'Lock first to prevent players from using room.', type: NotifType.error);
+                                                    } else {
+                                                      final result = await roomManager.delete(rooms[i].id ?? '');
+                                                      if (result != null) {
+                                                        if (!context.mounted) return;
+                                                        toast.showToast(context, result, type: NotifType.error);
+                                                      }
                                                     }
                                                     setState(() {
                                                       processing = false;

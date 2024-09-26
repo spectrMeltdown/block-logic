@@ -237,7 +237,8 @@ class _WaitingRoomState extends ConsumerState<WaitingRoom> {
     );
     // if id not returned, exit function
     if (result != null || result2 != null) {
-      toast.showToast('Error starting the game.', type: NotifType.error);
+      if (!context.mounted) return;
+      toast.showToast(context, 'Error starting the game.', type: NotifType.error);
       toggleProcessing();
     }
     // else to game

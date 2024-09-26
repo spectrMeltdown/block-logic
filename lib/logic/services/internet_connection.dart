@@ -27,9 +27,9 @@
 
 //   void _showToast(bool isConnected) {
 //     if (isConnected) {
-//       _toast?.showToast('Connection restored.', type: NotifType.success);
+//       _toast?.showToast(context,'Connection restored.', type: NotifType.success);
 //     } else {
-//       _toast?.showToast('Connection lost.', type: NotifType.error);
+//       _toast?.showToast(context,'Connection lost.', type: NotifType.error);
 //     }
 //     // WidgetsBinding.instance.addPostFrameCallback((_) {
 

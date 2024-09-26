@@ -94,11 +94,14 @@ class _BLCardState extends ConsumerState<BLTranslucentCard> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              BLText(
-                                widget.title,
-                                color: BLUI().getAppColor('amber'),
-                                bold: true,
-                                size: 18,
+                              Flexible(
+                                child: BLText(
+                                  widget.title,
+                                  color: BLUI().getAppColor('amber'),
+                                  bold: true,
+                                  overflow: false,
+                                  size: 18,
+                                ),
                               ),
                               const SizedBox(
                                 width: 10,

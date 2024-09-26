@@ -142,16 +142,10 @@ class _CreatorModeState extends ConsumerState<CreatorMode> {
                   if (processing) return;
                   processing = true;
                   if (roomsLength == 10) {
-                    toast.showToast(
-                        'You have reached the maximmum number of rooms.\nPlease delete a room to add another.',
-                        withTransparency: false,
-                        duration: const Duration(seconds: 6),
-                        alignment: Alignment.bottomCenter,
-                        margin: const EdgeInsets.only(bottom: 60, left: 20, right: 20),
-                        type: NotifType.error);
+                    if (!context.mounted) return;
+                    toast.showToast(context, 'You have reached the maximmum number of rooms.\nPlease delete a room to add another.', withTransparency: false, duration: const Duration(seconds: 6), alignment: Alignment.bottomCenter, margin: const EdgeInsets.only(bottom: 60, left: 20, right: 20), type: NotifType.error);
                   } else {
-                    nav.push(context, const AddRoomBottomSheet(),
-                        transition: PageTransitionType.rightToLeftJoined, childCurrent: const CreatorMode());
+                    nav.push(context, const AddRoomBottomSheet(), transition: PageTransitionType.rightToLeftJoined, childCurrent: const CreatorMode());
                   }
                   processing = false;
                 },

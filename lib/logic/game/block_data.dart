@@ -1,4 +1,5 @@
 import 'package:block_logic/logic/enums.dart';
+import 'package:block_logic/logic/game/data_type.dart';
 import 'package:block_logic/logic/game/py_conditional.dart';
 import 'package:block_logic/logic/game/py_keyword.dart';
 import 'package:block_logic/logic/game/py_literal.dart';
@@ -134,7 +135,7 @@ class GameBlockData {
     return GameBlockData(
       type: type,
       name: literal.value,
-      arrayUIDs: const [],
+      arrayUIDs: literal.dataType == PyDataType.array ? [] : null,
       // inSelectorIndex: inSelectorIndex,
       inSelectorCount: count,
     );

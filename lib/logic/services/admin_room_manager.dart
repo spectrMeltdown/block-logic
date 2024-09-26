@@ -48,8 +48,10 @@ class AdminRoomManager extends _$AdminRoomManager {
     try {
       final room = await roomRef.get();
       if (room.exists) {
-        final roomData =
-            Room(adminLocked: newLockState, status: newLockState == true ? RoomStatus.locked : RoomStatus.available);
+        final roomData = Room(
+          adminLocked: newLockState,
+          status: newLockState == true ? RoomStatus.locked : RoomStatus.available,
+        );
         await roomRef.update(roomData.toFirestore());
       } else {
         return 'Room doesn\'t exist';

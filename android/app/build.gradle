@@ -41,7 +41,7 @@ android {
         applicationId = "com.uncaughtexception.blocklogic"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
-        minSdkVersion = 23
+        minSdkVersion = 30
         versionCode = flutterVersionCode.toInteger()
         versionName = flutterVersionName
     }

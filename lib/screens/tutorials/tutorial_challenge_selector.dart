@@ -1,4 +1,5 @@
 import 'package:block_logic/components/background.dart';
+import 'package:block_logic/components/button/back.dart';
 import 'package:block_logic/components/card/card.dart';
 import 'package:block_logic/components/text/title_small.dart';
 import 'package:block_logic/logic/enums.dart';
@@ -37,7 +38,15 @@ class _TutorialChallengeSelectorState extends ConsumerState<TutorialChallengeSel
             padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
             child: Column(
               children: [
-                const Center(child: BLSmallTitle('Select a challenge')),
+                const Row(
+                  children: [
+                    BLBackButton(),
+                    BLSmallTitle(
+                      'Select a challenge',
+                      bottomPadding: 0,
+                    )
+                  ],
+                ),
                 const SizedBox(height: 15),
                 ...List.generate(
                   practiceChallenges.length,

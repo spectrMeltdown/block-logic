@@ -192,15 +192,17 @@ class _VerifyPhoneNumState extends ConsumerState<VerifyPhoneNum> {
     processing = true;
 
     final result = await accountService.verifyPhoneNumber(
+      context: context,
       phoneNumber: widget.phoneNum,
       resendToken: resendToken,
       type: AccountType.user,
       updateCallBack: updateCallBack,
     );
     if (result != null) {
-      toast.showToast(result, type: NotifType.error);
+      if (!mounted) return;
+      toast.showToast(context, result, type: NotifType.error);
     } else {
-      // toast.showToast('OTP sent!', type: NotifType.success);
+      // if(!context.mounted) return; toast.showToast(context,'OTP sent!', type: NotifType.success);
       setState(() {
         timer = createTimer();
       });
@@ -236,7 +238,8 @@ class _VerifyPhoneNumState extends ConsumerState<VerifyPhoneNum> {
       // link it
       final result = await accountService.continuePhoneNumVerify(verificationID, otpInput.text.trim());
       if (result == null) {
-        toast.showToast('Phone verified successfully.', type: NotifType.success);
+        if (!mounted) return;
+        toast.showToast(context, 'Phone verified successfully.', type: NotifType.success);
         if (kIsWeb) {
           if (!mounted) return;
           context.go('/dashboard');
@@ -246,7 +249,8 @@ class _VerifyPhoneNumState extends ConsumerState<VerifyPhoneNum> {
           nav.pop(context);
         }
       } else {
-        toast.showToast(result, type: NotifType.error);
+        if (!mounted) return;
+        toast.showToast(context, result, type: NotifType.error);
       }
     }
     processing = false;
@@ -256,9 +260,9 @@ class _VerifyPhoneNumState extends ConsumerState<VerifyPhoneNum> {
   // void send() async {
   //   final result = await sms.send(phoneNum, otp.getOTP().toString());
   //   if (result == null) {
-  //     toast.showToast('OTP sent!', type: NotifType.success);
+  //     if(!context.mounted) return; toast.showToast(context,'OTP sent!', type: NotifType.success);
   //   } else {
-  //     toast.showToast(result, type: NotifType.error);
+  //     if(!context.mounted) return; toast.showToast(context,result, type: NotifType.error);
   //   }
   // }
 }

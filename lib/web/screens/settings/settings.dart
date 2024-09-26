@@ -122,13 +122,7 @@ class _AdminSettingsState extends ConsumerState<AdminSettings> {
                                       },
                                       child: Row(
                                         mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          const Icon(FontAwesomeIcons.envelope, color: Colors.white),
-                                          const SizedBox(width: 15),
-                                          const Flexible(child: BLEmail()),
-                                          const SizedBox(width: 5),
-                                          widget.editIcon
-                                        ],
+                                        children: [const Icon(FontAwesomeIcons.envelope, color: Colors.white), const SizedBox(width: 15), const Flexible(child: BLEmail()), const SizedBox(width: 5), widget.editIcon],
                                       )),
                                   const SizedBox(height: 15),
                                   BLTextButton(
@@ -137,13 +131,7 @@ class _AdminSettingsState extends ConsumerState<AdminSettings> {
                                       },
                                       child: Row(
                                         mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          const Icon(FontAwesomeIcons.lock, color: Colors.white),
-                                          const SizedBox(width: 15),
-                                          const BLText('Change password'),
-                                          const SizedBox(width: 5),
-                                          widget.editIcon
-                                        ],
+                                        children: [const Icon(FontAwesomeIcons.lock, color: Colors.white), const SizedBox(width: 15), const BLText('Change password'), const SizedBox(width: 5), widget.editIcon],
                                       )),
                                   const SizedBox(height: 25),
                                   BLTextButton(
@@ -222,7 +210,8 @@ class _AdminSettingsState extends ConsumerState<AdminSettings> {
         );
       });
     } else {
-      toast.showToast('Success', type: NotifType.success);
+      if (!mounted) return;
+      toast.showToast(context, 'Success', type: NotifType.success);
     }
     processing = false;
   }
@@ -272,14 +261,16 @@ class _AdminSettingsState extends ConsumerState<AdminSettings> {
         processing = false;
         return;
       }
-      toast.showToast('Wrong password', type: NotifType.error);
+      if (!context.mounted) return;
+      toast.showToast(context, 'Wrong password', type: NotifType.error);
     } else if (reauth == 'cancelled') {
       if (!context.mounted) {
         processing = true;
         return;
       }
     } else if (reauth == 'TOA') {
-      toast.showToast('Too many attempts, try again later', type: NotifType.error);
+      if (!context.mounted) return;
+      toast.showToast(context, 'Too many attempts, try again later', type: NotifType.error);
     }
     processing = false;
   }

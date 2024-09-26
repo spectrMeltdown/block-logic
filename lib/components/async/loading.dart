@@ -21,7 +21,7 @@ class BLLoading extends ConsumerStatefulWidget {
   const BLLoading({
     super.key,
     this.message,
-    this.type = LoadingType.normal,
+    this.type = kIsWeb ? LoadingType.full : LoadingType.normal,
     this.height = 200,
     this.width = 200,
     this.color,
@@ -39,17 +39,20 @@ class _BLLoadingState extends ConsumerState<BLLoading> with TickerProviderStateM
   Widget build(BuildContext context) {
     switch (widget.type) {
       case LoadingType.full:
-        return Center(
-            child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (widget.message != null) BLText(widget.message!),
-            if (widget.message != null) const SizedBox(height: 10),
-            CircularProgressIndicator(
-              color: widget.color ?? Colors.white,
-            ),
-          ],
-        ));
+        return Padding(
+          padding: const EdgeInsets.all(15),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (widget.message != null) BLText(widget.message!),
+              if (widget.message != null) const SizedBox(height: 10),
+              BLAnimationPlayer(
+                assets.loadingBricks1,
+                size: 100,
+              )
+            ],
+          ),
+        );
       case LoadingType.normal:
         return Center(
             child: Column(

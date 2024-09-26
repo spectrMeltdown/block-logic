@@ -37,9 +37,9 @@ class _BLAdminButtonState extends State<BLAdminButton> {
           backgroundColor: WidgetStateProperty.resolveWith<Color?>(
             (Set<WidgetState> states) {
               if (states.contains(WidgetState.hovered)) {
-                return getBgColor(); // Change color when hovered
+                return getBgColor(widget.type); // Change color when hovered
               }
-              return getBgColor().withOpacity(0.9); // Default background color
+              return getBgColor(widget.type).withOpacity(0.9); // Default background color
             },
           ),
           padding: WidgetStateProperty.all<EdgeInsets>(
@@ -59,8 +59,8 @@ class _BLAdminButtonState extends State<BLAdminButton> {
         child: widget.child);
   }
 
-  Color getBgColor() {
-    switch (widget.type) {
+  Color getBgColor(AdminBtnType type) {
+    switch (type) {
       case AdminBtnType.green:
         return Colors.green;
       case AdminBtnType.red:

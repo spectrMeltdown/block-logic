@@ -215,7 +215,8 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
                                                             useEmail: useEmail,
                                                           ));
                                                   if (result != null) {
-                                                    toast.showToast('A reset link was sent to your email.', type: NotifType.info);
+                                                    if (!context.mounted) return;
+                                                    toast.showToast(context, 'A reset link was sent to your email.', type: NotifType.info);
                                                   }
                                                 },
                                                 child: const BLText(
@@ -227,7 +228,8 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
                                             child: BLTextButton(
                                               onPressed: () {
                                                 if (validator.validatePhoneNum(phoneController.text, required: true) != null) {
-                                                  toast.showToast('Please provide phone number.', type: NotifType.error);
+                                                  if (!context.mounted) return;
+                                                  toast.showToast(context, 'Please provide phone number.', type: NotifType.error);
                                                 } else if (!otpCooldownTimer.isActive) {
                                                   sendOTP(context);
                                                 }
@@ -254,7 +256,8 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
                                           padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 10),
                                           onPressed: () {
                                             if (firstOTPSent == false && !useEmail) {
-                                              toast.showToast('Send OTP first', type: NotifType.error);
+                                              if (!context.mounted) return;
+                                              toast.showToast(context, 'Send OTP first', type: NotifType.error);
                                               return;
                                             }
                                             submit();
@@ -308,7 +311,7 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
   @override
   void didPopNext() {
     if (context.mounted) {
-      toast.dismissAllToast();
+      toast.dismissAllToast(context);
     }
     super.didPop();
   }
@@ -316,7 +319,7 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
   @override
   void didPushNext() {
     if (context.mounted) {
-      toast.dismissAllToast();
+      toast.dismissAllToast(context);
     }
     super.didPushNext();
   }
@@ -362,7 +365,8 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
       if (!useEmail) {
         final phoneExists = await auth.checkPhoneExists(phoneController.text.trim());
         if (phoneExists != null) {
-          toast.showToast(phoneExists, type: NotifType.error);
+          if (!mounted) return;
+          toast.showToast(context, phoneExists, type: NotifType.error);
           toggleProcessing(false);
           return;
         }
@@ -396,7 +400,7 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
         await loginAlert.send();
         // if (result != null) {
         //   if (!context.mounted) return;
-        //   toast.showToast(result, type: NotifType.error);
+        //   if(!context.mounted) return; toast.showToast(context,result, type: NotifType.error);
         // }
         if (kIsWeb) {
           if (!mounted) return;
@@ -408,8 +412,9 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
           nav.pushAndRemove(context, const Checkpoint());
         }
       } else {
-        if (!context.mounted) return;
+        if (!mounted) return;
         toast.showToast(
+          context,
           error,
           type: NotifType.error,
         );
@@ -439,15 +444,17 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
     processing = true;
     // var result = null;
     final result = await accountService.verifyPhoneNumber(
+      context: context,
       phoneNumber: '+63${phoneController.text.trim()}',
       resendToken: resendToken,
       type: AccountType.user,
       updateCallBack: updateCallBack,
     );
     if (result != null) {
-      toast.showToast(result, type: NotifType.error);
+      if (!context.mounted) return;
+      toast.showToast(context, result, type: NotifType.error);
     } else {
-      // toast.showToast('OTP sent!', type: NotifType.success);
+      // if(!context.mounted) return; toast.showToast(context,'OTP sent!', type: NotifType.success);
       if (firstOTPSent == false) {
         setState(() {
           firstOTPSent = true;

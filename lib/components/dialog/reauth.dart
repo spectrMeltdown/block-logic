@@ -44,7 +44,7 @@ class _ReauthDialogState extends ConsumerState<ReauthDialog> {
   @override
   void initState() {
     phoneNum = FirebaseAuth.instance.currentUser?.phoneNumber ?? '';
-    useEmail = phoneNum.isNotEmpty;
+    useEmail = phoneNum.isEmpty;
     firstOTPSent = useEmail;
     nav = ref.read(customNavigationProvider.notifier);
     auth = ref.read(authServiceProvider.notifier);
@@ -111,6 +111,7 @@ class _ReauthDialogState extends ConsumerState<ReauthDialog> {
     processing = true;
     // var result = null;
     final result = await accountService.verifyPhoneNumber(
+      context: context,
       phoneNumber: phoneNum,
       resendToken: resendToken,
       type: AccountType.user,

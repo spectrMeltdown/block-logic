@@ -20,7 +20,7 @@ Future<List<Challenge>> selectedChallenges(
         challenges.add(Challenge.fromFirestore(doc));
       }
     } catch (e) {
-      errorhandler.call(e, 'selcted challenges');
+      errorhandler.call(e, 'selected challenges');
     }
   }
   return challenges;

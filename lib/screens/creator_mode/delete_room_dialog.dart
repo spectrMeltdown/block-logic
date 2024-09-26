@@ -57,7 +57,8 @@ class _DeleteRoomDialogState extends ConsumerState<DeleteRoomDialog> {
                   nav.pop(context);
                   final result = await room.deleteRoom(widget.roomID);
                   if (result != null) {
-                    toast.showToast(result, type: NotifType.error);
+                    if (!context.mounted) return;
+                    toast.showToast(context, result, type: NotifType.error);
                   }
                   processing = false;
                 },

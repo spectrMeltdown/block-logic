@@ -13,6 +13,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:mime/mime.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -211,6 +212,8 @@ class AccountService extends _$AccountService {
   }
 
   Future<String?> verifyPhoneNumber({
+    // ignore: avoid_build_context_in_providers
+    required BuildContext context,
     required String phoneNumber,
     required AccountType type,
     required String resendToken,
@@ -218,6 +221,7 @@ class AccountService extends _$AccountService {
   }) async {
     String? error;
     debugPrint(phoneNumber);
+    state.toast.showToast(context, 'Sending OTP', type: NotifType.info);
     try {
       await FirebaseAuth.instance.verifyPhoneNumber(
         phoneNumber: phoneNumber.trim(),
@@ -236,11 +240,11 @@ class AccountService extends _$AccountService {
         verificationFailed: (FirebaseAuthException e) {
           debugPrint('OTP FAILED: $e');
           error = state._errorHandler.call(e, this);
-          state.toast.showToast(error ?? '', type: NotifType.error);
+          state.toast.showToast(context, error ?? '', type: NotifType.error);
         },
         codeSent: (String verificationId, int? resendToken) async {
           debugPrint('CODE SENT');
-          state.toast.showToast('OTP sent!', type: NotifType.success);
+          state.toast.showToast(context, 'OTP sent!', type: NotifType.success);
           updateCallBack(resendToken: resendToken.toString(), verificationID: verificationId);
           // final verify = await state.sharedPref.setString('verificationID', verificationId);
           // final resend = await state.sharedPref.setString('resendToken', resendToken.toString());

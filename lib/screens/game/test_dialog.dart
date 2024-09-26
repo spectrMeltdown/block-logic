@@ -87,21 +87,7 @@ class _TestDialogState extends ConsumerState<TestDialog> {
           );
         },
         error: (error, stackTrace) {
-          genericError(error, stackTrace);
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const BLText(
-                'Failed to test solution ...',
-                size: 18,
-              ),
-              const BLText('Internet problem?'),
-              const SizedBox(
-                height: 15,
-              ),
-              BLButton(type: BtnType.red, onPressed: () => nav.pop(context), child: const BLText('Close'))
-            ],
-          );
+          return genericError(error, stackTrace);
         },
         loading: () {
           genericLoading();

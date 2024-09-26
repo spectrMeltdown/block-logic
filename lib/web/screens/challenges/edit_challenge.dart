@@ -125,8 +125,7 @@ class _SelectedChallengeState extends ConsumerState<EditChallenge> {
               BLTextBox(
                 controller: tagController,
               ),
-              BLAdminButton(
-                  type: AdminBtnType.green, child: const BLText('Save'), onPressed: () => Navigator.pop(context))
+              BLAdminButton(type: AdminBtnType.green, child: const BLText('Save'), onPressed: () => Navigator.pop(context))
             ],
           ),
         ),
@@ -221,8 +220,7 @@ class _SelectedChallengeState extends ConsumerState<EditChallenge> {
             },
             error: widget.selectedChallengeID.isEmpty
                 ? (error, stackTrace) => ConstrainedBox(
-                      constraints: BoxConstraints(
-                          maxWidth: width <= desktopMin ? width * 0.8 : width * 0.4, maxHeight: height * 0.5),
+                      constraints: BoxConstraints(maxWidth: width <= desktopMin ? width * 0.8 : width * 0.4, maxHeight: height * 0.5),
                       child: const Center(
                         child: BLText('Select a challenge'),
                       ),
@@ -364,9 +362,11 @@ class _SelectedChallengeState extends ConsumerState<EditChallenge> {
       );
       final result = await challengeManager.update(challenge);
       if (result == null) {
-        toast.showToast('Edited successfully', type: NotifType.success);
+        if (!mounted) return;
+        toast.showToast(context, 'Edited successfully', type: NotifType.success);
       } else {
-        toast.showToast(result.toString(), type: NotifType.error);
+        if (!mounted) return;
+        toast.showToast(context, result.toString(), type: NotifType.error);
       }
     }
     processing = false;

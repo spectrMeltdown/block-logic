@@ -29,7 +29,8 @@ class TestingPage extends ConsumerWidget {
               children: [
                 BLButton(
                     onPressed: () {
-                      toast.showToast('Test notif', type: NotifType.info);
+                      if (!context.mounted) return;
+                      toast.showToast(context, 'Test notif', type: NotifType.info);
                     },
                     child: const BLText('Notif')),
                 BLButton(
@@ -50,8 +51,7 @@ class TestingPage extends ConsumerWidget {
                           id: 'testing1',
                           name: 'Leap Year Check',
                           shortDescription: 'Check if the given year is a leap year.',
-                          additionalInfo:
-                              'A leap year has 366 days, with an extra day in February (29 days instead of 28). It occurs every four years to keep the calendar year aligned with the solar year.',
+                          additionalInfo: 'A leap year has 366 days, with an extra day in February (29 days instead of 28). It occurs every four years to keep the calendar year aligned with the solar year.',
                           limitations: ['5 block lines', 'No functions', 'No classes'],
                           blocks: AllBlocks().getAll(),
                           difficulty: Difficulty.intermediate,
@@ -73,16 +73,15 @@ class TestingPage extends ConsumerWidget {
                       ];
                       await db.collection('rooms').doc('testing').update(room.toFirestore());
                       for (int i = 0; i <= challenges.length - 1; i++) {
-                        await db
-                            .collection('challenges')
-                            .doc('testing$i')
-                            .set(challenges[i].toFirestore(), SetOptions(merge: true));
+                        await db.collection('challenges').doc('testing$i').set(challenges[i].toFirestore(), SetOptions(merge: true));
                       }
-                      toast.showToast('Creating success', type: NotifType.success);
+                      if (!context.mounted) return;
+                      toast.showToast(context, 'Creating success', type: NotifType.success);
                     } catch (e) {
                       final errorHandler = ErrorHandler();
                       errorHandler.call(e, this);
-                      toast.showToast('Creating failed', type: NotifType.error);
+                      if (!context.mounted) return;
+                      toast.showToast(context, 'Creating failed', type: NotifType.error);
                     }
                   },
                   child: const BLText('Create test data'),
@@ -94,11 +93,13 @@ class TestingPage extends ConsumerWidget {
                       await db.collection('rooms').doc('testing').delete();
                       await db.collection('challenges').doc('testing1').delete();
                       await db.collection('challenges').doc('testing2').delete();
-                      toast.showToast('Deleting success', type: NotifType.success);
+                      if (!context.mounted) return;
+                      toast.showToast(context, 'Deleting success', type: NotifType.success);
                     } catch (e) {
                       final errorHandler = ErrorHandler();
                       errorHandler.call(e, this);
-                      toast.showToast('Deleting failed', type: NotifType.error);
+                      if (!context.mounted) return;
+                      toast.showToast(context, 'Deleting failed', type: NotifType.error);
                     }
                   },
                   child: const BLText('Delete test data'),

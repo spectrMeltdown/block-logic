@@ -105,7 +105,8 @@ class _KickPlayerState extends ConsumerState<KickPlayerBottomSheet> with TickerP
                             if (result == null) {
                               if (!context.mounted) return;
                               nav.pop(context);
-                              toast.showToast('Kick successful', type: NotifType.success);
+                              if (!context.mounted) return;
+                              toast.showToast(context, 'Kick successful', type: NotifType.success);
                             } else {
                               setState(() {
                                 msg = BLText(

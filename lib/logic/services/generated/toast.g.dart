@@ -6,11 +6,11 @@ part of '../toast.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$toastHash() => r'939aedca7731618a70498581e026ebd4085a4336';
+String _$toastHash() => r'3551df47ea5c5fef1059c393231ed2e05ca47934';
 
 /// See also [Toast].
 @ProviderFor(Toast)
-final toastProvider = AutoDisposeNotifierProvider<Toast, void>.internal(
+final toastProvider = AutoDisposeNotifierProvider<Toast, ToastState>.internal(
   Toast.new,
   name: r'toastProvider',
   debugGetCreateSourceHash:
@@ -19,6 +19,6 @@ final toastProvider = AutoDisposeNotifierProvider<Toast, void>.internal(
   allTransitiveDependencies: null,
 );
 
-typedef _$Toast = AutoDisposeNotifier<void>;
+typedef _$Toast = AutoDisposeNotifier<ToastState>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

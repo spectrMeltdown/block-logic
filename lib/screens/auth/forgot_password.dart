@@ -131,9 +131,7 @@ class _ForgotPasswordDialogState extends ConsumerState<ForgotPasswordDialog> {
       toggleProcessing();
       return;
     }
-    String? result = widget.useEmail
-        ? await auth.forgotPass(emailController.text.trim())
-        : await auth.forgotPass(phoneController.text.trim(), useEmail: false);
+    String? result = widget.useEmail ? await auth.forgotPass(emailController.text.trim()) : await auth.forgotPass(phoneController.text.trim(), useEmail: false);
     if (result != null) {
       setState(() {
         errorMsg = BLText(
@@ -145,9 +143,8 @@ class _ForgotPasswordDialogState extends ConsumerState<ForgotPasswordDialog> {
       toggleProcessing();
       if (!mounted) return;
       nav.pop(context);
-      toast.showToast(
-          'A password reset link was sent to ${widget.useEmail ? emailController.text : phoneController.text}.',
-          type: NotifType.info);
+      if (!context.mounted) return;
+      toast.showToast(context, 'A password reset link was sent to ${widget.useEmail ? emailController.text : phoneController.text}.', type: NotifType.info);
     }
     toggleProcessing();
   }
