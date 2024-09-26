@@ -35,23 +35,18 @@ class _BlockSelectorDialogState extends ConsumerState<BlockSelectorDialog> with 
     return BLDialog(
         child: Column(
       children: [
-        const BLText('Select the blocks that will be used in this challenge.'),
+        const BLText(
+          'Select the blocks that will be used in this challenge.',
+          color: Colors.white,
+          size: 20,
+        ),
         const SizedBox(height: 15),
-        ClipRRect(
-          child: Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              borderRadius: const BorderRadius.all(Radius.circular(30)),
-              color: Colors.blue.shade900,
-            ),
-            child: TabBar(
-              labelColor: Colors.white,
-              unselectedLabelColor: Colors.grey,
-              isScrollable: true,
-              controller: tabController,
-              tabs: tabs,
-            ),
-          ),
+        TabBar(
+          labelColor: Colors.white,
+          unselectedLabelColor: Colors.grey,
+          isScrollable: true,
+          controller: tabController,
+          tabs: tabs,
         ),
         Flexible(
           child: TabBarView(
