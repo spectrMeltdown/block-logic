@@ -21,7 +21,6 @@ class BlockSelectorDialog extends ConsumerStatefulWidget {
 }
 
 class _BlockSelectorDialogState extends ConsumerState<BlockSelectorDialog> with SingleTickerProviderStateMixin {
-  final Map<CodeBlockType, List<GameBlockData>> allBlocks = AllBlocks().getAll();
   late final List<Tab> tabs;
   late TabController tabController;
   bool processing = false;
@@ -53,33 +52,37 @@ class _BlockSelectorDialogState extends ConsumerState<BlockSelectorDialog> with 
           child: TabBarView(
               controller: tabController,
               children: List.generate(tabs.length, (i) {
-                final blockCategories = allBlocks.values.elementAt(i);
+                final key = widget.blocks!.entries.elementAt(i).key;
+                final category = widget.blocks!.entries.elementAt(i).value;
                 return Padding(
                   padding: const EdgeInsets.all(15),
                   child: Column(
                     children: [
-                      Wrap(
-                          children: List.generate(blockCategories.length, (j) {
-                        return GestureDetector(
-                          onTap: () {},
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                            child: BlockDesignWrapper(
-                              updateSelection: () {},
-                              data: blockCategories[j],
-                              child: const SizedBox(
-                                height: 50,
-                                width: 70,
+                      Expanded(
+                        child: Wrap(
+                            children: List.generate(category.length, (j) {
+                          return GestureDetector(
+                            onTap: () {},
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                              child: BlockDesignWrapper(
+                                updateSelection: () {},
+                                data: category[j],
+                                text: category[j].name,
+                                child: const SizedBox(
+                                  height: 50,
+                                  width: 70,
+                                ),
                               ),
                             ),
-                          ),
-                        );
-                        // return SizedBox(
-                        //   width: 200,
-                        //   child: BLText(blockCategory[j].name),
-                        // );
-                      })),
-                      BlockSelectorAddBtn(type: allBlocks.keys.toList()[i], addObj: addObj)
+                          );
+                          // return SizedBox(
+                          //   width: 200,
+                          //   child: BLText(blockCategory[j].name),
+                          // );
+                        })),
+                      ),
+                      BlockSelectorAddBtn(type: key, addObj: addObj)
                     ],
                   ),
                 );
@@ -110,10 +113,10 @@ class _BlockSelectorDialogState extends ConsumerState<BlockSelectorDialog> with 
   @override
   void initState() {
     dialog = ref.read(dialogServiceProvider.notifier);
-    tabController = TabController(vsync: this, length: allBlocks.keys.length);
-    tabs = List.generate(allBlocks.keys.length, (i) {
+    tabController = TabController(vsync: this, length: widget.blocks!.keys.length);
+    tabs = List.generate(widget.blocks!.keys.length, (i) {
       return Tab(
-        text: allBlocks.keys.elementAt(i).name,
+        text: widget.blocks!.keys.elementAt(i).name,
       );
     });
     super.initState();
