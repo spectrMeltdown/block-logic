@@ -3,7 +3,7 @@ name: Build and Upload APK to Google Drive
 on:
   push:
     branches:
-      - main  # Build on every push to the main branch
+      - master 
 
 jobs:
   build:
