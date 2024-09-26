@@ -330,7 +330,7 @@ class _SelectedChallengeState extends ConsumerState<EditChallenge> {
               processing = false;
             },
             child: const BLText(
-              'Edit',
+              'Select',
               color: Colors.white,
             ));
       default:
