@@ -38,6 +38,7 @@ class _SelectedChallengeState extends ConsumerState<EditChallenge> {
   String? shortDescription;
   String? additionalInfo;
   String? name;
+  int totalSelected = 0;
   late final DialogService dialog;
   Map<CodeBlockType, List<GameBlockData>>? blocks;
   bool processing = false;
@@ -163,6 +164,15 @@ class _SelectedChallengeState extends ConsumerState<EditChallenge> {
               limitations = challenge.limitations ?? [];
               difficultySelection ??= challenge.difficulty;
               blocks ??= challenge.blocks;
+              if (blocks != null) {
+                int count = 0;
+                for (final entry in blocks!.entries) {
+                  for (final block in entry.value) {
+                    count++;
+                  }
+                }
+                totalSelected = count;
+              }
               return ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 600),
                 child: Padding(
@@ -326,11 +336,11 @@ class _SelectedChallengeState extends ConsumerState<EditChallenge> {
             onPressed: () async {
               if (processing) return;
               processing = true;
-              final result = dialog.show(context, BlockSelectorDialog(blocks));
+              await dialog.show(context, BlockSelectorDialog(blocks));
               processing = false;
             },
-            child: const BLText(
-              'Select',
+            child: BLText(
+              'Edit ($totalSelected selected)',
               color: Colors.white,
             ));
       default:
