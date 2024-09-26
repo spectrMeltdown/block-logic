@@ -6,6 +6,7 @@ import 'package:block_logic/components/util/animation_player.dart';
 import 'package:block_logic/components/util/provider_default.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/services/assets.dart';
+import 'package:block_logic/logic/services/game_manager.dart';
 import 'package:block_logic/logic/services/navigation.dart';
 import 'package:block_logic/logic/services/solution_checker.dart';
 import 'package:flutter/material.dart';
@@ -31,9 +32,25 @@ class _TestDialogState extends ConsumerState<TestDialog> {
   @override
   Widget build(BuildContext context) {
     final solutionCheck = ref.watch(solutionCheckProvider);
+    final gameState = ref.read(gameManagerProvider);
     return BLDialog(
       child: solutionCheck.when(
         data: (solution) {
+          if (gameState.dataTree.isEmpty) {
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const BLText(
+                  'No blocks to test on.',
+                  size: 18,
+                ),
+                const SizedBox(
+                  height: 15,
+                ),
+                BLButton(type: BtnType.red, onPressed: () => nav.pop(context), child: const BLText('Close'))
+              ],
+            );
+          }
           if (solution == null) {
             return Column(
               mainAxisSize: MainAxisSize.min,
@@ -42,7 +59,6 @@ class _TestDialogState extends ConsumerState<TestDialog> {
                   'Failed to test solution ...',
                   size: 18,
                 ),
-                const BLText('Internet problem?'),
                 const SizedBox(
                   height: 15,
                 ),

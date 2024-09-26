@@ -114,28 +114,29 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
                                         bottomPadding: 10,
                                       ),
                                       const SizedBox(height: 10),
-                                      Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          const Icon(
-                                            FontAwesomeIcons.arrowRightArrowLeft,
-                                            color: Colors.white,
-                                            size: 16,
-                                          ),
-                                          BLTextButton(
-                                            onPressed: () {
-                                              setState(() {
-                                                useEmail = !useEmail;
-                                              });
-                                            },
-                                            child: BLText(
-                                              useEmail ? 'Login with phone' : 'Login with email',
-                                              color: Colors.amber,
-                                              bold: true,
+                                      if (!kIsWeb)
+                                        Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            const Icon(
+                                              FontAwesomeIcons.arrowRightArrowLeft,
+                                              color: Colors.white,
+                                              size: 16,
                                             ),
-                                          ),
-                                        ],
-                                      ),
+                                            BLTextButton(
+                                              onPressed: () {
+                                                setState(() {
+                                                  useEmail = !useEmail;
+                                                });
+                                              },
+                                              child: BLText(
+                                                useEmail ? 'Login with phone' : 'Login with email',
+                                                color: Colors.amber,
+                                                bold: true,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       Visibility(
                                         visible: useEmail,
                                         child: BLTextBox(
@@ -203,9 +204,9 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
                                         ),
                                       ),
                                       Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        // mainAxisAlignment: useEmail ? MainAxisAlignment.start : MainAxisAlignment.end,
                                         children: [
-                                          if (!useEmail)
+                                          if (useEmail)
                                             BLTextButton(
                                                 onPressed: () async {
                                                   bool? result = await showDialog(
@@ -446,7 +447,7 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
     if (result != null) {
       toast.showToast(result, type: NotifType.error);
     } else {
-      toast.showToast('OTP sent!', type: NotifType.success);
+      // toast.showToast('OTP sent!', type: NotifType.success);
       if (firstOTPSent == false) {
         setState(() {
           firstOTPSent = true;

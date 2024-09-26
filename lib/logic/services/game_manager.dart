@@ -371,6 +371,7 @@ class GameManager extends StateNotifier<GameState> {
       case CodeBlockType.literals:
         // remove right away, because there are no children
         state.dataTree.remove(data.uid);
+        updateParentChildren(parent, data.uid!);
         break;
       case CodeBlockType.functions:
       case CodeBlockType.objects:
@@ -390,6 +391,7 @@ class GameManager extends StateNotifier<GameState> {
             }
             // if data has no children, delete it
             state.dataTree.remove(uid);
+            updateParentChildren(parent, data.uid!);
           }
         }
         if (data.parameterUIDs != null && data.parameterUIDs!.isNotEmpty) {
@@ -408,6 +410,7 @@ class GameManager extends StateNotifier<GameState> {
             }
             // if data has no children, delete it
             state.dataTree.remove(uid);
+            updateParentChildren(parent, data.uid!);
           }
         }
         if (data.bodyUIDs != null && data.bodyUIDs!.isNotEmpty) {
@@ -426,6 +429,7 @@ class GameManager extends StateNotifier<GameState> {
             }
             // if data has no children, delete it
             state.dataTree.remove(uid);
+            updateParentChildren(parent, data.uid!);
           }
         }
         break;
@@ -447,6 +451,7 @@ class GameManager extends StateNotifier<GameState> {
             }
             // if data has no children, delete it
             state.dataTree.remove(uid);
+            updateParentChildren(parent, data.uid!);
           }
         }
 
@@ -466,6 +471,7 @@ class GameManager extends StateNotifier<GameState> {
             }
             // if data has no children, delete it
             state.dataTree.remove(uid);
+            updateParentChildren(parent, data.uid!);
           }
         }
         break;
@@ -518,6 +524,27 @@ class GameManager extends StateNotifier<GameState> {
   void addInSelectorUIDs(CodeBlockType type, String uid) => state.inSelectorUIDs[type]!.add(uid);
 
   void removeInSelectorUIDs(CodeBlockType type, String uid) => state.inSelectorUIDs[type]!.removeWhere((item) => item == uid);
+
+  void updateParentChildren(GameBlockData parent, String childUID) {
+    if (parent.argumentUIDs != null) {
+      parent.argumentUIDs!.removeWhere((i) => i == childUID);
+    }
+    if (parent.parameterUIDs != null) {
+      parent.parameterUIDs!.removeWhere((i) => i == childUID);
+    }
+    if (parent.arrayUIDs != null) {
+      parent.arrayUIDs!.removeWhere((i) => i == childUID);
+    }
+    if (parent.bodyUIDs != null) {
+      parent.bodyUIDs!.removeWhere((i) => i == childUID);
+    }
+    if (parent.conditionUIDs != null) {
+      parent.conditionUIDs!.removeWhere((i) => i == childUID);
+    }
+    if (parent.statementUIDs != null) {
+      parent.statementUIDs!.removeWhere((i) => i == childUID);
+    }
+  }
 }
 
 enum ChildrenData { body, arguments, parameters, condition, statement, array }

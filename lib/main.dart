@@ -1,16 +1,11 @@
 import 'dart:async';
 
 import 'package:block_logic/app_theme.dart';
-import 'package:block_logic/components/background.dart';
-import 'package:block_logic/logic/enums.dart';
-import 'package:block_logic/logic/firebase_models/challenge.dart';
 import 'package:block_logic/logic/services/audio.dart';
-import 'package:block_logic/logic/services/block_data_manager.dart';
 import 'package:block_logic/logic/services/shared_pref.dart';
 import 'package:block_logic/route_observer.dart';
 import 'package:block_logic/router_config.dart';
 import 'package:block_logic/screens/checkpoint.dart';
-import 'package:block_logic/screens/game/game_challenge.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
@@ -61,35 +56,14 @@ class BlockLogic extends ConsumerWidget {
       //ref.watch(internetStatusProvider);
       return ToastificationWrapper(
         child: MaterialApp(
-          title: 'Block-Logic',
-          navigatorObservers: [routeObserver],
-          debugShowCheckedModeBanner: false,
-          theme: appTheme.theme(),
-          darkTheme: appTheme.theme(),
+            title: 'Block-Logic',
+            navigatorObservers: [routeObserver],
+            debugShowCheckedModeBanner: false,
+            theme: appTheme.theme(),
+            darkTheme: appTheme.theme(),
 
-          // home: Login(accountType: FirestoreCollections.users),
-          home: true
-              ? const Checkpoint()
-              : Scaffold(
-                  body: Background(
-                  child: SafeArea(
-                    child: GameChallenge(
-                      currentChallenge: 0,
-                      updateChallenge: () {},
-                      roomName: 'Testing',
-                      challenge: Challenge(
-                        id: 'testing2',
-                        name: 'Give me a five!',
-                        shortDescription: 'Print the number 5',
-                        additionalInfo: 'This should be a simple one..',
-                        difficulty: Difficulty.beginner,
-                        blocks: AllBlocks().beginnerTesting(),
-                      ),
-                      challengeCount: 1,
-                    ),
-                  ),
-                )),
-        ),
+            // home: Login(accountType: FirestoreCollections.users),
+            home: const Checkpoint()),
       );
     }
     return ToastificationWrapper(

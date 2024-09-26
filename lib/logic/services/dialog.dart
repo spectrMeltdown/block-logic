@@ -20,7 +20,7 @@ class DialogService extends _$DialogService {
     return showGeneralDialog(
         context: context,
         barrierDismissible: barrierDismissable,
-        transitionDuration: const Duration(milliseconds: 500),
+        transitionDuration: const Duration(milliseconds: 400),
         transitionBuilder: (context, animation, secondaryAnimation, child) {
           final primaryCurve = CurvedAnimation(
             parent: animation,

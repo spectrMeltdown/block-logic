@@ -5,7 +5,9 @@ import 'package:block_logic/logic/firebase_models/challenge.dart';
 import 'package:block_logic/logic/services/audio.dart';
 import 'package:block_logic/logic/services/dialog.dart';
 import 'package:block_logic/logic/services/game_manager.dart';
+import 'package:block_logic/logic/services/game_provider.dart';
 import 'package:block_logic/logic/services/navigation.dart';
+import 'package:block_logic/logic/services/should_reset_all_blocks.dart';
 import 'package:block_logic/logic/services/time_box.dart';
 import 'package:block_logic/logic/services/ui.dart';
 import 'package:block_logic/screens/game/pause_dialog.dart';
@@ -25,11 +27,13 @@ class GameAppbar extends ConsumerStatefulWidget {
   final Challenge challenge;
   final int currentIndex;
   final int maxIndex;
+  final bool practiceMode;
   const GameAppbar({
     required this.roomName,
     required this.challenge,
     required this.currentIndex,
     required this.maxIndex,
+    required this.practiceMode,
     super.key,
   });
 
@@ -52,21 +56,41 @@ class _GameAppbarState extends ConsumerState<GameAppbar> {
         GestureDetector(
           onTapDown: (details) => audio.playBtn(),
           onTapUp: (details) async {
-            gameManager.pauseTimer();
-            ref.invalidate(runTimerProvider);
+            if (!widget.practiceMode) {
+              gameManager.pauseTimer();
+              ref.invalidate(runTimerProvider);
+            }
+
             // debugPrint('pause timer: ${gameManager.getTimer()}');
             final leave = await dialog.show(context, const PauseDialog());
             if (leave is bool && leave) {
+              if (widget.practiceMode) {
+                gameManager.resetTree();
+                gameManager.setShouldResetAllBlocks(true);
+                ref.invalidate(getRootDataProvider);
+                ref.invalidate(shouldResetAllBlocksProvider);
+                if (!context.mounted) return;
+                nav.pop(context);
+                nav.pop(context);
+                return;
+              }
               if (!context.mounted) return;
               final result = await showDialog(context: context, builder: (context) => const ConfirmDialog());
               if (result is bool && result) {
                 await gameManager.leaveGame(false);
+                gameManager.resetTree();
+                gameManager.setShouldResetAllBlocks(true);
+                ref.invalidate(getRootDataProvider);
+                ref.invalidate(shouldResetAllBlocksProvider);
                 if (!context.mounted) return;
                 nav.pop(context);
               }
             }
-            gameManager.resumeTimer();
-            ref.invalidate(runTimerProvider);
+            if (!widget.practiceMode) {
+              gameManager.resumeTimer();
+              ref.invalidate(runTimerProvider);
+            }
+
             // debugPrint('pause timer: ${gameManager.getTimer()}');
           },
           child: const BLBorderedPanel(
@@ -85,7 +109,7 @@ class _GameAppbarState extends ConsumerState<GameAppbar> {
         const SizedBox(
           width: 10,
         ),
-        const Expanded(child: TimeBox()),
+        Expanded(child: TimeBox(widget.practiceMode)),
       ],
     );
   }

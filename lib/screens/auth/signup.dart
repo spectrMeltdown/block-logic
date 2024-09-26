@@ -101,7 +101,6 @@ class _SignupState extends ConsumerState<Signup> with RouteAware {
     if (result != null) {
       toast.showToast(result, type: NotifType.error);
     } else {
-      toast.showToast('OTP sent!', type: NotifType.success);
       if (firstOTPSent == false) {
         setState(() {
           firstOTPSent = true;

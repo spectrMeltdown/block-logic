@@ -33,18 +33,7 @@ enum Difficulty {
   advanced,
 }
 
-enum FirestoreCollections {
-  admins,
-  users,
-  rooms,
-  reports,
-  leaderboards,
-  scores,
-  settings,
-  notifications,
-  challenges,
-  feedback
-}
+enum FirestoreCollections { admins, users, rooms, reports, leaderboards, scores, settings, notifications, challenges, feedback }
 
 /// Similar to [ScoreStatus]
 /// - incomplete if the host destroyed the room, or if the admin locked it
@@ -62,6 +51,7 @@ enum ReportType {
   roomsPlayed,
   premiumUsers,
   freeUsers,
+  leaderboards,
 }
 
 /// - ongoing, self explanatory
@@ -78,12 +68,4 @@ enum RoomStatus { available, inGame, finalizing, locked }
 enum ScoreStatus { pending, incomplete, complete }
 
 /// Used in [Tutorials] widget
-enum TutorialType {
-  dataTypesAndliterals,
-  functions,
-  conditionalsAndLoops,
-  classesAndObjects,
-  variables,
-  operators,
-  keywords
-}
+enum TutorialType { dataTypesAndliterals, functions, conditionalsAndLoops, classesAndObjects, variables, operators, keywords }

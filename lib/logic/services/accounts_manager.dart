@@ -62,7 +62,8 @@ class AccountsManager extends _$AccountsManager {
         }
         return null;
       } else {
-        return decodedResponse['message'];
+        debugPrint(response.body);
+        return decodedResponse['error'];
       }
     } catch (e) {
       debugPrint(responseBody);

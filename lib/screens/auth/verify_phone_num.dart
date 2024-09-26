@@ -200,7 +200,7 @@ class _VerifyPhoneNumState extends ConsumerState<VerifyPhoneNum> {
     if (result != null) {
       toast.showToast(result, type: NotifType.error);
     } else {
-      toast.showToast('OTP sent!', type: NotifType.success);
+      // toast.showToast('OTP sent!', type: NotifType.success);
       setState(() {
         timer = createTimer();
       });

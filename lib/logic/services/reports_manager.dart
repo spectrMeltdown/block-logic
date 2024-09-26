@@ -1,4 +1,5 @@
 import 'package:block_logic/logic/enums.dart';
+import 'package:block_logic/logic/firebase_models/report.dart';
 import 'package:block_logic/logic/services/error_handler.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
@@ -11,11 +12,13 @@ class ReportsManager extends _$ReportsManager {
   Future<String?> add(ReportType type, int count) async {
     // TODO: Reports are currently disabled in debug to prevent database read/write cap
     try {
-      if (!kDebugMode) {
-        await state._db.doc(type.name).collection('list').doc().set({
-          'date': DateTime.now(),
-          'count': count,
-        });
+      // check because web & mobile share some screens
+      if (!kIsWeb) {
+        await state._db.doc().set(Report(
+              type: type,
+              count: count,
+              date: DateTime.now(),
+            ).toFirestore());
       }
       return null;
     } catch (e) {

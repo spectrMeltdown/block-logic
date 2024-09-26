@@ -6,7 +6,7 @@ part of '../dialog.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$dialogServiceHash() => r'4066a1bdb34d168363268101ca7f39cb75b3a339';
+String _$dialogServiceHash() => r'af9c37e7dacd523b8a52e368546e1c285e8b336a';
 
 /// See also [DialogService].
 @ProviderFor(DialogService)

@@ -105,7 +105,7 @@ class AuthService extends _$AuthService {
           }
         }
       }
-      return 'Phone number isn\'t linked to an account.\n Signup first.';
+      return 'Phone number isn\'t linked to an account. Signup first.';
     } catch (e) {
       return state._errorHandler.call(e, this);
     }

@@ -6,7 +6,7 @@ part of '../accounts_manager.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$accountsManagerHash() => r'0dc20b9f507a37df82caee3859627d79e97c2572';
+String _$accountsManagerHash() => r'7f72b2af35ae2ebc790d99c5395abeca278e1cdf';
 
 /// See also [AccountsManager].
 @ProviderFor(AccountsManager)

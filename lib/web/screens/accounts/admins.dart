@@ -43,8 +43,7 @@ class _AdminsState extends ConsumerState<Admins> {
                 return DataRow(cells: [
                   DataCell(BLProfilePic(type: AccountType.admin, admins[i].id ?? '')),
                   DataCell(BLDisplayName(admins[i].id ?? '', AccountType.admin)),
-                  DataCell(BLText(
-                      admins[i].createdAt != null ? DateFormat('dd / MM / yyyy').format(admins[i].createdAt!) : '--')),
+                  DataCell(BLText(admins[i].createdAt != null ? DateFormat('dd / MM / yyyy').format(admins[i].createdAt!) : '--')),
                   DataCell(Wrap(
                     children: [
                       BLAdminButton(
@@ -52,18 +51,14 @@ class _AdminsState extends ConsumerState<Admins> {
                           child: const BLText('Delete'),
                           onPressed: () async {
                             if (processing) return;
-                            setState(() {
-                              processing = true;
-                            });
+                            toggleProcessing();
                             final result = await accountsManager.deleteAccount(admins[i].id!, AccountType.admin);
                             if (result == null) {
                               toast.showToast('Delete success.', type: NotifType.success);
                             } else {
                               toast.showToast(result, type: NotifType.error);
                             }
-                            setState(() {
-                              processing = false;
-                            });
+                            toggleProcessing();
                           })
                     ],
                   )),
@@ -79,5 +74,13 @@ class _AdminsState extends ConsumerState<Admins> {
     accountsManager = ref.read(accountsManagerProvider.notifier);
     toast = ref.read(toastProvider.notifier);
     super.initState();
+  }
+
+  void toggleProcessing() {
+    if (mounted) {
+      setState(() {
+        processing = !processing;
+      });
+    }
   }
 }

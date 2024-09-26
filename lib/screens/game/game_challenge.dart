@@ -24,16 +24,18 @@ final processingProvider = StateProvider.autoDispose<bool>((ref) {
 
 class GameChallenge extends ConsumerStatefulWidget {
   final String roomName;
-  final void Function() updateChallenge;
+  final void Function()? updateChallenge;
   final Challenge challenge;
   final int challengeCount;
   final int currentChallenge;
+  final bool practiceMode;
   const GameChallenge({
     required this.currentChallenge,
-    required this.updateChallenge,
+    this.updateChallenge,
     required this.roomName,
     required this.challenge,
     required this.challengeCount,
+    this.practiceMode = false,
     super.key,
   });
   @override
@@ -69,6 +71,7 @@ class _GameChallengeState extends ConsumerState<GameChallenge> {
               challenge: widget.challenge,
               currentIndex: widget.currentChallenge,
               maxIndex: widget.challengeCount,
+              practiceMode: widget.practiceMode,
             ),
             Flexible(
               flex: 0,
@@ -85,7 +88,11 @@ class _GameChallengeState extends ConsumerState<GameChallenge> {
                     constraints: const BoxConstraints(maxWidth: 120),
                     child: Column(
                       children: [
-                        GameSubmitButton(widget.updateChallenge, widget.challengeCount == widget.currentChallenge),
+                        GameSubmitButton(
+                          widget.challengeCount == widget.currentChallenge,
+                          updateChallenge: widget.updateChallenge,
+                          practiceMode: widget.practiceMode,
+                        ),
                         const SizedBox(height: 10),
                         const GameTestBtn(),
                       ],

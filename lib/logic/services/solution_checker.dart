@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/game/block_data.dart';
-import 'package:block_logic/logic/jdoodle.dart';
 import 'package:block_logic/logic/services/error_handler.dart';
 import 'package:block_logic/logic/services/game_manager.dart';
 import 'package:flutter/foundation.dart';
@@ -65,54 +64,54 @@ class SolutionChecker extends StateNotifier<SolutionCheckerState> {
     }
   }
 
-  Future<String?> onlineResult(String code) async {
-    try {
-      final url = Uri.parse(Jdoodle().executeEndpoint);
-      final body = jsonEncode({
-        'clientId': '152c230638b61745c6862327865fb06',
-        'clientSecret': '5172be7d10a61698182966a70673360cf6c112dcd7bc5352b9e118c4773c5d8b',
-        'script': code,
-        'stdin': '',
-        'language': 'python3',
-        'versionIndex': '3',
-        'compileOnly': false,
-      });
-      final response = await http.post(
-        url,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: body,
-      );
+//   Future<String?> onlineResult(String code) async {
+//     try {
+//       final url = Uri.parse(Jdoodle().executeEndpoint);
+//       final body = jsonEncode({
+//         'clientId': '152c230638b61745c6862327865fb06',
+//         'clientSecret': '5172be7d10a61698182966a70673360cf6c112dcd7bc5352b9e118c4773c5d8b',
+//         'script': code,
+//         'stdin': '',
+//         'language': 'python3',
+//         'versionIndex': '3',
+//         'compileOnly': false,
+//       });
+//       final response = await http.post(
+//         url,
+//         headers: {
+//           'Content-Type': 'application/json',
+//         },
+//         body: body,
+//       );
 
-// {
-//   "output": "Hello, World!\n",
-//   "statusCode": 200,
-//   "memory": "1024",
-//   "cpuTime": "0.01",
-//   "compilationStatus": 0
-// }
+// // {
+// //   "output": "Hello, World!\n",
+// //   "statusCode": 200,
+// //   "memory": "1024",
+// //   "cpuTime": "0.01",
+// //   "compilationStatus": 0
+// // }
 
-      if (response.statusCode == 200) {
-        debugPrint('Response data: ${response.body}');
-        final result = jsonDecode(response.body) as Map<String, dynamic>;
-        final output = result['output'].toString();
-        return output.replaceFirst(RegExp(r'jdoodle.py'), 'main.py');
-        // return output.substring(output.indexOf(RegExp(r'Traceback (most recent call last)'), output.indexOf('')));
-        // if (result['isExecutionSuccess']) {
+//       if (response.statusCode == 200) {
+//         debugPrint('Response data: ${response.body}');
+//         final result = jsonDecode(response.body) as Map<String, dynamic>;
+//         final output = result['output'].toString();
+//         return output.replaceFirst(RegExp(r'jdoodle.py'), 'main.py');
+//         // return output.substring(output.indexOf(RegExp(r'Traceback (most recent call last)'), output.indexOf('')));
+//         // if (result['isExecutionSuccess']) {
 
-        // }
-      } else {
-        debugPrint('Request failed with status: ${response.statusCode}');
-        debugPrint('Request failed with status: ${response.body}');
-      }
-      return null;
-    } catch (e) {
-      debugPrint('error here');
-      return state.errorHandler.call(e, this);
-    }
-    // return null;
-  }
+//         // }
+//       } else {
+//         debugPrint('Request failed with status: ${response.statusCode}');
+//         debugPrint('Request failed with status: ${response.body}');
+//       }
+//       return null;
+//     } catch (e) {
+//       debugPrint('error here');
+//       return state.errorHandler.call(e, this);
+//     }
+//     // return null;
+//   }
 
 //   Future<String?> onlineResult(String code) async {
 //     try {
@@ -165,7 +164,11 @@ class SolutionChecker extends StateNotifier<SolutionCheckerState> {
 
   Future<String?> check() async {
     final gameState = ref.read(gameManagerProvider);
-    String compiledCode = compileCode(gameState.dataTree);
+    final dataTree = gameState.dataTree;
+    if (dataTree.isEmpty) {
+      return null;
+    }
+    String compiledCode = compileCode(dataTree);
     return await executePythonCode(compiledCode);
   }
 
@@ -197,11 +200,13 @@ class SolutionChecker extends StateNotifier<SolutionCheckerState> {
       case CodeBlockType.operators:
       case CodeBlockType.keywords:
       case CodeBlockType.literals:
-        if (block.arrayUIDs != null && block.arrayUIDs!.isEmpty) {
+        if (block.arrayUIDs != null) {
           codeBuffer.write('[');
           for (int i = 0; i < block.arrayUIDs!.length; i++) {
             _processBlock(dataTree, block.arrayUIDs![i], codeBuffer);
-            codeBuffer.write(',');
+            if (block.arrayUIDs!.length != 1) {
+              codeBuffer.write(',');
+            }
           }
           codeBuffer.write(']');
         } else {

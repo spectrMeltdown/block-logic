@@ -7,6 +7,7 @@ import 'package:block_logic/logic/firebase_models/user_account.dart';
 import 'package:block_logic/logic/services/error_handler.dart';
 import 'package:block_logic/logic/services/leaderboard_manager.dart';
 import 'package:block_logic/logic/services/shared_pref.dart';
+import 'package:block_logic/logic/services/toast.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -24,9 +25,11 @@ class AccountService extends _$AccountService {
   AccountServiceState build() {
     final errorHandler = ref.read(errorHandlerProvider.notifier);
     final sharedPref = ref.read(sharedPrefProvider);
+    final toast = ref.read(toastProvider.notifier);
     return AccountServiceState(
       sharedPref: sharedPref,
       errorHandler: errorHandler,
+      toast: toast,
     );
   }
 
@@ -233,9 +236,11 @@ class AccountService extends _$AccountService {
         verificationFailed: (FirebaseAuthException e) {
           debugPrint('OTP FAILED: $e');
           error = state._errorHandler.call(e, this);
+          state.toast.showToast(error ?? '', type: NotifType.error);
         },
         codeSent: (String verificationId, int? resendToken) async {
           debugPrint('CODE SENT');
+          state.toast.showToast('OTP sent!', type: NotifType.success);
           updateCallBack(resendToken: resendToken.toString(), verificationID: verificationId);
           // final verify = await state.sharedPref.setString('verificationID', verificationId);
           // final resend = await state.sharedPref.setString('resendToken', resendToken.toString());
@@ -277,8 +282,10 @@ class AccountServiceState {
   final SharedPreferences sharedPref;
   final _auth = FirebaseAuth.instance.currentUser;
   final ErrorHandler _errorHandler;
+  final Toast toast;
   AccountServiceState({
     required this.sharedPref,
     required ErrorHandler errorHandler,
+    required this.toast,
   }) : _errorHandler = errorHandler;
 }

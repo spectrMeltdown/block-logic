@@ -8,6 +8,7 @@ import 'package:block_logic/logic/services/accounts_manager.dart';
 import 'package:block_logic/logic/services/toast.dart';
 import 'package:block_logic/web/components/bl_table.dart';
 import 'package:block_logic/web/components/button.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -29,6 +30,8 @@ class _UsersState extends ConsumerState<Users> {
     final users = ref.watch(allUsersProvider);
     return users.when(
         data: (users) {
+          /// admin cannot delete their user account from here. They must use Settings > Delete account instead.
+          users.removeWhere((user) => user.id == FirebaseAuth.instance.currentUser!.uid);
           if (users.isEmpty) {
             return const Center(
               child: BLText('There are no users at the moment...'),
@@ -45,8 +48,7 @@ class _UsersState extends ConsumerState<Users> {
                     child: BLProfilePic(type: AccountType.user, users[i].id ?? ''),
                   )),
                   DataCell(BLDisplayName(users[i].id ?? '', AccountType.user)),
-                  DataCell(BLText(
-                      users[i].createdAt != null ? DateFormat('dd / MM / yyyy').format(users[i].createdAt!) : '--')),
+                  DataCell(BLText(users[i].createdAt != null ? DateFormat('dd / MM / yyyy').format(users[i].createdAt!) : '--')),
                   DataCell(Wrap(
                     children: [
                       BLAdminButton(

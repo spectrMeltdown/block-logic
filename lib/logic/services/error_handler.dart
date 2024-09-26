@@ -61,7 +61,8 @@ class ErrorHandler extends _$ErrorHandler {
         error = 'Account already exists!';
         break;
       case 'requires-recent-login':
-        return null;
+        error = 'Please verify again. (Timeout reached)';
+        break;
       case 'too-many-requests':
         error = 'Sorry, too many attempts. Try again later';
         break;
@@ -72,7 +73,7 @@ class ErrorHandler extends _$ErrorHandler {
         error = 'The verification ID was incorrect (please contact developer).';
         break;
       default:
-        return 'Unexpected error occurred.';
+        return e.message;
     }
     if (handleOverlay) {
       blShowNotifyDialog(context, title: 'Error', label: error);

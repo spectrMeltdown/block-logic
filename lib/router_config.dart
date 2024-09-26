@@ -174,6 +174,7 @@ GoRouter router() {
     ],
     observers: [routeObserver],
     redirect: (context, state) async {
+      // return '/accounts';
       final user = FirebaseAuth.instance.currentUser;
       if (user?.uid != null) {
         if (user!.emailVerified == false) {

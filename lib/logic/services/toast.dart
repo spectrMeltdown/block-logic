@@ -49,6 +49,7 @@ class Toast extends _$Toast {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       toastification.showCustom(
           autoCloseDuration: duration,
+          animationDuration: Duration.zero,
           alignment: alignment,
           animationBuilder: (context, animation, alignment, child) {
             return FadeTransition(
@@ -62,10 +63,7 @@ class Toast extends _$Toast {
               margin: margin,
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: paddingX, vertical: 10),
-                decoration: BoxDecoration(
-                    borderRadius: const BorderRadius.all(Radius.circular(10)),
-                    border: Border.all(color: _getColor(type)),
-                    color: _getColor(type, withTransparency)),
+                decoration: BoxDecoration(borderRadius: const BorderRadius.all(Radius.circular(10)), border: Border.all(color: _getColor(type)), color: _getColor(type, withTransparency)),
                 child: LayoutBuilder(builder: (context, constraints) {
                   final icon = Icon(
                     _getIcon(type),

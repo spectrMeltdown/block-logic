@@ -10,7 +10,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:widget_and_text_animator/widget_and_text_animator.dart';
 
 class TimeBox extends ConsumerStatefulWidget {
-  const TimeBox({super.key});
+  final bool practiceMode;
+  const TimeBox(this.practiceMode, {super.key});
 
   @override
   ConsumerState<TimeBox> createState() => _TimeBoxState();
@@ -24,11 +25,13 @@ class _TimeBoxState extends ConsumerState<TimeBox> {
 
   @override
   Widget build(BuildContext context) {
-    final shouldPause = ref.watch(runTimerProvider);
-    if (shouldPause) {
-      pauseTimer();
-    } else {
-      resumeTimer();
+    if (!widget.practiceMode) {
+      final shouldPause = ref.watch(runTimerProvider);
+      if (shouldPause) {
+        pauseTimer();
+      } else {
+        resumeTimer();
+      }
     }
     return BLBorderedPanel(
         child: Padding(
@@ -45,8 +48,9 @@ class _TimeBoxState extends ConsumerState<TimeBox> {
           ),
           const SizedBox(width: 7),
           BLText(
-            formatTime(seconds),
+            widget.practiceMode ? 'No time \nlimit' : formatTime(seconds),
             bold: true,
+            size: widget.practiceMode ? 12 : 14,
           )
         ],
       ),
@@ -80,6 +84,9 @@ class _TimeBoxState extends ConsumerState<TimeBox> {
   void initState() {
     gameManager = ref.read(gameManagerProvider.notifier);
     timer = createTimer();
+    if (widget.practiceMode) {
+      timer.cancel();
+    }
     super.initState();
   }
 

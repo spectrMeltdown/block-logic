@@ -6,7 +6,7 @@ part of '../error_handler.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$errorHandlerHash() => r'a240371c9e4eb69993a0ef31119cd20b4d72a09b';
+String _$errorHandlerHash() => r'2036118de19c43111bd48349999dd94ace8b3110';
 
 /// See also [ErrorHandler].
 @ProviderFor(ErrorHandler)

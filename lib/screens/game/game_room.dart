@@ -8,9 +8,11 @@ import 'package:block_logic/logic/firebase_providers/selected_challenges.dart';
 import 'package:block_logic/logic/services/assets.dart';
 import 'package:block_logic/logic/services/dialog.dart';
 import 'package:block_logic/logic/services/game_manager.dart';
+import 'package:block_logic/logic/services/game_provider.dart';
 import 'package:block_logic/logic/services/navigation.dart';
 import 'package:block_logic/logic/services/room_manager.dart';
 import 'package:block_logic/logic/services/shared_pref.dart';
+import 'package:block_logic/logic/services/should_reset_all_blocks.dart';
 import 'package:block_logic/screens/game/finalizing_results.dart';
 import 'package:block_logic/screens/game/game_challenge.dart';
 import 'package:block_logic/screens/game/pause_dialog.dart';
@@ -97,6 +99,10 @@ class _GameRoomState extends ConsumerState<GameRoom> with WidgetsBindingObserver
           final result = await showDialog(context: context, builder: (context) => const ConfirmDialog());
           if (result is bool && result) {
             await gameManager.leaveGame(false);
+            gameManager.resetTree();
+            gameManager.setShouldResetAllBlocks(true);
+            ref.invalidate(getRootDataProvider);
+            ref.invalidate(shouldResetAllBlocksProvider);
             if (!context.mounted) return;
             nav.pop(context);
           }

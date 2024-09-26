@@ -1,7 +1,9 @@
 import 'package:block_logic/components/background.dart';
 import 'package:block_logic/components/button/back.dart';
+import 'package:block_logic/components/card/card.dart';
 import 'package:block_logic/components/card/tutorial_item.dart';
 import 'package:block_logic/components/text/title.dart';
+import 'package:block_logic/components/text/title_small.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/services/navigation.dart';
 import 'package:block_logic/screens/tutorials/classes_and_objects.dart';
@@ -10,6 +12,7 @@ import 'package:block_logic/screens/tutorials/data_type_and_literals.dart';
 import 'package:block_logic/screens/tutorials/functions.dart';
 import 'package:block_logic/screens/tutorials/keywords.dart';
 import 'package:block_logic/screens/tutorials/operators.dart';
+import 'package:block_logic/screens/tutorials/tutorial_challenge_selector.dart';
 import 'package:block_logic/screens/tutorials/variables.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -30,22 +33,43 @@ class Tutorials extends ConsumerWidget {
               child: BLBackButton(),
             ),
             const BLTitle('Tutorials'),
-            const SizedBox(height: 10),
             Expanded(
-                child: ListView.separated(
-              padding: EdgeInsets.zero,
-              itemBuilder: (context, i) {
-                var tutorial = getData(TutorialType.values[i]);
-                return TutorialItem(
-                    onPressed: () => nav.push(context, tutorial[0]),
-                    type: TutorialType.values[i],
-                    childText: tutorial[1]);
-              },
-              itemCount: TutorialType.values.length,
-              separatorBuilder: (context, index) {
-                return const SizedBox(height: 12);
-              },
-            )),
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    BLCard(
+                        color: Colors.teal,
+                        onPressed: () {
+                          nav.push(context, const TutorialChallengeSelector());
+                        },
+                        child: const Center(
+                            child: Padding(
+                          padding: EdgeInsets.only(top: 5),
+                          child: BLSmallTitle('Practice'),
+                        ))),
+                    const SizedBox(
+                      height: 12,
+                    ),
+                    ...List.generate(TutorialType.values.length, (i) {
+                      final tutorial = getData(TutorialType.values[i]);
+                      return Column(
+                        children: [
+                          TutorialItem(
+                            onPressed: () => nav.push(context, tutorial[0]),
+                            type: TutorialType.values[i],
+                            childText: tutorial[1],
+                          ),
+                          const SizedBox(
+                            height: 12,
+                          )
+                        ],
+                      );
+                    })
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 30),
           ],
         ),
       )),

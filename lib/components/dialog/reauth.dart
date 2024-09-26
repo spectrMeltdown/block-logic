@@ -28,7 +28,7 @@ class _ReauthDialogState extends ConsumerState<ReauthDialog> {
   int attemptsLeft = 3;
   late Widget msg;
   bool processing = false;
-  bool firstOTPSent = false;
+  late bool firstOTPSent;
   late final bool useEmail;
   late final CustomNavigation nav;
   late final AuthService auth;
@@ -45,6 +45,7 @@ class _ReauthDialogState extends ConsumerState<ReauthDialog> {
   void initState() {
     phoneNum = FirebaseAuth.instance.currentUser?.phoneNumber ?? '';
     useEmail = phoneNum.isNotEmpty;
+    firstOTPSent = useEmail;
     nav = ref.read(customNavigationProvider.notifier);
     auth = ref.read(authServiceProvider.notifier);
     validator = ref.read(textValidatorProvider.notifier);
@@ -118,7 +119,7 @@ class _ReauthDialogState extends ConsumerState<ReauthDialog> {
     if (result != null) {
       updateMsg(result);
     } else {
-      updateMsg('OTP sent!', color: Colors.green);
+      // updateMsg('OTP sent!', color: Colors.green);
       if (firstOTPSent == false) {
         setState(() {
           firstOTPSent = true;
