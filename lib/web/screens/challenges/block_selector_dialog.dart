@@ -42,6 +42,7 @@ class _BlockSelectorDialogState extends ConsumerState<BlockSelectorDialog> with 
         ),
         const SizedBox(height: 15),
         TabBar(
+          tabAlignment: TabAlignment.center,
           labelColor: Colors.white,
           unselectedLabelColor: Colors.grey,
           isScrollable: true,
