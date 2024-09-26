@@ -52,4 +52,4 @@ jobs:
 
       - name: Upload APK to Google Drive
         run: |
-          rclone copy build/app/outputs/flutter-apk/app-release.apk gdrive:1vk4ABM771odwxtr1dr1fiLTkwaS05YUl -v
+          rclone copy build/app/outputs/flutter-apk/app-release.apk diamadex:1vk4ABM771odwxtr1dr1fiLTkwaS05YUl -v
