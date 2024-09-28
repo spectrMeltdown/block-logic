@@ -5,10 +5,22 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Android Debug",
+      "name": "Profile",
       "request": "launch",
       "type": "dart",
-      "program": "lib/main.dart",
+      "flutterMode": "profile"
+    },
+    {
+      "name": "Release",
+      "request": "launch",
+      "type": "dart",
+      "flutterMode": "release"
+    },
+    {
+      "name": "Debug",
+      "request": "launch",
+      "type": "dart",
+      "flutterMode": "debug"
     },
     {
       "name": "Web Debug",
@@ -24,17 +36,5 @@
         //"8000"
       ],
     },
-    {
-      "name": "profile",
-      "request": "launch",
-      "type": "dart",
-      "flutterMode": "profile"
-    },
-    {
-      "name": "release",
-      "request": "launch",
-      "type": "dart",
-      "flutterMode": "release"
-    }
   ]
 }

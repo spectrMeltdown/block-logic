@@ -21,7 +21,7 @@ class BLLoading extends ConsumerStatefulWidget {
   const BLLoading({
     super.key,
     this.message,
-    this.type = kIsWeb ? LoadingType.full : LoadingType.normal,
+    this.type = LoadingType.normal,
     this.height = 200,
     this.width = 200,
     this.color,

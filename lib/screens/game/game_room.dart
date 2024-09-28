@@ -146,7 +146,7 @@ class _GameRoomState extends ConsumerState<GameRoom> with WidgetsBindingObserver
             Visibility(
                 visible: processing,
                 child: Container(
-                  color: Colors.black.withOpacity(0.6),
+                  color: Colors.black.withOpacity(0.9),
                   child: const BLLoading(
                     message: 'Loading ...',
                   ),

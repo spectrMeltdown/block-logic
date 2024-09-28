@@ -95,7 +95,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             Visibility(
                 visible: processing,
                 child: Container(
-                  color: Colors.black.withOpacity(0.4),
+                  color: Colors.black.withOpacity(0.9),
                   child: const BLLoading(
                     message: 'Loading ...',
                   ),

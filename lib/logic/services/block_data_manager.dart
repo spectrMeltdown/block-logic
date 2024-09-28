@@ -70,12 +70,24 @@ class AllBlocks {
   /// All blocks (except variables, functions)
   Map<CodeBlockType, List<GameBlockData>> getAll() {
     return {
-      CodeBlockType.objects: [],
+      CodeBlockType.objects: [
+        GameBlockData.createObjectDefinition(
+          name: 'myClass',
+        ),
+        GameBlockData.createObject(
+          name: 'myObject',
+        ),
+      ],
       CodeBlockType.functions: [
         /// when calling functions, they must exist in the body before doing so
         GameBlockData.createFunction(
+          name: 'print',
+        ),
+        GameBlockData.createFunctionDefinition(
           name: 'myFunction',
-          //  inSelectorIndex: 0,
+        ),
+        GameBlockData.createFunction(
+          name: 'myFunction',
         ),
       ],
       CodeBlockType.keywords: [

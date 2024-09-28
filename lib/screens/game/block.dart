@@ -112,7 +112,7 @@ class GameCodeBlockState extends ConsumerState<GameBlock> with TickerProviderSta
     }
     // TODO: animate when cancelled
     return LongPressDraggable<GameBlockData>(
-        delay: const Duration(milliseconds: 150),
+        delay: const Duration(milliseconds: 100),
         data: finalData ?? widget.data, // drag target will not detect if data is null
         onDragUpdate: (details) {},
         dragAnchorStrategy: (draggable, context, position) {

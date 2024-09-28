@@ -1,15 +1,19 @@
 import 'dart:typed_data';
 
+import 'package:block_logic/components/async/loading.dart';
+import 'package:block_logic/components/dialog/dialog.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/text/title_small.dart';
 import 'package:block_logic/components/util/provider_default.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_providers/reports.dart';
+import 'package:block_logic/logic/services/navigation.dart';
 import 'package:block_logic/logic/services/reports_manager.dart';
 import 'package:block_logic/logic/services/toast.dart';
 import 'package:block_logic/web/components/button.dart';
 import 'package:block_logic/web/components/card_simple.dart';
 import 'package:block_logic/web/components/header.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 // import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -27,8 +31,9 @@ class Reports extends ConsumerStatefulWidget {
 
 class _ReportsState extends ConsumerState<Reports> {
   final pageScrollController = ScrollController();
+  final db = FirebaseFirestore.instance;
   Map<String, ReportType> reportOptions = {
-    'Basic Users': ReportType.users,
+    'Basic Users': ReportType.freeUsers,
     'Premium Users': ReportType.premiumUsers,
     // 'Challenges' : ReportType.challe,
     'Rooms': ReportType.rooms,
@@ -37,14 +42,16 @@ class _ReportsState extends ConsumerState<Reports> {
     'Rooms Played': ReportType.roomsPlayed,
   };
 
-  ReportType selectedType = ReportType.users;
+  late final Map<ReportType, Stream> streams;
+
+  ReportType selectedType = ReportType.freeUsers;
   // DateTime? from;
   // DateTime? to;
   DateTimeRange? dateRange;
   int total = 0;
   Map<TimePeriod, int> printData = {};
   bool reportsEmpty = false;
-
+  bool processing = false;
   late final ReportsManager reportsManager;
 
   final pw.Document pdf = pw.Document();
@@ -94,7 +101,7 @@ class _ReportsState extends ConsumerState<Reports> {
               pw.Center(
                   child: pw.Text(
                 dateRange == null ? '(Total only)' : '${DateFormat('dd / MMM / y').format(dateRange!.start)} - ${DateFormat('dd / MMM / y').format(dateRange!.end)}',
-                style: pw.TextStyle(fontSize: 14),
+                style: const pw.TextStyle(fontSize: 14),
               )),
               pw.SizedBox(height: 20),
               pw.Text('Created at: ${DateFormat('MMMM d, y, hh:mm a').format(DateTime.now())}'),
@@ -115,13 +122,58 @@ class _ReportsState extends ConsumerState<Reports> {
     return pdf.save();
   }
 
-  void downloadPDF() async {
+  void toggleProcessing() {
+    setState(() {
+      processing = !processing;
+    });
+  }
+
+  void generatePdf() async {
+    if (processing) return;
+    toggleProcessing();
     if (reportsEmpty) {
       toast.showToast(context, 'No reports found in this category!', type: NotifType.error);
+      toggleProcessing();
       return;
     }
+    final reportsToPrint = await showDialog<Map<ReportType, bool>>(
+      context: context,
+      builder: (context) => ReportTypeSelector(
+        initial: selectedType,
+        reportOptions: reportOptions,
+      ),
+    );
+    // initalize the print data
+    final Map<ReportType, Map<TimePeriod, int>> printData = {for (final type in ReportType.values) type: {}};
+
+    // loop through selected categories
+    for (final entry in reportsToPrint!.entries) {
+      // if not equal to current selected type & is selected
+      if (entry.value && entry.key != selectedType) {
+        // get the new category of reports
+        final newCategory = await ref.read(reportsProvider(ReportParams(
+          dateRange: dateRange,
+          stream: streams.entries.firstWhere((e) => e.key == entry.key).value,
+        )).future);
+
+        //construct count of the new category
+        final Map<TimePeriod, int> newCategoryCount = {for (final category in newCategory.keys) category: 0};
+        for (final category in newCategory.entries) {
+          newCategoryCount[category.key] = category.value.length;
+        }
+
+        // add the new count to the printData
+        printData[entry.key] = newCategoryCount;
+      }
+      // add the selectedType (or entry.key) to the printData, if selected
+      else if (entry.value) {
+        printData[entry.key] = this.printData;
+      }
+    }
+
     Uint8List pdfBytes = await generatePDFBytes();
     await Printing.sharePdf(bytes: pdfBytes, filename: '${selectedType.name}.pdf');
+    toggleProcessing();
   }
 
   @override
@@ -129,189 +181,204 @@ class _ReportsState extends ConsumerState<Reports> {
     double width = MediaQuery.of(context).size.width;
     // double height = MediaQuery.of(context).size.height;
     // final reports = ref.watch(reportsProvider(ReportParams(type: selectedType, from: from, to: to)));
-    final reports = ref.watch(reportsProvider(ReportParams(type: selectedType, dateRange: dateRange)));
+    final reports = ref.watch(reportsProvider(ReportParams(
+      stream: streams.entries.firstWhere((e) => e.key == selectedType).value,
+      dateRange: dateRange,
+    )));
 
-    return ListView(
-      controller: pageScrollController,
+    return Stack(
+      fit: StackFit.expand,
       children: [
-        const Header(title: 'Reports'),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
-          child: Column(
-            children: [
-              ConstrainedBox(
-                constraints: BoxConstraints(maxWidth: 600),
-                child: BLCardSimple(
-                  child: Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Column(
-                      // crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          // mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        ListView(
+          controller: pageScrollController,
+          children: [
+            const Header(title: 'Reports'),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+              child: Column(
+                children: [
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 600),
+                    child: BLCardSimple(
+                      child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Column(
+                          // crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const BLSmallTitle('Reports'),
-                            const SizedBox(
-                              width: 20,
+                            Row(
+                              // mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const BLSmallTitle('Reports'),
+                                const SizedBox(
+                                  width: 20,
+                                ),
+                                BLAdminButton(
+                                    type: AdminBtnType.teal,
+                                    onPressed: generatePdf,
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        const Icon(
+                                          FontAwesomeIcons.file,
+                                          color: Colors.white,
+                                          size: 15,
+                                        ),
+                                        SizedBox(
+                                          width: width / 180,
+                                        ),
+                                        const BLText(
+                                          'Generate PDF',
+                                          color: Colors.white,
+                                        ),
+                                      ],
+                                    ))
+                              ],
                             ),
-                            BLAdminButton(
-                                type: AdminBtnType.teal,
-                                onPressed: downloadPDF,
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    const Icon(
-                                      FontAwesomeIcons.file,
-                                      color: Colors.white,
-                                      size: 15,
-                                    ),
-                                    SizedBox(
-                                      width: width / 180,
-                                    ),
-                                    const BLText(
-                                      'Generate PDF',
-                                      color: Colors.white,
-                                    ),
-                                  ],
-                                ))
-                          ],
-                        ),
-                        Row(
-                          // mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            BLCardSimple(
-                              color: Colors.blue.shade800,
-                              child: DropdownButton<ReportType>(
-                                borderRadius: const BorderRadius.all(Radius.circular(20)),
-                                padding: const EdgeInsets.symmetric(horizontal: 10),
-                                underline: const SizedBox.shrink(),
-                                value: selectedType,
-                                items: reportOptions.entries.map((entry) {
-                                  return DropdownMenuItem<ReportType>(
-                                    value: entry.value,
-                                    child: Text(entry.key),
-                                  );
-                                }).toList(),
-                                onChanged: (newValue) {
-                                  if (newValue != null) {
-                                    setState(() {
-                                      selectedType = newValue;
-                                    });
-                                  }
-                                },
-                                hint: const BLText('Select a category'),
-                              ),
-                            ),
-                            const SizedBox(
-                              width: 20,
-                            ),
-                            Flexible(
-                              child: GestureDetector(
-                                onTap: () async {
-                                  final dateRange = await showDateRangePicker(
-                                    context: context,
-                                    firstDate: DateTime(2024, 9, 20),
-                                    lastDate: DateTime.now(),
-                                    initialDateRange: this.dateRange,
-                                  );
-                                  setState(() {
-                                    this.dateRange = dateRange;
-                                  });
-                                },
-                                child: ConstrainedBox(
-                                  constraints: BoxConstraints(maxWidth: 200, minWidth: 200, maxHeight: 80),
-                                  child: BLCardSimple(
-                                    color: Colors.green.shade800,
-                                    child: Center(
-                                      child: BLText(
-                                        dateRange == null ? 'Select\ndate range' : 'From: ${DateFormat('dd / MM / y').format(dateRange!.start)}\nTo: ${DateFormat('dd / MM / y').format(dateRange!.end)}',
-                                        size: 18,
-                                        color: Colors.white,
-                                        alignCenter: true,
+                            Row(
+                              // mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                BLCardSimple(
+                                  color: Colors.blue.shade800,
+                                  child: DropdownButton<ReportType>(
+                                    borderRadius: const BorderRadius.all(Radius.circular(20)),
+                                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                                    underline: const SizedBox.shrink(),
+                                    value: selectedType,
+                                    items: reportOptions.entries.map((entry) {
+                                      return DropdownMenuItem<ReportType>(
+                                        value: entry.value,
+                                        child: Text(entry.key),
+                                      );
+                                    }).toList(),
+                                    onChanged: (newValue) {
+                                      if (newValue != null) {
+                                        setState(() {
+                                          selectedType = newValue;
+                                        });
+                                      }
+                                    },
+                                    hint: const BLText('Select a category'),
+                                  ),
+                                ),
+                                const SizedBox(
+                                  width: 20,
+                                ),
+                                Flexible(
+                                  child: GestureDetector(
+                                    onTap: () async {
+                                      final dateRange = await showDateRangePicker(
+                                        context: context,
+                                        firstDate: DateTime(2024, 9, 20),
+                                        lastDate: DateTime.now(),
+                                        initialDateRange: this.dateRange,
+                                      );
+                                      setState(() {
+                                        this.dateRange = dateRange;
+                                      });
+                                    },
+                                    child: ConstrainedBox(
+                                      constraints: const BoxConstraints(maxWidth: 200, minWidth: 200, maxHeight: 80),
+                                      child: BLCardSimple(
+                                        color: Colors.green.shade800,
+                                        child: Center(
+                                          child: BLText(
+                                            dateRange == null ? 'Select\ndate range' : 'From: ${DateFormat('dd / MM / y').format(dateRange!.start)}\nTo: ${DateFormat('dd / MM / y').format(dateRange!.end)}',
+                                            size: 18,
+                                            color: Colors.white,
+                                            alignCenter: true,
+                                          ),
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
-                              ),
-                            )
-                          ],
-                        ),
-                        SizedBox(
-                          height: 20,
-                        ),
-                        reports.when(
-                            data: (reports) {
-                              if (reports.isEmpty) {
-                                setState(() {
-                                  reportsEmpty = true;
-                                });
-                                return const BLText(
-                                  'No reports of this type found.',
-                                  alignCenter: true,
-                                );
-                              }
-                              final type = reportOptions.entries.firstWhere((i) => i.value == selectedType).key;
-                              final entries = reports.entries.toList();
-                              // final keys = reports.keys.toList();
-                              printData = {for (var entry in entries) entry.key: entry.value.length};
-                              int total = 0;
-                              for (final entry in entries) {
-                                total += entry.value.length;
-                              }
-                              setState(() {
-                                this.total = total;
-                                reportsEmpty = false;
-                              });
-                              return Column(
-                                // mainAxisSize: MainAxisSize.min,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  SizedBox(
-                                    height: 20,
-                                  ),
-                                  Row(
+                                )
+                              ],
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            reports.when(
+                                data: (reports) {
+                                  if (reports.isEmpty) {
+                                    setState(() {
+                                      reportsEmpty = true;
+                                    });
+                                    return const BLText(
+                                      'No reports of this type found.',
+                                      alignCenter: true,
+                                    );
+                                  }
+                                  final type = reportOptions.entries.firstWhere((i) => i.value == selectedType).key;
+                                  final entries = reports.entries.toList();
+                                  // final keys = reports.keys.toList();
+                                  printData = {for (var entry in entries) entry.key: entry.value.length};
+                                  int total = 0;
+                                  for (final entry in entries) {
+                                    total += entry.value.length;
+                                  }
+                                  setState(() {
+                                    this.total = total;
+                                    reportsEmpty = false;
+                                  });
+                                  return Column(
                                     // mainAxisSize: MainAxisSize.min,
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      BLText(
-                                        'Total $type: ',
-                                        size: 20,
-                                        bold: true,
+                                      const SizedBox(
+                                        height: 20,
                                       ),
-                                      BLText(
-                                        total.toString(),
-                                        size: 20,
-                                        bold: true,
-                                      ),
-                                    ],
-                                  ),
-                                  // if (from != null || to != null)
-                                  if (dateRange != null)
-                                    ...List.generate(entries.length, (i) {
-                                      return Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
+                                      Row(
                                         // mainAxisSize: MainAxisSize.min,
+                                        mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
-                                          BLText('Total $type ${entries[i].key.name}: '),
-                                          BLText(entries[i].value.length.toString()),
+                                          BLText(
+                                            'Total $type: ',
+                                            size: 20,
+                                            bold: true,
+                                          ),
+                                          BLText(
+                                            total.toString(),
+                                            size: 20,
+                                            bold: true,
+                                          ),
                                         ],
-                                      );
-                                    })
-                                ],
-                              );
-                            },
-                            error: genericError,
-                            loading: genericLoading),
-                      ],
+                                      ),
+                                      // if (from != null || to != null)
+                                      if (dateRange != null)
+                                        ...List.generate(entries.length, (i) {
+                                          return Row(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            // mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              BLText('Total $type ${entries[i].key.name}: '),
+                                              BLText(entries[i].value.length.toString()),
+                                            ],
+                                          );
+                                        })
+                                    ],
+                                  );
+                                },
+                                error: genericError,
+                                loading: genericLoading),
+                          ],
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-              )
-            ],
-          ),
-        )
+                  )
+                ],
+              ),
+            )
+          ],
+        ),
+        if (processing)
+          Container(
+            color: Colors.black.withOpacity(0.8),
+            child: BLLoading(
+              message: 'Processing ...',
+            ),
+          )
       ],
     );
   }
@@ -320,6 +387,15 @@ class _ReportsState extends ConsumerState<Reports> {
   void initState() {
     reportsManager = ref.read(reportsManagerProvider.notifier);
     toast = ref.read(toastProvider.notifier);
+    streams = {
+      ReportType.freeUsers: db.collection('users').where('premiumUser', isEqualTo: false).snapshots(),
+      ReportType.premiumUsers: db.collection('users').where('premiumUser', isEqualTo: true).snapshots(),
+      ReportType.users: db.collection('users').snapshots(),
+      ReportType.challengesPlayed: db.collection('reports').where('type', isEqualTo: 'challengesPlayed').snapshots(),
+      ReportType.leaderboards: db.collection('leaderboards').snapshots(),
+      ReportType.rooms: db.collection('rooms').snapshots(),
+      ReportType.roomsPlayed: db.collection('reports').where('type', isEqualTo: 'roomsPlayed').snapshots(),
+    };
     super.initState();
   }
 
@@ -347,5 +423,81 @@ class _ReportsState extends ConsumerState<Reports> {
     }
 
     return Text(text, style: style, textAlign: TextAlign.left);
+  }
+}
+
+class ReportTypeSelector extends ConsumerStatefulWidget {
+  final ReportType initial;
+  final Map<String, ReportType> reportOptions;
+  const ReportTypeSelector({required this.initial, required this.reportOptions, super.key});
+
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() => _ReportTypeSelectorState();
+}
+
+class _ReportTypeSelectorState extends ConsumerState<ReportTypeSelector> {
+  late final Toast toast;
+  late final CustomNavigation nav;
+  late final Map<ReportType, bool> selectedReports;
+  bool hasSelection = true;
+
+  @override
+  void initState() {
+    nav = ref.read(customNavigationProvider.notifier);
+    toast = ref.read(toastProvider.notifier);
+    selectedReports = {for (final report in ReportType.values) report: false};
+    selectedReports[widget.initial] = true;
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (selectedReports.values.any((value) => value == true)) {
+      setState(() {
+        hasSelection = true;
+      });
+    } else {
+      setState(() {
+        hasSelection = false;
+      });
+    }
+    return BLDialog(
+        child: ListView(
+      shrinkWrap: true,
+      children: [
+        BLSmallTitle('Select reports to print:'),
+        SizedBox(height: 15),
+        ...List.generate(widget.reportOptions.length, (i) {
+          final currentReport = widget.reportOptions.values.toList()[i];
+          return CheckboxListTile(
+              value: selectedReports[currentReport],
+              onChanged: (value) {
+                if (value != null) {
+                  if (value) {
+                    setState(() {
+                      selectedReports[currentReport] = false;
+                    });
+                  } else {
+                    setState(() {
+                      selectedReports[currentReport] = true;
+                    });
+                  }
+                }
+              });
+        }),
+        SizedBox(height: 15),
+        BLAdminButton(
+          type: hasSelection ? AdminBtnType.green : AdminBtnType.grey,
+          child: BLText('Confirm & Download'),
+          onPressed: () {
+            if (!hasSelection) {
+              toast.showToast(context, 'Select a report type.', type: NotifType.error);
+            } else {
+              nav.pop(context, selectedReports);
+            }
+          },
+        )
+      ],
+    ));
   }
 }

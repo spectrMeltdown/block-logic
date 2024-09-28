@@ -15,10 +15,7 @@ class SidebarToggle extends ConsumerWidget {
       child: Material(
         color: Colors.transparent,
         child: Ink(
-          decoration: BoxDecoration(
-              borderRadius: const BorderRadius.all(Radius.circular(30)),
-              color: Colors.blue.shade700,
-              boxShadow: const [BoxShadow(blurRadius: 20)]),
+          decoration: BoxDecoration(borderRadius: const BorderRadius.all(Radius.circular(30)), color: Colors.blue.shade700, boxShadow: const [BoxShadow(blurRadius: 20)]),
           child: InkWell(
             borderRadius: const BorderRadius.all(Radius.circular(30)),
             onTap: () {
@@ -56,22 +53,25 @@ class _WebScaffoldState extends ConsumerState<WebScaffold> {
       drawer: Drawer(
         child: sidebar,
       ),
-      body: Background(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            if (width >= mobileMax) sidebar,
-            Expanded(
-              child: Stack(
-                children: [
-                  widget.child,
-                  if (width <= mobileMax)
-                    SidebarToggle(scaffoldKey: scaffoldKey),
-                ],
-              ),
+      body: Column(
+        children: [
+          Background(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                if (width >= mobileMax) sidebar,
+                Expanded(
+                  child: Stack(
+                    children: [
+                      widget.child,
+                      if (width <= mobileMax) SidebarToggle(scaffoldKey: scaffoldKey),
+                    ],
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

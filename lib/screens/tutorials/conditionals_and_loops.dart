@@ -1,7 +1,11 @@
 import 'package:block_logic/components/background.dart';
 import 'package:block_logic/components/button/back.dart';
+import 'package:block_logic/components/button/button.dart';
+import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/text/text_span.dart';
 import 'package:block_logic/components/text/title_small.dart';
+import 'package:block_logic/logic/enums.dart';
+import 'package:block_logic/logic/services/navigation.dart';
 import 'package:block_logic/logic/services/tutorials.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -17,48 +21,185 @@ class _ConditionalsAndLoopsState extends ConsumerState<ConditionalsAndLoops> {
   @override
   Widget build(BuildContext context) {
     final tutorialData = ref.read(tutorialDataProvider);
+    final nav = ref.read(customNavigationProvider.notifier);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Background(
           child: SafeArea(
         child: Column(
           children: [
-            const Align(
-              alignment: Alignment.centerLeft,
-              child: BLBackButton(),
+            const SizedBox(
+              height: 20,
             ),
-            const Center(
-              child: BLSmallTitle('Conditionals & Loops'),
+            const BLText(
+              'Introduction to Conditionals\nand Loops in Python',
+              softWrap: true,
+              color: Colors.white,
+              bold: true,
+              alignCenter: true,
+              size: 25,
             ),
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      BLRichText([
-                        TextSpan(text: '''
-            Conditionals allow programs to make decisions based on certain conditions. The most common conditional statement is if, which executes a block of code only if a specified condition is true. For example:\n\n
-            ''', style: tutorialData.paragraphStyle),
-                        const TextSpan(text: '''
-            if temperature > 30:
-            print("It's hot outside!")\n\n
-            '''),
-                        TextSpan(text: '''
-            This code checks if the temperature is greater than 30 and prints a message if the condition is true.\n
-            ''', style: tutorialData.paragraphStyle),
-                        TextSpan(text: '''
-            Loops enable repeated execution of a block of code as long as a condition is met. Common types of loops are for and while loops. A for loop iterates over a sequence of values, while a while loop continues as long as a specified condition remains true. For instance, a for loop in Python might look like this:\n
-            ''', style: tutorialData.paragraphStyle),
-                        const TextSpan(text: '''
-            for i in range(5):     
-                  print(i)
-            '''),
-                      ])
-                    ],
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                child: Container(
+                  margin: const EdgeInsets.all(8.0),
+                  decoration: BoxDecoration(
+                    color: Colors.blueGrey.shade900,
+                    borderRadius: const BorderRadius.all(
+                      Radius.circular(20),
+                    ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 5),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+                            child: BLRichText([
+                              TextSpan(
+                                text: 'Conditionals and loops are fundamental concepts in programming that allow you to control the flow of your code.\n\n',
+                              ),
+                              TextSpan(
+                                text: '1. Conditionals:\n',
+                                style: tutorialData.paragraphStyle.copyWith(fontSize: 18, fontWeight: FontWeight.bold),
+                              ),
+                              TextSpan(
+                                text: '   - Conditionals are used to execute different blocks of code based on certain conditions.\n',
+                              ),
+                              TextSpan(
+                                text: '   - The most common conditional statement is the ',
+                              ),
+                              TextSpan(
+                                text: 'if statement',
+                                style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
+                              ),
+                              TextSpan(
+                                text: ':\n     Example:\n',
+                              ),
+                              TextSpan(
+                                text: '     if ',
+                              ),
+                              TextSpan(
+                                text: 'x > 10:',
+                                style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
+                              ),
+                              TextSpan(
+                                text: '\n     \tprint("x is greater than 10")\n\n',
+                              ),
+                              TextSpan(
+                                text: '   - You can also use ',
+                              ),
+                              TextSpan(
+                                text: 'else',
+                                style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
+                              ),
+                              TextSpan(
+                                text: ' and ',
+                              ),
+                              TextSpan(
+                                text: 'elif',
+                                style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
+                              ),
+                              TextSpan(
+                                text: ' to handle multiple conditions:\n     Example:\n',
+                              ),
+                              TextSpan(
+                                text: '     if ',
+                              ),
+                              TextSpan(
+                                text: 'x > 10:',
+                                style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
+                              ),
+                              TextSpan(
+                                text: '\n     \tprint("x is greater than 10")\n',
+                              ),
+                              TextSpan(
+                                text: '     elif ',
+                              ),
+                              TextSpan(
+                                text: 'x == 10:',
+                                style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
+                              ),
+                              TextSpan(
+                                text: '\n     \tprint("x is equal to 10")\n',
+                              ),
+                              TextSpan(
+                                text: '     else:\n     \tprint("x is less than 10")\n\n',
+                              ),
+                              TextSpan(
+                                text: '2. Loops:\n',
+                                style: tutorialData.paragraphStyle.copyWith(fontSize: 18, fontWeight: FontWeight.bold),
+                              ),
+                              TextSpan(
+                                text: '   - Loops allow you to execute a block of code repeatedly.\n',
+                              ),
+                              TextSpan(
+                                text: '   - The most common loops in Python are the ',
+                              ),
+                              TextSpan(
+                                text: 'for loop',
+                                style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
+                              ),
+                              TextSpan(
+                                text: ' and the ',
+                              ),
+                              TextSpan(
+                                text: 'while loop',
+                                style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
+                              ),
+                              TextSpan(
+                                text: ':\n     Example of a for loop:\n',
+                              ),
+                              TextSpan(
+                                text: '     for ',
+                              ),
+                              TextSpan(
+                                text: 'i in range(5):',
+                                style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
+                              ),
+                              TextSpan(
+                                text: '\n     \tprint(i)\n\n',
+                              ),
+                              TextSpan(
+                                text: '   - Example of a while loop:\n',
+                              ),
+                              TextSpan(
+                                text: '     while ',
+                              ),
+                              TextSpan(
+                                text: 'x < 5:',
+                                style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
+                              ),
+                              TextSpan(
+                                text: '\n     \tprint(x)\n     \tx += 1\n\n',
+                              ),
+                              TextSpan(
+                                text: '3. Conclusion:\n',
+                                style: tutorialData.paragraphStyle.copyWith(fontSize: 18, fontWeight: FontWeight.bold),
+                              ),
+                              TextSpan(
+                                text: '   - Mastering conditionals and loops will allow you to create dynamic and powerful programs in Python.',
+                                style: tutorialData.paragraphStyle.copyWith(fontStyle: FontStyle.italic),
+                              ),
+                            ]),
+                          )
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               ),
+            ),
+            BLButton(
+              type: BtnType.red,
+              paddingX: 100,
+              onPressed: () => nav.pop(context),
+              child: const BLText('Back'),
+            ),
+            const SizedBox(
+              height: 30,
             )
           ],
         ),

@@ -10,7 +10,6 @@ part 'generated/reports_manager.g.dart';
 @riverpod
 class ReportsManager extends _$ReportsManager {
   Future<String?> add(ReportType type, int count) async {
-    // TODO: Reports are currently disabled in debug to prevent database read/write cap
     try {
       // check because web & mobile share some screens
       if (!kIsWeb) {

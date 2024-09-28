@@ -28,7 +28,8 @@ class GameSubmitButton extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final manager = ref.read(gameManagerProvider.notifier);
     final score = ref.read(scoreManagerProvider.notifier);
-    final check = ref.watch(solutionCheckProvider.future);
+    // final check = ref.watch(solutionCheckProvider.future);
+    final check = ref.watch(solutionCheckerProvider.notifier);
     final toast = ref.read(toastProvider.notifier);
     final solutionMatch = ref.read(gameManagerProvider).solution;
     // final gameState = ref.read(gameManagerProvider);
@@ -45,10 +46,12 @@ class GameSubmitButton extends ConsumerWidget {
           toggleProcessing();
           bool correct = false;
           String? result;
-          final userOutput = await check;
+          final userOutput = await check.check();
           // loop through correct answers
           for (final match in solutionMatch) {
-            if (userOutput.toString() == match.toString()) {
+            debugPrint('match is: $match');
+            debugPrint(userOutput.toString());
+            if (userOutput.toString().trim() == match.toString().trim()) {
               correct = true;
             } else {
               correct = false;
@@ -69,11 +72,11 @@ class GameSubmitButton extends ConsumerWidget {
               );
             }
           }
-          gameManager.resetTree();
-          gameManager.setShouldResetAllBlocks(true);
-          ref.invalidate(getRootDataProvider);
-          ref.invalidate(shouldResetAllBlocksProvider);
           if (updateChallenge != null) {
+            gameManager.resetTree();
+            gameManager.setShouldResetAllBlocks(true);
+            ref.invalidate(getRootDataProvider);
+            ref.invalidate(shouldResetAllBlocksProvider);
             updateChallenge!();
           }
           if (result != null) {

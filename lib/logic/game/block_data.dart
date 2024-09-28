@@ -103,7 +103,7 @@ class GameBlockData {
     const type = CodeBlockType.functions;
     return GameBlockData(
       type: type,
-      name: '$name ',
+      name: name,
       // inSelectorIndex: inSelectorIndex,
       argumentUIDs: const [],
       inSelectorCount: count,

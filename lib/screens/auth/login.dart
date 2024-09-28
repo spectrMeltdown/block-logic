@@ -41,9 +41,9 @@ class Login extends ConsumerStatefulWidget {
 }
 
 class _LoginState extends ConsumerState<Login> with RouteAware {
-  final emailController = TextEditingController();
+  final emailController = kIsWeb && kDebugMode ? TextEditingController(text: 'diamadex@gmail.com') : TextEditingController();
   final phoneController = TextEditingController();
-  final passwordController = TextEditingController();
+  final passwordController = kIsWeb && kDebugMode ? TextEditingController(text: 'willow123') : TextEditingController();
   final otpController = TextEditingController();
   final _loginFormKey = GlobalKey<FormState>();
   late final Toast toast;
@@ -293,7 +293,7 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
             Visibility(
                 visible: processing,
                 child: Container(
-                  color: Colors.black.withOpacity(0.6),
+                  color: Colors.black.withOpacity(0.9),
                   child: const BLLoading(message: 'Logging in ...'),
                 ))
           ],
@@ -387,8 +387,8 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
         ref.invalidate(authChangesProvider);
 
         // remove used tokens
-        sharedPref.remove('resendToken');
-        sharedPref.remove('verificationID');
+        // sharedPref.remove('resendToken');
+        // sharedPref.remove('verificationID');
 
         // create sessionID
         if (!kIsWeb) {

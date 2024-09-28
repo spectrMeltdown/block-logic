@@ -6,6 +6,7 @@ import 'package:block_logic/logic/services/shared_pref.dart';
 import 'package:block_logic/route_observer.dart';
 import 'package:block_logic/router_config.dart';
 import 'package:block_logic/screens/checkpoint.dart';
+import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -22,11 +23,11 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   if (!kIsWeb) {
-    // if (kDebugMode) {
-    //   await FirebaseAppCheck.instance.activate(androidProvider: AndroidProvider.debug);
-    // } else {
-    //   await FirebaseAppCheck.instance.activate();
-    // }
+    if (kDebugMode) {
+      await FirebaseAppCheck.instance.activate(androidProvider: AndroidProvider.debug);
+    } else {
+      await FirebaseAppCheck.instance.activate();
+    }
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
     SystemChrome.setPreferredOrientations(
       <DeviceOrientation>[DeviceOrientation.portraitUp],
@@ -57,14 +58,30 @@ class BlockLogic extends ConsumerWidget {
       ref.read(audioInitProvider);
       //ref.watch(internetStatusProvider);
       return MaterialApp(
-          title: 'Block-Logic',
-          navigatorObservers: [routeObserver],
-          debugShowCheckedModeBanner: false,
-          theme: appTheme.theme(),
-          darkTheme: appTheme.theme(),
-
-          // home: Login(accountType: FirestoreCollections.users),
-          home: const Checkpoint());
+        title: 'Block-Logic',
+        navigatorObservers: [routeObserver],
+        debugShowCheckedModeBanner: false,
+        theme: appTheme.theme(),
+        darkTheme: appTheme.theme(),
+        // home: Login(accountType: FirestoreCollections.users),
+        home: const Checkpoint(),
+        // home: Scaffold(
+        //   body: Background(
+        //       child: SafeArea(
+        //           child: GameChallenge(
+        //     currentChallenge: 1,
+        //     roomName: 'Testing',
+        //     challenge: Challenge(
+        //       name: 'Testing',
+        //       shortDescription: 'Testing',
+        //       solutionMatch: [5],
+        //       blocks: AllBlocks().getAll(),
+        //     ),
+        //     challengeCount: 1,
+        //     practiceMode: true,
+        //   ))),
+        // ),
+      );
     }
     return MaterialApp.router(
       // builder: (context, child) => ResponsiveBreakpoints.builder(

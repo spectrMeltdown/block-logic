@@ -165,7 +165,7 @@ class _LeaderboardsPageState extends ConsumerState<LeaderboardsPage> {
             ),
             if (processing)
               Container(
-                color: Colors.black.withOpacity(0.8),
+                color: Colors.black.withOpacity(0.9),
                 child: const BLLoading(
                   message: 'Processing ...',
                 ),

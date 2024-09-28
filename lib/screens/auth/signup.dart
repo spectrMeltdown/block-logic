@@ -400,14 +400,13 @@ class _SignupState extends ConsumerState<Signup> with RouteAware {
                                                 );
                                               }
                                               if (error == null) {
-                                                sharedPref.remove('resendToken');
-                                                sharedPref.remove('verificationID');
+                                                // sharedPref.remove('resendToken');
+                                                // sharedPref.remove('verificationID');
                                                 if (!kIsWeb) {
                                                   final sessionID = const UuidV4().generate();
                                                   // save sessionID to shared_pref
                                                   auth.saveSessionID(sessionID);
                                                 }
-                                                await reportsManager.add(ReportType.users, 1);
                                                 if (!context.mounted) return;
                                                 nav.pushReplace(context, const Checkpoint());
                                               } else {
@@ -457,7 +456,7 @@ class _SignupState extends ConsumerState<Signup> with RouteAware {
             Visibility(
                 visible: processing,
                 child: Container(
-                  color: Colors.black.withOpacity(0.6),
+                  color: Colors.black.withOpacity(0.9),
                   child: const BLLoading(message: 'Creating account ...'),
                 ))
           ],

@@ -65,7 +65,7 @@ class _UserRoomsState extends ConsumerState<UserRooms> {
                 visible: processing,
                 child: Positioned.fill(
                     child: Container(
-                        color: Colors.black.withOpacity(0.6),
+                        color: Colors.black.withOpacity(0.9),
                         child: const BLLoading(
                           message: 'Joining room...',
                         ))))

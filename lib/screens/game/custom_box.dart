@@ -38,10 +38,9 @@ class _ParameterConditionBoxState extends ConsumerState<CustomBox> {
             }),
             DragTargetWrapper(
               builderChild: () {
-                if (parameters.isNotEmpty) {}
-                return const AddNewBlockBox(
-                  height: 40,
-                  width: 100,
+                return AddNewBlockBox(
+                  height: 35,
+                  width: parameters.isEmpty ? 100 : 30,
                 );
               },
               onAcceptWithDetails: (data, manager) {
@@ -68,41 +67,42 @@ class _ParameterConditionBoxState extends ConsumerState<CustomBox> {
       case GameBox.arguments:
         final data = ref.watch(getSelfDataProvider(widget.data.uid!));
         final arguments = ref.watch(getChildrenDataProvider(data!.argumentUIDs!));
-        return DragTargetWrapper(
-          builderChild: () {
-            if (arguments!.isNotEmpty) {
-              return Row(
-                children: List.generate(arguments.length, (index) {
-                  return Padding(
-                    padding: const EdgeInsets.all(3),
-                    child: GameBlock(data: arguments[index]),
-                  );
-                }),
-              );
-            }
-            return const AddNewBlockBox(
-              height: 40,
+
+        return Row(children: [
+          ...List.generate(arguments!.length, (index) {
+            return Padding(
+              padding: const EdgeInsets.all(3),
+              child: GameBlock(data: arguments[index]),
             );
-          },
-          onAcceptWithDetails: (data, manager) {
-            if (data.state == CodeBlockState.inEditor) {
-              gameManager.moveData(data.uid!, widget.data.uid!);
-            } else {
-              gameManager.addData(data, widget.data.uid!, ChildrenData.arguments);
-            }
-            ref.invalidate(getRootDataProvider);
-            ref.invalidate(getChildrenDataProvider);
-            ref.invalidate(getSelfDataProvider);
-            setState(() {});
-          },
-          onWillAcceptWithDetails: (data) {
-            if (widget.data.argumentUIDs!.contains(data.uid) || data.uid == widget.data.uid) {
-              return false;
-            }
-            return true;
-            // return validator.parameterBox(data: data!, dataToAccept: data!);
-          },
-        );
+          }),
+          DragTargetWrapper(
+            builderChild: () {
+              return AddNewBlockBox(
+                height: 35,
+                width: arguments.isEmpty ? 100 : 30,
+              );
+            },
+            onAcceptWithDetails: (data, manager) {
+              if (data.state == CodeBlockState.inEditor) {
+                gameManager.moveData(data.uid!, widget.data.uid!);
+              } else {
+                gameManager.addData(data, widget.data.uid!, ChildrenData.arguments);
+              }
+              ref.invalidate(getRootDataProvider);
+              ref.invalidate(getChildrenDataProvider);
+              ref.invalidate(getSelfDataProvider);
+              setState(() {});
+            },
+            onWillAcceptWithDetails: (data) {
+              if (widget.data.argumentUIDs!.contains(data.uid) || data.uid == widget.data.uid) {
+                return false;
+              }
+              return true;
+              // return validator.parameterBox(data: data!, dataToAccept: data!);
+            },
+          )
+        ]);
+
       case GameBox.conditions:
         final data = ref.watch(getSelfDataProvider(widget.data.uid!));
         final conditions = ref.watch(getChildrenDataProvider(data!.conditionUIDs!));
@@ -134,9 +134,7 @@ class _ParameterConditionBoxState extends ConsumerState<CustomBox> {
                 setState(() {});
               },
               onWillAcceptWithDetails: (data) {
-                if (widget.data.conditionUIDs!.contains(data.uid) ||
-                    data.uid == widget.data.uid ||
-                    data.uid == widget.data.parentUID) {
+                if (widget.data.conditionUIDs!.contains(data.uid) || data.uid == widget.data.uid || data.uid == widget.data.parentUID) {
                   return false;
                 }
                 return validator.conditionBox(data: widget.data, dataToAccept: data);
@@ -175,9 +173,7 @@ class _ParameterConditionBoxState extends ConsumerState<CustomBox> {
                 setState(() {});
               },
               onWillAcceptWithDetails: (data) {
-                if (widget.data.arrayUIDs!.contains(data.uid) ||
-                    data.uid == widget.data.uid ||
-                    data.uid == widget.data.parentUID) {
+                if (widget.data.arrayUIDs!.contains(data.uid) || data.uid == widget.data.uid || data.uid == widget.data.parentUID) {
                   return false;
                 }
                 return validator.conditionBox(data: widget.data, dataToAccept: data);

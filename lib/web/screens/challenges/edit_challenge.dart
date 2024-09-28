@@ -336,7 +336,11 @@ class _SelectedChallengeState extends ConsumerState<EditChallenge> {
             onPressed: () async {
               if (processing) return;
               processing = true;
-              await dialog.show(context, BlockSelectorDialog(blocks));
+              await dialog.show(
+                  context,
+                  BlockSelectorDialog(
+                    initialBlocks: blocks,
+                  ));
               processing = false;
             },
             child: BLText(

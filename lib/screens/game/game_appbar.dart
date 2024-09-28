@@ -51,7 +51,7 @@ class _GameAppbarState extends ConsumerState<GameAppbar> {
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
         GestureDetector(
           onTapDown: (details) => audio.playBtn(),

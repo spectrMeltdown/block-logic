@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UserAccount extends AccountModel {
   final String? sessionID;
+  final bool? premiumUser;
   UserAccount({
     super.id,
     super.phoneNum,
@@ -11,6 +12,7 @@ class UserAccount extends AccountModel {
     super.createdAt,
     // super.verificationID,
     // super.resendToken,
+    this.premiumUser,
     this.sessionID,
   });
 
@@ -26,6 +28,7 @@ class UserAccount extends AccountModel {
       displayName: data['displayName'] ?? '',
       profilePicLink: data['profilePicLink'] ?? '',
       phoneNum: data['phoneNum'] ?? '',
+      premiumUser: data['premiumUser'],
       // verificationID: data['verificationID'],
       // resendToken: data['resendToken'],
       sessionID: data['sessionID'],
@@ -44,6 +47,9 @@ class UserAccount extends AccountModel {
     }
     if (phoneNum != null) {
       toFirestoreMap.addAll({'phoneNum': phoneNum});
+    }
+    if (premiumUser != null) {
+      toFirestoreMap.addAll({'premiumUser': premiumUser});
     }
     // if (verificationID != null) {
     //   toFirestoreMap.addAll({'verificationID': verificationID});

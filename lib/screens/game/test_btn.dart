@@ -47,7 +47,6 @@ class _GameRunButtonState extends ConsumerState<GameTestBtn> {
           }
           if (processing) return;
           processing = true;
-          ref.invalidate(solutionCheckProvider);
           await showDialog(
             context: context,
             barrierDismissible: false,

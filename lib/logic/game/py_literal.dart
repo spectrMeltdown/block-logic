@@ -33,7 +33,9 @@ class PyLiteral {
 
   factory PyLiteral.string(String string) => PyLiteral._(PyDataType.string_, '"$string"');
 
-  factory PyLiteral.array() => PyLiteral._(PyDataType.array, '');
+  factory PyLiteral.array(String array) {
+    return PyLiteral._(PyDataType.array, array);
+  }
 
   factory PyLiteral.fromJSON(Map<String, dynamic> json) {
     return PyLiteral._(

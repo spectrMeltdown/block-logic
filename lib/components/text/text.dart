@@ -16,19 +16,7 @@ class BLText extends ConsumerStatefulWidget {
   final bool alignCenter;
   final Duration duration;
   final bool overflow;
-  const BLText(this.text,
-      {super.key,
-      this.size = 14,
-      this.fontStyle = FontStyle.normal,
-      this.underlined = false,
-      this.bold = false,
-      this.color,
-      this.alignCenter = false,
-      this.animated = false,
-      this.softWrap = false,
-      this.overflow = false,
-      this.maxLines,
-      this.duration = const Duration(milliseconds: 500)});
+  const BLText(this.text, {super.key, this.size = 14, this.fontStyle = FontStyle.normal, this.underlined = false, this.bold = false, this.color, this.alignCenter = false, this.animated = false, this.softWrap = false, this.overflow = false, this.maxLines, this.duration = const Duration(milliseconds: 500)});
 
   @override
   ConsumerState<BLText> createState() => _BLTextState();
@@ -53,7 +41,7 @@ class _BLTextState extends ConsumerState<BLText> with SingleTickerProviderStateM
               ? TextOverflow.visible
               : TextOverflow.ellipsis,
       style: TextStyle(
-        color: widget.color ?? BLUI().getAppColor('lightBlue'),
+        color: widget.color ?? Colors.white,
         fontSize: widget.size ?? responsive.getTextSize(width),
         fontStyle: widget.fontStyle,
         fontWeight: widget.bold == true ? FontWeight.bold : null,

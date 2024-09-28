@@ -1,3 +1,4 @@
+import 'package:block_logic/components/card/card.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/services/audio.dart';
 import 'package:block_logic/logic/services/ui.dart';
@@ -31,8 +32,8 @@ class _BtnState extends ConsumerState<BLButton> {
   late final BLUI blui;
   late List<Color> btnPressedColor;
   late List<Color> btnColor;
-  final Color darkerShade = Colors.blueGrey.shade900;
-  final Color darkShade = Colors.blueGrey.shade800;
+  // final Color darkerShade = Colors.blueGrey.shade900;
+  // final Color darkShade = Colors.blueGrey.shade800;
   final containerKey = GlobalKey();
   bool _isTapped = false;
   double width = 10;
@@ -79,24 +80,24 @@ class _BtnState extends ConsumerState<BLButton> {
   void getBtnColor() {
     switch (widget.type) {
       case BtnType.normal:
-        btnPressedColor = [Colors.teal.shade300, darkerShade];
-        btnColor = [Colors.teal.shade800, darkerShade];
+        btnPressedColor = [Colors.teal.shade300, Colors.teal.shade900];
+        btnColor = [Colors.teal.shade800, Colors.teal.shade900];
         break;
       case BtnType.red:
-        btnPressedColor = [Colors.red, darkerShade];
-        btnColor = [Colors.redAccent.shade700, darkerShade];
+        btnPressedColor = [Colors.red, Colors.red.shade700];
+        btnColor = [Colors.redAccent.shade700, const Color.fromARGB(255, 179, 1, 1)];
         break;
       case BtnType.orange:
-        btnPressedColor = [Colors.deepOrange, darkerShade];
-        btnColor = [Colors.deepOrange.shade600, darkerShade];
+        btnPressedColor = [Colors.deepOrange, Colors.deepOrange.shade600];
+        btnColor = [Colors.deepOrange.shade600, Colors.deepOrange.shade900];
         break;
       case BtnType.green:
-        btnPressedColor = [Colors.greenAccent.shade700, darkerShade];
-        btnColor = [Colors.green.shade800, darkerShade];
+        btnPressedColor = [Colors.greenAccent.shade700, Colors.green.shade800];
+        btnColor = [Colors.green.shade800, Colors.green.shade900];
         break;
       case BtnType.grey:
-        btnPressedColor = [Colors.grey.shade300, darkerShade];
-        btnColor = [Colors.grey.shade800, darkerShade];
+        btnPressedColor = [Colors.grey.shade300, Colors.grey.shade800];
+        btnColor = [Colors.grey.shade800, Colors.grey.shade900];
         break;
     }
   }

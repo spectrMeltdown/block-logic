@@ -364,13 +364,15 @@ class GameManager extends StateNotifier<GameState> {
   void deleteData(GameBlockData data) {
     if (data.uid == null || data.uid!.isEmpty) throw ('UID was empty!');
     GameBlockData parent = state.dataTree[data.parentUID]!;
+    List<String> uidsToDelete = [];
     switch (data.type) {
       case CodeBlockType.variables:
       case CodeBlockType.operators:
       case CodeBlockType.keywords:
       case CodeBlockType.literals:
         // remove right away, because there are no children
-        state.dataTree.remove(data.uid);
+        // state.dataTree.remove(data.uid);
+        uidsToDelete.add(data.uid!);
         updateParentChildren(parent, data.uid!);
         break;
       case CodeBlockType.functions:
@@ -390,7 +392,8 @@ class GameManager extends StateNotifier<GameState> {
               default:
             }
             // if data has no children, delete it
-            state.dataTree.remove(uid);
+            // state.dataTree.remove(uid);
+            uidsToDelete.add(data.uid!);
             updateParentChildren(parent, data.uid!);
           }
         }
@@ -409,7 +412,8 @@ class GameManager extends StateNotifier<GameState> {
               default:
             }
             // if data has no children, delete it
-            state.dataTree.remove(uid);
+            // state.dataTree.remove(uid);
+            uidsToDelete.add(data.uid!);
             updateParentChildren(parent, data.uid!);
           }
         }
@@ -428,7 +432,8 @@ class GameManager extends StateNotifier<GameState> {
               default:
             }
             // if data has no children, delete it
-            state.dataTree.remove(uid);
+            // state.dataTree.remove(uid);
+            uidsToDelete.add(data.uid!);
             updateParentChildren(parent, data.uid!);
           }
         }
@@ -450,7 +455,8 @@ class GameManager extends StateNotifier<GameState> {
               default:
             }
             // if data has no children, delete it
-            state.dataTree.remove(uid);
+            // state.dataTree.remove(uid);
+            uidsToDelete.add(data.uid!);
             updateParentChildren(parent, data.uid!);
           }
         }
@@ -470,7 +476,8 @@ class GameManager extends StateNotifier<GameState> {
               default:
             }
             // if data has no children, delete it
-            state.dataTree.remove(uid);
+            // state.dataTree.remove(uid);
+            uidsToDelete.add(data.uid!);
             updateParentChildren(parent, data.uid!);
           }
         }
@@ -492,10 +499,17 @@ class GameManager extends StateNotifier<GameState> {
               default:
             }
             // if data has no children, delete it
-            state.dataTree.remove(uid);
+            // state.dataTree.remove(uid);
+            uidsToDelete.add(data.uid!);
           }
         }
         break;
+    }
+
+    // After iterating, remove the uids
+    for (final uid in uidsToDelete) {
+      state.dataTree.remove(uid);
+      updateParentChildren(parent, uid);
     }
     // if data is in statement, update the statment
     // if data is the last element in a statement, remove the statement.

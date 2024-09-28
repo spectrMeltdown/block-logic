@@ -16,6 +16,7 @@ import 'package:block_logic/screens/auth/login.dart';
 import 'package:block_logic/screens/creator_mode/creator_mode.dart';
 import 'package:block_logic/screens/feedback/feedback_dialog.dart';
 import 'package:block_logic/screens/leaderboard/leaderboards_page.dart';
+import 'package:block_logic/screens/premium_prompt_dialog.dart';
 import 'package:block_logic/screens/rooms/rooms.dart';
 import 'package:block_logic/screens/settings/settings_page.dart';
 import 'package:block_logic/screens/tutorials/tutorials.dart';
@@ -87,9 +88,6 @@ List<Widget> loggedInMenu(BuildContext context, CustomNavigation nav) {
         style: TextStyle(fontSize: 16),
       ),
     ),
-    const SizedBox(
-      height: 80,
-    ),
   ];
 }
 
@@ -141,9 +139,6 @@ List<Widget> loggedOutMenu(BuildContext context, CustomNavigation nav) {
         style: TextStyle(fontSize: 16),
       ),
     ),
-    const SizedBox(
-      height: 80,
-    )
   ];
 }
 
@@ -169,25 +164,86 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> with WidgetsBin
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      floatingActionButton: Container(
-        padding: const EdgeInsets.only(right: 10, bottom: 10),
-        child: FloatingActionButton(
-            backgroundColor: Colors.transparent,
-            onPressed: () async {
-              await showDialog(context: context, builder: (context) => const FeedbackDialog());
-            },
-            child: Image.asset(assets.feedback)),
-      ),
-      body: Background(
-        child: SafeArea(
-          child: Center(
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    BLTextButton(
-                        onPressed: () {},
+      body: Stack(
+        children: [
+          Background(
+            child: SafeArea(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Column(
+                    children: [
+                      SizedBox(
+                        height: 50,
+                      ),
+                      SlideInLeft(
+                        duration: const Duration(milliseconds: 1000),
+                        child: AnimatedBuilder(
+                            animation: _titleAnimationController,
+                            builder: (context, child) {
+                              return Text('BLOCK',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontFamily: 'MajorMonoDisplay',
+                                    fontSize: 60,
+                                    height: 1.05,
+                                    shadows: <Shadow>[
+                                      Shadow(blurRadius: _blurRadiusAnimation.value, color: Colors.white),
+                                    ],
+                                  ));
+                            }),
+                      ),
+                      SlideInRight(
+                        duration: const Duration(milliseconds: 1300),
+                        child: AnimatedBuilder(
+                            animation: _titleAnimationController,
+                            builder: (context, child) {
+                              return Text('LOGIC',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontFamily: 'MajorMonoDisplay',
+                                    fontSize: 60,
+                                    height: 1.05,
+                                    shadows: <Shadow>[
+                                      Shadow(blurRadius: _blurRadiusAnimation.value, color: Colors.white),
+                                    ],
+                                  ));
+                            }),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 70,
+                  ),
+                  SpacedColumn(spacing: 10, children: [
+                    ...auth.isLoggedIn() ? loggedInMenu(context, nav) : loggedOutMenu(context, nav),
+                  ]),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      GestureDetector(
+                          onTap: () async {
+                            await showDialog(context: context, builder: (context) => const FeedbackDialog());
+                          },
+                          child: Row(
+                            children: [
+                              const SizedBox(
+                                width: 15,
+                              ),
+                              Image.asset(
+                                assets.feedback,
+                                width: 50,
+                                height: 50,
+                              ),
+                            ],
+                          )),
+                      GestureDetector(
+                        onTap: () {
+                          showDialog(context: context, builder: (context) => PremiumPromptDialog());
+                        },
                         child: Row(
                           children: [
                             BLAnimationPlayer(
@@ -200,65 +256,21 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> with WidgetsBin
                               },
                             ),
                             const SizedBox(
-                              width: 5,
+                              width: 15,
                             ),
                           ],
-                        ))
-                  ],
-                ),
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Column(
-                        children: [
-                          SlideInLeft(
-                            duration: const Duration(milliseconds: 1000),
-                            child: AnimatedBuilder(
-                                animation: _titleAnimationController,
-                                builder: (context, child) {
-                                  return Text('BLOCK',
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        fontFamily: 'MajorMonoDisplay',
-                                        fontSize: 60,
-                                        height: 1.05,
-                                        shadows: <Shadow>[
-                                          Shadow(blurRadius: _blurRadiusAnimation.value, color: Colors.white),
-                                        ],
-                                      ));
-                                }),
-                          ),
-                          SlideInRight(
-                            duration: const Duration(milliseconds: 1300),
-                            child: AnimatedBuilder(
-                                animation: _titleAnimationController,
-                                builder: (context, child) {
-                                  return Text('LOGIC',
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        fontFamily: 'MajorMonoDisplay',
-                                        fontSize: 60,
-                                        height: 1.05,
-                                        shadows: <Shadow>[
-                                          Shadow(blurRadius: _blurRadiusAnimation.value, color: Colors.white),
-                                        ],
-                                      ));
-                                }),
-                          ),
-                        ],
+                        ),
                       ),
-                      SpacedColumn(spacing: 10, children: [
-                        ...auth.isLoggedIn() ? loggedInMenu(context, nav) : loggedOutMenu(context, nav),
-                      ]),
                     ],
                   ),
-                ),
-              ],
+                  SizedBox(
+                    height: 5,
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }

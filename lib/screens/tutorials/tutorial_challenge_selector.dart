@@ -18,6 +18,7 @@ class TutorialChallengeSelector extends ConsumerStatefulWidget {
 }
 
 class _TutorialChallengeSelectorState extends ConsumerState<TutorialChallengeSelector> {
+  late final CustomNavigation nav;
   final List<Challenge> practiceChallenges = [
     Challenge(
       id: 'testing2',
@@ -29,6 +30,12 @@ class _TutorialChallengeSelectorState extends ConsumerState<TutorialChallengeSel
       solutionMatch: [5],
     ),
   ];
+  @override
+  void initState() {
+    nav = ref.read(customNavigationProvider.notifier);
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,7 +60,34 @@ class _TutorialChallengeSelectorState extends ConsumerState<TutorialChallengeSel
                   (i) => TutorialChallengeSelectorItem(
                     practiceChallenges[i],
                   ),
-                )
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                BLCard(
+                    color: Colors.amber,
+                    onPressed: () {
+                      nav.push(
+                          context,
+                          Scaffold(
+                            body: Background(
+                                child: SafeArea(
+                                    child: GameChallenge(
+                              currentChallenge: 0,
+                              roomName: 'Practice Room',
+                              challenge: Challenge(
+                                blocks: AllBlocks().getAll(),
+                                difficulty: Difficulty.advanced,
+                                shortDescription: 'No Challenge here!',
+                                solutionMatch: [5],
+                                name: 'Testing',
+                              ),
+                              challengeCount: 1,
+                              practiceMode: true,
+                            ))),
+                          ));
+                    },
+                    child: Center(child: BLSmallTitle('All blocks')))
               ],
             ),
           ),

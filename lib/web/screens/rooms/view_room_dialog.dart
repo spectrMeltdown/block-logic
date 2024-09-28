@@ -38,7 +38,7 @@ class _SelectedRoomState extends ConsumerState<ViewRoomDialog> {
         child: Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        BLSmallTitle('Room Details'),
+        const BLSmallTitle('Room Details'),
         room.when(
             data: (room) {
               if (room == null) {

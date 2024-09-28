@@ -43,6 +43,7 @@ class Toast extends _$Toast {
     toast.removeCustomToast();
     toast.showToast(
         toastDuration: const Duration(seconds: 5),
+        gravity: ToastGravity.TOP,
         child: Container(
           alignment: alignment,
           margin: margin,

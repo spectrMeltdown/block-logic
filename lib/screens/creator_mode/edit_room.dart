@@ -404,7 +404,7 @@ class _EditRoomBottomSheetState extends ConsumerState<EditRoomBottomSheet> {
               Visibility(
                 visible: processing,
                 child: Container(
-                  color: Colors.black.withOpacity(0.7),
+                  color: Colors.black.withOpacity(0.9),
                   child: const BLLoading(
                     message: 'Processing ...',
                   ),

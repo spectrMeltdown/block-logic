@@ -16,6 +16,7 @@ import 'package:block_logic/screens/tutorials/tutorial_challenge_selector.dart';
 import 'package:block_logic/screens/tutorials/variables.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:widget_and_text_animator/widget_and_text_animator.dart';
 
 class Tutorials extends ConsumerWidget {
   const Tutorials({super.key});
@@ -42,10 +43,16 @@ class Tutorials extends ConsumerWidget {
                         onPressed: () {
                           nav.push(context, const TutorialChallengeSelector());
                         },
-                        child: const Center(
+                        child: Center(
                             child: Padding(
                           padding: EdgeInsets.only(top: 5),
-                          child: BLSmallTitle('Practice'),
+                          child: WidgetAnimator(
+                            child: BLSmallTitle(
+                              'Practice',
+                              color: Colors.amber,
+                            ),
+                            atRestEffect: WidgetRestingEffects.size(effectStrength: 1),
+                          ),
                         ))),
                     const SizedBox(
                       height: 12,

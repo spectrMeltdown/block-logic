@@ -187,7 +187,7 @@ class _GameChallengeState extends ConsumerState<GameChallenge> {
         Visibility(
             visible: processing,
             child: Container(
-              color: Colors.black.withOpacity(0.8),
+              color: Colors.black.withOpacity(0.9),
               child: const BLLoading(
                 message: 'Processing...',
               ),

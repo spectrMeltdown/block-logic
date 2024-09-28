@@ -47,18 +47,35 @@ class _GameBlockWithChildState extends ConsumerState<GameBlockWithChild> {
     final data = ref.watch(getSelfDataProvider(widget.data.uid!));
     final bodyData = ref.watch(getChildrenDataProvider(data?.bodyUIDs ?? []));
     // final body = gameManager.getChildrenData(widget.data.bodyUIDs!);
+    // debugPrint(widget.data.name);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
             BLText(widget.data.name),
-            const SizedBox(width: 20),
+            SizedBox(
+              width: 5,
+            ),
+            if (shouldRenderParentheses(widget.data))
+              BLText(
+                '(',
+                size: 20,
+              ),
             if (shouldRenderBox(widget.data))
               CustomBox(
                 data: widget.data,
                 box: widget.box!,
               ),
+            if (shouldRenderParentheses(widget.data))
+              BLText(
+                ')',
+                size: 20,
+              ),
+            BLText(
+              ':',
+              size: 20,
+            ),
             // if (widget.data.bodyUIDs != null) const BLText(' :')
           ],
         ),
@@ -93,9 +110,7 @@ class _GameBlockWithChildState extends ConsumerState<GameBlockWithChild> {
                     setState(() {});
                   },
                   onWillAcceptWithDetails: (initData) {
-                    if (data!.bodyUIDs!.contains(initData.uid) ||
-                        initData.uid == data.uid ||
-                        initData.uid == data.parentUID) {
+                    if (data!.bodyUIDs!.contains(initData.uid) || initData.uid == data.uid || initData.uid == data.parentUID) {
                       return false;
                     }
                     return true;
@@ -109,25 +124,16 @@ class _GameBlockWithChildState extends ConsumerState<GameBlockWithChild> {
     );
   }
 
+  bool shouldRenderParentheses(GameBlockData data) {
+    // if (data.name == 'else') return false;
+    // if (data.name.contains('class')) return false;
+    if (data.argumentUIDs != null || data.parameterUIDs != null) return true;
+    return false;
+  }
+
   bool shouldRenderBox(GameBlockData data) {
     if (data.name == 'else') return false;
     if (data.name.contains('class')) return false;
     return true;
-    // switch (data.type) {
-    //   case CodeBlockType.literals:
-    //   case CodeBlockType.conditionals:
-    //   case CodeBlockType.loops:
-    //   case CodeBlockType.functions:
-    //   case CodeBlockType.objects:
-
-    //   case CodeBlockType.keywords:
-
-    //   case CodeBlockType.variables:
-
-    //   case CodeBlockType.operators:
-
-    //   case CodeBlockType.statement:
-
-    // }
   }
 }

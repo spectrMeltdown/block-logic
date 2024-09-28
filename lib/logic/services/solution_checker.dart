@@ -10,15 +10,15 @@ import 'package:http/http.dart' as http;
 
 // part 'generated/solution_checker.g.dart';
 
-final solutionCheckProvider = FutureProvider.autoDispose<String?>((ref) async {
-  final errorHandler = ref.read(errorHandlerProvider.notifier);
-  final solutionChecker = ref.read(solutionCheckerProvider.notifier);
-  try {
-    return await solutionChecker.check();
-  } catch (e) {
-    return errorHandler.call(e, 'solutionCheck');
-  }
-});
+// final solutionCheckProvider = FutureProvider.autoDispose<String?>((ref) async {
+//   final errorHandler = ref.read(errorHandlerProvider.notifier);
+//   final solutionChecker = ref.read(solutionCheckerProvider.notifier);
+//   try {
+//     return await solutionChecker.check();
+//   } catch (e) {
+//     return errorHandler.call(e, 'solutionCheck');
+//   }
+// });
 
 final solutionCheckerProvider = StateNotifierProvider.autoDispose<SolutionChecker, SolutionCheckerState>((ref) {
   final errorHandler = ref.read(errorHandlerProvider.notifier);
@@ -229,11 +229,10 @@ class SolutionChecker extends StateNotifier<SolutionCheckerState> {
       case CodeBlockType.functions:
         // if body is null, it is a function call
         if (block.bodyUIDs != null) {
-          codeBuffer.writeln('${block.name} ');
+          codeBuffer.write('\n${block.name}');
         } else {
-          codeBuffer.write('${block.name} ');
+          codeBuffer.write(block.name);
         }
-
         if (block.argumentUIDs != null) {
           codeBuffer.write('(');
           for (final uid in block.argumentUIDs!) {
@@ -253,14 +252,16 @@ class SolutionChecker extends StateNotifier<SolutionCheckerState> {
       case CodeBlockType.objects:
         // if body is null, it is a instance
         if (block.bodyUIDs != null) {
-          codeBuffer.write('${block.name} ');
+          codeBuffer.write(block.name);
         } else {
-          codeBuffer.writeln('${block.name} ');
+          codeBuffer.write('\n${block.name}');
         }
         if (block.argumentUIDs != null) {
-          for (final uid in block.conditionUIDs!) {
+          codeBuffer.write('(');
+          for (final uid in block.argumentUIDs!) {
             _processBlock(dataTree, uid, codeBuffer);
           }
+          codeBuffer.write(')');
         }
         codeBuffer.write(':');
         _processBody(dataTree, uid, codeBuffer);

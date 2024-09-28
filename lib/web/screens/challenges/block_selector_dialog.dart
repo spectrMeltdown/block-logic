@@ -2,8 +2,9 @@ import 'package:block_logic/components/dialog/dialog.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/game/block_data.dart';
-import 'package:block_logic/logic/services/block_data_manager.dart';
 import 'package:block_logic/logic/services/dialog.dart';
+import 'package:block_logic/logic/services/navigation.dart';
+import 'package:block_logic/logic/services/toast.dart';
 import 'package:block_logic/screens/game/wrapper_block_design.dart';
 import 'package:block_logic/web/components/back_btn.dart';
 import 'package:block_logic/web/components/button.dart';
@@ -13,20 +14,34 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class BlockSelectorDialog extends ConsumerStatefulWidget {
-  final Map<CodeBlockType, List<GameBlockData>>? blocks;
-  const BlockSelectorDialog(this.blocks, {super.key});
+  final Map<CodeBlockType, List<GameBlockData>>? initialBlocks;
+  const BlockSelectorDialog({required this.initialBlocks, super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _BlockSelectorDialogState();
 }
 
 class _BlockSelectorDialogState extends ConsumerState<BlockSelectorDialog> with SingleTickerProviderStateMixin {
+  late final Map<CodeBlockType, List<GameBlockData>>? selectedBlocks;
   late final List<Tab> tabs;
   late TabController tabController;
-  bool processing = false;
   late final DialogService dialog;
-  void addObj() async {
-    final result = await dialog.show(context, const CustomBlockDialog());
+  late final CustomNavigation nav;
+  late final Toast toast;
+  bool processing = false;
+
+  void addCustom(CodeBlockType type) async {
+    if (processing) return;
+    processing = false;
+    final result = await dialog.show(context, barrierDismissable: false, CustomBlockDialog(type));
+    if (result is GameBlockData) {
+      if (!mounted) return;
+      nav.pop(context, result);
+    } else {
+      if (!mounted) return;
+      toast.showToast(context, 'No block added.', type: NotifType.info);
+    }
+    processing = false;
   }
 
   @override
@@ -52,8 +67,8 @@ class _BlockSelectorDialogState extends ConsumerState<BlockSelectorDialog> with 
           child: TabBarView(
               controller: tabController,
               children: List.generate(tabs.length, (i) {
-                final key = widget.blocks!.entries.elementAt(i).key;
-                final category = widget.blocks!.entries.elementAt(i).value;
+                final key = selectedBlocks!.entries.elementAt(i).key;
+                final category = selectedBlocks!.entries.elementAt(i).value;
                 return Padding(
                   padding: const EdgeInsets.all(15),
                   child: Column(
@@ -82,7 +97,7 @@ class _BlockSelectorDialogState extends ConsumerState<BlockSelectorDialog> with 
                           // );
                         })),
                       ),
-                      BlockSelectorAddBtn(type: key, addObj: addObj)
+                      BlockSelectorAddBtn(type: key, addCustom: addCustom)
                     ],
                   ),
                 );
@@ -113,10 +128,13 @@ class _BlockSelectorDialogState extends ConsumerState<BlockSelectorDialog> with 
   @override
   void initState() {
     dialog = ref.read(dialogServiceProvider.notifier);
-    tabController = TabController(vsync: this, length: widget.blocks!.keys.length);
-    tabs = List.generate(widget.blocks!.keys.length, (i) {
+    nav = ref.read(customNavigationProvider.notifier);
+    toast = ref.read(toastProvider.notifier);
+    selectedBlocks = widget.initialBlocks ?? {for (final type in CodeBlockType.values) type: []};
+    tabController = TabController(vsync: this, length: selectedBlocks!.keys.length);
+    tabs = List.generate(selectedBlocks!.keys.length, (i) {
       return Tab(
-        text: widget.blocks!.keys.elementAt(i).name,
+        text: selectedBlocks!.keys.elementAt(i).name,
       );
     });
     super.initState();

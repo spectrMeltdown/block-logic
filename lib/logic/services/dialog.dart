@@ -18,32 +18,23 @@ class DialogService extends _$DialogService {
       return showDialog(context: context, builder: (context) => dialog);
     }
     return showGeneralDialog(
-        context: context,
-        barrierDismissible: barrierDismissable,
-        transitionDuration: const Duration(milliseconds: 400),
-        transitionBuilder: (context, animation, secondaryAnimation, child) {
-          final primaryCurve = CurvedAnimation(
-            parent: animation,
-            //     begin: const Offset(0, 1),
-            //     end: const Offset(0, 0),
-            //   ).animate(animation),
-            //   child: child,
-            // );
-            curve: Curves.easeInOut,
-            reverseCurve: Curves.easeInOut,
-          );
-          return SlideTransition(
-            position: Tween<Offset>(
-              begin: const Offset(0, 1),
-              end: const Offset(0, 0),
-            ).animate(primaryCurve),
-            child: child,
-          );
-          // return SlideTransition(
-          //   position: Tween<Offset>(
-        },
-        pageBuilder: (context, animation1, animation2) {
-          return dialog;
-        });
+      context: context,
+      barrierDismissible: barrierDismissable,
+      transitionDuration: const Duration(milliseconds: 400),
+      transitionBuilder: (context, animation, secondaryAnimation, child) {
+        final fadeAnimation = CurvedAnimation(
+          parent: animation,
+          curve: Curves.easeInOut,
+          reverseCurve: Curves.easeInOut,
+        );
+        return FadeTransition(
+          opacity: fadeAnimation,
+          child: child,
+        );
+      },
+      pageBuilder: (context, animation1, animation2) {
+        return dialog;
+      },
+    );
   }
 }

@@ -52,13 +52,13 @@ enum TimePeriod {
 }
 
 enum ReportType {
-  users,
-  rooms,
-  challengesPlayed,
+  rooms, // total existing rooms
+  challengesPlayed, // challenges per room played
   roomsPlayed,
-  premiumUsers,
+  premiumUsers, // after purchase is verified
   freeUsers,
-  leaderboards,
+  users, // all users
+  leaderboards, // leaderboards, based on dateCreated
 }
 
 /// - ongoing, self explanatory
@@ -75,4 +75,12 @@ enum RoomStatus { available, inGame, finalizing, locked }
 enum ScoreStatus { pending, incomplete, complete }
 
 /// Used in [Tutorials] widget
-enum TutorialType { dataTypesAndliterals, functions, conditionalsAndLoops, classesAndObjects, variables, operators, keywords }
+enum TutorialType {
+  variables,
+  dataTypesAndliterals,
+  operators,
+  conditionalsAndLoops,
+  functions,
+  classesAndObjects,
+  keywords,
+}
