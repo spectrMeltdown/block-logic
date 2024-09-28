@@ -19,10 +19,12 @@ import 'package:block_logic/logic/services/navigation.dart';
 import 'package:block_logic/logic/services/shared_pref.dart';
 import 'package:block_logic/logic/services/toast.dart';
 import 'package:block_logic/logic/services/validator_text.dart';
+import 'package:block_logic/logic/testing.dart';
 import 'package:block_logic/route_observer.dart';
 import 'package:block_logic/screens/auth/forgot_password.dart';
 import 'package:block_logic/screens/auth/signup.dart';
 import 'package:block_logic/screens/checkpoint.dart';
+import 'package:block_logic/web/components/button.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -82,6 +84,23 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
                     child: Column(
                       mainAxisAlignment: kIsWeb ? MainAxisAlignment.center : MainAxisAlignment.start,
                       children: [
+                        if (kDebugMode)
+                          BLAdminButton(
+                              type: AdminBtnType.grey,
+                              child: const BLText('Populate Reports'),
+                              onPressed: () async {
+                                final testing = ref.read(testingProvider.notifier);
+                                final result = await testing.populateReports(
+                                    dateRange: DateTimeRange(
+                                      start: DateTime(2024, 8, 1, 12, 0),
+                                      end: DateTime.now(),
+                                    ),
+                                    number: 50);
+                                if (result != null) {
+                                  if (!context.mounted) return;
+                                  toast.showToast(context, result, type: NotifType.error);
+                                }
+                              }),
                         if (!kIsWeb)
                           const Align(
                             child: Align(

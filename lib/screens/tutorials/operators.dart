@@ -58,7 +58,7 @@ class _OperatorsState extends ConsumerState<Operators> {
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
                             child: BLRichText([
-                              TextSpan(
+                              const TextSpan(
                                 text: 'Operators are special symbols in Python that perform operations on variables and values. '
                                     'They can be used for mathematical calculations, comparisons, logical operations, and more.\n\n',
                               ),
@@ -66,17 +66,17 @@ class _OperatorsState extends ConsumerState<Operators> {
                                 text: '1. Types of Operators:\n',
                                 style: tutorialData.paragraphStyle.copyWith(fontSize: 18, fontWeight: FontWeight.bold),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: '   - Python has various types of operators, including:\n',
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: '     - ',
                               ),
                               TextSpan(
                                 text: 'Arithmetic Operators',
                                 style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: ': Used for basic math operations like addition, subtraction, etc.\n'
                                     '     Example: ',
                               ),
@@ -84,17 +84,17 @@ class _OperatorsState extends ConsumerState<Operators> {
                                 text: 'result = 10 + 5',
                                 style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: ' (result will be 15)\n',
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: '     - ',
                               ),
                               TextSpan(
                                 text: 'Comparison Operators',
                                 style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: ': Used to compare two values.\n'
                                     '     Example: ',
                               ),
@@ -102,17 +102,17 @@ class _OperatorsState extends ConsumerState<Operators> {
                                 text: 'x == y',
                                 style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: ' checks if x is equal to y.\n',
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: '     - ',
                               ),
                               TextSpan(
                                 text: 'Logical Operators',
                                 style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: ': Used to combine conditional statements.\n'
                                     '     Example: ',
                               ),
@@ -120,17 +120,17 @@ class _OperatorsState extends ConsumerState<Operators> {
                                 text: 'if (x > 5 and y < 10):',
                                 style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: ' checks if both conditions are true.\n',
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: '     - ',
                               ),
                               TextSpan(
                                 text: 'Bitwise Operators',
                                 style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: ': Operate on bits and perform bit-by-bit operations.\n'
                                     '     Example: ',
                               ),
@@ -138,17 +138,17 @@ class _OperatorsState extends ConsumerState<Operators> {
                                 text: 'result = x & y',
                                 style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: ' performs a bitwise AND operation.\n',
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: '     - ',
                               ),
                               TextSpan(
                                 text: 'Assignment Operators',
                                 style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: ': Used to assign values to variables.\n'
                                     '     Example: ',
                               ),
@@ -156,14 +156,14 @@ class _OperatorsState extends ConsumerState<Operators> {
                                 text: 'x = 10',
                                 style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: ' assigns 10 to x.\n',
                               ),
                               TextSpan(
                                 text: '2. Importance of Operators:\n',
                                 style: tutorialData.paragraphStyle.copyWith(fontSize: 18, fontWeight: FontWeight.bold),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: '   - Understanding operators is essential for performing calculations and controlling the flow of your code.\n\n',
                               ),
                               TextSpan(

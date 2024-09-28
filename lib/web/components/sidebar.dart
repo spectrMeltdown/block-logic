@@ -145,48 +145,46 @@ class _SidebarState extends ConsumerState<Sidebar> {
       final title = WebScaffoldPages.values[i].name;
       final capital = title.substring(0, 1).toUpperCase();
       final lower = title.substring(1, title.length);
-      return Flexible(
-        child: GestureDetector(
-          onTap: () {
-            go(i);
+      return GestureDetector(
+        onTap: () {
+          go(i);
+          setState(() {
+            selected = i;
+          });
+        },
+        child: MouseRegion(
+          onEnter: (_) {
             setState(() {
-              selected = i;
+              hovered = i; // Set the hovered index
             });
           },
-          child: MouseRegion(
-            onEnter: (_) {
-              setState(() {
-                hovered = i; // Set the hovered index
-              });
-            },
-            onExit: (_) {
-              setState(() {
-                hovered = null; // Reset the hovered index
-              });
-            },
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: const BorderRadius.all(Radius.circular(10)),
-                color: selected == i
-                    ? Colors.blue
-                    : hovered == i
-                        ? Colors.blueGrey.withOpacity(0.5) // Hover color
-                        : Colors.transparent, // Default color
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 15),
-              margin: EdgeInsets.symmetric(
-                vertical: 2,
-                horizontal: width <= mobileMax ? 5 : 10,
-              ),
-              child: Row(
-                children: [
-                  SizedBox(width: width <= mobileMax ? 5 : 15),
-                  getIcon(WebScaffoldPages.values[i]),
-                  if (!isCompact) const SizedBox(width: 15),
-                  if (!isCompact) BLText('$capital$lower'),
-                  SizedBox(width: width <= mobileMax ? 5 : 15),
-                ],
-              ),
+          onExit: (_) {
+            setState(() {
+              hovered = null; // Reset the hovered index
+            });
+          },
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: const BorderRadius.all(Radius.circular(10)),
+              color: selected == i
+                  ? Colors.blue
+                  : hovered == i
+                      ? Colors.blueGrey.withOpacity(0.5) // Hover color
+                      : Colors.transparent, // Default color
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 15),
+            margin: EdgeInsets.symmetric(
+              vertical: 2,
+              horizontal: width <= mobileMax ? 5 : 10,
+            ),
+            child: Row(
+              children: [
+                SizedBox(width: width <= mobileMax ? 5 : 15),
+                getIcon(WebScaffoldPages.values[i]),
+                if (!isCompact) const SizedBox(width: 15),
+                if (!isCompact) BLText('$capital$lower'),
+                SizedBox(width: width <= mobileMax ? 5 : 15),
+              ],
             ),
           ),
         ),

@@ -58,121 +58,121 @@ class _ConditionalsAndLoopsState extends ConsumerState<ConditionalsAndLoops> {
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
                             child: BLRichText([
-                              TextSpan(
+                              const TextSpan(
                                 text: 'Conditionals and loops are fundamental concepts in programming that allow you to control the flow of your code.\n\n',
                               ),
                               TextSpan(
                                 text: '1. Conditionals:\n',
                                 style: tutorialData.paragraphStyle.copyWith(fontSize: 18, fontWeight: FontWeight.bold),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: '   - Conditionals are used to execute different blocks of code based on certain conditions.\n',
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: '   - The most common conditional statement is the ',
                               ),
                               TextSpan(
                                 text: 'if statement',
                                 style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: ':\n     Example:\n',
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: '     if ',
                               ),
                               TextSpan(
                                 text: 'x > 10:',
                                 style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: '\n     \tprint("x is greater than 10")\n\n',
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: '   - You can also use ',
                               ),
                               TextSpan(
                                 text: 'else',
                                 style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: ' and ',
                               ),
                               TextSpan(
                                 text: 'elif',
                                 style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: ' to handle multiple conditions:\n     Example:\n',
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: '     if ',
                               ),
                               TextSpan(
                                 text: 'x > 10:',
                                 style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: '\n     \tprint("x is greater than 10")\n',
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: '     elif ',
                               ),
                               TextSpan(
                                 text: 'x == 10:',
                                 style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: '\n     \tprint("x is equal to 10")\n',
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: '     else:\n     \tprint("x is less than 10")\n\n',
                               ),
                               TextSpan(
                                 text: '2. Loops:\n',
                                 style: tutorialData.paragraphStyle.copyWith(fontSize: 18, fontWeight: FontWeight.bold),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: '   - Loops allow you to execute a block of code repeatedly.\n',
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: '   - The most common loops in Python are the ',
                               ),
                               TextSpan(
                                 text: 'for loop',
                                 style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: ' and the ',
                               ),
                               TextSpan(
                                 text: 'while loop',
                                 style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: ':\n     Example of a for loop:\n',
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: '     for ',
                               ),
                               TextSpan(
                                 text: 'i in range(5):',
                                 style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: '\n     \tprint(i)\n\n',
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: '   - Example of a while loop:\n',
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: '     while ',
                               ),
                               TextSpan(
                                 text: 'x < 5:',
                                 style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: '\n     \tprint(x)\n     \tx += 1\n\n',
                               ),
                               TextSpan(

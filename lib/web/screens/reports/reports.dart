@@ -6,6 +6,7 @@ import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/text/title_small.dart';
 import 'package:block_logic/components/util/provider_default.dart';
 import 'package:block_logic/logic/enums.dart';
+import 'package:block_logic/logic/firebase_models/report.dart';
 import 'package:block_logic/logic/firebase_providers/reports.dart';
 import 'package:block_logic/logic/services/navigation.dart';
 import 'package:block_logic/logic/services/reports_manager.dart';
@@ -14,6 +15,7 @@ import 'package:block_logic/web/components/button.dart';
 import 'package:block_logic/web/components/card_simple.dart';
 import 'package:block_logic/web/components/header.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fl_chart/fl_chart.dart';
 // import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -185,6 +187,32 @@ class _ReportsState extends ConsumerState<Reports> {
       stream: streams.entries.firstWhere((e) => e.key == selectedType).value,
       dateRange: dateRange,
     )));
+
+    // final reports = ref.watch(reportsProvider(ReportParams(type: selectedType, from: from, to: to)));
+    final groupedReports = ref.watch(reportsProvider(ReportParams(
+      stream: streams.entries.firstWhere((e) => e.key == selectedType).value,
+      dateRange: dateRange,
+    )));
+
+    return Column(
+      children: [
+        groupedReports.when(
+            data: (data) {
+              return data.isNotEmpty
+                  ? Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: BarChartWidget(data), // Custom widget to display the bar chart
+                      ),
+                    )
+                  : Center(
+                      child: CircularProgressIndicator(),
+                    );
+            },
+            error: genericError,
+            loading: genericLoading)
+      ],
+    );
 
     return Stack(
       fit: StackFit.expand,
@@ -375,7 +403,7 @@ class _ReportsState extends ConsumerState<Reports> {
         if (processing)
           Container(
             color: Colors.black.withOpacity(0.8),
-            child: BLLoading(
+            child: const BLLoading(
               message: 'Processing ...',
             ),
           )
@@ -465,8 +493,8 @@ class _ReportTypeSelectorState extends ConsumerState<ReportTypeSelector> {
         child: ListView(
       shrinkWrap: true,
       children: [
-        BLSmallTitle('Select reports to print:'),
-        SizedBox(height: 15),
+        const BLSmallTitle('Select reports to print:'),
+        const SizedBox(height: 15),
         ...List.generate(widget.reportOptions.length, (i) {
           final currentReport = widget.reportOptions.values.toList()[i];
           return CheckboxListTile(
@@ -485,10 +513,10 @@ class _ReportTypeSelectorState extends ConsumerState<ReportTypeSelector> {
                 }
               });
         }),
-        SizedBox(height: 15),
+        const SizedBox(height: 15),
         BLAdminButton(
           type: hasSelection ? AdminBtnType.green : AdminBtnType.grey,
-          child: BLText('Confirm & Download'),
+          child: const BLText('Confirm & Download'),
           onPressed: () {
             if (!hasSelection) {
               toast.showToast(context, 'Select a report type.', type: NotifType.error);
@@ -499,5 +527,52 @@ class _ReportTypeSelectorState extends ConsumerState<ReportTypeSelector> {
         )
       ],
     ));
+  }
+}
+
+class BarChartWidget extends StatelessWidget {
+  final Map<TimePeriod, Map<int, List<Report>>> groupedReports;
+
+  const BarChartWidget(this.groupedReports, {super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    // Extract the yearly data
+    final yearlyReports = groupedReports[TimePeriod.yearly] ?? {};
+
+    // Prepare data for the BarChart
+    List<BarChartGroupData> barGroups = yearlyReports.entries.map((entry) {
+      final year = entry.key;
+      final reportCount = entry.value.length;
+
+      return BarChartGroupData(
+        x: year, // x-axis as the year
+        barRods: [BarChartRodData(toY: reportCount.toDouble(), width: 15)],
+      );
+    }).toList();
+
+    return BarChart(
+      BarChartData(
+        alignment: BarChartAlignment.spaceAround,
+        barGroups: barGroups,
+        titlesData: FlTitlesData(
+          bottomTitles: AxisTitles(
+            sideTitles: SideTitles(
+                showTitles: true,
+                getTitlesWidget: (value, _) {
+                  return Text(value.toInt().toString()); // Display year on the x-axis
+                }),
+          ),
+          leftTitles: AxisTitles(
+            sideTitles: SideTitles(
+                showTitles: true,
+                getTitlesWidget: (value, _) {
+                  return Text(value.toInt().toString()); // Display report count on y-axis
+                }),
+          ),
+        ),
+        borderData: FlBorderData(show: false),
+      ),
+    );
   }
 }

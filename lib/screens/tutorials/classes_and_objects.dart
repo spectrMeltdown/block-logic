@@ -58,73 +58,73 @@ class _ClassesAndObjectsState extends ConsumerState<ClassesAndObjects> {
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
                             child: BLRichText([
-                              TextSpan(
+                              const TextSpan(
                                 text: 'Classes and objects are fundamental concepts in object-oriented programming (OOP) that help organize code and model real-world entities.\n\n',
                               ),
                               TextSpan(
                                 text: '1. What is a Class?\n',
                                 style: tutorialData.paragraphStyle.copyWith(fontSize: 18, fontWeight: FontWeight.bold),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: '   - A class is a blueprint for creating objects. It defines a set of attributes and methods that the objects created from the class can have.\n',
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: '   - Example of a class definition:\n',
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: '     class ',
                               ),
                               TextSpan(
                                 text: 'Dog:',
                                 style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: '\n     \tdef __init__(self, name, age):\n',
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: '     \t\tself.name = name\n',
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: '     \t\tself.age = age\n\n',
                               ),
                               TextSpan(
                                 text: '2. What is an Object?\n',
                                 style: tutorialData.paragraphStyle.copyWith(fontSize: 18, fontWeight: FontWeight.bold),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: '   - An object is an instance of a class. It represents a specific entity that has the properties defined by the class.\n',
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: '   - Example of creating an object:\n',
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: '     my_dog = ',
                               ),
                               TextSpan(
                                 text: 'Dog("Buddy", 5)',
                                 style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: ' creates an object named my_dog with the name "Buddy" and age 5.\n\n',
                               ),
                               TextSpan(
                                 text: '3. Methods in Classes:\n',
                                 style: tutorialData.paragraphStyle.copyWith(fontSize: 18, fontWeight: FontWeight.bold),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: '   - Methods are functions defined within a class that describe the behaviors of the objects.\n',
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: '   - Example of a method:\n',
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: '     def ',
                               ),
                               TextSpan(
                                 text: 'bark(self):',
                                 style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: '\n     \tprint("Woof!")\n\n',
                               ),
                               TextSpan(

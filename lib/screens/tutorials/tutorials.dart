@@ -45,13 +45,13 @@ class Tutorials extends ConsumerWidget {
                         },
                         child: Center(
                             child: Padding(
-                          padding: EdgeInsets.only(top: 5),
+                          padding: const EdgeInsets.only(top: 5),
                           child: WidgetAnimator(
+                            atRestEffect: WidgetRestingEffects.size(effectStrength: 1),
                             child: BLSmallTitle(
                               'Practice',
                               color: Colors.amber,
                             ),
-                            atRestEffect: WidgetRestingEffects.size(effectStrength: 1),
                           ),
                         ))),
                     const SizedBox(

@@ -72,6 +72,7 @@ dependencies:
   html: ^0.15.4
   equatable: ^2.0.5
   rxdart: ^0.28.0
+  fl_chart: ^0.69.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

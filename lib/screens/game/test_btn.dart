@@ -3,7 +3,6 @@ import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/services/game_manager.dart';
 import 'package:block_logic/logic/services/game_provider.dart';
-import 'package:block_logic/logic/services/solution_checker.dart';
 import 'package:block_logic/logic/services/toast.dart';
 import 'package:block_logic/screens/game/test_dialog.dart';
 import 'package:flutter/material.dart';

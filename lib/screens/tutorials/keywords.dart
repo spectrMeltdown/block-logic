@@ -58,7 +58,7 @@ class _KeywordsScreenState extends ConsumerState<Keywords> {
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
                             child: BLRichText([
-                              TextSpan(
+                              const TextSpan(
                                 text: 'Keywords are reserved words in Python that have special meaning and cannot be used for anything other than their intended purpose. '
                                     'They help define the syntax and structure of the code.\n\n',
                               ),
@@ -66,206 +66,206 @@ class _KeywordsScreenState extends ConsumerState<Keywords> {
                                 text: '1. List of Keywords:\n',
                                 style: tutorialData.paragraphStyle.copyWith(fontSize: 18, fontWeight: FontWeight.bold),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: '   - Python has a set of keywords that you need to know. Here are some of the most common ones:\n',
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: '     - ',
                               ),
                               TextSpan(
                                 text: 'False',
                                 style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: ', ',
                               ),
                               TextSpan(
                                 text: 'None',
                                 style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: ', ',
                               ),
                               TextSpan(
                                 text: 'True',
                                 style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: ', ',
                               ),
                               TextSpan(
                                 text: 'and',
                                 style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: ', ',
                               ),
                               TextSpan(
                                 text: 'or',
                                 style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: ', ',
                               ),
                               TextSpan(
                                 text: 'if',
                                 style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: ', ',
                               ),
                               TextSpan(
                                 text: 'elif',
                                 style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: ', ',
                               ),
                               TextSpan(
                                 text: 'else',
                                 style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: ', ',
                               ),
                               TextSpan(
                                 text: 'for',
                                 style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: ', ',
                               ),
                               TextSpan(
                                 text: 'while',
                                 style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: ', ',
                               ),
                               TextSpan(
                                 text: 'break',
                                 style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: ', ',
                               ),
                               TextSpan(
                                 text: 'continue',
                                 style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: ', ',
                               ),
                               TextSpan(
                                 text: 'def',
                                 style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: ', ',
                               ),
                               TextSpan(
                                 text: 'return',
                                 style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: ', ',
                               ),
                               TextSpan(
                                 text: 'import',
                                 style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: ', ',
                               ),
                               TextSpan(
                                 text: 'from',
                                 style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: ', ',
                               ),
                               TextSpan(
                                 text: 'as',
                                 style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: ', ',
                               ),
                               TextSpan(
                                 text: 'class',
                                 style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: ', ',
                               ),
                               TextSpan(
                                 text: 'try',
                                 style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: ', ',
                               ),
                               TextSpan(
                                 text: 'except',
                                 style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: ', ',
                               ),
                               TextSpan(
                                 text: 'finally',
                                 style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: ', ',
                               ),
                               TextSpan(
                                 text: 'with',
                                 style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: ', ',
                               ),
                               TextSpan(
                                 text: 'assert',
                                 style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: ', ',
                               ),
                               TextSpan(
                                 text: 'async',
                                 style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: ', ',
                               ),
                               TextSpan(
                                 text: 'await',
                                 style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: ', ',
                               ),
                               TextSpan(
                                 text: 'nonlocal',
                                 style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: ', ',
                               ),
                               TextSpan(
                                 text: 'global',
                                 style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: ' and more.\n\n',
                               ),
                               TextSpan(
                                 text: '2. Importance of Keywords:\n',
                                 style: tutorialData.paragraphStyle.copyWith(fontSize: 18, fontWeight: FontWeight.bold),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: '   - Keywords help define the structure of your Python code. '
                                     'Understanding them is essential for writing valid Python programs.\n\n',
                               ),
@@ -273,7 +273,7 @@ class _KeywordsScreenState extends ConsumerState<Keywords> {
                                 text: '3. Using Keywords:\n',
                                 style: tutorialData.paragraphStyle.copyWith(fontSize: 18, fontWeight: FontWeight.bold),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: '   - Remember, you cannot use keywords as variable names or function names.\n'
                                     '     Example: Using ',
                               ),
@@ -281,7 +281,7 @@ class _KeywordsScreenState extends ConsumerState<Keywords> {
                                 text: 'def',
                                 style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: ' as a variable name will cause an error.\n\n',
                               ),
                               TextSpan(

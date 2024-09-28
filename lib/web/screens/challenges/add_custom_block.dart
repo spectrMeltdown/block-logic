@@ -155,7 +155,7 @@ class _CustomBlockDialogState extends ConsumerState<CustomBlockDialog> {
                 ),
               if (widget.type == CodeBlockType.variables || widget.type == CodeBlockType.literals)
                 DropdownButton<PyDataType>(
-                  hint: BLText('(Select data type)'),
+                  hint: const BLText('(Select data type)'),
                   value: selectedDataType,
                   items: List.generate(PyDataType.values.length, (i) {
                     return DropdownMenuItem(

@@ -61,7 +61,7 @@ class _TutorialChallengeSelectorState extends ConsumerState<TutorialChallengeSel
                     practiceChallenges[i],
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 BLCard(
@@ -87,7 +87,7 @@ class _TutorialChallengeSelectorState extends ConsumerState<TutorialChallengeSel
                             ))),
                           ));
                     },
-                    child: Center(child: BLSmallTitle('All blocks')))
+                    child: const Center(child: BLSmallTitle('All blocks')))
               ],
             ),
           ),

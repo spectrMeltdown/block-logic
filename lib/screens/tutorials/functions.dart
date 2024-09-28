@@ -58,7 +58,7 @@ class _FunctionsState extends ConsumerState<Functions> {
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
                             child: BLRichText([
-                              TextSpan(
+                              const TextSpan(
                                 text: 'Functions are blocks of reusable code that perform a specific task. '
                                     'They help organize and structure your program.\n\n',
                               ),
@@ -66,14 +66,14 @@ class _FunctionsState extends ConsumerState<Functions> {
                                 text: '1. Defining a Function:\n',
                                 style: tutorialData.paragraphStyle.copyWith(fontSize: 18, fontWeight: FontWeight.bold),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: '   - Use the keyword ',
                               ),
                               TextSpan(
                                 text: 'def',
                                 style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: ' to define a function.\n     Example: ',
                               ),
                               TextSpan(
@@ -84,7 +84,7 @@ class _FunctionsState extends ConsumerState<Functions> {
                                 text: '2. Calling a Function:\n',
                                 style: tutorialData.paragraphStyle.copyWith(fontSize: 18, fontWeight: FontWeight.bold),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: '   - To execute a function, use its name followed by parentheses.\n     Example: ',
                               ),
                               TextSpan(
@@ -95,7 +95,7 @@ class _FunctionsState extends ConsumerState<Functions> {
                                 text: '3. Function Parameters:\n',
                                 style: tutorialData.paragraphStyle.copyWith(fontSize: 18, fontWeight: FontWeight.bold),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: '   - You can pass data to functions using parameters.\n     Example: ',
                               ),
                               TextSpan(
@@ -106,14 +106,14 @@ class _FunctionsState extends ConsumerState<Functions> {
                                 text: '4. Return Statement:\n',
                                 style: tutorialData.paragraphStyle.copyWith(fontSize: 18, fontWeight: FontWeight.bold),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: '   - Use ',
                               ),
                               TextSpan(
                                 text: 'return',
                                 style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: ' to send back a value from a function.\n     Example: ',
                               ),
                               TextSpan(
@@ -124,7 +124,7 @@ class _FunctionsState extends ConsumerState<Functions> {
                                 text: '5. Default Parameters:\n',
                                 style: tutorialData.paragraphStyle.copyWith(fontSize: 18, fontWeight: FontWeight.bold),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: '   - You can set default values for parameters.\n     Example: ',
                               ),
                               TextSpan(
@@ -135,7 +135,7 @@ class _FunctionsState extends ConsumerState<Functions> {
                                 text: '6. Keyword Arguments:\n',
                                 style: tutorialData.paragraphStyle.copyWith(fontSize: 18, fontWeight: FontWeight.bold),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: '   - You can pass arguments by keyword instead of position.\n     Example: ',
                               ),
                               TextSpan(
@@ -146,7 +146,7 @@ class _FunctionsState extends ConsumerState<Functions> {
                                 text: '7. Variable-length Arguments:\n',
                                 style: tutorialData.paragraphStyle.copyWith(fontSize: 18, fontWeight: FontWeight.bold),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: '   - Use *args for non-keyword and **kwargs for keyword arguments.\n     Example: ',
                               ),
                               TextSpan(
@@ -157,7 +157,7 @@ class _FunctionsState extends ConsumerState<Functions> {
                                 text: '8. Lambda Functions:\n',
                                 style: tutorialData.paragraphStyle.copyWith(fontSize: 18, fontWeight: FontWeight.bold),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: '   - Short, anonymous functions defined with the lambda keyword.\n     Example: ',
                               ),
                               TextSpan(

@@ -1,14 +1,10 @@
 import 'package:block_logic/components/background.dart';
-import 'package:block_logic/components/button/back.dart';
 import 'package:block_logic/components/button/button.dart';
-import 'package:block_logic/components/card/card.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/text/text_span.dart';
-import 'package:block_logic/components/text/title_small.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/services/navigation.dart';
 import 'package:block_logic/logic/services/tutorials.dart';
-import 'package:block_logic/logic/services/ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

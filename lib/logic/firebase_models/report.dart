@@ -6,11 +6,13 @@ class Report {
   final ReportType? type;
   final int? count;
   final DateTime? date;
+  final bool? isTest;
   Report({
     this.id,
     this.type,
     this.count,
     this.date,
+    this.isTest,
     // this.startDate,
     // this.endDate,
     // super.createdAt,
@@ -47,14 +49,18 @@ class Report {
           throw ('No matching ReportType!');
       }
     }
+    // reportType: data['reportType'] ?? '',
+    // data: data['data'] ?? '',
+    // startDate: (data['startDate'] as Timestamp).toDate(),
+    // endDate: (data['endDate'] as Timestamp).toDate(),
+    // createdAt: data['createdAt'] == null ? null : (data['createdAt'] as Timestamp).toDate(),
+    // modifiedAt: (data['modifiedAt'] as Timestamp).toDate(),
     return Report(
-      id: doc.id, count: data['count'], type: type, date: data['date'] == null ? null : (data['date'] as Timestamp).toDate(),
-      // reportType: data['reportType'] ?? '',
-      // data: data['data'] ?? '',
-      // startDate: (data['startDate'] as Timestamp).toDate(),
-      // endDate: (data['endDate'] as Timestamp).toDate(),
-      // createdAt: data['createdAt'] == null ? null : (data['createdAt'] as Timestamp).toDate(),
-      // modifiedAt: (data['modifiedAt'] as Timestamp).toDate(),
+      id: doc.id,
+      count: data['count'],
+      type: type,
+      date: data['date'] == null ? null : (data['date'] as Timestamp).toDate(),
+      isTest: data['isTest'],
     );
   }
   Map<String, dynamic> toFirestore() {
@@ -67,6 +73,9 @@ class Report {
     }
     if (count != null) {
       toFirestoreMap.addAll({'count': count});
+    }
+    if (isTest != null) {
+      toFirestoreMap.addAll({'isTest': isTest});
     }
     // if (createdAt != null) {
     //   toFirestoreMap.addAll({'createdAt': Timestamp.fromDate(createdAt!)});

@@ -173,7 +173,7 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> with WidgetsBin
                 children: [
                   Column(
                     children: [
-                      SizedBox(
+                      const SizedBox(
                         height: 50,
                       ),
                       SlideInLeft(
@@ -212,13 +212,13 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> with WidgetsBin
                       ),
                     ],
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 70,
                   ),
                   SpacedColumn(spacing: 10, children: [
                     ...auth.isLoggedIn() ? loggedInMenu(context, nav) : loggedOutMenu(context, nav),
                   ]),
-                  SizedBox(
+                  const SizedBox(
                     height: 10,
                   ),
                   Row(
@@ -242,7 +242,7 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> with WidgetsBin
                           )),
                       GestureDetector(
                         onTap: () {
-                          showDialog(context: context, builder: (context) => PremiumPromptDialog());
+                          showDialog(context: context, builder: (context) => const PremiumPromptDialog());
                         },
                         child: Row(
                           children: [
@@ -263,7 +263,7 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> with WidgetsBin
                       ),
                     ],
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 5,
                   ),
                 ],

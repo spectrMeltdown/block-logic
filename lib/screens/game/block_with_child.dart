@@ -54,11 +54,11 @@ class _GameBlockWithChildState extends ConsumerState<GameBlockWithChild> {
         Row(
           children: [
             BLText(widget.data.name),
-            SizedBox(
+            const SizedBox(
               width: 5,
             ),
             if (shouldRenderParentheses(widget.data))
-              BLText(
+              const BLText(
                 '(',
                 size: 20,
               ),
@@ -68,11 +68,11 @@ class _GameBlockWithChildState extends ConsumerState<GameBlockWithChild> {
                 box: widget.box!,
               ),
             if (shouldRenderParentheses(widget.data))
-              BLText(
+              const BLText(
                 ')',
                 size: 20,
               ),
-            BLText(
+            const BLText(
               ':',
               size: 20,
             ),
