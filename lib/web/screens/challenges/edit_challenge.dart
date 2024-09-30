@@ -44,6 +44,7 @@ class _SelectedChallengeState extends ConsumerState<EditChallenge> {
   Map<CodeBlockType, List<GameBlockData>>? blocks;
   bool processing = false;
   Difficulty? difficultySelection;
+  late final ChallengeManager challengeManager;
   final formKey = GlobalKey<FormState>();
   final List<String> challengeProps = [
     'Name',
@@ -52,53 +53,8 @@ class _SelectedChallengeState extends ConsumerState<EditChallenge> {
     //'Limitations',
     'Blocks',
     'Difficulty',
-    'Tags',
+    // 'Tags',
   ];
-
-  late final ChallengeManager challengeManager;
-
-  // void addLimitationPop(BuildContext context) async {
-  //   if (processing) return;
-  //   processing = true;
-  //   final RenderBox button = limitationBtnKey.currentContext!.findRenderObject() as RenderBox;
-  //   final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
-  //   final RelativeRect position = RelativeRect.fromRect(
-  //     Rect.fromPoints(
-  //       button.localToGlobal(Offset.zero, ancestor: overlay),
-  //       button.localToGlobal(button.size.bottomRight(Offset.zero), ancestor: overlay),
-  //     ),
-  //     Offset.zero & overlay.size,
-  //   );
-  //   final limitationController = TextEditingController();
-  //   await showMenu(
-  //     context: context,
-  //     position: position,
-  //     items: [
-  //       PopupMenuItem<String>(
-  //         value: limitationController.text,
-  //         child: Column(
-  //           crossAxisAlignment: CrossAxisAlignment.start,
-  //           children: [
-  //             const Text('Add Limitation:'),
-  //             const SizedBox(height: 8),
-  //             BLTextBox(
-  //               controller: limitationController,
-  //             ),
-  //             BLAdminButton(
-  //                 type: AdminBtnType.green, child: const BLText('Save'), onPressed: () => Navigator.pop(context))
-  //           ],
-  //         ),
-  //       ),
-  //     ],
-  //     elevation: 8.0,
-  //   );
-  //   if (limitationController.text.trim().isNotEmpty) {
-  //     setState(() {
-  //       limitations.add(limitationController.text.trim());
-  //     });
-  //   }
-  //   processing = false;
-  // }
 
   void addTagPop(BuildContext context) async {
     if (processing) return;
@@ -288,20 +244,20 @@ class _SelectedChallengeState extends ConsumerState<EditChallenge> {
       //                   });
       //                 },
       //               )));
-      case 'Tags':
-        return ChipStrip(
-            btnKey: tagBtnKey,
-            onPressed: () => addTagPop(context),
-            children: List.generate(
-                tags.length,
-                (i) => BlChip(
-                      label: BLText(tags[i]),
-                      onDeleted: () {
-                        setState(() {
-                          tags.removeWhere((j) => j == tags[i]);
-                        });
-                      },
-                    )));
+      // case 'Tags':
+      //   return ChipStrip(
+      //       btnKey: tagBtnKey,
+      //       onPressed: () => addTagPop(context),
+      //       children: List.generate(
+      //           tags.length,
+      //           (i) => BlChip(
+      //                 label: BLText(tags[i]),
+      //                 onDeleted: () {
+      //                   setState(() {
+      //                     tags.removeWhere((j) => j == tags[i]);
+      //                   });
+      //                 },
+      //               )));
       case 'Difficulty':
         return BlSegmentedButton(
             selected: {

@@ -38,11 +38,7 @@ class DashboardCard extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
-                children: [
-                  Flexible(child: BLText('Total $titleTotal')),
-                  Flexible(
-                      child: BLSmallTitle(NumberFormat('#,###').format(total)))
-                ],
+                children: [Flexible(child: BLText('Total $titleTotal')), Flexible(child: BLSmallTitle(NumberFormat('#,###').format(total)))],
               ),
               SizedBox(width: width * .03),
               Container(
@@ -55,27 +51,27 @@ class DashboardCard extends StatelessWidget {
             ],
           ),
           SizedBox(height: height * .02),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              downOrup == 'up'
-                  ? const Icon(
-                      Icons.trending_up_rounded,
-                      color: Colors.green,
-                    )
-                  : const Icon(
-                      Icons.trending_down_rounded,
-                      color: Colors.red,
-                    ),
-              SizedBox(
-                width: width / 100,
-              ),
-              BLRichText([
-                TextSpan(text: '$percent% '),
-                TextSpan(text: '$downOrup from yesterday')
-              ])
-            ],
-          )
+          // Row(
+          //   mainAxisSize: MainAxisSize.min,
+          //   children: [
+          //     downOrup == 'up'
+          //         ? const Icon(
+          //             Icons.trending_up_rounded,
+          //             color: Colors.green,
+          //           )
+          //         : const Icon(
+          //             Icons.trending_down_rounded,
+          //             color: Colors.red,
+          //           ),
+          //     SizedBox(
+          //       width: width / 100,
+          //     ),
+          //     BLRichText([
+          //       TextSpan(text: '$percent% '),
+          //       TextSpan(text: '$downOrup from yesterday')
+          //     ])
+          //   ],
+          // )
         ],
       ),
     ));

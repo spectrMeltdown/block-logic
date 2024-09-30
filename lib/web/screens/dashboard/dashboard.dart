@@ -1,5 +1,6 @@
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/text/title_small.dart';
+import 'package:block_logic/components/util/provider_default.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_providers/reports.dart';
 import 'package:block_logic/logic/services/toast.dart';
@@ -9,6 +10,9 @@ import 'package:block_logic/web/components/button.dart';
 import 'package:block_logic/web/components/card_simple.dart';
 import 'package:block_logic/web/components/header.dart';
 import 'package:block_logic/web/screens/dashboard/dashboard_card.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -28,10 +32,13 @@ class _DashboardState extends ConsumerState<Dashboard> {
   final notifScrollController = ScrollController();
   final pageScrollController = ScrollController();
   late final Toast toast;
+  late final Map<ReportType, Stream> streams;
 
   @override
   Widget build(BuildContext context) {
-    // final reports = ref.watch(reportsProvider(ReportParams(dateRange: null, stream: )));
+    final users = ref.watch(reportsProvider(ReportParams(dateRange: null, stream: streams.entries.firstWhere((i) => i.key == ReportType.users).value)));
+    final challengesPlayed = ref.watch(reportsProvider(ReportParams(dateRange: null, stream: streams.entries.firstWhere((i) => i.key == ReportType.challengesPlayed).value)));
+    final rooms = ref.watch(reportsProvider(ReportParams(dateRange: null, stream: streams.entries.firstWhere((i) => i.key == ReportType.rooms).value)));
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     return Scrollbar(
@@ -46,79 +53,60 @@ class _DashboardState extends ConsumerState<Dashboard> {
             SizedBox(
               height: height / 30,
             ),
-            if (kDebugMode)
-              Row(
-                children: [
-                  BLAdminButton(
-                      type: AdminBtnType.grey,
-                      child: const BLText('Populate test Reports'),
-                      onPressed: () async {
-                        final testing = ref.read(testingProvider.notifier);
-                        final result = await testing.populateReports(
-                            dateRange: DateTimeRange(
-                              start: DateTime(2024, 8, 1, 12, 0),
-                              end: DateTime.now(),
-                            ),
-                            number: 50);
-                        if (result != null) {
-                          if (!context.mounted) return;
-                          toast.showToast(context, result, type: NotifType.error);
-                        } else {
-                          if (!context.mounted) return;
-                          toast.showToast(context, 'Success', type: NotifType.success);
-                        }
-                      }),
-                  BLAdminButton(
-                      type: AdminBtnType.grey,
-                      child: const BLText('Delete test Reports'),
-                      onPressed: () async {
-                        final testing = ref.read(testingProvider.notifier);
-                        final result = await testing.populateReports(
-                            dateRange: DateTimeRange(
-                              start: DateTime(2024, 8, 1, 12, 0),
-                              end: DateTime.now(),
-                            ),
-                            number: 50);
-                        if (result != null) {
-                          if (!context.mounted) return;
-                          toast.showToast(context, result, type: NotifType.error);
-                        } else {
-                          if (!context.mounted) return;
-                          toast.showToast(context, 'Success', type: NotifType.success);
-                        }
-                      }),
-                ],
-              ),
-            const Padding(
+            Padding(
               padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
               child: Wrap(
                 spacing: 15,
                 runSpacing: 15,
                 children: [
-                  DashboardCard(
-                    percent: 10.2,
-                    downOrup: 'up',
-                    titleTotal: 'users',
-                    total: 10000,
-                    icon: Icon(Icons.person),
-                    iconBgColor: Colors.deepPurple,
-                  ),
-                  DashboardCard(
-                    percent: 10.2,
-                    downOrup: 'up',
-                    titleTotal: 'challenges played',
-                    total: 10000,
-                    icon: Icon(FontAwesomeIcons.gamepad),
-                    iconBgColor: Colors.orange,
-                  ),
-                  DashboardCard(
-                    percent: 10.2,
-                    downOrup: 'up',
-                    titleTotal: 'rooms',
-                    total: 10000,
-                    icon: Icon(FontAwesomeIcons.box),
-                    iconBgColor: Colors.green,
-                  ),
+                  users.when(
+                      data: (data) {
+                        if (data is List) {
+                          return DashboardCard(
+                            percent: 10.2,
+                            downOrup: 'up',
+                            titleTotal: 'users',
+                            total: data.length,
+                            icon: Icon(Icons.person),
+                            iconBgColor: Colors.deepPurple,
+                          );
+                        }
+                        return BLText('Error loading data');
+                      },
+                      error: genericError,
+                      loading: genericLoading),
+                  challengesPlayed.when(
+                      data: (data) {
+                        if (data is List) {
+                          return DashboardCard(
+                            percent: 10.2,
+                            downOrup: 'up',
+                            titleTotal: 'challenges played',
+                            total: data.length,
+                            icon: Icon(FontAwesomeIcons.gamepad),
+                            iconBgColor: Colors.orange,
+                          );
+                        }
+                        return BLText('Error loading data');
+                      },
+                      error: genericError,
+                      loading: genericLoading),
+                  rooms.when(
+                      data: (data) {
+                        if (data is List) {
+                          return DashboardCard(
+                            percent: 10.2,
+                            downOrup: 'up',
+                            titleTotal: 'rooms',
+                            total: data.length,
+                            icon: Icon(FontAwesomeIcons.box),
+                            iconBgColor: Colors.green,
+                          );
+                        }
+                        return BLText('Error loading data');
+                      },
+                      error: genericError,
+                      loading: genericLoading),
                 ],
               ),
             ),
@@ -201,6 +189,8 @@ class _DashboardState extends ConsumerState<Dashboard> {
   @override
   void initState() {
     generateMonths();
+    final db = FirebaseFirestore.instance;
+    streams = {for (final type in ReportType.values) type: db.collection('reports').where('type', isEqualTo: type.name).snapshots()};
     toast = ref.read(toastProvider.notifier);
     super.initState();
   }

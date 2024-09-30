@@ -78,7 +78,7 @@ class _EditRoomBottomSheetState extends ConsumerState<EditRoomBottomSheet> {
   Widget build(BuildContext context) {
     final roomsProvider = ref.watch(SelectedRoomsProvider(FirebaseAuth.instance.currentUser!.uid)); // used to get currently existing room names, to prevent dups on room names
     final selectedRoom = ref.watch(SelectedRoomProvider(widget.roomID, futureOnly: true)); // set to future only, to avoid showing changes when updating
-    final challenges = ref.watch(challengesProvider); // to get challenges from challenge ids
+    final challenges = ref.watch(ChallengesProvider()); // to get challenges from challenge ids
     return PopScope(
       canPop: processing,
       child: Scaffold(

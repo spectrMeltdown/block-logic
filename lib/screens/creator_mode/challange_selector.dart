@@ -39,7 +39,7 @@ class _ChallengeSelectorState extends ConsumerState<ChallengeSelector> with Sing
 
   @override
   Widget build(BuildContext context) {
-    final challenges = ref.watch(challengesProvider);
+    final challenges = ref.watch(ChallengesProvider());
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Background(

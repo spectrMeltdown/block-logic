@@ -5,17 +5,20 @@ import 'package:block_logic/components/dialog/dialog.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/text/title_small.dart';
 import 'package:block_logic/components/util/provider_default.dart';
+import 'package:block_logic/components/util/spaced_row.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_models/report.dart';
 import 'package:block_logic/logic/firebase_providers/reports.dart';
 import 'package:block_logic/logic/services/navigation.dart';
 import 'package:block_logic/logic/services/reports_manager.dart';
 import 'package:block_logic/logic/services/toast.dart';
+import 'package:block_logic/logic/testing.dart';
 import 'package:block_logic/web/components/button.dart';
 import 'package:block_logic/web/components/card_simple.dart';
 import 'package:block_logic/web/components/header.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/foundation.dart';
 // import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -208,6 +211,51 @@ class _ReportsState extends ConsumerState<Reports> {
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
               child: Column(
                 children: [
+                  if (kDebugMode)
+                    SpacedRow(
+                      spacing: 10,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        BLAdminButton(
+                            type: AdminBtnType.grey,
+                            child: const BLText('Populate test Reports'),
+                            onPressed: () async {
+                              final testing = ref.read(testingProvider.notifier);
+                              final result = await testing.populateReports(
+                                  dateRange: DateTimeRange(
+                                    start: DateTime(2024, 8, 1, 12, 0),
+                                    end: DateTime.now(),
+                                  ),
+                                  number: 50);
+                              if (result != null) {
+                                if (!context.mounted) return;
+                                toast.showToast(context, result, type: NotifType.error);
+                              } else {
+                                if (!context.mounted) return;
+                                toast.showToast(context, 'Success', type: NotifType.success);
+                              }
+                            }),
+                        BLAdminButton(
+                            type: AdminBtnType.grey,
+                            child: const BLText('Delete test Reports'),
+                            onPressed: () async {
+                              final testing = ref.read(testingProvider.notifier);
+                              final result = await testing.populateReports(
+                                  dateRange: DateTimeRange(
+                                    start: DateTime(2024, 8, 1, 12, 0),
+                                    end: DateTime.now(),
+                                  ),
+                                  number: 50);
+                              if (result != null) {
+                                if (!context.mounted) return;
+                                toast.showToast(context, result, type: NotifType.error);
+                              } else {
+                                if (!context.mounted) return;
+                                toast.showToast(context, 'Success', type: NotifType.success);
+                              }
+                            }),
+                      ],
+                    ),
                   ConstrainedBox(
                     constraints: const BoxConstraints(maxWidth: 600),
                     child: BLCardSimple(

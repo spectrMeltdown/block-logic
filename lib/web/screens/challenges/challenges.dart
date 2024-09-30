@@ -29,19 +29,25 @@ class ChallengesState extends ConsumerState<Challenges> {
   String selectedChallengeID = '';
   String searchQuery = '';
   bool processing = false;
+  bool isAllSelected = false;
   bool deleteMode = false;
-  List<String> selectedChallengeIDs = [];
+  Map<String, bool>? selectedChallengeIDs;
 
   @override
   void initState() {
     toast = ref.read(toastProvider.notifier);
     manager = ref.read(challengeManagerProvider.notifier);
+    searchController.addListener(() {
+      setState(() {
+        searchQuery = searchController.text.trim();
+      });
+    });
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    final challenges = ref.watch(challengesProvider);
+    final challenges = ref.watch(ChallengesProvider(searchQuery: searchQuery));
     //double width = MediaQuery.of(context).size.width;
     //double height = MediaQuery.of(context).size.height;
     return Column(
@@ -75,37 +81,77 @@ class ChallengesState extends ConsumerState<Challenges> {
                                           child: BLText('No challenges found.'),
                                         );
                                       }
+                                      if (selectedChallengeIDs == null) {
+                                        setState(() {
+                                          selectedChallengeIDs = {for (final challenge in challenges) challenge.id!: false};
+                                        });
+                                      }
+                                      if (searchQuery.isNotEmpty && challenges.isEmpty) {
+                                        return const Center(
+                                          child: BLText('No results.'),
+                                        );
+                                      }
                                       return FadeIn(
                                         child: Padding(
                                           padding: const EdgeInsets.all(15),
                                           child: BLTable(
-                                            checkboxes: deleteMode,
-                                            columns: const [
-                                              DataColumn(label: BLText('Name')),
-                                              DataColumn(label: BLText('Short Description')),
-                                              DataColumn(label: BLText('Difficulty')),
-                                              // DataColumn(label: BLText('Tags')),
-                                            ],
-                                            rows: List.generate(challenges.length, (i) {
-                                              return DataRow(
-                                                  onSelectChanged: (value) {
-                                                    if (deleteMode) {
-                                                      if (value != null) {
-                                                        if (value) {
-                                                          updateSelectedIDs(challenges[i].id, false);
-                                                        } else {
-                                                          updateSelectedIDs(challenges[i].id, true);
+                                              // checkboxes: deleteMode,
+                                              columns: [
+                                                DataColumn(
+                                                    label: Visibility(
+                                                  visible: deleteMode,
+                                                  child: Checkbox(
+                                                      value: isAllSelected,
+                                                      onChanged: (value) {
+                                                        if (value != null) {
+                                                          if (value) {
+                                                            selectedChallengeIDs!.updateAll((key, value) => true);
+                                                          } else {
+                                                            selectedChallengeIDs!.updateAll((key, value) => false);
+                                                          }
+                                                          setState(() {
+                                                            isAllSelected = value;
+                                                          });
                                                         }
-                                                      }
-                                                    } else {
+                                                      }),
+                                                )),
+                                                DataColumn(label: BLText('Name')),
+                                                DataColumn(label: BLText('Short Description')),
+                                                DataColumn(label: BLText('Difficulty')),
+                                                // DataColumn(label: BLText('Tags')),
+                                              ],
+                                              rows: List.generate(challenges.length, (i) {
+                                                return DataRow(
+                                                  onSelectChanged: (value) {
+                                                    if (!deleteMode) {
                                                       context.go('/challenges/edit/${challenges[i].id}');
                                                     }
                                                   },
                                                   cells: [
-                                                    DataCell(BLText(
-                                                      challenges[i].name ?? '--',
-                                                      softWrap: true,
-                                                    )),
+                                                    DataCell(
+                                                      Visibility(
+                                                        visible: deleteMode,
+                                                        child: Checkbox(
+                                                          value: selectedChallengeIDs![challenges[i].id!], // Handle null safety
+                                                          onChanged: (value) {
+                                                            debugPrint(challenges[i].id);
+                                                            debugPrint(selectedChallengeIDs![challenges[i].id!].toString());
+                                                            if (value != null) {
+                                                              setState(() {
+                                                                selectedChallengeIDs![challenges[i].id!] = value; // Update parent state
+                                                                debugPrint(selectedChallengeIDs![challenges[i].id!].toString());
+                                                              });
+                                                            }
+                                                          },
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    DataCell(
+                                                      BLText(
+                                                        challenges[i].name ?? '--',
+                                                        softWrap: true,
+                                                      ),
+                                                    ),
                                                     DataCell(
                                                       ConstrainedBox(
                                                         constraints: const BoxConstraints(maxWidth: 400),
@@ -116,15 +162,12 @@ class ChallengesState extends ConsumerState<Challenges> {
                                                         ),
                                                       ),
                                                     ),
-                                                    DataCell(BLText(challenges[i].difficulty?.name ?? '--')),
-                                                    // DataCell(Row(
-                                                    //   children: List.generate(challenges[i].tags!.length, (j) {
-                                                    //     return BLText(challenges[i].tags![j]);
-                                                    //   }),
-                                                    // )),
-                                                  ]);
-                                            }),
-                                          ),
+                                                    DataCell(
+                                                      BLText(challenges[i].difficulty?.name ?? '--'),
+                                                    ),
+                                                  ],
+                                                );
+                                              })),
                                         ),
                                       );
                                     },
@@ -158,7 +201,12 @@ class ChallengesState extends ConsumerState<Challenges> {
                                                 BLText('Create')
                                               ],
                                             ),
-                                            onPressed: () {}),
+                                            onPressed: () {
+                                              if (processing) return;
+                                              toggleProcessing();
+
+                                              toggleProcessing();
+                                            }),
                                     const SizedBox(
                                       width: 15,
                                     ),
@@ -190,8 +238,8 @@ class ChallengesState extends ConsumerState<Challenges> {
                                               deleteMode = true;
                                             });
                                           } else {
-                                            if (selectedChallengeIDs.isNotEmpty) {
-                                              for (final id in selectedChallengeIDs) {
+                                            if (selectedChallengeIDs!.isNotEmpty && selectedChallengeIDs!.values.any((i) => i)) {
+                                              for (final id in selectedChallengeIDs!.entries.where((i) => i.value == true).map((e) => e.key).toList()) {
                                                 final error = await manager.delete(id);
                                                 if (error != null) {
                                                   if (!context.mounted) return;
@@ -229,15 +277,21 @@ class ChallengesState extends ConsumerState<Challenges> {
     });
   }
 
-  void updateSelectedIDs(String? id, bool add) {
-    if (id == null || id.isEmpty) return;
+  void updateSelectedIDs(String id, bool add) {
+    // setState(() {
+    //   // selectedChallengeIDs.add(id);
+    //   selectedChallengeIDs[id] = add;
+    // });
+    if (id.isEmpty) return;
     if (add) {
       setState(() {
-        selectedChallengeIDs.add(id);
+        // selectedChallengeIDs.add(id);
+        selectedChallengeIDs![id] = add;
       });
     } else {
       setState(() {
-        selectedChallengeIDs.removeWhere((i) => i == id);
+        // selectedChallengeIDs.removeWhere((i) => i == id);
+        selectedChallengeIDs![id] = add;
       });
     }
     debugPrint(selectedChallengeIDs.toString());
