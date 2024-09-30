@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:animate_do/animate_do.dart';
 import 'package:block_logic/components/button/text.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/logic/enums.dart';
@@ -76,17 +77,31 @@ FutureOr<bool> onExitEdit(BuildContext context, GoRouterState state) async {
   return confirmed ?? false;
 }
 
+Page pageTransition({required Widget child}) {
+  return NoTransitionPage(
+    child: FadeIn(child: child),
+    // transitionDuration: const Duration(milliseconds: 500),
+    // reverseTransitionDuration: const Duration(milliseconds: 500),
+    // transitionsBuilder: (context, animation, secondaryAnimation, child) {
+    //   return FadeTransition(
+    //     opacity: animation,
+    //     child: child,
+    //   );
+    // },
+  );
+}
+
 GoRouter router() {
   final parentKey = GlobalKey<NavigatorState>();
   final shellKey = GlobalKey<NavigatorState>();
   Map<String, List<dynamic>> shellRoutes = {
-    'dashboard': ['/dashboard', const Dashboard()],
-    'reports': ['/reports', const Reports()],
-    'feedback': ['/feedback', const FeedbackManager()],
-    'challenges': ['/challenges', const Challenges()],
-    'settings': ['/settings', const AdminSettings()],
-    'accounts': ['/accounts', const Accounts()],
-    'rooms': ['/rooms', const RoomsManager()]
+    'dashboard': ['/dashboard', pageTransition(child: const Dashboard())],
+    'reports': ['/reports', pageTransition(child: const Reports())],
+    'feedback': ['/feedback', pageTransition(child: const FeedbackManager())],
+    'challenges': ['/challenges', pageTransition(child: const Challenges())],
+    'settings': ['/settings', pageTransition(child: const AdminSettings())],
+    'accounts': ['/accounts', pageTransition(child: const Accounts())],
+    'rooms': ['/rooms', pageTransition(child: const RoomsManager())]
   };
   List<List<dynamic>> routes = [
     ['/not-found', const NotFound()],
@@ -114,60 +129,70 @@ GoRouter router() {
       ShellRoute(
         navigatorKey: shellKey,
         pageBuilder: (context, state, child) {
-          return NoTransitionPage(
+          return CustomTransitionPage(
+            key: state.pageKey,
+            child: FadeIn(
               child: WebScaffold(
-            location: state.fullPath!,
-            child: child,
-          ));
+                location: state.fullPath!,
+                child: child,
+              ),
+            ),
+            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+              return FadeTransition(
+                opacity: animation,
+                child: child,
+              );
+            },
+          );
         },
         routes: [
           GoRoute(
             path: shellRoutes['dashboard']![0],
-            builder: (context, state) => shellRoutes['dashboard']![1],
+            pageBuilder: (context, state) => shellRoutes['dashboard']![1],
           ),
           GoRoute(
             path: shellRoutes['reports']![0],
-            builder: (context, state) => shellRoutes['reports']![1],
+            pageBuilder: (context, state) => shellRoutes['reports']![1],
           ),
           GoRoute(
             path: shellRoutes['feedback']![0],
-            builder: (context, state) => shellRoutes['feedback']![1],
+            pageBuilder: (context, state) => shellRoutes['feedback']![1],
             routes: [
               GoRoute(
                 path: 'view/:id',
-                builder: (context, state) => ViewFeedback(state.pathParameters['id']!),
+                pageBuilder: (context, state) => pageTransition(child: ViewFeedback(state.pathParameters['id']!)),
               )
             ],
           ),
-          GoRoute(path: shellRoutes['challenges']![0], builder: (context, state) => shellRoutes['challenges']![1], routes: [
+          GoRoute(path: shellRoutes['challenges']![0], pageBuilder: (context, state) => shellRoutes['challenges']![1], routes: [
             GoRoute(
               path: 'edit/:id',
-              builder: (context, state) => EditChallenge(state.pathParameters['id']!),
+              pageBuilder: (context, state) => pageTransition(child: EditChallenge(state.pathParameters['id']!)),
               // onExit: onExitEdit,
             ),
             GoRoute(
               path: 'create',
-              builder: (context, state) => const CreateChallenge(),
+              pageBuilder: (context, state) => pageTransition(child: const CreateChallenge()),
               // onExit: onExitCreate,
             ),
           ]),
           GoRoute(
             path: shellRoutes['settings']![0],
-            builder: (context, state) => shellRoutes['settings']![1],
+            pageBuilder: (context, state) => shellRoutes['settings']![1],
           ),
           GoRoute(
             path: shellRoutes['accounts']![0],
-            builder: (context, state) => shellRoutes['accounts']![1],
+            pageBuilder: (context, state) => shellRoutes['accounts']![1],
             routes: [
               GoRoute(
                 path: 'create-admin',
-                builder: (context, state) => const CreateAdmin(),
+                pageBuilder: (context, state) => pageTransition(child: const CreateAdmin()),
               )
             ],
           ),
           GoRoute(
             path: shellRoutes['rooms']![0],
-            builder: (context, state) => shellRoutes['rooms']![1],
+            pageBuilder: (context, state) => shellRoutes['rooms']![1],
           ),
         ],
       ),

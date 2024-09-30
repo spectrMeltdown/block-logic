@@ -1,3 +1,4 @@
+import 'package:animate_do/animate_do.dart';
 import 'package:block_logic/components/account/display_name.dart';
 import 'package:block_logic/components/account/profile_pic.dart';
 import 'package:block_logic/components/text/text.dart';
@@ -33,48 +34,52 @@ class _UsersState extends ConsumerState<Users> {
           /// admin cannot delete their user account from here. They must use Settings > Delete account instead.
           users.removeWhere((user) => user.id == FirebaseAuth.instance.currentUser!.uid);
           if (users.isEmpty) {
-            return const Center(
-              child: BLText('There are no users at the moment...'),
+            return FadeIn(
+              child: const Center(
+                child: BLText('There are no users at the moment...'),
+              ),
             );
           }
-          return BLTable(
-              bottomPadding: 0,
-              dataRowMaxHeight: 80,
-              columns: List.generate(widget.userProps.length, (i) => DataColumn(label: BLText(widget.userProps[i]))),
-              rows: List.generate(users.length, (i) {
-                return DataRow(cells: [
-                  DataCell(Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: BLProfilePic(type: AccountType.user, users[i].id ?? ''),
-                  )),
-                  DataCell(BLDisplayName(users[i].id ?? '', AccountType.user)),
-                  DataCell(BLText(users[i].createdAt != null ? DateFormat('dd / MM / yyyy').format(users[i].createdAt!) : '--')),
-                  DataCell(Wrap(
-                    children: [
-                      BLAdminButton(
-                          type: processing ? AdminBtnType.grey : AdminBtnType.red,
-                          child: const BLText('Delete'),
-                          onPressed: () async {
-                            if (processing) return;
-                            setState(() {
-                              processing = true;
-                            });
-                            final result = await accountsManager.deleteAccount(users[i].id!, AccountType.user);
-                            if (result == null) {
-                              if (!context.mounted) return;
-                              toast.showToast(context, 'Delete success.', type: NotifType.success);
-                            } else {
-                              if (!context.mounted) return;
-                              toast.showToast(context, result, type: NotifType.error);
-                            }
-                            setState(() {
-                              processing = false;
-                            });
-                          })
-                    ],
-                  )),
-                ]);
-              }));
+          return FadeIn(
+            child: BLTable(
+                bottomPadding: 0,
+                dataRowMaxHeight: 80,
+                columns: List.generate(widget.userProps.length, (i) => DataColumn(label: BLText(widget.userProps[i]))),
+                rows: List.generate(users.length, (i) {
+                  return DataRow(cells: [
+                    DataCell(Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: BLProfilePic(type: AccountType.user, users[i].id ?? ''),
+                    )),
+                    DataCell(BLDisplayName(users[i].id ?? '', AccountType.user)),
+                    DataCell(BLText(users[i].createdAt != null ? DateFormat('dd / MM / yyyy').format(users[i].createdAt!) : '--')),
+                    DataCell(Wrap(
+                      children: [
+                        BLAdminButton(
+                            type: processing ? AdminBtnType.grey : AdminBtnType.red,
+                            child: const BLText('Delete'),
+                            onPressed: () async {
+                              if (processing) return;
+                              setState(() {
+                                processing = true;
+                              });
+                              final result = await accountsManager.deleteAccount(users[i].id!, AccountType.user);
+                              if (result == null) {
+                                if (!context.mounted) return;
+                                toast.showToast(context, 'Delete success.', type: NotifType.success);
+                              } else {
+                                if (!context.mounted) return;
+                                toast.showToast(context, result, type: NotifType.error);
+                              }
+                              setState(() {
+                                processing = false;
+                              });
+                            })
+                      ],
+                    )),
+                  ]);
+                })),
+          );
         },
         error: genericError,
         loading: genericLoading);

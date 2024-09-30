@@ -37,6 +37,7 @@ class AccountService extends _$AccountService {
   Future<String?> changeDisplayName(String displayName, FirestoreCollections collection) async {
     try {
       await state._db.collection(collection.name).doc(state._auth!.uid).update({'displayName': displayName});
+      await FirebaseAuth.instance.currentUser!.updateDisplayName(displayName);
       return null;
     } catch (e) {
       return state._errorHandler.call(e, this);
@@ -152,6 +153,7 @@ class AccountService extends _$AccountService {
       if (type == AccountType.user) {
         await state._db.collection('users').doc(createdID ?? FirebaseAuth.instance.currentUser!.uid).set(UserAccount(
               createdAt: DateTime.now(),
+              premiumUser: false,
               displayName: displayName ?? state._auth!.displayName,
               phoneNum: phoneNum,
               profilePicLink: 'default',

@@ -37,6 +37,10 @@ class AppTheme {
         filled: true,
         fillColor: Colors.teal.shade900.withAlpha(200),
       ),
+      checkboxTheme: const CheckboxThemeData(
+        side: BorderSide(color: Colors.white),
+      ),
+      dialogBackgroundColor: Colors.blueGrey.shade900,
       dialogTheme: DialogTheme(
         backgroundColor: Colors.blueGrey.shade900,
       ),
@@ -47,12 +51,7 @@ class AppTheme {
         color: Colors.white,
       ),
       canvasColor: Colors.blue, // Background color for dropdown menu
-      dropdownMenuTheme: const DropdownMenuThemeData(
-          menuStyle:
-              MenuStyle(padding: WidgetStatePropertyAll(EdgeInsets.zero)),
-          inputDecorationTheme:
-              InputDecorationTheme(contentPadding: EdgeInsets.zero)),
+      dropdownMenuTheme: const DropdownMenuThemeData(menuStyle: MenuStyle(padding: WidgetStatePropertyAll(EdgeInsets.zero)), inputDecorationTheme: InputDecorationTheme(contentPadding: EdgeInsets.zero)),
       menuButtonTheme: const MenuButtonThemeData(),
-      scrollbarTheme: const ScrollbarThemeData(
-          thumbColor: WidgetStatePropertyAll(Colors.white60)));
+      scrollbarTheme: const ScrollbarThemeData(thumbColor: WidgetStatePropertyAll(Colors.white60)));
 }

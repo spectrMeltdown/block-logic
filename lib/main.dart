@@ -93,10 +93,10 @@ class BlockLogic extends ConsumerWidget {
       //     const Breakpoint(start: 1921, end: double.infinity, name: '4K'),
       //   ],
       // ),
-      builder: FToastBuilder(),
-      routerConfig: router(),
       title: 'Block-Logic',
       debugShowCheckedModeBanner: false,
+      builder: FToastBuilder(),
+      routerConfig: router(),
       theme: appTheme.theme(),
       darkTheme: appTheme.theme(),
     );

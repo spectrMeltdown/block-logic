@@ -1,3 +1,4 @@
+import 'package:animate_do/animate_do.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/util/blank_widget.dart';
 import 'package:flutter/material.dart';
@@ -13,18 +14,20 @@ class BLError extends StatelessWidget {
   Widget build(BuildContext context) {
     switch (type) {
       case ErrorType.normal:
-        return const Center(child: Icon(Icons.error, color: Colors.red));
+        return FadeIn(child: const Center(child: Icon(Icons.error, color: Colors.red)));
       case ErrorType.withMessage:
-        return Center(
-            child: Column(
-          children: [
-            const Icon(Icons.error, color: Colors.red),
-            const SizedBox(
-              height: 15,
-            ),
-            BLText(message ?? '')
-          ],
-        ));
+        return FadeIn(
+          child: Center(
+              child: Column(
+            children: [
+              const Icon(Icons.error, color: Colors.red),
+              const SizedBox(
+                height: 15,
+              ),
+              BLText(message ?? '')
+            ],
+          )),
+        );
       default:
         return const BlankWidget();
     }

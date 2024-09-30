@@ -24,9 +24,9 @@ class ChallengeManager extends _$ChallengeManager {
     }
   }
 
-  Future<String?> delete(Challenge challenge) async {
+  Future<String?> delete(String id) async {
     try {
-      await _db!.collection('challenges').doc(challenge.id).delete();
+      await _db!.collection('challenges').doc(id).delete();
       return null;
     } catch (e) {
       return _errorHandler?.call(e, 'challenge manager');

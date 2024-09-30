@@ -72,6 +72,9 @@ class ErrorHandler extends _$ErrorHandler {
       case 'invalid-verification-id':
         error = 'The verification ID was incorrect (please contact developer).';
         break;
+      case 'provider-already-linked':
+        error = 'Already linked to another account.';
+        break;
       default:
         return e.message;
     }

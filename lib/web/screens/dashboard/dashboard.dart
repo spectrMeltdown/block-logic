@@ -1,9 +1,14 @@
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/text/title_small.dart';
+import 'package:block_logic/logic/enums.dart';
+import 'package:block_logic/logic/services/toast.dart';
+import 'package:block_logic/logic/testing.dart';
 import 'package:block_logic/web/components/bl_table.dart';
+import 'package:block_logic/web/components/button.dart';
 import 'package:block_logic/web/components/card_simple.dart';
 import 'package:block_logic/web/components/header.dart';
 import 'package:block_logic/web/screens/dashboard/dashboard_card.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -21,6 +26,8 @@ class _DashboardState extends ConsumerState<Dashboard> {
   List<String> months = [];
   final notifScrollController = ScrollController();
   final pageScrollController = ScrollController();
+  late final Toast toast;
+
   @override
   Widget build(BuildContext context) {
     //final assets = ref.read(assetsProvider);
@@ -38,6 +45,49 @@ class _DashboardState extends ConsumerState<Dashboard> {
             SizedBox(
               height: height / 30,
             ),
+            if (kDebugMode)
+              Row(
+                children: [
+                  BLAdminButton(
+                      type: AdminBtnType.grey,
+                      child: const BLText('Populate test Reports'),
+                      onPressed: () async {
+                        final testing = ref.read(testingProvider.notifier);
+                        final result = await testing.populateReports(
+                            dateRange: DateTimeRange(
+                              start: DateTime(2024, 8, 1, 12, 0),
+                              end: DateTime.now(),
+                            ),
+                            number: 50);
+                        if (result != null) {
+                          if (!context.mounted) return;
+                          toast.showToast(context, result, type: NotifType.error);
+                        } else {
+                          if (!context.mounted) return;
+                          toast.showToast(context, 'Success', type: NotifType.success);
+                        }
+                      }),
+                  BLAdminButton(
+                      type: AdminBtnType.grey,
+                      child: const BLText('Delete test Reports'),
+                      onPressed: () async {
+                        final testing = ref.read(testingProvider.notifier);
+                        final result = await testing.populateReports(
+                            dateRange: DateTimeRange(
+                              start: DateTime(2024, 8, 1, 12, 0),
+                              end: DateTime.now(),
+                            ),
+                            number: 50);
+                        if (result != null) {
+                          if (!context.mounted) return;
+                          toast.showToast(context, result, type: NotifType.error);
+                        } else {
+                          if (!context.mounted) return;
+                          toast.showToast(context, 'Success', type: NotifType.success);
+                        }
+                      }),
+                ],
+              ),
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
               child: Wrap(
@@ -45,26 +95,29 @@ class _DashboardState extends ConsumerState<Dashboard> {
                 runSpacing: 15,
                 children: [
                   DashboardCard(
-                      percent: 10.2,
-                      downOrup: 'up',
-                      titleTotal: 'users',
-                      total: 10000,
-                      icon: Icon(Icons.person),
-                      iconBgColor: Colors.deepPurple),
+                    percent: 10.2,
+                    downOrup: 'up',
+                    titleTotal: 'users',
+                    total: 10000,
+                    icon: Icon(Icons.person),
+                    iconBgColor: Colors.deepPurple,
+                  ),
                   DashboardCard(
-                      percent: 10.2,
-                      downOrup: 'up',
-                      titleTotal: 'challenges played',
-                      total: 10000,
-                      icon: Icon(FontAwesomeIcons.gamepad),
-                      iconBgColor: Colors.orange),
+                    percent: 10.2,
+                    downOrup: 'up',
+                    titleTotal: 'challenges played',
+                    total: 10000,
+                    icon: Icon(FontAwesomeIcons.gamepad),
+                    iconBgColor: Colors.orange,
+                  ),
                   DashboardCard(
-                      percent: 10.2,
-                      downOrup: 'up',
-                      titleTotal: 'rooms',
-                      total: 10000,
-                      icon: Icon(FontAwesomeIcons.box),
-                      iconBgColor: Colors.green)
+                    percent: 10.2,
+                    downOrup: 'up',
+                    titleTotal: 'rooms',
+                    total: 10000,
+                    icon: Icon(FontAwesomeIcons.box),
+                    iconBgColor: Colors.green,
+                  ),
                 ],
               ),
             ),
@@ -75,27 +128,27 @@ class _DashboardState extends ConsumerState<Dashboard> {
                   padding: const EdgeInsets.all(20),
                   child: Column(
                     children: [
-                      Row(
+                      const Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const BLSmallTitle('Notifications'),
-                          DropdownButton<String>(
-                            padding: const EdgeInsets.symmetric(horizontal: 10),
-                            underline: const SizedBox.shrink(),
-                            value: selectedMonth,
-                            items: months.map((month) {
-                              return DropdownMenuItem<String>(
-                                value: month,
-                                child: Text(month),
-                              );
-                            }).toList(),
-                            onChanged: (newValue) {
-                              setState(() {
-                                selectedMonth = newValue;
-                              });
-                            },
-                            hint: const BLText('Select a month'),
-                          ),
+                          BLSmallTitle('Notifications'),
+                          // DropdownButton<String>(
+                          //   padding: const EdgeInsets.symmetric(horizontal: 10),
+                          //   underline: const SizedBox.shrink(),
+                          //   value: selectedMonth,
+                          //   items: months.map((month) {
+                          //     return DropdownMenuItem<String>(
+                          //       value: month,
+                          //       child: Text(month),
+                          //     );
+                          //   }).toList(),
+                          //   onChanged: (newValue) {
+                          //     setState(() {
+                          //       selectedMonth = newValue;
+                          //     });
+                          //   },
+                          //   hint: const BLText('Select a month'),
+                          // ),
                         ],
                       ),
                       SizedBox(
@@ -146,7 +199,8 @@ class _DashboardState extends ConsumerState<Dashboard> {
 
   @override
   void initState() {
-    super.initState();
     generateMonths();
+    toast = ref.read(toastProvider.notifier);
+    super.initState();
   }
 }

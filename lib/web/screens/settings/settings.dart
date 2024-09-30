@@ -16,6 +16,7 @@ import 'package:block_logic/screens/auth/change_display_name.dart';
 import 'package:block_logic/screens/auth/change_email.dart';
 import 'package:block_logic/screens/auth/change_password.dart';
 import 'package:block_logic/web/components/header.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -109,7 +110,7 @@ class _AdminSettingsState extends ConsumerState<AdminSettings> {
                                           Flexible(
                                               child: BLDisplayName(
                                             auth.getUID(),
-                                            AccountType.user,
+                                            kIsWeb ? AccountType.admin : AccountType.user,
                                           )),
                                           const SizedBox(width: 5),
                                           widget.editIcon

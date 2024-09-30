@@ -62,102 +62,101 @@ class _ChangeEmailState extends ConsumerState<ChangeEmail> {
   @override
   Widget build(BuildContext context) {
     return BLDialog(
-        child: Form(
-      key: formKey,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          BLSmallTitle(usePass ? 'Enter new email & password' : 'Enter your new email'),
-          const SizedBox(
-            height: 10,
-          ),
-          BLTextBox(
-            controller: emailController,
-            labelText: 'Your email',
-            keyboardType: TextInputType.emailAddress,
-            prefixIcon: const Icon(
-              Icons.mail,
-              color: Colors.white,
-            ),
-            validator: (email) => validator.validateEmail(email),
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          if (usePass)
-            BLTextBox(
-              controller: passController,
-              keyboardType: TextInputType.visiblePassword,
-              labelText: 'Your secure password',
-              isObscure: true,
-              prefixIcon: const Icon(
-                Icons.lock,
-                color: Colors.white,
-              ),
-              validator: (pass) => validator.validatePassword(pass),
-            ),
-          if (usePass)
+        child: ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: 600),
+      child: Form(
+        key: formKey,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            BLSmallTitle(usePass ? 'Enter new email & password' : 'Enter your new email'),
             const SizedBox(
               height: 10,
             ),
-          msg,
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              TextButton(
-                  onPressed: () {
-                    if (processing) return;
-                    Navigator.pop(context);
-                  },
-                  child: BLText(
-                    'Cancel',
-                    color: processing ? Colors.grey : Colors.red,
-                  )),
-              TextButton(
-                  onPressed: () async {
-                    if (processing) return;
-                    toggleProcessing();
-                    if (formKey.currentState!.validate()) {
-                      final newEmail = emailController.text.trim();
-                      if (oldEmail != newEmail) {
-                        // link the credential first, user must first this error if exists
-                        final error = await auth.linkEmailAndPass(
-                          email: newEmail,
-                          pass: passController.text.trim(),
-                        );
-                        if (error != null) {
-                          updateMsg(error);
-                        } else {
-                          if (!context.mounted) return;
-                          nav.pop(context);
-                        }
+            BLTextBox(
+              controller: emailController,
+              labelText: 'Your email',
+              keyboardType: TextInputType.emailAddress,
+              prefixIcon: const Icon(
+                Icons.mail,
+                color: Colors.white,
+              ),
+              validator: (email) => validator.validateEmail(email),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            if (usePass)
+              BLTextBox(
+                controller: passController,
+                keyboardType: TextInputType.visiblePassword,
+                labelText: 'Your secure password',
+                isObscure: true,
+                prefixIcon: const Icon(
+                  Icons.lock,
+                  color: Colors.white,
+                ),
+                validator: (pass) => validator.validatePassword(pass),
+              ),
+            if (usePass)
+              const SizedBox(
+                height: 10,
+              ),
+            msg,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextButton(
+                    onPressed: () {
+                      if (processing) return;
+                      Navigator.pop(context);
+                    },
+                    child: BLText(
+                      'Cancel',
+                      color: processing ? Colors.grey : Colors.red,
+                    )),
+                TextButton(
+                    onPressed: () async {
+                      if (processing) return;
+                      toggleProcessing();
+                      if (formKey.currentState!.validate()) {
+                        final newEmail = emailController.text.trim();
+                        if (oldEmail != newEmail) {
+                          String? error;
+                          if (!usePass) {
+                            // for changing emails
+                            error = await auth.changeEmail(newEmail);
+                          } else {
+                            // for adding email
+                            error = await auth.linkEmailAndPass(
+                              email: newEmail,
+                              pass: passController.text.trim(),
+                            );
+                          }
 
-                        if (!usePass) {
-                          // for changing emails
-                          final error = await auth.changeEmail(newEmail);
                           if (error != null) {
                             updateMsg(error);
                           } else {
                             if (!context.mounted) return;
                             nav.pop(context);
                           }
+                        } else {
+                          updateMsg('Same email.');
                         }
-                      } else {
-                        nav.pop(context);
                       }
-                    }
-                    toggleProcessing();
-                  },
-                  child: BLText(
-                    'Save',
-                    color: processing ? Colors.grey : Colors.green,
-                  )),
-              const SizedBox(
-                width: 10,
-              )
-            ],
-          )
-        ],
+                      toggleProcessing();
+                    },
+                    child: BLText(
+                      'Save',
+                      color: processing ? Colors.grey : Colors.green,
+                    )),
+                const SizedBox(
+                  width: 10,
+                )
+              ],
+            )
+          ],
+        ),
       ),
     ));
   }

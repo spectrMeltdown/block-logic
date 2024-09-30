@@ -7,6 +7,168 @@ import 'package:block_logic/logic/game/py_loops.dart';
 import 'package:block_logic/logic/game/py_operators.dart';
 
 class AllBlocks {
+  /// "Sum of first N natural numbers"
+  Map<CodeBlockType, List<GameBlockData>> sumOfNaturalNumbers() {
+    return {
+      CodeBlockType.variables: [
+        GameBlockData.createVariable(name: 'total', value: PyLiteral.none(), count: 2),
+        GameBlockData.createVariable(name: 'n', value: PyLiteral.none(), count: 3),
+      ],
+      CodeBlockType.functions: [GameBlockData.createFunction(name: 'print')],
+      CodeBlockType.objects: [],
+      CodeBlockType.operators: [
+        GameBlockData.createOperator(operatorType: PyOperatorTypes.assignment, operator: PyOperatorsAssignment.assignment, count: 2),
+        GameBlockData.createOperator(operatorType: PyOperatorTypes.comparison, operator: PyOperatorsComparison.greaterThan),
+        GameBlockData.createOperator(operatorType: PyOperatorTypes.arithmetic, operator: PyOperatorsArithmetic.floor),
+        GameBlockData.createOperator(operatorType: PyOperatorTypes.arithmetic, operator: PyOperatorsArithmetic.multiply),
+        GameBlockData.createOperator(operatorType: PyOperatorTypes.arithmetic, operator: PyOperatorsArithmetic.add),
+      ],
+      CodeBlockType.keywords: [],
+      CodeBlockType.literals: [
+        GameBlockData.createLiteral(literal: PyLiteral.number(intNum: 10)),
+        GameBlockData.createLiteral(literal: PyLiteral.number(intNum: 1)),
+        GameBlockData.createLiteral(literal: PyLiteral.number(intNum: 2)),
+      ],
+      CodeBlockType.conditionals: [],
+      CodeBlockType.loops: [],
+    };
+  }
+
+  /// "Palindrome Check"
+  Map<CodeBlockType, List<GameBlockData>> palindromeCheck() {
+    return {
+      CodeBlockType.variables: [
+        GameBlockData.createVariable(name: 's', value: PyLiteral.none(), count: 3),
+        GameBlockData.createVariable(name: 's.lower()', value: PyLiteral.none()),
+        GameBlockData.createVariable(name: 's[::-1]', value: PyLiteral.none()),
+        GameBlockData.createVariable(name: 'is_palindrome', value: PyLiteral.none(), count: 2),
+      ],
+      CodeBlockType.functions: [GameBlockData.createFunction(name: 'print')], // TODO: update functions to methods
+      CodeBlockType.objects: [],
+      CodeBlockType.operators: [
+        GameBlockData.createOperator(operatorType: PyOperatorTypes.assignment, operator: PyOperatorsAssignment.assignment, count: 3),
+        GameBlockData.createOperator(operatorType: PyOperatorTypes.comparison, operator: PyOperatorsComparison.equalTo),
+      ],
+      CodeBlockType.keywords: [],
+      CodeBlockType.literals: [
+        GameBlockData.createLiteral(literal: PyLiteral.string('madam')),
+        GameBlockData.createLiteral(literal: PyLiteral.string('hairball')),
+        GameBlockData.createLiteral(literal: PyLiteral.string('racecar')),
+      ],
+      CodeBlockType.conditionals: [],
+      CodeBlockType.loops: [],
+    };
+  }
+
+  /// "factorial"
+  Map<CodeBlockType, List<GameBlockData>> factorial() {
+    return {
+      CodeBlockType.variables: [
+        GameBlockData.createVariable(name: 'result', value: PyLiteral.none(), count: 3),
+        GameBlockData.createVariable(name: 'n', value: PyLiteral.none(), count: 2),
+      ],
+      CodeBlockType.functions: [
+        GameBlockData.createFunction(name: 'print'),
+        GameBlockData.createFunction(name: 'range'),
+      ],
+      CodeBlockType.objects: [],
+      CodeBlockType.operators: [
+        GameBlockData.createOperator(operatorType: PyOperatorTypes.arithmetic, operator: PyOperatorsArithmetic.add),
+        GameBlockData.createOperator(operatorType: PyOperatorTypes.assignment, operator: PyOperatorsAssignment.multiplyAssignment),
+        GameBlockData.createOperator(operatorType: PyOperatorTypes.assignment, operator: PyOperatorsAssignment.assignment, count: 2),
+      ],
+      CodeBlockType.keywords: [],
+      CodeBlockType.literals: [
+        GameBlockData.createLiteral(literal: PyLiteral.number(intNum: 5)),
+        GameBlockData.createLiteral(literal: PyLiteral.number(intNum: 1), count: 3),
+      ],
+      CodeBlockType.conditionals: [],
+      CodeBlockType.loops: [],
+    };
+  }
+
+  /// "Sum of digits"
+  Map<CodeBlockType, List<GameBlockData>> sumOfDigits() {
+    return {
+      CodeBlockType.variables: [
+        GameBlockData.createVariable(name: 'total', value: PyLiteral.none(), count: 3),
+        GameBlockData.createVariable(name: 'n', value: PyLiteral.none(), count: 4),
+      ],
+      CodeBlockType.functions: [GameBlockData.createFunction(name: 'print')],
+      CodeBlockType.objects: [],
+      CodeBlockType.operators: [
+        GameBlockData.createOperator(operatorType: PyOperatorTypes.assignment, operator: PyOperatorsAssignment.floorAssignment),
+        GameBlockData.createOperator(operatorType: PyOperatorTypes.assignment, operator: PyOperatorsAssignment.addAssignment),
+        GameBlockData.createOperator(operatorType: PyOperatorTypes.assignment, operator: PyOperatorsAssignment.assignment, count: 2),
+        GameBlockData.createOperator(operatorType: PyOperatorTypes.comparison, operator: PyOperatorsComparison.greaterThan),
+        GameBlockData.createOperator(operatorType: PyOperatorTypes.arithmetic, operator: PyOperatorsArithmetic.modulus),
+      ],
+      CodeBlockType.keywords: [],
+      CodeBlockType.literals: [
+        GameBlockData.createLiteral(literal: PyLiteral.number(intNum: 123)),
+        GameBlockData.createLiteral(literal: PyLiteral.number(intNum: 0), count: 2),
+        GameBlockData.createLiteral(literal: PyLiteral.number(intNum: 10), count: 2),
+      ],
+      CodeBlockType.conditionals: [],
+      CodeBlockType.loops: [GameBlockData.createLoop(loop: PyLoop.while_)],
+    };
+  }
+
+  /// "Prime number check" //TODO: incomplete!!
+  Map<CodeBlockType, List<GameBlockData>> primeNumCheck() {
+    return {
+      CodeBlockType.variables: [
+        GameBlockData.createVariable(name: 'n', value: PyLiteral.none(), count: 3),
+        GameBlockData.createVariable(name: 'i', value: PyLiteral.none(), count: 2),
+      ],
+      CodeBlockType.functions: [
+        GameBlockData.createFunction(name: 'range'),
+        GameBlockData.createFunction(name: 'print'),
+        GameBlockData.createFunction(name: 'int'),
+        GameBlockData.createFunction(name: 'is_prime'),
+        GameBlockData.createFunctionDefinition(name: 'is_prime'),
+      ],
+      CodeBlockType.objects: [],
+      CodeBlockType.operators: [
+        GameBlockData.createOperator(
+          operatorType: PyOperatorTypes.comparison,
+          operator: PyOperatorsComparison.lesserThanOrEqualTo,
+        ),
+        GameBlockData.createOperator(
+          operatorType: PyOperatorTypes.comparison,
+          operator: PyOperatorsComparison.equalTo,
+        ),
+        GameBlockData.createOperator(
+          operatorType: PyOperatorTypes.membership,
+          operator: PyOperatorsMembership.in_,
+        ),
+        GameBlockData.createOperator(
+          operatorType: PyOperatorTypes.arithmetic,
+          operator: PyOperatorsArithmetic.add,
+        ),
+        GameBlockData.createOperator(
+          operatorType: PyOperatorTypes.arithmetic,
+          operator: PyOperatorsArithmetic.modulus,
+        ),
+        GameBlockData.createOperator(
+          operatorType: PyOperatorTypes.arithmetic,
+          operator: PyOperatorsArithmetic.exponentation,
+        ),
+      ],
+      CodeBlockType.keywords: [
+        GameBlockData.createKeyword(keyword: PyKeyword.return_, count: 3),
+      ],
+      CodeBlockType.literals: [
+        GameBlockData.createLiteral(literal: PyLiteral.boolean(false), count: 2),
+        GameBlockData.createLiteral(literal: PyLiteral.boolean(true)),
+        GameBlockData.createLiteral(literal: PyLiteral.number(intNum: 1)),
+      ],
+      CodeBlockType.conditionals: [GameBlockData.createConditional(conditional: PyConditional.if_, count: 2)],
+      CodeBlockType.loops: [GameBlockData.createLoop(loop: PyLoop.for_)],
+      CodeBlockType.statement: [],
+    };
+  }
+
   /// Blocks for the challenge "Give me a five!"
   Map<CodeBlockType, List<GameBlockData>> beginnerTesting() {
     return {

@@ -1,3 +1,4 @@
+import 'package:animate_do/animate_do.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/textbox.dart';
 import 'package:block_logic/components/util/blank_widget.dart';
@@ -173,53 +174,55 @@ class _SelectedChallengeState extends ConsumerState<EditChallenge> {
                 }
                 totalSelected = count;
               }
-              return ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 600),
-                child: Padding(
-                  padding: const EdgeInsets.all(15),
-                  child: Center(
-                    child: BLCardSimple(
-                      child: Padding(
-                        padding: const EdgeInsets.all(15),
-                        child: Form(
-                          key: formKey,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const SizedBox(height: 10),
-                              ...List.generate(challengeProps.length, (i) {
-                                return Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  // spacing: 15,
-                                  // runSpacing: 15,
+              return FadeIn(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 600),
+                  child: Padding(
+                    padding: const EdgeInsets.all(15),
+                    child: Center(
+                      child: BLCardSimple(
+                        child: Padding(
+                          padding: const EdgeInsets.all(15),
+                          child: Form(
+                            key: formKey,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const SizedBox(height: 10),
+                                ...List.generate(challengeProps.length, (i) {
+                                  return Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    // spacing: 15,
+                                    // runSpacing: 15,
+                                    children: [
+                                      const SizedBox(height: 10),
+                                      BLText('${challengeProps[i]} : '),
+                                      const SizedBox(height: 5),
+                                      ConstrainedBox(
+                                        constraints: const BoxConstraints(maxWidth: 700),
+                                        child: getInputWidget(challengeProps[i], challenge),
+                                      ),
+                                    ],
+                                  );
+                                }),
+                                const SizedBox(height: 20),
+                                Row(
+                                  mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    const SizedBox(height: 10),
-                                    BLText('${challengeProps[i]} : '),
-                                    const SizedBox(height: 5),
-                                    ConstrainedBox(
-                                      constraints: const BoxConstraints(maxWidth: 700),
-                                      child: getInputWidget(challengeProps[i], challenge),
+                                    const AdminBackBtn(
+                                      useContext: true,
                                     ),
+                                    const SizedBox(width: 10),
+                                    BLAdminButton(
+                                        type: AdminBtnType.green,
+                                        onPressed: () {
+                                          save();
+                                        },
+                                        child: const BLText('Save changes', color: Colors.white))
                                   ],
-                                );
-                              }),
-                              const SizedBox(height: 20),
-                              Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  const AdminBackBtn(
-                                    useContext: true,
-                                  ),
-                                  const SizedBox(width: 10),
-                                  BLAdminButton(
-                                      type: AdminBtnType.green,
-                                      onPressed: () {
-                                        save();
-                                      },
-                                      child: const BLText('Save changes', color: Colors.white))
-                                ],
-                              )
-                            ],
+                                )
+                              ],
+                            ),
                           ),
                         ),
                       ),
@@ -230,7 +233,10 @@ class _SelectedChallengeState extends ConsumerState<EditChallenge> {
             },
             error: widget.selectedChallengeID.isEmpty
                 ? (error, stackTrace) => ConstrainedBox(
-                      constraints: BoxConstraints(maxWidth: width <= desktopMin ? width * 0.8 : width * 0.4, maxHeight: height * 0.5),
+                      constraints: BoxConstraints(
+                        maxWidth: width <= desktopMin ? width * 0.8 : width * 0.4,
+                        maxHeight: height * 0.5,
+                      ),
                       child: const Center(
                         child: BLText('Select a challenge'),
                       ),

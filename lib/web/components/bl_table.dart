@@ -6,10 +6,14 @@ class BLTable extends ConsumerStatefulWidget {
   final List<DataRow> rows;
   final double bottomPadding;
   final double? dataRowMaxHeight;
+  final bool checkboxes;
+  final void Function(bool?)? onSelectAll;
   const BLTable({
     this.dataRowMaxHeight,
+    this.onSelectAll,
     required this.columns,
     required this.rows,
+    this.checkboxes = false,
     this.bottomPadding = 10,
     super.key,
   });
@@ -33,13 +37,15 @@ class _BLTableState extends ConsumerState<BLTable> {
               //border: Border.all(color: Colors.black),
               borderRadius: BorderRadius.all(Radius.circular(20))),
           child: DataTable(
-              dataRowMaxHeight: widget.dataRowMaxHeight,
-              showCheckboxColumn: false,
-              clipBehavior: Clip.antiAlias,
-              decoration: const BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(20))),
-              headingRowColor: WidgetStatePropertyAll(Colors.blueGrey.shade700),
-              columns: widget.columns,
-              rows: widget.rows),
+            onSelectAll: widget.onSelectAll,
+            dataRowMaxHeight: widget.dataRowMaxHeight,
+            showCheckboxColumn: widget.checkboxes,
+            clipBehavior: Clip.antiAlias,
+            decoration: const BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(20))),
+            headingRowColor: WidgetStatePropertyAll(Colors.blueGrey.shade700),
+            columns: widget.columns,
+            rows: widget.rows,
+          ),
         ),
       ),
     );

@@ -1,3 +1,4 @@
+import 'package:animate_do/animate_do.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/util/animation_player.dart';
 import 'package:block_logic/components/util/blank_widget.dart';
@@ -39,9 +40,26 @@ class _BLLoadingState extends ConsumerState<BLLoading> with TickerProviderStateM
   Widget build(BuildContext context) {
     switch (widget.type) {
       case LoadingType.full:
-        return Padding(
-          padding: const EdgeInsets.all(15),
-          child: Column(
+        return FadeIn(
+          child: Padding(
+            padding: const EdgeInsets.all(15),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (widget.message != null) BLText(widget.message!),
+                if (widget.message != null) const SizedBox(height: 10),
+                BLAnimationPlayer(
+                  assets.loadingBricks1,
+                  size: 100,
+                )
+              ],
+            ),
+          ),
+        );
+      case LoadingType.normal:
+        return FadeIn(
+          child: Center(
+              child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               if (widget.message != null) BLText(widget.message!),
@@ -51,21 +69,8 @@ class _BLLoadingState extends ConsumerState<BLLoading> with TickerProviderStateM
                 size: 100,
               )
             ],
-          ),
+          )),
         );
-      case LoadingType.normal:
-        return Center(
-            child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (widget.message != null) BLText(widget.message!),
-            if (widget.message != null) const SizedBox(height: 10),
-            BLAnimationPlayer(
-              assets.loadingBricks1,
-              size: 100,
-            )
-          ],
-        ));
       default:
         return const BlankWidget();
     }

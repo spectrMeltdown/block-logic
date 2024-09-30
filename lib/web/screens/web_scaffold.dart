@@ -15,7 +15,13 @@ class SidebarToggle extends ConsumerWidget {
       child: Material(
         color: Colors.transparent,
         child: Ink(
-          decoration: BoxDecoration(borderRadius: const BorderRadius.all(Radius.circular(30)), color: Colors.blue.shade700, boxShadow: const [BoxShadow(blurRadius: 20)]),
+          decoration: BoxDecoration(
+            borderRadius: const BorderRadius.all(Radius.circular(30)),
+            color: Colors.blue.shade700,
+            boxShadow: const [
+              BoxShadow(blurRadius: 20),
+            ],
+          ),
           child: InkWell(
             borderRadius: const BorderRadius.all(Radius.circular(30)),
             onTap: () {
@@ -43,35 +49,37 @@ class WebScaffold extends ConsumerStatefulWidget {
 
 class _WebScaffoldState extends ConsumerState<WebScaffold> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
+
+  void closeDrawer() {
+    scaffoldKey.currentState!.closeDrawer();
+  }
+
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
-    final sidebar = Sidebar(location: widget.location);
+    final sidebar = Sidebar(
+      location: widget.location,
+      closeDrawer: closeDrawer,
+    );
     //debugPrint(FirebaseAuth.instance.currentUser?.uid);
     return Scaffold(
       key: scaffoldKey,
-      drawer: Drawer(
-        child: sidebar,
-      ),
-      body: Column(
-        children: [
-          Background(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                if (width >= mobileMax) sidebar,
-                Expanded(
-                  child: Stack(
-                    children: [
-                      widget.child,
-                      if (width <= mobileMax) SidebarToggle(scaffoldKey: scaffoldKey),
-                    ],
-                  ),
-                ),
-              ],
+      drawer: Drawer(child: sidebar),
+      body: Background(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            if (width >= mobileMax) sidebar,
+            Expanded(
+              child: Stack(
+                children: [
+                  widget.child,
+                  if (width <= mobileMax) SidebarToggle(scaffoldKey: scaffoldKey),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

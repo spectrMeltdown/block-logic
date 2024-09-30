@@ -1,3 +1,4 @@
+import 'package:animate_do/animate_do.dart';
 import 'package:block_logic/components/account/display_name.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/util/provider_default.dart';
@@ -36,8 +37,7 @@ class _FeedbackTableState extends ConsumerState<FeedbackTable> {
             data: (feedbacks) {
               if (widget.searchQuery.isNotEmpty && feedbacks.isEmpty) {
                 return ConstrainedBox(
-                  constraints:
-                      BoxConstraints(maxHeight: height * 0.2, maxWidth: width >= mobileMax ? width * 0.4 : width * 0.3),
+                  constraints: BoxConstraints(maxHeight: height * 0.2, maxWidth: width >= mobileMax ? width * 0.4 : width * 0.3),
                   child: const Center(
                     child: BLText('No results.'),
                   ),
@@ -52,32 +52,32 @@ class _FeedbackTableState extends ConsumerState<FeedbackTable> {
                 );
               }
               feedbacksList = feedbacks;
-              return BLTable(
-                  columns: List.generate(FeedbackProps.values.length, (i) {
-                    return DataColumn(label: BLText(FeedbackProps.values[i].name));
-                  }),
-                  rows: List.generate(feedbacksList.length, (i) {
-                    return DataRow(
-                        onSelectChanged: (value) async {
-                          if (processing) return;
-                          processing = true;
-                          await dialog.show(context, ViewFeedback(feedbacksList[i].id!));
-                          processing = false;
-                        },
-                        cells: [
-                          DataCell(BLText(feedbacksList[i].title ?? '--')),
-                          DataCell(ConstrainedBox(
-                            constraints: BoxConstraints(maxWidth: width >= mobileMax ? width * 0.4 : width * 0.3),
-                            child: BLText(
-                              feedbacksList[i].message ?? '--',
-                            ),
-                          )),
-                          DataCell(BLDisplayName(feedbacksList[i].userID ?? '', AccountType.user)),
-                          DataCell(BLText(feedbacksList[i].createdAt != null
-                              ? DateFormat('dd / MM / yyyy').format(feedbacksList[i].createdAt!)
-                              : '--')),
-                        ]);
-                  }));
+              return FadeIn(
+                child: BLTable(
+                    columns: List.generate(FeedbackProps.values.length, (i) {
+                      return DataColumn(label: BLText(FeedbackProps.values[i].name));
+                    }),
+                    rows: List.generate(feedbacksList.length, (i) {
+                      return DataRow(
+                          onSelectChanged: (value) async {
+                            if (processing) return;
+                            processing = true;
+                            await dialog.show(context, ViewFeedback(feedbacksList[i].id!));
+                            processing = false;
+                          },
+                          cells: [
+                            DataCell(BLText(feedbacksList[i].title ?? '--')),
+                            DataCell(ConstrainedBox(
+                              constraints: BoxConstraints(maxWidth: width >= mobileMax ? width * 0.4 : width * 0.3),
+                              child: BLText(
+                                feedbacksList[i].message ?? '--',
+                              ),
+                            )),
+                            DataCell(BLDisplayName(feedbacksList[i].userID ?? '', AccountType.user)),
+                            DataCell(BLText(feedbacksList[i].createdAt != null ? DateFormat('dd / MM / yyyy').format(feedbacksList[i].createdAt!) : '--')),
+                          ]);
+                    })),
+              );
             },
             error: genericError,
             loading: genericLoading));

@@ -57,19 +57,19 @@ class TestingPage extends ConsumerWidget {
                           difficulty: Difficulty.intermediate,
                           tags: ['conditionals', ''],
                         ),
-                        Challenge(
-                          id: 'testing2',
-                          name: 'Vowel Count',
-                          shortDescription: 'Count the number of vowels in a given string.',
-                          additionalInfo: '',
-                          limitations: ['2 block lines', 'Use one function', ''],
-                          blocks: AllBlocks().getAll(),
-                          difficulty: Difficulty.beginner,
-                          tags: [
-                            'conditionals',
-                            'functions',
-                          ],
-                        )
+                        // Challenge(
+                        //   id: 'testing2',
+                        //   name: 'Vowel Count',
+                        //   shortDescription: 'Count the number of vowels in a given string.',
+                        //   additionalInfo: '',
+                        //   limitations: ['2 block lines', 'Use one function', ''],
+                        //   blocks: AllBlocks().getAll(),
+                        //   difficulty: Difficulty.beginner,
+                        //   tags: [
+                        //     'conditionals',
+                        //     'functions',
+                        //   ],
+                        // )
                       ];
                       await db.collection('rooms').doc('testing').update(room.toFirestore());
                       for (int i = 0; i <= challenges.length - 1; i++) {

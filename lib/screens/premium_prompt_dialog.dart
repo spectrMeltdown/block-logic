@@ -12,6 +12,7 @@ class PremiumPromptDialog extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final nav = ref.read(customNavigationProvider.notifier);
+    // TODO: await reportsManager.add(ReportType.freeUsers, 1);
     return BLDialog(
         child: Column(
       mainAxisSize: MainAxisSize.min,

@@ -56,7 +56,7 @@ class _KickPlayerState extends ConsumerState<KickPlayerBottomSheet> with TickerP
 
   @override
   Widget build(BuildContext context) {
-    final room = ref.watch(SelectedRoomProvider(widget.roomID));
+    final room = ref.watch(SelectedRoomProvider(widget.roomID, futureOnly: true));
     return BottomSheet(
         animationController: BottomSheet.createAnimationController(this),
         onClosing: () {},

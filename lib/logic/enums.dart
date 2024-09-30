@@ -56,7 +56,7 @@ enum ReportType {
   challengesPlayed, // challenges per room played
   roomsPlayed,
   premiumUsers, // after purchase is verified
-  freeUsers,
+  basicUsers,
   users, // all users
   leaderboards, // leaderboards, based on dateCreated
 }

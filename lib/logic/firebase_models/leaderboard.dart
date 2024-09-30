@@ -39,9 +39,7 @@ class Leaderboard {
       roomID: data['roomID'] ?? '',
       totalScore: data['totalScore'],
       status: status,
-      players: data['players'] == null
-          ? <String>[]
-          : (data['players'] as List<dynamic>).map((player) => player as String).toList(),
+      players: data['players'] == null ? <String>[] : (data['players'] as List<dynamic>).map((player) => player as String).toList(),
       date: data['date'] == null ? null : (data['date'] as Timestamp).toDate(),
     );
   }

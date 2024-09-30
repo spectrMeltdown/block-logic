@@ -250,7 +250,13 @@ class _EditRoomBottomSheetState extends ConsumerState<EditRoomBottomSheet> {
                                                                       mainAxisSize: MainAxisSize.min,
                                                                       children: [
                                                                         const SizedBox(width: 10),
-                                                                        BLText(currentChallenge.name ?? '--'),
+                                                                        ConstrainedBox(
+                                                                          constraints: const BoxConstraints(maxWidth: 150),
+                                                                          child: BLText(
+                                                                            currentChallenge.name ?? '--',
+                                                                            softWrap: true,
+                                                                          ),
+                                                                        ),
                                                                         const SizedBox(width: 10),
                                                                         BLText(
                                                                           currentChallenge.difficulty?.name ?? '--',

@@ -2,6 +2,7 @@ import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_models/report.dart';
 import 'package:block_logic/logic/services/error_handler.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -9,7 +10,7 @@ part 'generated/reports_manager.g.dart';
 
 @riverpod
 class ReportsManager extends _$ReportsManager {
-  Future<String?> add(ReportType type, int count) async {
+  Future<String?> add(ReportType type, int count, {String? dataUID}) async {
     try {
       // check because web & mobile share some screens
       if (!kIsWeb) {
@@ -17,6 +18,7 @@ class ReportsManager extends _$ReportsManager {
               type: type,
               count: count,
               date: DateTime.now(),
+              userUID: FirebaseAuth.instance.currentUser!.uid,
             ).toFirestore());
       }
       return null;

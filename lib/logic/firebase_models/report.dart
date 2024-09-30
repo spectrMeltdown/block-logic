@@ -4,6 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class Report {
   final String? id;
   final ReportType? type;
+  final String? userUID; // used for deletion operations
+  final String? dataUID; // leaderboards or rooms UID
   final int? count;
   final DateTime? date;
   final bool? isTest;
@@ -13,6 +15,8 @@ class Report {
     this.count,
     this.date,
     this.isTest,
+    this.userUID,
+    this.dataUID,
     // this.startDate,
     // this.endDate,
     // super.createdAt,
@@ -42,8 +46,11 @@ class Report {
         case 'premiumUsers':
           type = ReportType.premiumUsers;
           break;
-        case 'freeUsers':
-          type = ReportType.freeUsers;
+        case 'basicUsers':
+          type = ReportType.basicUsers;
+          break;
+        case 'leaderboards':
+          type = ReportType.leaderboards;
           break;
         default:
           throw ('No matching ReportType!');
@@ -61,6 +68,8 @@ class Report {
       type: type,
       date: data['date'] == null ? null : (data['date'] as Timestamp).toDate(),
       isTest: data['isTest'],
+      userUID: data['userUID'],
+      dataUID: data['dataUID'],
     );
   }
   Map<String, dynamic> toFirestore() {
@@ -76,6 +85,12 @@ class Report {
     }
     if (isTest != null) {
       toFirestoreMap.addAll({'isTest': isTest});
+    }
+    if (userUID != null) {
+      toFirestoreMap.addAll({'userUID': userUID});
+    }
+    if (dataUID != null) {
+      toFirestoreMap.addAll({'dataUID': dataUID});
     }
     // if (createdAt != null) {
     //   toFirestoreMap.addAll({'createdAt': Timestamp.fromDate(createdAt!)});

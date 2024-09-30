@@ -3,6 +3,7 @@ import 'package:block_logic/logic/firebase_models/report.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 // import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 // part 'generated/reports.g.dart';
@@ -25,21 +26,19 @@ class ReportParams extends Equatable {
   List<Object?> get props => [dateRange, stream];
 }
 
-final reportsProvider = StreamProvider.family.autoDispose<Map<TimePeriod, Map<int, List<Report>>>, ReportParams>((ref, params) async* {
+final reportsProvider = StreamProvider.family<dynamic, ReportParams>((ref, params) async* {
   await for (final query in params.stream) {
-    final List<Report> unfilteredList = [];
-    List<Report> filteredList = [];
+    final List<Report> list = [];
 
     if (query.docs.isNotEmpty) {
       for (final report in query.docs) {
-        unfilteredList.add(Report.fromFirestore(report));
+        list.add(Report.fromFirestore(report));
       }
       if (params.dateRange == null) {
-        filteredList = unfilteredList;
+        yield list;
       } else {
-        filteredList = unfilteredList.where((report) => report.date!.isAfter(params.dateRange!.start) && report.date!.isBefore(params.dateRange!.end)).toList();
+        yield groupReportsByTimePeriod(list.where((report) => report.date!.isAfter(params.dateRange!.start) && report.date!.isBefore(params.dateRange!.end)).toList());
       }
-      yield groupReportsByTimePeriod(filteredList);
     } else {
       yield {};
     }
@@ -47,11 +46,12 @@ final reportsProvider = StreamProvider.family.autoDispose<Map<TimePeriod, Map<in
 });
 
 Map<TimePeriod, Map<int, List<Report>>> groupReportsByTimePeriod(List<Report> reports) {
+  if (reports.isEmpty) return {};
   final Map<TimePeriod, Map<int, List<Report>>> groupedReports = {
-    TimePeriod.yearly: {}, // get all years from 2024 - 2050
-    TimePeriod.monthly: {}, // get all months from 2024 - 2050
-    TimePeriod.weekly: {}, // get all weeks from 2024 - 2050
-    TimePeriod.daily: {}, // get all days from 2024 - 2050
+    TimePeriod.yearly: {},
+    TimePeriod.monthly: {},
+    TimePeriod.weekly: {},
+    TimePeriod.daily: {},
   };
 
   for (final report in reports) {
@@ -65,22 +65,28 @@ Map<TimePeriod, Map<int, List<Report>>> groupReportsByTimePeriod(List<Report> re
     groupedReports[TimePeriod.yearly]?[year]?.add(report);
 
     // Group by monthly
-    final monthKey = year * 100 + createdAt.month; // Unique key for each month
+    // final monthKey = year * 100 + createdAt.month;
+    final monthKey = int.parse('$year${createdAt.month}');
+    debugPrint(monthKey.toString());
     if (groupedReports[TimePeriod.monthly]?[monthKey] == null) {
       groupedReports[TimePeriod.monthly]?[monthKey] = [];
     }
     groupedReports[TimePeriod.monthly]?[monthKey]?.add(report);
 
     // Group by weekly
-    final startOfWeek = createdAt.subtract(Duration(days: createdAt.weekday - 1)); // Start of the week (Monday)
-    final weekKey = year * 100 + startOfWeek.weekOfYear(); // Custom function to calculate week number
+    // final startOfWeek = createdAt.subtract(Duration(days: createdAt.weekday - 1)); // Start of the week (Monday)
+    // final weekKey = year * 100 + startOfWeek.weekOfYear(); // Custom function to calculate week number
+    final weekKey = int.parse(createdAt.yearMonthWeekString());
+    debugPrint(weekKey.toString());
     if (groupedReports[TimePeriod.weekly]?[weekKey] == null) {
       groupedReports[TimePeriod.weekly]?[weekKey] = [];
     }
     groupedReports[TimePeriod.weekly]?[weekKey]?.add(report);
 
     // Group by daily
-    final dayKey = year * 10000 + createdAt.month * 100 + createdAt.day; // Unique key for each day
+    // final dayKey = year * 10000 + createdAt.month * 100 + createdAt.day; // Unique key for each day
+    final dayKey = int.parse(DateFormat('yyyyMMdd').format(createdAt));
+    debugPrint(dayKey.toString());
     if (groupedReports[TimePeriod.daily]?[dayKey] == null) {
       groupedReports[TimePeriod.daily]?[dayKey] = [];
     }
@@ -90,14 +96,40 @@ Map<TimePeriod, Map<int, List<Report>>> groupReportsByTimePeriod(List<Report> re
   return groupedReports;
 }
 
-// Helper function to get the week number of the year
 extension DateTimeExtension on DateTime {
   int weekOfYear() {
     final firstDayOfYear = DateTime(year, 1, 1);
-    final daysSinceYearStart = difference(firstDayOfYear).inDays;
-    return (daysSinceYearStart / 7).ceil(); // Approximate week number
+    final firstMonday = firstDayOfYear.add(Duration(days: (firstDayOfYear.weekday - 1) % 7));
+    final daysSinceFirstMonday = difference(firstMonday).inDays;
+    return (daysSinceFirstMonday / 7).ceil() + 1;
+  }
+
+  // Method to get a formatted string as "yearNum + monthNum + weekNum"
+  String yearMonthWeekString() {
+    final yearString = year.toString();
+    final monthString = DateFormat('MM').format(this);
+    final weekString = weekOfYear().toString().padLeft(2, '0');
+    return yearString + monthString + weekString;
   }
 }
+
+// // Helper function to calculate the week number in the year
+// int _getWeekOfYear(DateTime date) {
+//   // Get the first day of the year
+//   DateTime firstDayOfYear = DateTime(date.year, 1, 1);
+
+//   // Get the weekday of the first day of the year (ISO where Monday = 1, Sunday = 7)
+//   int firstWeekDay = firstDayOfYear.weekday;
+
+//   // Calculate the difference in days between the date and the first day of the year
+//   int dayOfYear = date.difference(firstDayOfYear).inDays + 1;
+
+//   // Adjust day of year for ISO week system (first week starts with Monday)
+//   int adjustedDayOfYear = dayOfYear + (firstWeekDay - 1);
+
+//   // Calculate the week number (ceiling to round up)
+//   return (adjustedDayOfYear / 7).ceil();
+// }
 
 // @riverpod
 // Stream<Map<TimePeriod, List<Report>>> reports(

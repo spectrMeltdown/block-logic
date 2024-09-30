@@ -48,7 +48,7 @@ class Tutorials extends ConsumerWidget {
                           padding: const EdgeInsets.only(top: 5),
                           child: WidgetAnimator(
                             atRestEffect: WidgetRestingEffects.size(effectStrength: 1),
-                            child: BLSmallTitle(
+                            child: const BLSmallTitle(
                               'Practice',
                               color: Colors.amber,
                             ),

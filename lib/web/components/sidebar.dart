@@ -11,7 +11,8 @@ import 'package:go_router/go_router.dart';
 
 class Sidebar extends ConsumerStatefulWidget {
   final String location;
-  const Sidebar({required this.location, super.key});
+  final void Function() closeDrawer;
+  const Sidebar({required this.location, required this.closeDrawer, super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _SidebarState();
@@ -63,6 +64,10 @@ class _SidebarState extends ConsumerState<Sidebar> {
                 ],
               ),
             ),
+          ),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            child: Divider(),
           ),
           ...items(),
           const Padding(
@@ -147,10 +152,11 @@ class _SidebarState extends ConsumerState<Sidebar> {
       final lower = title.substring(1, title.length);
       return GestureDetector(
         onTap: () {
-          go(i);
           setState(() {
             selected = i;
           });
+          go(i);
+          widget.closeDrawer();
         },
         child: MouseRegion(
           onEnter: (_) {

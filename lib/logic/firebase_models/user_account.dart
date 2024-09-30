@@ -28,7 +28,7 @@ class UserAccount extends AccountModel {
       displayName: data['displayName'] ?? '',
       profilePicLink: data['profilePicLink'] ?? '',
       phoneNum: data['phoneNum'] ?? '',
-      premiumUser: data['premiumUser'],
+      premiumUser: data['premiumUser'] is String ? bool.tryParse(data['premiumUser']) : data['premiumUser'] as bool?,
       // verificationID: data['verificationID'],
       // resendToken: data['resendToken'],
       sessionID: data['sessionID'],

@@ -3,6 +3,7 @@ import 'package:block_logic/components/button/text.dart';
 import 'package:block_logic/components/dialog/dialog.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/text/title_small.dart';
+import 'package:block_logic/components/util/blank_widget.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/services/navigation.dart';
 import 'package:block_logic/logic/services/room_manager.dart';
@@ -22,6 +23,7 @@ class _InGameControlsState extends ConsumerState<InGameControlsDialog> {
   late final CustomNavigation nav;
   late final Toast toast;
   late final RoomManager roomM;
+  Widget msg = const BlankWidget();
   bool processing = false;
   @override
   void initState() {
@@ -58,15 +60,30 @@ class _InGameControlsState extends ConsumerState<InGameControlsDialog> {
         ),
         BLButton(
             type: processing ? BtnType.grey : BtnType.normal,
-            onPressed: () {
+            onPressed: () async {
               if (processing) return;
               toggleProcessing();
-              nav.pop(context);
+              final String? result = await roomM.removePlayers(widget.roomID, [], removeAll: true);
+              if (result == null) {
+                if (!context.mounted) return;
+                nav.pop(context);
+                if (!context.mounted) return;
+                toast.showToast(context, 'Room disbanded', type: NotifType.info);
+              } else {
+                setState(() {
+                  msg = BLText(
+                    result,
+                    color: Colors.red,
+                  );
+                });
+              }
               toggleProcessing();
-              if (!context.mounted) return;
-              toast.showToast(context, 'Room disbanded', type: NotifType.info);
             },
             child: const BLText('Disband room')),
+        const SizedBox(
+          height: 15,
+        ),
+        msg,
         const SizedBox(
           height: 15,
         ),

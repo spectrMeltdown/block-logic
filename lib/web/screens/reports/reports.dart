@@ -35,7 +35,7 @@ class _ReportsState extends ConsumerState<Reports> {
   final pageScrollController = ScrollController();
   final db = FirebaseFirestore.instance;
   Map<String, ReportType> reportOptions = {
-    'Basic Users': ReportType.freeUsers,
+    'Basic Users': ReportType.basicUsers,
     'Premium Users': ReportType.premiumUsers,
     // 'Challenges' : ReportType.challe,
     'Rooms': ReportType.rooms,
@@ -46,7 +46,7 @@ class _ReportsState extends ConsumerState<Reports> {
 
   late final Map<ReportType, Stream> streams;
 
-  ReportType selectedType = ReportType.freeUsers;
+  ReportType selectedType = ReportType.basicUsers;
   // DateTime? from;
   // DateTime? to;
   DateTimeRange? dateRange;
@@ -91,12 +91,13 @@ class _ReportsState extends ConsumerState<Reports> {
     pdf.addPage(
       pw.Page(
         build: (pw.Context context) {
+          final name = reportOptions.entries.firstWhere((e) => e.value == selectedType).key;
           return pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
               pw.Center(
                   child: pw.Text(
-                'Block-Logic ${selectedType.name} Report',
+                'Block-Logic $name Report',
                 style: pw.TextStyle(fontSize: 20, fontWeight: pw.FontWeight.bold),
               )),
               pw.SizedBox(height: 5),
@@ -108,7 +109,7 @@ class _ReportsState extends ConsumerState<Reports> {
               pw.SizedBox(height: 20),
               pw.Text('Created at: ${DateFormat('MMMM d, y, hh:mm a').format(DateTime.now())}'),
               pw.SizedBox(height: 10),
-              pw.Text('Total ${selectedType.name}: $total', style: const pw.TextStyle(fontSize: 20)),
+              pw.Text('Total $name: $total', style: const pw.TextStyle(fontSize: 20)),
               // if (from != null || to != null) pw.SizedBox(height: 10),
               if (dateRange != null) pw.SizedBox(height: 10),
               // if (from != null || to != null)
@@ -148,8 +149,15 @@ class _ReportsState extends ConsumerState<Reports> {
     // initalize the print data
     final Map<ReportType, Map<TimePeriod, int>> printData = {for (final type in ReportType.values) type: {}};
 
+    if (reportsToPrint == null) {
+      if (!mounted) return;
+      toast.showToast(context, 'Selection was empty', type: NotifType.error);
+      toggleProcessing();
+      return;
+    }
+
     // loop through selected categories
-    for (final entry in reportsToPrint!.entries) {
+    for (final entry in reportsToPrint.entries) {
       // if not equal to current selected type & is selected
       if (entry.value && entry.key != selectedType) {
         // get the new category of reports
@@ -189,31 +197,6 @@ class _ReportsState extends ConsumerState<Reports> {
     )));
 
     // final reports = ref.watch(reportsProvider(ReportParams(type: selectedType, from: from, to: to)));
-    final groupedReports = ref.watch(reportsProvider(ReportParams(
-      stream: streams.entries.firstWhere((e) => e.key == selectedType).value,
-      dateRange: dateRange,
-    )));
-
-    return Column(
-      children: [
-        groupedReports.when(
-            data: (data) {
-              return data.isNotEmpty
-                  ? Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: BarChartWidget(data), // Custom widget to display the bar chart
-                      ),
-                    )
-                  : Center(
-                      child: CircularProgressIndicator(),
-                    );
-            },
-            error: genericError,
-            loading: genericLoading)
-      ],
-    );
-
     return Stack(
       fit: StackFit.expand,
       children: [
@@ -338,13 +321,25 @@ class _ReportsState extends ConsumerState<Reports> {
                                       alignCenter: true,
                                     );
                                   }
-                                  final type = reportOptions.entries.firstWhere((i) => i.value == selectedType).key;
-                                  final entries = reports.entries.toList();
-                                  // final keys = reports.keys.toList();
-                                  printData = {for (var entry in entries) entry.key: entry.value.length};
                                   int total = 0;
-                                  for (final entry in entries) {
-                                    total += entry.value.length;
+                                  String type = '';
+                                  List<MapEntry<TimePeriod, Map<int, List<Report>>>> entries = [];
+                                  if (reports is Map) {
+                                    final mapData = reports as Map<TimePeriod, Map<int, List<Report>>>;
+                                    mapData.forEach((k, v) {
+                                      debugPrint('$k: $v');
+                                    });
+                                    entries = mapData.entries.toList();
+                                    type = reportOptions.entries.firstWhere((i) => i.value == selectedType).key;
+                                    // final keys = reports.keys.toList();
+                                    printData = {for (var entry in entries) entry.key: entry.value.length};
+                                    for (final entry in entries) {
+                                      total += entry.value.length;
+                                    }
+                                  } else {
+                                    final listData = reports as List<Report>;
+                                    type = reportOptions.entries.firstWhere((i) => i.value == selectedType).key;
+                                    total += listData.length;
                                   }
                                   setState(() {
                                     this.total = total;
@@ -362,7 +357,7 @@ class _ReportsState extends ConsumerState<Reports> {
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
                                           BLText(
-                                            'Total $type: ',
+                                            'Total ${reportOptions.entries.firstWhere((i) => i.value == selectedType).key}: ',
                                             size: 20,
                                             bold: true,
                                           ),
@@ -374,6 +369,7 @@ class _ReportsState extends ConsumerState<Reports> {
                                         ],
                                       ),
                                       // if (from != null || to != null)
+                                      if (dateRange != null) LineChartWidget(reports),
                                       if (dateRange != null)
                                         ...List.generate(entries.length, (i) {
                                           return Row(
@@ -415,15 +411,7 @@ class _ReportsState extends ConsumerState<Reports> {
   void initState() {
     reportsManager = ref.read(reportsManagerProvider.notifier);
     toast = ref.read(toastProvider.notifier);
-    streams = {
-      ReportType.freeUsers: db.collection('users').where('premiumUser', isEqualTo: false).snapshots(),
-      ReportType.premiumUsers: db.collection('users').where('premiumUser', isEqualTo: true).snapshots(),
-      ReportType.users: db.collection('users').snapshots(),
-      ReportType.challengesPlayed: db.collection('reports').where('type', isEqualTo: 'challengesPlayed').snapshots(),
-      ReportType.leaderboards: db.collection('leaderboards').snapshots(),
-      ReportType.rooms: db.collection('rooms').snapshots(),
-      ReportType.roomsPlayed: db.collection('reports').where('type', isEqualTo: 'roomsPlayed').snapshots(),
-    };
+    streams = {for (final type in ReportType.values) type: db.collection('reports').where('type', isEqualTo: type.name).snapshots()};
     super.initState();
   }
 
@@ -478,100 +466,189 @@ class _ReportTypeSelectorState extends ConsumerState<ReportTypeSelector> {
     super.initState();
   }
 
+  void updateReportType(ReportType type, bool add) {
+    if (add) {
+      selectedReports[type] = true;
+    } else {
+      selectedReports[type] = false;
+    }
+    for (final entry in selectedReports.entries) {
+      debugPrint(entry.toString());
+    }
+    debugPrint('');
+    if (selectedReports.values.any((value) => value == true)) {
+      hasSelection = true;
+    } else {
+      hasSelection = false;
+    }
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
-    if (selectedReports.values.any((value) => value == true)) {
-      setState(() {
-        hasSelection = true;
-      });
-    } else {
-      setState(() {
-        hasSelection = false;
-      });
-    }
     return BLDialog(
-        child: ListView(
-      shrinkWrap: true,
-      children: [
-        const BLSmallTitle('Select reports to print:'),
-        const SizedBox(height: 15),
-        ...List.generate(widget.reportOptions.length, (i) {
-          final currentReport = widget.reportOptions.values.toList()[i];
-          return CheckboxListTile(
-              value: selectedReports[currentReport],
-              onChanged: (value) {
-                if (value != null) {
-                  if (value) {
-                    setState(() {
-                      selectedReports[currentReport] = false;
-                    });
-                  } else {
-                    setState(() {
-                      selectedReports[currentReport] = true;
-                    });
-                  }
-                }
-              });
-        }),
-        const SizedBox(height: 15),
-        BLAdminButton(
-          type: hasSelection ? AdminBtnType.green : AdminBtnType.grey,
-          child: const BLText('Confirm & Download'),
-          onPressed: () {
-            if (!hasSelection) {
-              toast.showToast(context, 'Select a report type.', type: NotifType.error);
-            } else {
-              nav.pop(context, selectedReports);
-            }
-          },
-        )
-      ],
+        child: ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: 600),
+      child: ListView(
+        shrinkWrap: true,
+        children: [
+          const BLSmallTitle('Select reports to print:'),
+          const SizedBox(height: 15),
+          ...List.generate(selectedReports.length, (i) {
+            final reportType = widget.reportOptions.values.toList()[i];
+            final name = widget.reportOptions.keys.toList()[i];
+            return ReportTypeSelectorItem(
+              type: reportType,
+              name: name,
+              initial: selectedReports[reportType]!,
+              updateReportType: updateReportType,
+            );
+          }),
+          const SizedBox(height: 15),
+          BLAdminButton(
+            type: hasSelection ? AdminBtnType.green : AdminBtnType.grey,
+            child: const BLText('Confirm & Download'),
+            onPressed: () {
+              if (!hasSelection) {
+                toast.showToast(context, 'Select a report type.', type: NotifType.error);
+              } else {
+                nav.pop(context, selectedReports);
+              }
+            },
+          ),
+          BLAdminButton(
+            type: AdminBtnType.red,
+            child: const BLText('Cancel'),
+            onPressed: () {
+              nav.pop(context);
+            },
+          )
+        ],
+      ),
     ));
   }
 }
 
-class BarChartWidget extends StatelessWidget {
+class ReportTypeSelectorItem extends ConsumerStatefulWidget {
+  final ReportType type;
+  final String name;
+  final bool initial;
+  final void Function(ReportType, bool) updateReportType;
+  const ReportTypeSelectorItem({
+    required this.type,
+    required this.updateReportType,
+    required this.name,
+    required this.initial,
+    super.key,
+  });
+
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() => _ReportTypeSelectorItemState();
+}
+
+class _ReportTypeSelectorItemState extends ConsumerState<ReportTypeSelectorItem> {
+  late bool selected;
+
+  @override
+  void initState() {
+    selected = widget.initial;
+    super.initState();
+  }
+
+  void toggleSelected() {
+    setState(() {
+      selected = !selected;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: CheckboxListTile(
+        value: selected,
+        selected: selected,
+        onChanged: (value) {
+          if (value != null) {
+            if (value) {
+              widget.updateReportType(widget.type, false);
+            } else {
+              widget.updateReportType(widget.type, true);
+            }
+            toggleSelected();
+          }
+        },
+        title: BLText(widget.name),
+      ),
+    );
+  }
+}
+
+class LineChartWidget extends StatelessWidget {
   final Map<TimePeriod, Map<int, List<Report>>> groupedReports;
 
-  const BarChartWidget(this.groupedReports, {super.key});
+  const LineChartWidget(this.groupedReports, {super.key});
 
   @override
   Widget build(BuildContext context) {
     // Extract the yearly data
     final yearlyReports = groupedReports[TimePeriod.yearly] ?? {};
 
-    // Prepare data for the BarChart
-    List<BarChartGroupData> barGroups = yearlyReports.entries.map((entry) {
-      final year = entry.key;
-      final reportCount = entry.value.length;
+    // Prepare data for the LineChart
+    List<FlSpot> spots = yearlyReports.entries
+        .map((entry) {
+          final year = entry.key;
+          final reportCount = entry.value.length;
 
-      return BarChartGroupData(
-        x: year, // x-axis as the year
-        barRods: [BarChartRodData(toY: reportCount.toDouble(), width: 15)],
-      );
-    }).toList();
+          // Safeguard against invalid values (like NaN or Infinity)
+          if (reportCount.isNaN || reportCount.isInfinite || reportCount <= 0) {
+            return null; // Skip invalid data
+          }
 
-    return BarChart(
-      BarChartData(
-        alignment: BarChartAlignment.spaceAround,
-        barGroups: barGroups,
-        titlesData: FlTitlesData(
-          bottomTitles: AxisTitles(
-            sideTitles: SideTitles(
-                showTitles: true,
-                getTitlesWidget: (value, _) {
-                  return Text(value.toInt().toString()); // Display year on the x-axis
-                }),
+          return FlSpot(year.toDouble(), reportCount.toDouble());
+        })
+        .whereType<FlSpot>()
+        .toList(); // Filter out nulls
+
+    return SizedBox(
+      width: 500,
+      height: 500,
+      child: LineChart(
+        LineChartData(
+          lineBarsData: [
+            LineChartBarData(
+              spots: spots, // Data points for the line chart
+              isCurved: true, // Optional: make the line curved
+              dotData: const FlDotData(show: true), // Show dots on the data points
+            ),
+          ],
+          titlesData: FlTitlesData(
+            bottomTitles: AxisTitles(
+              sideTitles: SideTitles(
+                  showTitles: true,
+                  getTitlesWidget: (value, _) {
+                    // Safeguard against invalid values on x-axis (year)
+                    if (value.isNaN || value.isInfinite) {
+                      return const Text(''); // Avoid displaying invalid values
+                    }
+                    return Text(value.toInt().toString()); // Display year on the x-axis
+                  }),
+            ),
+            leftTitles: AxisTitles(
+              sideTitles: SideTitles(
+                  showTitles: true,
+                  getTitlesWidget: (value, _) {
+                    // Ensure Y-axis shows integers only
+                    if (value.isNaN || value.isInfinite) {
+                      return const Text(''); // Avoid displaying invalid values
+                    }
+                    return Text(value.toInt().toString()); // Display report count as an integer
+                  }),
+            ),
           ),
-          leftTitles: AxisTitles(
-            sideTitles: SideTitles(
-                showTitles: true,
-                getTitlesWidget: (value, _) {
-                  return Text(value.toInt().toString()); // Display report count on y-axis
-                }),
-          ),
+          borderData: FlBorderData(show: false),
+          minY: 0, // Prevent negative values
         ),
-        borderData: FlBorderData(show: false),
       ),
     );
   }

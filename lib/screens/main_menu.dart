@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:animate_do/animate_do.dart';
 import 'package:block_logic/components/background.dart';
 import 'package:block_logic/components/button/button.dart';
-import 'package:block_logic/components/button/text.dart';
 import 'package:block_logic/components/util/animation_player.dart';
 import 'package:block_logic/components/util/spaced_col.dart';
 import 'package:block_logic/logic/enums.dart';
