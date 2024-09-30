@@ -12,7 +12,8 @@ class AllBlocks {
     return {
       CodeBlockType.variables: [
         GameBlockData.createVariable(name: 'total', value: PyLiteral.none(), count: 2),
-        GameBlockData.createVariable(name: 'n', value: PyLiteral.none(), count: 3),
+        GameBlockData.createVariable(name: 'n', value: PyLiteral.none(), count: 2),
+        GameBlockData.createVariable(name: '(n + 1)', value: PyLiteral.none()),
       ],
       CodeBlockType.functions: [GameBlockData.createFunction(name: 'print')],
       CodeBlockType.objects: [],

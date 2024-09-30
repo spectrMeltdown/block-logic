@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class AppTheme {
@@ -40,7 +41,7 @@ class AppTheme {
       checkboxTheme: const CheckboxThemeData(
         side: BorderSide(color: Colors.white),
       ),
-      dialogBackgroundColor: Colors.blueGrey.shade900,
+      dialogBackgroundColor: kIsWeb ? Colors.blueGrey.shade900 : null,
       dialogTheme: DialogTheme(
         backgroundColor: Colors.blueGrey.shade900,
       ),

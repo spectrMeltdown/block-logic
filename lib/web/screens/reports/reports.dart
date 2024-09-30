@@ -164,7 +164,7 @@ class _ReportsState extends ConsumerState<Reports> {
         final newCategory = await ref.read(reportsProvider(ReportParams(
           dateRange: dateRange,
           stream: streams.entries.firstWhere((e) => e.key == entry.key).value,
-        )).future);
+        )).future) as Map<TimePeriod, Map<int, List<Report>>>;
 
         //construct count of the new category
         final Map<TimePeriod, int> newCategoryCount = {for (final category in newCategory.keys) category: 0};
@@ -312,7 +312,7 @@ class _ReportsState extends ConsumerState<Reports> {
                             ),
                             reports.when(
                                 data: (reports) {
-                                  if (reports.isEmpty) {
+                                  if ((reports is Map && reports.isEmpty) || (reports is List && reports.isEmpty)) {
                                     setState(() {
                                       reportsEmpty = true;
                                     });
@@ -369,7 +369,7 @@ class _ReportsState extends ConsumerState<Reports> {
                                         ],
                                       ),
                                       // if (from != null || to != null)
-                                      if (dateRange != null) LineChartWidget(reports),
+                                      if (dateRange != null) LineChartWidget(reports as Map<TimePeriod, Map<int, List<Report>>>),
                                       if (dateRange != null)
                                         ...List.generate(entries.length, (i) {
                                           return Row(

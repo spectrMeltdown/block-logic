@@ -185,10 +185,11 @@ class _LeaderboardState extends ConsumerState<SelectedLeaderboard> {
                               return Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: Column(
+                                  mainAxisSize: MainAxisSize.min,
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     if (completed != null && completed.isNotEmpty)
-                                      DataTable(columnSpacing: constraints.maxWidth / 10, headingRowHeight: 40, columns: const [
+                                      DataTable(columnSpacing: constraints.maxWidth / 13, headingRowHeight: 40, columns: const [
                                         DataColumn(label: BLText('Rank')),
                                         DataColumn(label: BLText('Player')),
                                         DataColumn(label: BLText('Time')),
@@ -197,7 +198,21 @@ class _LeaderboardState extends ConsumerState<SelectedLeaderboard> {
                                         ...List.generate(completed.length, (i) {
                                           return DataRow(cells: [
                                             DataCell(BLText((i + 1).toString())),
-                                            DataCell(BLDisplayName(completed[i].accountID!, AccountType.user)),
+                                            DataCell(Row(
+                                              children: [
+                                                ConstrainedBox(
+                                                  constraints: BoxConstraints(maxWidth: constraints.maxWidth / 4),
+                                                  child: SingleChildScrollView(
+                                                    scrollDirection: Axis.horizontal,
+                                                    clipBehavior: Clip.antiAlias,
+                                                    child: BLDisplayName(
+                                                      completed[i].accountID!,
+                                                      AccountType.user,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            )),
                                             DataCell(Center(
                                               child: BLText(
                                                 formatTime(completed[i].timeElapsed!),

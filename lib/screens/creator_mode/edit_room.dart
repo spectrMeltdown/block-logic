@@ -222,7 +222,7 @@ class _EditRoomBottomSheetState extends ConsumerState<EditRoomBottomSheet> {
                                                     if (!issetChallenges) {
                                                       setState(() {
                                                         selectedChallenges = challenges.where((i) => selectedRoom.challengeIDs!.contains(i.id)).toList();
-                                                        isset = true;
+                                                        issetChallenges = true;
                                                       });
                                                     }
                                                     return Column(

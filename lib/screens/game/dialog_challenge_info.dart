@@ -25,7 +25,10 @@ class DialogChallengeInfo extends ConsumerWidget {
           padding: const EdgeInsets.only(left: 8),
           child: Wrap(
             children: [
-              BLText(challenge.shortDescription ?? 'No description provided.'),
+              BLText(
+                challenge.shortDescription ?? 'No description provided.',
+                softWrap: true,
+              ),
               const BLText('\n'),
               BLText(
                 challenge.additionalInfo ?? 'No additional info provided.',

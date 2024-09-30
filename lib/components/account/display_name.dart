@@ -13,7 +13,8 @@ class BLDisplayName extends ConsumerWidget {
   final AccountType type;
   final double? size;
   final bool alignCenter;
-  const BLDisplayName(this.accountID, this.type, {this.size, this.alignCenter = false, super.key});
+  final bool overflow;
+  const BLDisplayName(this.accountID, this.type, {this.size, this.alignCenter = false, this.overflow = false, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -35,7 +36,8 @@ class BLDisplayName extends ConsumerWidget {
               user?.displayName ?? '--',
               size: kIsWeb ? 16 : size,
               alignCenter: alignCenter,
-              overflow: false,
+              overflow: overflow,
+              // softWrap: true,
             ),
         error: blankError,
         loading: blankLoading);

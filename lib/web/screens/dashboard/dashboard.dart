@@ -1,6 +1,7 @@
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/text/title_small.dart';
 import 'package:block_logic/logic/enums.dart';
+import 'package:block_logic/logic/firebase_providers/reports.dart';
 import 'package:block_logic/logic/services/toast.dart';
 import 'package:block_logic/logic/testing.dart';
 import 'package:block_logic/web/components/bl_table.dart';
@@ -30,7 +31,7 @@ class _DashboardState extends ConsumerState<Dashboard> {
 
   @override
   Widget build(BuildContext context) {
-    //final assets = ref.read(assetsProvider);
+    // final reports = ref.watch(reportsProvider(ReportParams(dateRange: null, stream: )));
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     return Scrollbar(

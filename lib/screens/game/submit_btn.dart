@@ -60,7 +60,10 @@ class GameSubmitButton extends ConsumerWidget {
 
           if (practiceMode) {
             if (!context.mounted) return;
-            showDialog(context: context, builder: (context) => PracticeDialog(userOutput == null ? null : correct));
+            showDialog(
+              context: context,
+              builder: (context) => PracticeDialog(userOutput == null ? null : correct),
+            );
           }
           // if correct, add score
           if (correct) {
@@ -86,16 +89,16 @@ class GameSubmitButton extends ConsumerWidget {
           toggleProcessing();
         },
         padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
-        child: const Row(
+        child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              Icons.rocket_launch_outlined,
+              lastChallenge ? Icons.rocket_launch_outlined : Icons.arrow_forward,
               size: 16,
             ),
             SizedBox(width: 5),
             BLText(
-              'Submit',
+              lastChallenge ? 'Submit' : 'Next',
               size: 16,
               color: Colors.white,
             )

@@ -26,7 +26,7 @@ class ReportParams extends Equatable {
   List<Object?> get props => [dateRange, stream];
 }
 
-final reportsProvider = StreamProvider.family<dynamic, ReportParams>((ref, params) async* {
+final reportsProvider = StreamProvider.family<Object, ReportParams>((ref, params) async* {
   await for (final query in params.stream) {
     final List<Report> list = [];
 

@@ -60,6 +60,8 @@ class _GameChallengeState extends ConsumerState<GameChallenge> {
     final processing = ref.watch(processingProvider);
     // debugPrint(widget.challengeCount.toString());
     // debugPrint(widget.currentChallenge.toString());
+    debugPrint('${widget.challengeCount}');
+    debugPrint('${widget.currentChallenge}');
     return Stack(
       fit: StackFit.expand,
       children: [
@@ -89,7 +91,7 @@ class _GameChallengeState extends ConsumerState<GameChallenge> {
                     child: Column(
                       children: [
                         GameSubmitButton(
-                          widget.challengeCount == widget.currentChallenge,
+                          widget.challengeCount == (widget.currentChallenge + 1),
                           updateChallenge: widget.updateChallenge,
                           practiceMode: widget.practiceMode,
                         ),

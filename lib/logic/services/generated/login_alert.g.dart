@@ -6,7 +6,7 @@ part of '../login_alert.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$loginAlertHash() => r'2502e3ffc3e9f25a7da0c3070b2eaee917e00fe6';
+String _$loginAlertHash() => r'e375df0d973b88ab4b189d5daf081ae6c24ff931';
 
 /// See also [LoginAlert].
 @ProviderFor(LoginAlert)
