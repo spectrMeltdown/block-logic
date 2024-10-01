@@ -12,13 +12,11 @@ import 'package:block_logic/logic/services/challenge_manager.dart';
 import 'package:block_logic/logic/services/dialog.dart';
 import 'package:block_logic/logic/services/toast.dart';
 import 'package:block_logic/web/components/back_btn.dart';
-import 'package:block_logic/web/components/bl_chip.dart';
 import 'package:block_logic/web/components/bl_segmented_button.dart';
 import 'package:block_logic/web/components/button.dart';
 import 'package:block_logic/web/components/card_simple.dart';
 import 'package:block_logic/web/components/header.dart';
 import 'package:block_logic/web/screens/challenges/block_selector_dialog.dart';
-import 'package:block_logic/web/screens/challenges/chip_strip.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -124,7 +122,7 @@ class _SelectedChallengeState extends ConsumerState<EditChallenge> {
               if (blocks != null) {
                 int count = 0;
                 for (final entry in blocks!.entries) {
-                  for (final block in entry.value) {
+                  for (int i = 0; i < entry.value.length; i++) {
                     count++;
                   }
                 }

@@ -33,43 +33,59 @@ class _UserRoomItemState extends ConsumerState<UserRoomItem> {
   late final DialogService dialog;
   late final RoomManager roomManager;
   late final Toast toast;
+
+  Future<void> joinRoom() async {
+    if (widget.room.players != null) {
+      // final currentPlayers = await roomManager.currentPlayers(widget.room.id!);
+      // check if room is full. Minus 1 so that the host can join.
+
+      final joinSuccess = await roomManager.joinRoom(widget.room.id!);
+      if (joinSuccess) {
+        if (!mounted) return;
+        nav.push(context, WaitingRoom(widget.room.id!));
+      } else {
+        if (!mounted) return;
+        toast.showToast(context, 'Failed to join room.', type: NotifType.error);
+      }
+    } else {
+      if (!mounted) return;
+      toast.showToast(context, 'Error joining room.', type: NotifType.info);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final hostData = ref.watch(SelectedUserProvider(widget.room.hostID!));
     return hostData.when(
         data: (hostData) {
           return BLTranslucentCard(
+            onLongPress: () async {
+              final result = await showDialog(
+                context: context,
+                builder: (context) => InGameControlsDialog(widget.room.id!),
+              );
+              if (result is String && result == 'kickPlayer') {
+                if (!context.mounted) return;
+                showBottomSheet(
+                  context: context,
+                  builder: (context) => KickPlayerBottomSheet(widget.room.id!),
+                );
+              }
+            },
             onPressed: () async {
-              if (widget.room.status != null && widget.room.status == RoomStatus.inGame) {
-                final result = await showDialog(context: context, builder: (context) => InGameControlsDialog(widget.room.id!));
-                if (result is String && result == 'kickPlayer') {
-                  if (!context.mounted) return;
-                  showBottomSheet(context: context, builder: (context) => KickPlayerBottomSheet(widget.room.id!));
-                }
-                return;
-              }
               widget.toggleProcessing();
-              if (widget.room.password == null || widget.room.password!.isEmpty) {
-                await roomManager.joinRoom(widget.room.id!);
-                if (context.mounted) {
-                  nav.push(
-                    context,
-                    WaitingRoom(widget.room.id!),
-                  );
-                }
-              } else {
-                final joinRoom = await roomManager.joinRoom(widget.room.id!);
-                if (joinRoom) {
-                  if (!context.mounted) return;
-                  nav.push(context, WaitingRoom(widget.room.id!));
-                }
-              }
+              await joinRoom();
               widget.toggleProcessing();
             },
             color: Colors.black,
             //icon: room.icon ?? '',
             title: widget.room.name ?? '',
-            bottomRowStart: BLRoomState(widget.room.status),
+            bottomRowStart: widget.room.players!.length == widget.room.maxPlayers
+                ? const BLText(
+                    'Full',
+                    color: Colors.red,
+                  )
+                : BLRoomState(widget.room.status),
             bottomRowEnd: BLText(
               '${widget.room.players?.length ?? '--'}/${widget.room.maxPlayers ?? '--'}',
               bold: true,

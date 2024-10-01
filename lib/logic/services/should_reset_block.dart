@@ -12,11 +12,10 @@ import 'package:tuple/tuple.dart';
 //   return result;
 // }
 
-final shouldResetBlockProvider = Provider.family.autoDispose<bool, Tuple2<CodeBlockType, String>?>((ref, req) {
+final shouldResetBlockProvider = Provider.family<bool, Tuple2<CodeBlockType, String>?>((ref, req) {
   if (req == null) {
     return false;
   }
-  final result =
-      ref.watch(gameManagerProvider.select((state) => !state.inSelectorUIDs[req.item1]!.contains(req.item2)));
+  final result = ref.watch(gameManagerProvider.select((state) => !state.inSelectorUIDs[req.item1]!.contains(req.item2)));
   return result;
 });

@@ -3,23 +3,19 @@ import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/textbox.dart';
 import 'package:block_logic/components/util/blank_widget.dart';
 import 'package:block_logic/components/util/provider_default.dart';
-import 'package:block_logic/constants.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_models/challenge.dart';
 import 'package:block_logic/logic/firebase_providers/all_challenges.dart';
-import 'package:block_logic/logic/firebase_providers/selected_challenge.dart';
 import 'package:block_logic/logic/game/block_data.dart';
 import 'package:block_logic/logic/services/challenge_manager.dart';
 import 'package:block_logic/logic/services/dialog.dart';
 import 'package:block_logic/logic/services/toast.dart';
 import 'package:block_logic/web/components/back_btn.dart';
-import 'package:block_logic/web/components/bl_chip.dart';
 import 'package:block_logic/web/components/bl_segmented_button.dart';
 import 'package:block_logic/web/components/button.dart';
 import 'package:block_logic/web/components/card_simple.dart';
 import 'package:block_logic/web/components/header.dart';
 import 'package:block_logic/web/screens/challenges/block_selector_dialog.dart';
-import 'package:block_logic/web/screens/challenges/chip_strip.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -101,8 +97,8 @@ class _SelectedChallengeState extends ConsumerState<CreateChallenge> {
   @override
   Widget build(BuildContext context) {
     final challenges = ref.watch(ChallengesProvider());
-    double width = MediaQuery.of(context).size.width;
-    double height = MediaQuery.of(context).size.height;
+    // double width = MediaQuery.of(context).size.width;
+    // double height = MediaQuery.of(context).size.height;
     return ListView(
       padding: EdgeInsets.zero,
       children: [
@@ -120,7 +116,7 @@ class _SelectedChallengeState extends ConsumerState<CreateChallenge> {
               if (blocks != null) {
                 int count = 0;
                 blocks!.forEach((type, list) {
-                  for (final i in list) {
+                  for (int i = 0; i < list.length; i++) {
                     count++;
                   }
                 });

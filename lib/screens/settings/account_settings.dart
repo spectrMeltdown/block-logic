@@ -15,6 +15,7 @@ import 'package:block_logic/logic/firebase_providers/auth.dart';
 import 'package:block_logic/logic/services/account.dart';
 import 'package:block_logic/logic/services/auth.dart';
 import 'package:block_logic/logic/services/navigation.dart';
+import 'package:block_logic/logic/services/reports_manager.dart';
 import 'package:block_logic/logic/services/shared_pref.dart';
 import 'package:block_logic/logic/services/toast.dart';
 import 'package:block_logic/screens/auth/change_display_name.dart';
@@ -23,6 +24,7 @@ import 'package:block_logic/screens/auth/change_password.dart';
 import 'package:block_logic/screens/auth/change_phone_num.dart';
 import 'package:block_logic/screens/checkpoint.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -50,6 +52,8 @@ class _AccountSettingsWidgetState extends ConsumerState<AccountSettingsWidget> {
   late final Toast toast;
   late final CustomNavigation nav;
   late final SharedPreferences sharedPref;
+  late final ReportsManager reportManager;
+
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(authChangesProvider);
@@ -186,6 +190,9 @@ class _AccountSettingsWidgetState extends ConsumerState<AccountSettingsWidget> {
                                 );
                                 debugPrint('Reauth result = $reauth');
                                 if (reauth == null) {
+                                  if (!kIsWeb) {
+                                    await reportManager.remove(userUID: user.uid);
+                                  }
                                   await auth.deleteAccount();
                                   if (!context.mounted) return;
                                   nav.pushAndRemove(context, const Checkpoint());
@@ -353,6 +360,7 @@ class _AccountSettingsWidgetState extends ConsumerState<AccountSettingsWidget> {
     toast = ref.read(toastProvider.notifier);
     accountService = ref.read(accountServiceProvider.notifier);
     sharedPref = ref.read(sharedPrefProvider);
+    reportManager = ref.read(reportsManagerProvider.notifier);
     super.initState();
   }
 }

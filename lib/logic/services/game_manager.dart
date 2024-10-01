@@ -8,9 +8,11 @@ import 'package:block_logic/logic/services/error_handler.dart';
 import 'package:block_logic/logic/services/leaderboard_manager.dart';
 import 'package:block_logic/logic/services/room_manager.dart';
 import 'package:block_logic/logic/services/score_manager.dart';
+import 'package:block_logic/logic/services/shared_pref.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 final gameManagerProvider = StateNotifierProvider<GameManager, GameState>((ref) {
   final errorHandler = ref.read(errorHandlerProvider.notifier);
@@ -18,11 +20,13 @@ final gameManagerProvider = StateNotifierProvider<GameManager, GameState>((ref) 
   final scoreManager = ref.read(scoreManagerProvider.notifier);
   final roomManager = ref.read(roomManagerProvider.notifier);
   final auth = ref.read(authServiceProvider.notifier);
+  final sharedPref = ref.read(sharedPrefProvider);
   return GameManager(
     scoreManager: scoreManager,
     roomManager: roomManager,
     leaderboardManager: leaderboardManager,
     errorHandler: errorHandler,
+    sharedPref: sharedPref,
     auth: auth,
   );
 });
@@ -34,11 +38,13 @@ class GameManager extends StateNotifier<GameState> {
     required AuthService auth,
     required RoomManager roomManager,
     required LeaderboardManager leaderboardManager,
+    required SharedPreferences sharedPref,
   }) : super(GameState(
           scoreManager: scoreManager,
           roomManager: roomManager,
           leaderboardManager: leaderboardManager,
           errorHandler: errorHandler,
+          sharedPref: sharedPref,
           auth: auth,
         ));
 
@@ -133,7 +139,12 @@ class GameManager extends StateNotifier<GameState> {
       // if this player is the last to leave the room
       if (playerListResult!.isEmpty) {
         // finalize the leaderboard
-        await state.leaderboardManager.update(Leaderboard(id: state._leaderboardID, status: LeaderboardStatus.complete));
+        await state.leaderboardManager.update(
+          Leaderboard(
+            id: state._leaderboardID,
+            status: LeaderboardStatus.complete,
+          ),
+        );
 
         // reset the room status to available
         await state.roomManager.update(Room(
@@ -144,6 +155,8 @@ class GameManager extends StateNotifier<GameState> {
       } else {
         return playerListResult.first;
       }
+      state.sharedPref.remove('currentLeaderboardID');
+      state.sharedPref.remove('currentRoomID');
       state._processing = false;
       return null;
     } catch (e) {
@@ -607,12 +620,15 @@ class GameState {
   final AuthService _auth;
   String? _leaderboardID;
   String? _roomID;
-  int? _score;
+  // int? _score;
   int _timeElapsed = 0;
+
+  SharedPreferences sharedPref;
 
   // constructor
   GameState({
     // this.shouldSetState = false,
+    required this.sharedPref,
     bool processing = false,
     this.isDropCancelled = false,
     required this.scoreManager,

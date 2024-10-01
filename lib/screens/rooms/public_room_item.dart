@@ -32,6 +32,40 @@ class _PublicRoomItemState extends ConsumerState<PublicRoomItem> {
   late final DialogService dialog;
   late final RoomManager roomManager;
   late final Toast toast;
+  int errorTap = 0;
+  List<String> bannedFromRooms = [];
+
+  Future<void> joinRoom() async {
+    final currentPlayers = await roomManager.currentPlayers(widget.room.id!);
+    if (currentPlayers != null) {
+      // check if room is full. Minus 1 so that the host can join.
+
+      if (widget.room.maxPlayers! != currentPlayers.length) {
+        final joinSuccess = await roomManager.joinRoom(widget.room.id!);
+        if (joinSuccess) {
+          if (!mounted) return;
+          final result = nav.push(context, WaitingRoom(widget.room.id!));
+          if (result is String) {}
+          return;
+        } else {
+          if (!mounted) return;
+          toast.showToast(context, 'Failed to join room.', type: NotifType.error);
+        }
+        // if (currentPlayers.contains(widget.room.hostID) || (currentPlayers.length != widget.room.maxPlayers!)) {
+        // } else {
+        //   if (!mounted) return;
+        //   toast.showToast(context, 'Room full.', type: NotifType.info);
+        // }
+      } else {
+        if (!mounted) return;
+        toast.showToast(context, 'Room full.', type: NotifType.info);
+      }
+    } else {
+      if (!mounted) return;
+      toast.showToast(context, 'Error joining room.', type: NotifType.info);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final hostData = ref.watch(SelectedUserProvider(widget.room.hostID!));
@@ -40,23 +74,31 @@ class _PublicRoomItemState extends ConsumerState<PublicRoomItem> {
           return BLTranslucentCard(
             onPressed: () async {
               if (widget.room.status != null && widget.room.status == RoomStatus.inGame) {
+                if (errorTap == 2) {
+                  toast.showToast(context, 'This room has already started.', type: NotifType.info);
+                  setState(() {
+                    errorTap = 0;
+                  });
+                } else {
+                  setState(() {
+                    errorTap++;
+                  });
+                }
                 return;
               }
               widget.toggleProcessing();
               if (widget.room.password == null || widget.room.password!.isEmpty) {
-                await roomManager.joinRoom(widget.room.id!);
-                if (context.mounted) {
-                  nav.push(
-                    context,
-                    WaitingRoom(widget.room.id!),
-                  );
-                }
+                await joinRoom();
               } else {
-                final result = await dialog.show(context, RoomPasswordDialog(pass: widget.room.password!, hostID: widget.room.hostID!));
-                await roomManager.joinRoom(widget.room.id!);
+                final result = await dialog.show(
+                  context,
+                  RoomPasswordDialog(
+                    pass: widget.room.password!,
+                    hostID: widget.room.hostID!,
+                  ),
+                );
                 if (result is bool && result) {
-                  if (!context.mounted) return;
-                  nav.push(context, WaitingRoom(widget.room.id!));
+                  await joinRoom();
                 }
               }
               widget.toggleProcessing();
@@ -66,7 +108,12 @@ class _PublicRoomItemState extends ConsumerState<PublicRoomItem> {
             //icon: room.icon ?? '',
             title: widget.room.name ?? '',
             subTitle: hostData?.displayName ?? '--',
-            bottomRowStart: BLRoomState(widget.room.status),
+            bottomRowStart: widget.room.players!.length == widget.room.maxPlayers
+                ? const BLText(
+                    'Full',
+                    color: Colors.red,
+                  )
+                : BLRoomState(widget.room.status),
             bottomRowEnd: BLText(
               '${widget.room.players?.length ?? '--'}/${widget.room.maxPlayers ?? '--'}',
               bold: true,

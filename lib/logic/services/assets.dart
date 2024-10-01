@@ -37,6 +37,7 @@ class Assets {
   final String loadingBricks1 = 'assets/animations/loading-bricks-1.json';
   final String loadingBricks2 = 'assets/animations/loading-bricks-2.json';
   final String premiumCrown = 'assets/animations/premium-crown.json';
+  final String like = 'assets/animations/like.json';
 
   /// backgrounds
   // static final String bg1 = 'assets/animations/backgrounds/bg-1.json';

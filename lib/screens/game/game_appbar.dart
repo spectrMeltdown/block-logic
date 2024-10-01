@@ -8,6 +8,7 @@ import 'package:block_logic/logic/services/game_manager.dart';
 import 'package:block_logic/logic/services/game_provider.dart';
 import 'package:block_logic/logic/services/navigation.dart';
 import 'package:block_logic/logic/services/should_reset_all_blocks.dart';
+import 'package:block_logic/logic/services/should_reset_block.dart';
 import 'package:block_logic/logic/services/time_box.dart';
 import 'package:block_logic/logic/services/ui.dart';
 import 'package:block_logic/screens/game/pause_dialog.dart';
@@ -77,13 +78,14 @@ class _GameAppbarState extends ConsumerState<GameAppbar> {
               if (!context.mounted) return;
               final result = await showDialog(context: context, builder: (context) => const ConfirmDialog());
               if (result is bool && result) {
+                if (!context.mounted) return;
+                nav.pop(context);
                 await gameManager.leaveGame(false);
                 gameManager.resetTree();
                 gameManager.setShouldResetAllBlocks(true);
                 ref.invalidate(getRootDataProvider);
                 ref.invalidate(shouldResetAllBlocksProvider);
-                if (!context.mounted) return;
-                nav.pop(context);
+                ref.invalidate(shouldResetBlockProvider);
               }
             }
             if (!widget.practiceMode) {

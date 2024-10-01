@@ -55,7 +55,8 @@ class RoomManager extends _$RoomManager {
       final doc = await state._db.doc(roomID).get();
       return Room.fromFirestore(doc).players ?? [];
     } catch (e) {
-      return [state._errorHandler.call(e, this) ?? 'error'];
+      debugPrint(state._errorHandler.call(e, this) ?? '');
+      return null;
     }
   }
 

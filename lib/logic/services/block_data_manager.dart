@@ -7,6 +7,58 @@ import 'package:block_logic/logic/game/py_loops.dart';
 import 'package:block_logic/logic/game/py_operators.dart';
 
 class AllBlocks {
+  Map<CodeBlockType, List<GameBlockData>> helloWorld() {
+    return {
+      CodeBlockType.variables: [],
+      CodeBlockType.functions: [
+        GameBlockData.createFunction(name: 'print'),
+      ],
+      CodeBlockType.objects: [],
+      CodeBlockType.operators: [],
+      CodeBlockType.keywords: [],
+      CodeBlockType.literals: [
+        GameBlockData.createLiteral(literal: PyLiteral.string('Hello, World!')),
+      ],
+      CodeBlockType.conditionals: [],
+      CodeBlockType.loops: [],
+    };
+  }
+
+  Map<CodeBlockType, List<GameBlockData>> pythonIsAwesome() {
+    return {
+      CodeBlockType.variables: [
+        GameBlockData.createVariable(name: 'a', value: PyLiteral.none(), count: 2),
+        GameBlockData.createVariable(name: 'b', value: PyLiteral.none(), count: 2),
+        GameBlockData.createVariable(name: 'c', value: PyLiteral.none(), count: 2),
+        GameBlockData.createVariable(name: 'd', value: PyLiteral.none(), count: 2),
+      ],
+      CodeBlockType.functions: [
+        GameBlockData.createFunction(name: 'print'),
+      ],
+      CodeBlockType.objects: [],
+      CodeBlockType.operators: [
+        GameBlockData.createOperator(
+          operatorType: PyOperatorTypes.arithmetic,
+          operator: PyOperatorsArithmetic.add,
+          count: 2,
+        ),
+        GameBlockData.createOperator(
+          operatorType: PyOperatorTypes.assignment,
+          operator: PyOperatorsAssignment.assignment,
+          count: 4,
+        ),
+      ],
+      CodeBlockType.keywords: [],
+      CodeBlockType.literals: [
+        GameBlockData.createLiteral(literal: PyLiteral.string('Python')),
+        GameBlockData.createLiteral(literal: PyLiteral.string(' is ')),
+        GameBlockData.createLiteral(literal: PyLiteral.string('Awesome')),
+      ],
+      CodeBlockType.conditionals: [],
+      CodeBlockType.loops: [],
+    };
+  }
+
   /// "Sum of first N natural numbers"
   Map<CodeBlockType, List<GameBlockData>> sumOfNaturalNumbers() {
     return {

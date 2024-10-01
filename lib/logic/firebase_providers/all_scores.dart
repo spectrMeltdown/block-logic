@@ -43,14 +43,21 @@ Stream<Map<ScoreStatus, List<Score>>?> allScores(AllScoresRef ref, String leader
 
         /// do a ranking on ScoreStatus.complete
         if (result[ScoreStatus.complete]!.isNotEmpty) {
-          /// sort score first
-          result[ScoreStatus.complete]!.sort((a, b) => a.playerScore!.compareTo(b.playerScore!));
-
           /// sort time elapsed
           result[ScoreStatus.complete]!.sort((a, b) => a.timeElapsed!.compareTo(b.timeElapsed!));
+
+          /// sort score first
+          result[ScoreStatus.complete]!.sort((a, b) => a.playerScore!.compareTo(b.playerScore!));
+          result[ScoreStatus.complete] = result[ScoreStatus.complete]!.reversed.toList();
         }
       }
-      debugPrint(result.toString());
+      for (final scores in result.entries) {
+        // debugPrint(score.key.toString());
+        for (final score in scores.value) {
+          debugPrint(score.playerScore.toString());
+          debugPrint(score.status.toString());
+        }
+      }
       yield result;
     }
   }

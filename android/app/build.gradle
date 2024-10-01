@@ -83,9 +83,10 @@ flutter {
 dependencies {
     // Import the BoM for the Firebase platform
     implementation platform("com.google.firebase:firebase-bom:33.3.0")
-
+    implementation 'com.google.android.gms:play-services-basement:latest_version'
     // Add the dependencies for the App Check libraries
     implementation("com.google.firebase:firebase-appcheck-playintegrity")
     implementation("com.google.firebase:firebase-auth")
     // Other dependencies...
 }
+apply plugin: 'com.google.gms.google-services'

@@ -4,16 +4,11 @@ import 'package:block_logic/components/util/provider_default.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_providers/reports.dart';
 import 'package:block_logic/logic/services/toast.dart';
-import 'package:block_logic/logic/testing.dart';
 import 'package:block_logic/web/components/bl_table.dart';
-import 'package:block_logic/web/components/button.dart';
 import 'package:block_logic/web/components/card_simple.dart';
 import 'package:block_logic/web/components/header.dart';
 import 'package:block_logic/web/screens/dashboard/dashboard_card.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -54,7 +49,7 @@ class _DashboardState extends ConsumerState<Dashboard> {
               height: height / 30,
             ),
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
               child: Wrap(
                 spacing: 15,
                 runSpacing: 15,
@@ -67,11 +62,11 @@ class _DashboardState extends ConsumerState<Dashboard> {
                             downOrup: 'up',
                             titleTotal: 'users',
                             total: data.length,
-                            icon: Icon(Icons.person),
+                            icon: const Icon(Icons.person),
                             iconBgColor: Colors.deepPurple,
                           );
                         }
-                        return BLText('Error loading data');
+                        return const BLText('Error loading data');
                       },
                       error: genericError,
                       loading: genericLoading),
@@ -83,11 +78,11 @@ class _DashboardState extends ConsumerState<Dashboard> {
                             downOrup: 'up',
                             titleTotal: 'challenges played',
                             total: data.length,
-                            icon: Icon(FontAwesomeIcons.gamepad),
+                            icon: const Icon(FontAwesomeIcons.gamepad),
                             iconBgColor: Colors.orange,
                           );
                         }
-                        return BLText('Error loading data');
+                        return const BLText('Error loading data');
                       },
                       error: genericError,
                       loading: genericLoading),
@@ -99,11 +94,11 @@ class _DashboardState extends ConsumerState<Dashboard> {
                             downOrup: 'up',
                             titleTotal: 'rooms',
                             total: data.length,
-                            icon: Icon(FontAwesomeIcons.box),
+                            icon: const Icon(FontAwesomeIcons.box),
                             iconBgColor: Colors.green,
                           );
                         }
-                        return BLText('Error loading data');
+                        return const BLText('Error loading data');
                       },
                       error: genericError,
                       loading: genericLoading),

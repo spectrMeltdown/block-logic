@@ -10,7 +10,7 @@ part 'generated/reports_manager.g.dart';
 
 @riverpod
 class ReportsManager extends _$ReportsManager {
-  Future<String?> add(ReportType type, int count, {String? dataUID}) async {
+  Future<String?> add(ReportType type, int count, {String dataUID = ''}) async {
     try {
       // check because web & mobile share some screens
       if (!kIsWeb) {
@@ -20,6 +20,31 @@ class ReportsManager extends _$ReportsManager {
               date: DateTime.now(),
               userUID: FirebaseAuth.instance.currentUser!.uid,
             ).toFirestore());
+      }
+      return null;
+    } catch (e) {
+      return state._errorHandler.call(e, this);
+    }
+  }
+
+  Future<String?> remove({String dataUID = '', String userUID = ''}) async {
+    if (dataUID.isEmpty && userUID.isEmpty) {
+      throw ('Provide a data or user uid!!');
+    }
+    if (dataUID.isNotEmpty && userUID.isNotEmpty) {
+      throw ('Do not provide both!!');
+    }
+    try {
+      // check because web & mobile share some screens
+      if (!kIsWeb) {
+        final query = await state._db.where(dataUID.isNotEmpty ? 'dataUID' : 'userUID', isEqualTo: dataUID.isNotEmpty ? dataUID : userUID).get();
+        if (query.docs.isNotEmpty) {
+          for (final doc in query.docs) {
+            await doc.reference.delete();
+          }
+        } else {
+          return 'Report(s) not found.';
+        }
       }
       return null;
     } catch (e) {

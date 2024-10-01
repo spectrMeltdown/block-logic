@@ -19,6 +19,9 @@ import 'package:block_logic/logic/services/navigation.dart';
 import 'package:block_logic/logic/services/room_manager.dart';
 import 'package:block_logic/logic/services/toast.dart';
 import 'package:block_logic/screens/game/game_room.dart';
+import 'package:block_logic/screens/rooms/in_game_controls_dialog.dart';
+import 'package:block_logic/screens/rooms/kick_player_bottom_sheet.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widget_and_text_animator/widget_and_text_animator.dart';
@@ -84,8 +87,13 @@ class _WaitingRoomState extends ConsumerState<WaitingRoom> {
                     child: BLBorderedPanel(
                       child: room.when(
                           data: (room) {
-                            if (room == null) {
-                              debugPrint('Room doesn\'t exist');
+                            final uid = FirebaseAuth.instance.currentUser!.uid;
+                            if (room == null || !room.players!.contains(uid) && room.hostID != uid) {
+                              // if room was deleted
+                              WidgetsBinding.instance.addPostFrameCallback((duration) {
+                                nav.pop(context);
+                                toast.showToast(context, 'You have been kicked.', type: NotifType.error);
+                              });
                               return const BLError();
                             }
                             if (room.players!.isEmpty) {
@@ -109,69 +117,75 @@ class _WaitingRoomState extends ConsumerState<WaitingRoom> {
                                 Flexible(
                                   child: Stack(
                                     children: [
-                                      ListView.builder(
-                                          padding: EdgeInsets.zero,
-                                          itemCount: room.players!.length,
-                                          itemBuilder: (context, i) {
-                                            return Padding(
-                                              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                                              child: WidgetAnimator(
+                                      ListView(
+                                        padding: EdgeInsets.zero,
+                                        children: List.generate(room.players!.length, (i) {
+                                          return Padding(
+                                            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                                            child: WidgetAnimator(
                                                 incomingEffect: WidgetTransitionEffects.incomingScaleUp(),
-                                                child: Row(
-                                                  children: [
-                                                    BLProfilePic(type: AccountType.user, room.players![i]),
-                                                    const SizedBox(width: 10),
-                                                    BLDisplayName(
-                                                      room.players![i],
-                                                      AccountType.user,
-                                                      size: 16,
-                                                    )
-                                                  ],
-                                                ),
+                                                child: ListTile(
+                                                  leading: BLProfilePic(type: AccountType.user, room.players![i]),
+                                                  title: BLDisplayName(
+                                                    room.players![i],
+                                                    AccountType.user,
+                                                    size: 16,
+                                                  ),
+                                                )),
+                                          );
+                                        }),
+                                      ),
+                                      if (auth.getUID() == room.hostID)
+                                        Align(
+                                          alignment: Alignment.bottomCenter,
+                                          child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: [
+                                              BLButton(
+                                                  type: processing ? BtnType.grey : BtnType.normal,
+                                                  paddingX: 10,
+                                                  onPressed: () async {
+                                                    final result = await showDialog(
+                                                      context: context,
+                                                      builder: (context) => InGameControlsDialog(room.id!),
+                                                    );
+                                                    if (result is String && result == 'kickPlayer') {
+                                                      if (!context.mounted) return;
+                                                      showBottomSheet(
+                                                        context: context,
+                                                        builder: (context) => KickPlayerBottomSheet(room.id!),
+                                                      );
+                                                    }
+                                                  },
+                                                  child: const Icon(Icons.settings)),
+                                              const SizedBox(
+                                                width: 5,
                                               ),
-                                            );
-                                          }),
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: [
-                                          Visibility(
-                                            visible: auth.getUID() == room.hostID,
-                                            child: Align(
-                                              alignment: Alignment.bottomCenter,
-                                              child: Padding(
-                                                padding: const EdgeInsets.only(right: 5, bottom: 8),
-                                                child: BLButton(
-                                                    type: processing ? BtnType.grey : BtnType.normal,
-                                                    onPressed: () {
-                                                      start(context, room, true);
-                                                    },
-                                                    child: const BLText(
-                                                      'Start & leave',
-                                                      color: Colors.white,
-                                                    )),
+                                              BLButton(
+                                                  type: processing ? BtnType.grey : BtnType.orange,
+                                                  onPressed: () {
+                                                    start(context, room, true);
+                                                  },
+                                                  child: const BLText(
+                                                    'Start\n& leave',
+                                                    alignCenter: true,
+                                                    color: Colors.white,
+                                                  )),
+                                              const SizedBox(
+                                                width: 5,
                                               ),
-                                            ),
+                                              BLButton(
+                                                  type: processing ? BtnType.grey : BtnType.green,
+                                                  onPressed: () {
+                                                    start(context, room);
+                                                  },
+                                                  child: const BLText(
+                                                    'Start\n& join',
+                                                    color: Colors.white,
+                                                  )),
+                                            ],
                                           ),
-                                          Visibility(
-                                            visible: auth.getUID() == room.hostID,
-                                            child: Align(
-                                              alignment: Alignment.bottomCenter,
-                                              child: Padding(
-                                                padding: const EdgeInsets.only(bottom: 8.0),
-                                                child: BLButton(
-                                                    type: processing ? BtnType.grey : BtnType.green,
-                                                    onPressed: () {
-                                                      start(context, room);
-                                                    },
-                                                    child: const BLText(
-                                                      'Start & join',
-                                                      color: Colors.white,
-                                                    )),
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      )
+                                        )
                                     ],
                                   ),
                                 )

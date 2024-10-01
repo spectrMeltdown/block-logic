@@ -115,9 +115,9 @@ class ChallengesState extends ConsumerState<Challenges> {
                                                         }
                                                       }),
                                                 )),
-                                                DataColumn(label: BLText('Name')),
-                                                DataColumn(label: BLText('Short Description')),
-                                                DataColumn(label: BLText('Difficulty')),
+                                                const DataColumn(label: BLText('Name')),
+                                                const DataColumn(label: BLText('Short Description')),
+                                                const DataColumn(label: BLText('Difficulty')),
                                                 // DataColumn(label: BLText('Tags')),
                                               ],
                                               rows: List.generate(challenges.length, (i) {

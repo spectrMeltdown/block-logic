@@ -348,24 +348,75 @@ class GameBlockData {
   }
 
   Map<String, dynamic> toJSON() {
-    return {
-      'uid': uid,
-      'parentUID': parentUID,
-      'type': type.name,
-      'state': state.name,
-      'name': name,
-      'returnValue': returnValue?.toJSON(),
-      'parameterUIDs': parameterUIDs,
-      'argumentUIDs': argumentUIDs,
-      'conditionUIDs': conditionUIDs,
-      'bodyUIDs': bodyUIDs,
-      'statementUIDs': statementUIDs,
-      'inSelectorUID': inSelectorUID,
-      'inSelectorCount': inSelectorCount,
-      'inSelectorIndex': inSelectorIndex,
-      'value': value?.toJSON(),
-      'keyword': keyword?.name,
-      'arrayUIDs': arrayUIDs,
-    };
+    Map<String, dynamic> toFirestoreMap = {};
+    toFirestoreMap.addAll({'type': type.name});
+    toFirestoreMap.addAll({'state': state.name});
+    toFirestoreMap.addAll({'name': name});
+    if (uid != null) {
+      toFirestoreMap.addAll({'uid': uid});
+    }
+    if (parentUID != null) {
+      toFirestoreMap.addAll({'parentUID': parentUID});
+    }
+    if (returnValue != null) {
+      toFirestoreMap.addAll({'returnValue': returnValue?.toJSON()});
+    }
+    if (parameterUIDs != null) {
+      toFirestoreMap.addAll({'parameterUIDs': parameterUIDs});
+    }
+    if (argumentUIDs != null) {
+      toFirestoreMap.addAll({'argumentUIDs': argumentUIDs});
+    }
+    if (conditionUIDs != null) {
+      toFirestoreMap.addAll({'conditionUIDs': conditionUIDs});
+    }
+    if (bodyUIDs != null) {
+      toFirestoreMap.addAll({'bodyUIDs': bodyUIDs});
+    }
+    if (statementUIDs != null) {
+      toFirestoreMap.addAll({'statementUIDs': statementUIDs});
+    }
+    if (inSelectorUID != null) {
+      toFirestoreMap.addAll({'inSelectorUID': inSelectorUID});
+    }
+    if (inSelectorCount != null) {
+      toFirestoreMap.addAll({'inSelectorCount': inSelectorCount});
+    }
+    if (inSelectorIndex != null) {
+      toFirestoreMap.addAll({'inSelectorIndex': inSelectorIndex});
+    }
+    if (value != null) {
+      toFirestoreMap.addAll({'value': value?.toJSON()});
+    }
+    if (keyword != null) {
+      toFirestoreMap.addAll({'keyword': keyword?.name});
+    }
+    if (arrayUIDs != null) {
+      toFirestoreMap.addAll({'arrayUIDs': arrayUIDs});
+    }
+
+    return toFirestoreMap;
   }
+
+  // Map<String, dynamic> toJSON() {
+  //   return {
+  //     'uid': uid,
+  //     'parentUID': parentUID,
+  //     'type': type.name,
+  //     'state': state.name,
+  //     'name': name,
+  //     'returnValue': returnValue?.toJSON(),
+  //     'parameterUIDs': parameterUIDs,
+  //     'argumentUIDs': argumentUIDs,
+  //     'conditionUIDs': conditionUIDs,
+  //     'bodyUIDs': bodyUIDs,
+  //     'statementUIDs': statementUIDs,
+  //     'inSelectorUID': inSelectorUID,
+  //     'inSelectorCount': inSelectorCount,
+  //     'inSelectorIndex': inSelectorIndex,
+  //     'value': value?.toJSON(),
+  //     'keyword': keyword?.name,
+  //     'arrayUIDs': arrayUIDs,
+  //   };
+  // }
 }

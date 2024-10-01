@@ -45,10 +45,12 @@ class PyLiteral {
   }
 
   Map<String, dynamic> toJSON() {
-    return {
-      'dataType': dataType?.name,
-      'value': value,
-    };
+    final Map<String, dynamic> result = {};
+    if (dataType != null) {
+      result.addAll({'dataType': dataType?.name});
+    }
+    result.addAll({'value': value});
+    return result;
   }
 
   PyLiteral._(this.dataType, this.value);

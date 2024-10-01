@@ -44,10 +44,16 @@ class GameChallenge extends ConsumerStatefulWidget {
 
 class _GameChallengeState extends ConsumerState<GameChallenge> {
   late final GameManager gameManager;
+  int challengeBlockCount = 0;
   @override
   void initState() {
     gameManager = ref.read(gameManagerProvider.notifier);
     gameManager.updateSolution(widget.challenge.solutionMatch!);
+    for (final entry in widget.challenge.blocks!.entries) {
+      for (int i = 0; i < entry.value.length; i++) {
+        challengeBlockCount++;
+      }
+    }
     if (!kDebugMode) {
       // gameManager.updateSolution(widget.challenge.solution!);
     }
@@ -56,6 +62,8 @@ class _GameChallengeState extends ConsumerState<GameChallenge> {
 
   @override
   Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
     final returnBlock = ref.watch(returnBlockProvider);
     final processing = ref.watch(processingProvider);
     // debugPrint(widget.challengeCount.toString());
@@ -80,7 +88,8 @@ class _GameChallengeState extends ConsumerState<GameChallenge> {
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                 child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                  Expanded(
+                  ConstrainedBox(
+                    constraints: BoxConstraints(maxHeight: height * 0.15, maxWidth: width * 0.5),
                     child: ChallengeBox(
                       challenge: widget.challenge,
                     ),
@@ -94,9 +103,10 @@ class _GameChallengeState extends ConsumerState<GameChallenge> {
                           widget.challengeCount == (widget.currentChallenge + 1),
                           updateChallenge: widget.updateChallenge,
                           practiceMode: widget.practiceMode,
+                          challengeBlockCount: challengeBlockCount,
                         ),
                         const SizedBox(height: 10),
-                        const GameTestBtn(),
+                        GameTestBtn(widget.practiceMode),
                       ],
                     ),
                   )

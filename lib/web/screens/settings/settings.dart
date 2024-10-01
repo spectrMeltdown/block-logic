@@ -53,7 +53,7 @@ class _AdminSettingsState extends ConsumerState<AdminSettings> {
   @override
   Widget build(BuildContext context) {
     final account = ref.watch(SelectedAdminProvider(auth.getUID()));
-    double width = MediaQuery.of(context).size.width;
+    // double width = MediaQuery.of(context).size.width;
     //double height = MediaQuery.of(context).size.height;
     return Column(
       children: [

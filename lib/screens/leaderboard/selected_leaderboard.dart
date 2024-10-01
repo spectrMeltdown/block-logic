@@ -13,11 +13,14 @@ import 'package:block_logic/logic/firebase_providers/all_scores.dart';
 import 'package:block_logic/logic/firebase_providers/selected_users.dart';
 import 'package:block_logic/logic/services/game_manager.dart';
 import 'package:block_logic/logic/services/navigation.dart';
+import 'package:block_logic/logic/services/shared_pref.dart';
 import 'package:block_logic/logic/services/ui.dart';
+import 'package:block_logic/screens/feedback/random_dialog.dart';
 import 'package:block_logic/screens/leaderboard/top_three_players.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SelectedLeaderboard extends ConsumerStatefulWidget {
   final Leaderboard leaderboard;
@@ -40,6 +43,7 @@ class _LeaderboardState extends ConsumerState<SelectedLeaderboard> {
   final double horizontalPadding = 10;
   late final BLUI blui;
   late final CustomNavigation nav;
+  late final SharedPreferences sharedPref;
 
   String formatTime(int seconds) {
     final int hours = seconds ~/ 3600;
@@ -53,6 +57,7 @@ class _LeaderboardState extends ConsumerState<SelectedLeaderboard> {
   void initState() {
     blui = ref.read(bLUIProvider.notifier);
     nav = ref.read(customNavigationProvider.notifier);
+    sharedPref = ref.read(sharedPrefProvider);
     super.initState();
   }
 
@@ -332,8 +337,15 @@ class _LeaderboardState extends ConsumerState<SelectedLeaderboard> {
               ),
             if (!widget.showBackButton)
               BLButton(
-                  onPressed: () {
-                    nav.pop(context, 'feedback');
+                  onPressed: () async {
+                    nav.pop(context);
+                    int? count = sharedPref.getInt('randomDialog');
+                    if (count == null || count == 0) {
+                      sharedPref.setInt('randomDialog', 5);
+                      await showDialog(context: context, builder: (context) => RandomDialog(count: count));
+                    } else {
+                      sharedPref.setInt('randomDialog', count--);
+                    }
                   },
                   child: const BLText(
                     'Back to rooms',

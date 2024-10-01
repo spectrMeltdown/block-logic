@@ -45,9 +45,9 @@ class _GameRoomState extends ConsumerState<GameRoom> with WidgetsBindingObserver
       WidgetsBinding.instance.addPostFrameCallback((_) {
         nav.pushReplace(context, FinalizingResults(widget.room.currentLeaderboardID!));
       });
-      return PopScope(
-        canPop: !processing,
-        child: const Scaffold(
+      return const PopScope(
+        canPop: false,
+        child: Scaffold(
           body: Background(child: SafeArea(child: BLLoading())),
         ),
       );
@@ -86,7 +86,7 @@ class _GameRoomState extends ConsumerState<GameRoom> with WidgetsBindingObserver
       // );
     }
     return PopScope(
-      canPop: !processing,
+      canPop: false,
       onPopInvokedWithResult: (didPop, result) async {
         if (didPop) return;
         final leave = await dialog.show(context, const PauseDialog());
@@ -176,6 +176,8 @@ class _GameRoomState extends ConsumerState<GameRoom> with WidgetsBindingObserver
       FlameAudio.bgm.pause();
     }
     gameManager.init(widget.room);
+    sharedPref.setString('currentLeaderboardID', widget.room.currentLeaderboardID!);
+    sharedPref.setString('currentRoomID', widget.room.id!);
     roomManager = ref.read(roomManagerProvider.notifier);
     dialog = ref.read(dialogServiceProvider.notifier);
     nav = ref.read(customNavigationProvider.notifier);
@@ -186,16 +188,7 @@ class _GameRoomState extends ConsumerState<GameRoom> with WidgetsBindingObserver
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-
     super.dispose();
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) async {
-    /// this code runs whenever the user closes the app without properly exiting the game.
-    if (state == AppLifecycleState.paused || state == AppLifecycleState.detached) {
-      await gameManager.leaveGame(false);
-    }
   }
 
   void updateChallenge() {

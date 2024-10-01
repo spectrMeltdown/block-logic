@@ -3,6 +3,7 @@ import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/services/game_manager.dart';
 import 'package:block_logic/logic/services/game_provider.dart';
+import 'package:block_logic/logic/services/time_box.dart';
 import 'package:block_logic/logic/services/toast.dart';
 import 'package:block_logic/screens/game/test_dialog.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +11,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class GameTestBtn extends ConsumerStatefulWidget {
-  const GameTestBtn({super.key});
+  final bool practiceMode;
+  const GameTestBtn(this.practiceMode, {super.key});
 
   @override
   ConsumerState<GameTestBtn> createState() => _GameRunButtonState();
@@ -46,12 +48,20 @@ class _GameRunButtonState extends ConsumerState<GameTestBtn> {
           }
           if (processing) return;
           processing = true;
+          if (!widget.practiceMode) {
+            manager.pauseTimer();
+            ref.invalidate(runTimerProvider);
+          }
           await showDialog(
             context: context,
             barrierDismissible: false,
             builder: (context) => const TestDialog(),
           );
           processing = false;
+          if (!widget.practiceMode) {
+            manager.resumeTimer();
+            ref.invalidate(runTimerProvider);
+          }
         },
         child: const Row(
           mainAxisSize: MainAxisSize.min,
