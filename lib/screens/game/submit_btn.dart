@@ -4,6 +4,7 @@ import 'package:block_logic/components/dialog/dialog.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/text/title_small.dart';
 import 'package:block_logic/logic/enums.dart';
+import 'package:block_logic/logic/game/block_data.dart';
 import 'package:block_logic/logic/services/game_manager.dart';
 import 'package:block_logic/logic/services/game_provider.dart';
 import 'package:block_logic/logic/services/navigation.dart';
@@ -22,11 +23,11 @@ class GameSubmitButton extends ConsumerStatefulWidget {
   final void Function()? updateChallenge;
   final bool lastChallenge;
   final bool practiceMode;
-  final int challengeBlockCount;
+  final List<MapEntry<CodeBlockType, List<GameBlockData>>> entries;
   const GameSubmitButton(
     this.lastChallenge, {
     this.updateChallenge,
-    required this.challengeBlockCount,
+    required this.entries,
     required this.practiceMode,
     super.key,
   });
@@ -43,6 +44,7 @@ class _GameSubmitButtonState extends ConsumerState<GameSubmitButton> {
   late final GameState gameState;
   bool dontShowAgain = false;
   bool autoProceed = false;
+  late int challengeBlockCount;
 
   @override
   void initState() {
@@ -51,6 +53,13 @@ class _GameSubmitButtonState extends ConsumerState<GameSubmitButton> {
     toast = ref.read(toastProvider.notifier);
     solutionMatch = ref.read(gameManagerProvider).solution;
     gameState = ref.read(gameManagerProvider);
+    for (final entry in widget.entries) {
+      for (final data in entry.value) {
+        if (data.optional != null && !data.optional!) {
+          challengeBlockCount++;
+        }
+      }
+    }
     super.initState();
   }
 
@@ -78,7 +87,7 @@ class _GameSubmitButtonState extends ConsumerState<GameSubmitButton> {
               usedBlockCount++;
             }
           }
-          incompleteBlocks = usedBlockCount != widget.challengeBlockCount;
+          incompleteBlocks = usedBlockCount >= challengeBlockCount;
           if (!widget.practiceMode) {
             // if (!dontShowAgain) {
             //   bool result = await showDialog(context: context, builder: (context) => const NoSolution());

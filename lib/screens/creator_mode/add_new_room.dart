@@ -192,14 +192,20 @@ class _AddRoomBottomSheetState extends ConsumerState<AddRoomBottomSheet> {
                                                                 softWrap: true,
                                                               )),
                                                           const SizedBox(width: 10),
-                                                          BLText(
-                                                            currentChallenge.difficulty?.name ?? '--',
-                                                            bold: true,
-                                                            color: currentChallenge.difficulty == Difficulty.beginner
-                                                                ? Colors.green
-                                                                : currentChallenge.difficulty == Difficulty.intermediate
-                                                                    ? Colors.amber
-                                                                    : Colors.deepOrange,
+                                                          ConstrainedBox(
+                                                            constraints: const BoxConstraints(maxWidth: 50),
+                                                            child: SingleChildScrollView(
+                                                              scrollDirection: Axis.horizontal,
+                                                              child: BLText(
+                                                                currentChallenge.difficulty?.name ?? '--',
+                                                                bold: true,
+                                                                color: currentChallenge.difficulty == Difficulty.beginner
+                                                                    ? Colors.green
+                                                                    : currentChallenge.difficulty == Difficulty.intermediate
+                                                                        ? Colors.amber
+                                                                        : Colors.deepOrange,
+                                                              ),
+                                                            ),
                                                           ),
                                                           CloseButton(
                                                             onPressed: () {

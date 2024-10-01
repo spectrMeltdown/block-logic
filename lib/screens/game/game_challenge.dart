@@ -44,16 +44,10 @@ class GameChallenge extends ConsumerStatefulWidget {
 
 class _GameChallengeState extends ConsumerState<GameChallenge> {
   late final GameManager gameManager;
-  int challengeBlockCount = 0;
   @override
   void initState() {
     gameManager = ref.read(gameManagerProvider.notifier);
     gameManager.updateSolution(widget.challenge.solutionMatch!);
-    for (final entry in widget.challenge.blocks!.entries) {
-      for (int i = 0; i < entry.value.length; i++) {
-        challengeBlockCount++;
-      }
-    }
     if (!kDebugMode) {
       // gameManager.updateSolution(widget.challenge.solution!);
     }
@@ -103,7 +97,7 @@ class _GameChallengeState extends ConsumerState<GameChallenge> {
                           widget.challengeCount == (widget.currentChallenge + 1),
                           updateChallenge: widget.updateChallenge,
                           practiceMode: widget.practiceMode,
-                          challengeBlockCount: challengeBlockCount,
+                          entries: widget.challenge.blocks!.entries.toList(),
                         ),
                         const SizedBox(height: 10),
                         GameTestBtn(widget.practiceMode),

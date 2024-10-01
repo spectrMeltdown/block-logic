@@ -7,6 +7,142 @@ import 'package:block_logic/logic/game/py_loops.dart';
 import 'package:block_logic/logic/game/py_operators.dart';
 
 class AllBlocks {
+  Map<CodeBlockType, List<GameBlockData>> countChars() {
+    return {
+      CodeBlockType.variables: [
+        GameBlockData.createVariable(
+          name: 'string',
+          value: PyLiteral.none(),
+          count: 2,
+        ),
+        GameBlockData.createVariable(
+          name: 'count',
+          value: PyLiteral.none(),
+          count: 3,
+        ),
+        GameBlockData.createVariable(
+          name: 'char',
+          value: PyLiteral.none(),
+          count: 2,
+        ),
+      ],
+      CodeBlockType.functions: [
+        GameBlockData.createFunction(name: 'print'),
+      ],
+      CodeBlockType.objects: [],
+      CodeBlockType.operators: [
+        GameBlockData.createOperator(
+          operatorType: PyOperatorTypes.assignment,
+          operator: PyOperatorsAssignment.assignment,
+          count: 2,
+        ),
+        GameBlockData.createOperator(
+          operatorType: PyOperatorTypes.assignment,
+          operator: PyOperatorsAssignment.addAssignment,
+        ),
+        GameBlockData.createOperator(
+          operatorType: PyOperatorTypes.membership,
+          operator: PyOperatorsMembership.in_,
+        ),
+      ],
+      CodeBlockType.keywords: [],
+      CodeBlockType.literals: [
+        GameBlockData.createLiteral(literal: PyLiteral.string('Python')),
+        GameBlockData.createLiteral(literal: PyLiteral.string('characters.')),
+        GameBlockData.createLiteral(literal: PyLiteral.string('The string has: ')),
+        GameBlockData.createLiteral(literal: PyLiteral.number(intNum: 1)),
+        GameBlockData.createLiteral(literal: PyLiteral.number(intNum: 0)),
+      ],
+      CodeBlockType.conditionals: [],
+      CodeBlockType.loops: [
+        GameBlockData.createLoop(loop: PyLoop.for_),
+      ],
+    };
+  }
+
+  Map<CodeBlockType, List<GameBlockData>> sumOfTwoNumbers() {
+    return {
+      CodeBlockType.variables: [
+        GameBlockData.createVariable(
+          name: 'num1',
+          value: PyLiteral.none(),
+        ),
+        GameBlockData.createVariable(
+          name: 'num2',
+          value: PyLiteral.none(),
+        ),
+        GameBlockData.createVariable(
+          name: 'sum',
+          value: PyLiteral.none(),
+          count: 2,
+        ),
+      ],
+      CodeBlockType.functions: [
+        GameBlockData.createFunction(name: 'print'),
+      ],
+      CodeBlockType.objects: [],
+      CodeBlockType.operators: [
+        GameBlockData.createOperator(
+          operatorType: PyOperatorTypes.assignment,
+          operator: PyOperatorsAssignment.assignment,
+          count: 3,
+        ),
+        GameBlockData.createOperator(
+          operatorType: PyOperatorTypes.arithmetic,
+          operator: PyOperatorsArithmetic.add,
+        ),
+      ],
+      CodeBlockType.keywords: [],
+      CodeBlockType.literals: [
+        GameBlockData.createLiteral(literal: PyLiteral.string('The sum is: ')),
+        GameBlockData.createLiteral(literal: PyLiteral.number(intNum: 5)),
+        GameBlockData.createLiteral(literal: PyLiteral.number(intNum: 10)),
+      ],
+      CodeBlockType.conditionals: [],
+      CodeBlockType.loops: [],
+    };
+  }
+
+  Map<CodeBlockType, List<GameBlockData>> oddOrEven() {
+    return {
+      CodeBlockType.variables: [
+        GameBlockData.createVariable(name: 'number', value: PyLiteral.none(), count: 2),
+      ],
+      CodeBlockType.functions: [
+        GameBlockData.createFunction(name: 'print', count: 2),
+      ],
+      CodeBlockType.objects: [],
+      CodeBlockType.operators: [
+        GameBlockData.createOperator(
+          operatorType: PyOperatorTypes.assignment,
+          operator: PyOperatorsAssignment.assignment,
+        ),
+        GameBlockData.createOperator(
+          operatorType: PyOperatorTypes.arithmetic,
+          operator: PyOperatorsArithmetic.modulus,
+        ),
+        GameBlockData.createOperator(
+          operatorType: PyOperatorTypes.comparison,
+          operator: PyOperatorsComparison.equalTo,
+        ),
+      ],
+      CodeBlockType.keywords: [],
+      CodeBlockType.literals: [
+        GameBlockData.createLiteral(literal: PyLiteral.string('The number is even.')),
+        GameBlockData.createLiteral(literal: PyLiteral.string('The number is odd.')),
+        GameBlockData.createLiteral(literal: PyLiteral.number(intNum: 7), optional: true),
+        GameBlockData.createLiteral(literal: PyLiteral.number(intNum: 8), optional: true),
+        GameBlockData.createLiteral(literal: PyLiteral.number(intNum: 2)),
+        GameBlockData.createLiteral(literal: PyLiteral.number(intNum: 0)),
+      ],
+      CodeBlockType.conditionals: [
+        GameBlockData.createConditional(conditional: PyConditional.if_),
+        GameBlockData.createConditional(conditional: PyConditional.else_),
+      ],
+      CodeBlockType.loops: [],
+    };
+  }
+
   Map<CodeBlockType, List<GameBlockData>> helloWorld() {
     return {
       CodeBlockType.variables: [],
@@ -52,7 +188,7 @@ class AllBlocks {
       CodeBlockType.literals: [
         GameBlockData.createLiteral(literal: PyLiteral.string('Python')),
         GameBlockData.createLiteral(literal: PyLiteral.string(' is ')),
-        GameBlockData.createLiteral(literal: PyLiteral.string('Awesome')),
+        GameBlockData.createLiteral(literal: PyLiteral.string('Awesome!')),
       ],
       CodeBlockType.conditionals: [],
       CodeBlockType.loops: [],
