@@ -95,19 +95,26 @@ class _LeaderboardState extends ConsumerState<SelectedLeaderboard> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Row(
-                            children: [
-                              // BLCircular(
-                              //   url: widget.roomPhotoURL,
-                              //   iconSize: 25,
-                              // ),
-                              // const SizedBox(width: 8),
-                              BLText(
-                                widget.leaderboard.roomName!,
-                                size: 16,
-                                overflow: false,
-                              ),
-                            ],
+                          Flexible(
+                            child: Row(
+                              children: [
+                                // BLCircular(
+                                //   url: widget.roomPhotoURL,
+                                //   iconSize: 25,
+                                // ),
+                                // const SizedBox(width: 8),
+                                Flexible(
+                                  child: BLText(
+                                    widget.leaderboard.roomName!,
+                                    size: 16,
+                                    overflow: false,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(
+                            width: 40,
                           ),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.end,

@@ -40,7 +40,7 @@ class _PublicRoomItemState extends ConsumerState<PublicRoomItem> {
     if (currentPlayers != null) {
       // check if room is full. Minus 1 so that the host can join.
 
-      if (widget.room.maxPlayers! != currentPlayers.length) {
+      if (currentPlayers.length <= widget.room.maxPlayers!) {
         final joinSuccess = await roomManager.joinRoom(widget.room.id!);
         if (joinSuccess) {
           if (!mounted) return;

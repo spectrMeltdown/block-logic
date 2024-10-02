@@ -5,6 +5,7 @@ import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/text/title_small.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/game/block_data.dart';
+import 'package:block_logic/logic/services/custom_tab.dart';
 import 'package:block_logic/logic/services/game_manager.dart';
 import 'package:block_logic/logic/services/game_provider.dart';
 import 'package:block_logic/logic/services/navigation.dart';
@@ -161,6 +162,7 @@ class _GameSubmitButtonState extends ConsumerState<GameSubmitButton> {
             manager.setShouldResetAllBlocks(true);
             ref.invalidate(getRootDataProvider);
             ref.invalidate(shouldResetAllBlocksProvider);
+            ref.invalidate(customTabProvider);
             if (!widget.practiceMode) {
               manager.resumeTimer();
               ref.invalidate(runTimerProvider);

@@ -92,7 +92,7 @@ class _WaitingRoomState extends ConsumerState<WaitingRoom> {
                               // if room was deleted
                               WidgetsBinding.instance.addPostFrameCallback((duration) {
                                 nav.pop(context);
-                                toast.showToast(context, 'You have been kicked.', type: NotifType.error);
+                                // toast.showToast(context, 'You have been kicked.', type: NotifType.error);
                               });
                               return const BLError();
                             }

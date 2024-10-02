@@ -40,9 +40,7 @@ class _CustomTabState extends ConsumerState<CustomTab> with AutomaticKeepAliveCl
   Widget build(BuildContext context) {
     super.build(context);
     return Container(
-      decoration: BoxDecoration(
-          color: widget.isSelected ? Colors.white : Colors.grey,
-          borderRadius: const BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10))),
+      decoration: BoxDecoration(color: widget.isSelected ? Colors.white : Colors.grey, borderRadius: const BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10))),
       padding: EdgeInsets.symmetric(horizontal: widget.paddingX, vertical: widget.paddingY),
       child: BLText(
         '$firstLetter$word (${widget.count})',
