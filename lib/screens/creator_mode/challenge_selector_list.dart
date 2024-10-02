@@ -25,6 +25,7 @@ class ChallengeSelectorList extends ConsumerStatefulWidget {
 class _ChallengeSelectorListState extends ConsumerState<ChallengeSelectorList> {
   @override
   Widget build(BuildContext context) {
+    debugPrint('REBUILT LIST');
     if (widget.challenges.isEmpty) {
       return const Center(
           child: Padding(
@@ -68,7 +69,7 @@ class ChallengeItem extends ConsumerStatefulWidget {
   ConsumerState<ConsumerStatefulWidget> createState() => _ChallengeItemState();
 }
 
-class _ChallengeItemState extends ConsumerState<ChallengeItem> {
+class _ChallengeItemState extends ConsumerState<ChallengeItem> with AutomaticKeepAliveClientMixin {
   late final DialogService dialog;
   late final Toast toast;
   bool selected = false;
@@ -81,7 +82,13 @@ class _ChallengeItemState extends ConsumerState<ChallengeItem> {
   }
 
   @override
+  bool get wantKeepAlive => true;
+
+  @override
   Widget build(BuildContext context) {
+    super.build(context);
+
+    debugPrint('REBUILT');
     return GestureDetector(
       onLongPress: () {
         dialog.show(

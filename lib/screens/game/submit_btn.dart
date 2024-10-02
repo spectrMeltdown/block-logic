@@ -44,7 +44,7 @@ class _GameSubmitButtonState extends ConsumerState<GameSubmitButton> {
   late final GameState gameState;
   bool dontShowAgain = false;
   bool autoProceed = false;
-  late int challengeBlockCount;
+  int challengeBlockCount = 0;
 
   @override
   void initState() {
