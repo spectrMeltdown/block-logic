@@ -6,7 +6,7 @@ part of '../all_scores.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$allScoresHash() => r'533e376f38b00fcab29537954dc95cfb5fe2a6b6';
+String _$allScoresHash() => r'54fb2dba006a5589232fa635570efaa0dadf9650';
 
 /// Copied from Dart SDK
 class _SystemHash {

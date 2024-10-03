@@ -1,4 +1,3 @@
-import 'package:block_logic/components/button/button.dart';
 import 'package:block_logic/components/button/text.dart';
 import 'package:block_logic/components/dialog/dialog.dart';
 import 'package:block_logic/components/text/text.dart';
@@ -8,10 +7,9 @@ import 'package:block_logic/logic/services/assets.dart';
 import 'package:block_logic/logic/services/navigation.dart';
 import 'package:block_logic/logic/services/shared_pref.dart';
 import 'package:block_logic/screens/feedback/feedback_dialog.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class RandomDialog extends ConsumerStatefulWidget {

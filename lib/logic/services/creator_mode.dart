@@ -1,7 +1,8 @@
 import 'package:block_logic/logic/firebase_models/room.dart';
 import 'package:block_logic/logic/services/encryption.dart';
 import 'package:block_logic/logic/services/error_handler.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_database/firebase_database.dart';
+
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'generated/creator_mode.g.dart';
@@ -15,7 +16,7 @@ class CreatorModeManager extends _$CreatorModeManager {
       encryptedPass = state._encryption.encryptString(text: room.password!, key: room.hostID!);
     }
     try {
-      await state._rooms.doc().set(room.copyWith(password: encryptedPass).toFirestore());
+      await state._rooms.push().set(room.copyWith(password: encryptedPass).toJSON());
       return null;
     } catch (e) {
       return state._errorHandler.call(e, this);
@@ -34,7 +35,7 @@ class CreatorModeManager extends _$CreatorModeManager {
       throw ('Room id must not be empty!');
     }
     try {
-      await state._rooms.doc(roomID).delete();
+      await state._rooms.child(roomID).remove();
       return null;
     } catch (e) {
       return state._errorHandler.call(e, this);
@@ -51,9 +52,9 @@ class CreatorModeManager extends _$CreatorModeManager {
       encryptedPass = state._encryption.encryptString(text: room.password!, key: room.hostID!);
     }
     try {
-      await state._rooms.doc(room.id).update(room.copyWith(password: encryptedPass).toFirestore());
+      await state._rooms.child(room.id!).update(room.copyWith(password: encryptedPass).toJSON());
       if (removePass) {
-        await state._rooms.doc(room.id).update({'password': FieldValue.delete()});
+        await state._rooms.child(room.id!).child('password').remove();
       }
       return null;
     } catch (e) {
@@ -63,7 +64,7 @@ class CreatorModeManager extends _$CreatorModeManager {
 }
 
 class CreatorModeState {
-  final _rooms = FirebaseFirestore.instance.collection('rooms');
+  final _rooms = FirebaseDatabase.instance.ref('rooms');
   // final _user = FirebaseAuth.instance.currentUser;
   final ErrorHandler _errorHandler;
   final Encryption _encryption;

@@ -1,4 +1,4 @@
-// import 'package:cloud_firestore/cloud_firestore.dart';
+// 
 
 // class AccountSettings {
 //   final bool? loginAlerts;
@@ -12,10 +12,10 @@
 //     this.backgroundMusic,
 //   });
 
-//   factory AccountSettings.fromFirestore(DocumentSnapshot doc) {
+//   factory AccountSettings.fromRTDB(DataSnapshot doc) {
 //     Map<String, dynamic> data = {};
-//     if (doc.data() != null) {
-//       data = doc.data() as Map<String, dynamic>;
+//     if (doc.value != null) {
+//       data = doc.value as Map<String, dynamic>;
 //     }
 //     final settings = data['settings'];
 //     return AccountSettings(
@@ -26,7 +26,7 @@
 //     );
 //   }
 
-//   Map<String, dynamic> toFirestore() {
+//   Map<String, dynamic> toJSON() {
 //     Map<String, dynamic> userSettings = {};
 //     if (backgroundMusic != null) {
 //       userSettings.addAll({'backgroundMusic': backgroundMusic});
@@ -40,7 +40,7 @@
 //     if (notifications != null) {
 //       userSettings.addAll({'notifications': notifications});
 //     }
-//     Map<String, dynamic> toFirestoreMap = {'settings': userSettings};
-//     return toFirestoreMap;
+//     Map<String, dynamic> toJSONMap = {'settings': userSettings};
+//     return toJSONMap;
 //   }
 // }

@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 class FeedbackData {
   final String? id;
@@ -14,34 +14,34 @@ class FeedbackData {
     this.createdAt,
   });
 
-  factory FeedbackData.fromFirestore(DocumentSnapshot doc) {
-    Map<String, dynamic> data = {};
-    if (doc.data() != null) {
-      data = doc.data() as Map<String, dynamic>;
+  factory FeedbackData.fromRTDB(DataSnapshot doc) {
+    Map data = {};
+    if (doc.value != null) {
+      data = doc.value as Map;
     }
 
     return FeedbackData(
-      id: doc.id,
+      id: doc.key,
       title: data['title'] ?? '',
       message: data['message'] ?? '',
       userID: data['userID'] ?? '',
-      createdAt: data['createdAt'] == null ? null : (data['createdAt'] as Timestamp).toDate(),
+      createdAt: data['createdAt'] == null ? null : DateTime.fromMillisecondsSinceEpoch(data['createdAt']),
     );
   }
-  Map<String, dynamic> toFirestore() {
-    Map<String, dynamic> toFirestoreMap = {};
+  Map<String, dynamic> toJSON() {
+    Map<String, dynamic> toJSONMap = {};
     if (createdAt != null) {
-      toFirestoreMap.addAll({'createdAt': Timestamp.fromDate(createdAt!)});
+      toJSONMap.addAll({'createdAt': createdAt!.microsecondsSinceEpoch});
     }
     if (message != null) {
-      toFirestoreMap.addAll({'message': message});
+      toJSONMap.addAll({'message': message});
     }
     if (title != null) {
-      toFirestoreMap.addAll({'title': title});
+      toJSONMap.addAll({'title': title});
     }
     if (userID != null) {
-      toFirestoreMap.addAll({'userID': userID});
+      toJSONMap.addAll({'userID': userID});
     }
-    return toFirestoreMap;
+    return toJSONMap;
   }
 }

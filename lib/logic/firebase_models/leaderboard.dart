@@ -1,5 +1,4 @@
 import 'package:block_logic/logic/enums.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Leaderboard {
   final String? id; // the doc id. Should be auto generated
@@ -19,10 +18,10 @@ class Leaderboard {
     this.totalScore,
   });
 
-  factory Leaderboard.fromFirestore(dynamic doc) {
-    Map<String, dynamic> data = {};
-    if (doc.data() != null) {
-      data = doc.data() as Map<String, dynamic>;
+  factory Leaderboard.fromRTDB(dynamic doc) {
+    Map data = {};
+    if (doc.value != null) {
+      data = doc.value as Map;
     }
     LeaderboardStatus? status;
     if (data['status'] == LeaderboardStatus.complete.name) {
@@ -34,35 +33,35 @@ class Leaderboard {
     }
 
     return Leaderboard(
-      id: doc.id,
+      id: doc.key,
       roomName: data['roomName'] ?? '',
       roomID: data['roomID'] ?? '',
       totalScore: data['totalScore'],
       status: status,
       players: data['players'] == null ? <String>[] : (data['players'] as List<dynamic>).map((player) => player as String).toList(),
-      date: data['date'] == null ? null : (data['date'] as Timestamp).toDate(),
+      date: data['date'] == null ? null : DateTime.fromMillisecondsSinceEpoch(data['date']),
     );
   }
-  Map<String, dynamic> toFirestore() {
-    Map<String, dynamic> toFirestoreMap = {};
+  Map<String, dynamic> toJSON() {
+    Map<String, dynamic> toJSONMap = {};
     if (date != null) {
-      toFirestoreMap.addAll({'date': Timestamp.fromDate(date!)});
+      toJSONMap.addAll({'date': date!.millisecondsSinceEpoch});
     }
     if (roomID != null) {
-      toFirestoreMap.addAll({'roomID': roomID});
+      toJSONMap.addAll({'roomID': roomID});
     }
     if (roomName != null) {
-      toFirestoreMap.addAll({'roomName': roomName});
+      toJSONMap.addAll({'roomName': roomName});
     }
     if (totalScore != null) {
-      toFirestoreMap.addAll({'totalScore': totalScore});
+      toJSONMap.addAll({'totalScore': totalScore});
     }
     if (status != null) {
-      toFirestoreMap.addAll({'status': status!.name});
+      toJSONMap.addAll({'status': status!.name});
     }
     if (players != null) {
-      toFirestoreMap.addAll({'players': players});
+      toJSONMap.addAll({'players': players});
     }
-    return toFirestoreMap;
+    return toJSONMap;
   }
 }

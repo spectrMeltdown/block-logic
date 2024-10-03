@@ -395,6 +395,7 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
           final sessionID = const UuidV4().generate();
           // save sessionID to shared_pref
           auth.saveSessionID(sessionID);
+          auth.uploadSessionID(sessionID);
         }
         final loginAlert = ref.read(loginAlertProvider.notifier);
         await loginAlert.send();

@@ -1,5 +1,6 @@
 import 'package:block_logic/logic/firebase_models/leaderboard.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_database/firebase_database.dart';
+
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'generated/selected_leaderboards.g.dart';
@@ -8,15 +9,16 @@ part 'generated/selected_leaderboards.g.dart';
 @riverpod
 Stream<List<Leaderboard>?> selectedLeaderboards(SelectedLeaderboardsRef ref, String roomID) async* {
   if (roomID.isNotEmpty) {
-    final db = FirebaseFirestore.instance;
-    final leaderboardsStream = db.collection('leaderboards').where(roomID, isEqualTo: roomID).snapshots();
-    await for (final leaderboards in leaderboardsStream) {
-      final List<Leaderboard> result = [];
-      if (leaderboards.docs.isNotEmpty) {
-        for (final leaderboard in leaderboards.docs) {
-          result.add(Leaderboard.fromFirestore(leaderboard));
+    final db = FirebaseDatabase.instance;
+    final stream = db.ref('leaderboards').equalTo(roomID).onValue;
+    await for (final query in stream) {
+      List<Leaderboard> result = [];
+      if (query.snapshot.children.isNotEmpty) {
+        for (final leaderboard in query.snapshot.children) {
+          result.add(Leaderboard.fromRTDB(leaderboard));
         }
       }
+      // result = result.where((i) => i.players!.contains(roomID)).toList();
       yield result;
     }
   }

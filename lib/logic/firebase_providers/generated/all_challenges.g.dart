@@ -6,7 +6,7 @@ part of '../all_challenges.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$challengesHash() => r'cf1bd39fe58e55fd894b04dcb79725b12e5baf01';
+String _$challengesHash() => r'b85d75cc561507f24fdedcebdcdf962dc1c51ecf';
 
 /// Copied from Dart SDK
 class _SystemHash {

@@ -12,7 +12,7 @@ import 'package:block_logic/logic/services/auth.dart';
 import 'package:block_logic/logic/services/leaderboard_manager.dart';
 import 'package:block_logic/logic/services/toast.dart';
 import 'package:block_logic/screens/leaderboard/leaderboard_item.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -143,7 +143,7 @@ class _LeaderboardsPageState extends ConsumerState<LeaderboardsPage> {
                               if (selectedLeaderboards.isNotEmpty) {
                                 for (final entry in selectedLeaderboards.entries) {
                                   manager.updatePlayers(entry.key, {
-                                    'players': FieldValue.arrayRemove(entry.value),
+                                    'players': entry.value,
                                   });
                                 }
                               }

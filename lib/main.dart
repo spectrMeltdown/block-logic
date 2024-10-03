@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:block_logic/app_theme.dart';
-import 'package:block_logic/background_service.dart';
 import 'package:block_logic/logic/services/audio.dart';
 import 'package:block_logic/logic/services/shared_pref.dart';
 import 'package:block_logic/route_observer.dart';
@@ -12,7 +11,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -110,20 +108,20 @@ class BlockLogic extends ConsumerWidget {
 }
 
 // Initialize the background service
-Future<void> initializeService() async {
-  final service = FlutterBackgroundService();
+// Future<void> initializeService() async {
+//   final service = FlutterBackgroundService();
 
-  await service.configure(
-    androidConfiguration: AndroidConfiguration(
-      onStart: closeAppService, // function to run
-      isForegroundMode: true, // persistent notification (for debug)
-      autoStart: true, // Start automatically when the app goes to the background
-    ),
-    iosConfiguration: IosConfiguration(
-      onForeground: closeAppService,
-      autoStart: false,
-    ),
-  );
+//   await service.configure(
+//     androidConfiguration: AndroidConfiguration(
+//       onStart: closeAppService, // function to run
+//       isForegroundMode: true, // persistent notification (for debug)
+//       autoStart: true, // Start automatically when the app goes to the background
+//     ),
+//     iosConfiguration: IosConfiguration(
+//       onForeground: closeAppService,
+//       autoStart: false,
+//     ),
+//   );
 
-  service.startService();
-}
+//   service.startService();
+// }

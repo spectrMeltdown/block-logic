@@ -5,13 +5,10 @@ import 'package:block_logic/components/panel/bordered.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/text/title.dart';
 import 'package:block_logic/components/textbox.dart';
-import 'package:block_logic/logic/enums.dart';
-import 'package:block_logic/logic/firebase_models/challenge.dart';
-import 'package:block_logic/logic/services/block_data_manager.dart';
 import 'package:block_logic/logic/services/ui.dart';
 import 'package:block_logic/screens/rooms/public_rooms.dart';
 import 'package:block_logic/screens/rooms/user_rooms.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -129,66 +126,66 @@ class _RoomSelectorState extends ConsumerState<RoomSelector> with TickerProvider
 
   @override
   void initState() {
-    // FirebaseFirestore.instance.collection('challenges').doc().set(Challenge(
+    // FirebaseDatabase.instance.ref('challenges').doc().set(Challenge(
     //       name: '"Python is Awesome!"',
     //       shortDescription: 'Like printing "Hello, World".',
     //       additionalInfo: 'Involves printing, variables, and string concatenation.',
     //       blocks: AllBlocks().pythonIsAwesome(),
     //       difficulty: Difficulty.beginner,
     //       solutionMatch: ['Python is Awesome!'],
-    //     ).toFirestore());
-    // FirebaseFirestore.instance.collection('challenges').doc().set(Challenge(
+    //     ).toJSON());
+    // FirebaseDatabase.instance.ref('challenges').doc().set(Challenge(
     //       name: 'Count characters',
     //       shortDescription: 'Write a program that assigns a string and counts how many characters it contains.',
     //       additionalInfo: 'Involves loops and string manipulation.',
     //       blocks: AllBlocks().countChars(),
     //       difficulty: Difficulty.beginner,
     //       solutionMatch: ['The string has 6 characters.'],
-    //     ).toFirestore());
-    // FirebaseFirestore.instance.collection('challenges').doc().set(Challenge(
+    //     ).toJSON());
+    // FirebaseDatabase.instance.ref('challenges').doc().set(Challenge(
     //       name: 'Sum of two numbers',
     //       shortDescription: 'Write a program that assigns two numbers and outputs their sum.',
     //       additionalInfo: 'Involves simple arithmetic operations in Python.',
     //       blocks: AllBlocks().sumOfTwoNumbers(),
     //       difficulty: Difficulty.beginner,
     //       solutionMatch: ['The sum is: 15'],
-    //     ).toFirestore());
-    // FirebaseFirestore.instance.collection('challenges').doc().set(Challenge(
+    //     ).toJSON());
+    // FirebaseDatabase.instance.ref('challenges').doc().set(Challenge(
     //       name: 'Odd or Even?',
     //       shortDescription: 'Write a program that assigns a number and checks if the number is odd or even.',
     //       additionalInfo: 'If the number is divisible by 2 with no remainder, it\'s even; otherwise, it\'s odd.',
     //       blocks: AllBlocks().oddOrEven(),
     //       difficulty: Difficulty.beginner,
     //       solutionMatch: ['The number is odd.', 'The number is even.'],
-    //     ).toFirestore());
-    // FirebaseFirestore.instance.collection('challenges').doc().set(Challenge(
+    //     ).toJSON());
+    // FirebaseDatabase.instance.ref('challenges').doc().set(Challenge(
     //       name: '"Hello, World!"',
     //       shortDescription: 'Write a program that prints the string "Hello, World!" to the console.',
     //       additionalInfo: 'Simple printing in Python.',
     //       blocks: AllBlocks().helloWorld(),
     //       difficulty: Difficulty.beginner,
     //       solutionMatch: ['Hello, World!'],
-    //     ).toFirestore());
+    //     ).toJSON());
 
-    // FirebaseFirestore.instance.collection('challenges').doc().set(Challenge(
+    // FirebaseDatabase.instance.ref('challenges').doc().set(Challenge(
     //       name: 'Prime Number Check',
     //       shortDescription: 'Write a program that checks if a given positive integer n is a prime number. A prime number is a number greater than 1 that is divisible only by 1 and itself.',
     //       additionalInfo: 'For example, 7 is a prime number, but 10 is not because it is divisible by 2 and 5.',
     //       blocks: AllBlocks().primeNumCheck(),
     //       difficulty: Difficulty.intermediate,
     //       solutionMatch: [true],
-    //     ).toFirestore());
+    //     ).toJSON());
 
-    // FirebaseFirestore.instance.collection('challenges').doc().set(Challenge(
+    // FirebaseDatabase.instance.ref('challenges').doc().set(Challenge(
     //       name: 'Sum of first N natural Numbers',
     //       shortDescription: 'Write a program that calculates the sum of the first n natural numbers.',
     //       additionalInfo: ' The sum of the first n natural numbers is given by the formula n * (n + 1) / 2. For example, if n = 10, the sum is 1 + 2 + ... + 10 = 55.',
     //       blocks: AllBlocks().sumOfNaturalNumbers(),
     //       difficulty: Difficulty.intermediate,
     //       solutionMatch: [55],
-    //     ).toFirestore());
+    //     ).toJSON());
 
-    // FirebaseFirestore.instance.collection('challenges').doc().set(
+    // FirebaseDatabase.instance.ref('challenges').doc().set(
     //       Challenge(
     //         name: 'Palindrome',
     //         shortDescription: 'Write a program that checks if a given string is a palindrome.',
@@ -196,26 +193,26 @@ class _RoomSelectorState extends ConsumerState<RoomSelector> with TickerProvider
     //         blocks: AllBlocks().palindromeCheck(),
     //         difficulty: Difficulty.intermediate,
     //         solutionMatch: [true],
-    //       ).toFirestore(),
+    //       ).toJSON(),
     //     );
 
-    // FirebaseFirestore.instance.collection('challenges').doc().set(Challenge(
+    // FirebaseDatabase.instance.ref('challenges').doc().set(Challenge(
     //       name: 'Factorial',
     //       shortDescription: 'Given a positive integer n, write a program to compute the factorial of n.',
     //       additionalInfo: 'The factorial of a number is the product of all positive integers from 1 to n. For example, 5! = 5 * 4 * 3 * 2 * 1 = 120.',
     //       blocks: AllBlocks().factorial(),
     //       difficulty: Difficulty.intermediate,
     //       solutionMatch: [120],
-    //     ).toFirestore());
+    //     ).toJSON());
 
-    // FirebaseFirestore.instance.collection('challenges').doc().set(Challenge(
+    // FirebaseDatabase.instance.ref('challenges').doc().set(Challenge(
     //       name: 'Sum of digits',
     //       shortDescription: 'Given a positive integer n, write a program to calculate the sum of its digits.',
     //       additionalInfo: ' For example, if n = 123, the sum of its digits is 1 + 2 + 3 = 6.',
     //       blocks: AllBlocks().sumOfDigits(),
     //       difficulty: Difficulty.intermediate,
     //       solutionMatch: [6],
-    //     ).toFirestore());
+    //     ).toJSON());
     tabController = TabController(length: 2, vsync: this);
     searchController.addListener(() {
       setState(() {

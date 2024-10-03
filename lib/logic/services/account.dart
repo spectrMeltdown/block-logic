@@ -5,12 +5,12 @@ import 'package:block_logic/logic/firebase_models/admin_account.dart';
 import 'package:block_logic/logic/firebase_models/leaderboard.dart';
 import 'package:block_logic/logic/firebase_models/user_account.dart';
 import 'package:block_logic/logic/services/error_handler.dart';
-import 'package:block_logic/logic/services/leaderboard_manager.dart';
 import 'package:block_logic/logic/services/shared_pref.dart';
 import 'package:block_logic/logic/services/toast.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -36,7 +36,7 @@ class AccountService extends _$AccountService {
 
   Future<String?> changeDisplayName(String displayName, FirestoreCollections collection) async {
     try {
-      await state._db.collection(collection.name).doc(state._auth!.uid).update({'displayName': displayName});
+      await state._db.ref(collection.name).child(state._auth!.uid).update({'displayName': displayName});
       await FirebaseAuth.instance.currentUser!.updateDisplayName(displayName);
       return null;
     } catch (e) {
@@ -102,7 +102,7 @@ class AccountService extends _$AccountService {
     );
     try {
       await state._auth!.linkWithCredential(credential);
-      // await state._db.collection(kIsWeb ? 'admins' : 'users').doc(FirebaseAuth.instance.currentUser!.uid).update({'verificationID': null});
+      // await state._db.ref(kIsWeb ? 'admins' : 'users').doc(FirebaseAuth.instance.currentUser!.uid).update({'verificationID': null});
       return null;
     } catch (e) {
       return state._errorHandler.call(e, this);
@@ -110,30 +110,27 @@ class AccountService extends _$AccountService {
   }
 
   Future<String?> deleteFirestoreData(String uid, AccountType type) async {
-    final leaderboardManager = ref.read(leaderboardManagerProvider.notifier);
     try {
       if (type == AccountType.user) {
-        await state._db.collection('users').doc(uid).delete();
-        final rooms = await state._db.collection('rooms').where('hostID', isEqualTo: uid).get();
-        for (final room in rooms.docs) {
-          room.reference.delete();
+        await state._db.ref('users').child(uid).remove();
+        final rooms = await state._db.ref('rooms').equalTo(uid).get();
+        for (final room in rooms.children) {
+          room.ref.remove();
         }
-        var leaderboards = await state._db.collection('leaderboards').where('players', arrayContains: uid).get();
-        for (final leaderboard in leaderboards.docs) {
-          // if only player on the leaderboard, delete it
-          final leaderboardObj = Leaderboard.fromFirestore(leaderboard);
-          if (leaderboardObj.players?.length == 1) {
-            leaderboard.reference.delete();
+        var leaderboards = await state._db.ref('leaderboards').get();
+        for (final leaderboard in leaderboards.children) {
+          final lb = Leaderboard.fromRTDB(leaderboard);
+          if (lb.players!.contains(uid)) {
+            lb.players!.removeWhere((i) => i == uid);
           }
-          // if not the only player, then remove self
-          else {
-            await leaderboardManager.updatePlayers(leaderboard.id, {
-              'players': FieldValue.arrayRemove([uid])
-            });
+          if (lb.players?.length == 1) {
+            leaderboard.ref.remove();
+          } else {
+            leaderboard.ref.update({'players': lb.players});
           }
         }
       } else {
-        await state._db.collection('admins').doc(uid).delete();
+        await state._db.ref('admins').child(uid).remove();
       }
       return null;
     } catch (e) {
@@ -151,7 +148,7 @@ class AccountService extends _$AccountService {
     try {
       // String? result;
       if (type == AccountType.user) {
-        await state._db.collection('users').doc(createdID ?? FirebaseAuth.instance.currentUser!.uid).set(UserAccount(
+        await state._db.ref('users').child(createdID ?? FirebaseAuth.instance.currentUser!.uid).set(UserAccount(
               createdAt: DateTime.now(),
               premiumUser: false,
               displayName: displayName ?? state._auth!.displayName,
@@ -159,7 +156,7 @@ class AccountService extends _$AccountService {
               profilePicLink: 'default',
               // verificationID: (phoneNum == null || phoneNum.isEmpty) ? null : '',
               //isApproved: false,
-            ).toFirestore());
+            ).toJSON());
 
         /// initialize user settings
         // result = await updateUserSettings(AccountSettings(
@@ -171,14 +168,14 @@ class AccountService extends _$AccountService {
         //   return result;
         // }
       } else {
-        await state._db.collection('admins').doc(createdID ?? FirebaseAuth.instance.currentUser!.uid).set(AdminAccount(
+        await state._db.ref('admins').child(createdID ?? FirebaseAuth.instance.currentUser!.uid).set(AdminAccount(
               createdAt: DateTime.now(),
               displayName: displayName ?? state._auth!.displayName,
               // phoneNum: phoneNum,
               profilePicLink: 'default',
               // verificationID: (phoneNum == null || phoneNum.isEmpty) ? null : '',
               //isApproved: false,
-            ).toFirestore());
+            ).toJSON());
       }
       return null;
     } catch (e) {
@@ -192,9 +189,9 @@ class AccountService extends _$AccountService {
     }
     try {
       if (admin != null) {
-        await state._db.collection('admins').doc(admin.id).update(admin.toFirestore());
+        await state._db.ref('admins').child(admin.id!).update(admin.toJSON());
       } else if (user != null) {
-        await state._db.collection('users').doc(user.id).update(user.toFirestore());
+        await state._db.ref('users').child(user.id!).update(user.toJSON());
       } else {
         throw ('Either user or admin not provided!!');
       }
@@ -206,7 +203,7 @@ class AccountService extends _$AccountService {
 
   Future<String?> updateProfilePicLink(String link, FirestoreCollections collection) async {
     try {
-      await state._db.collection(collection.name).doc(state._auth!.uid).update({'profilePicLink': link});
+      await state._db.ref(collection.name).child(state._auth!.uid).update({'profilePicLink': link});
       return null;
     } catch (e) {
       return state._errorHandler.call(e, this);
@@ -270,9 +267,9 @@ class AccountService extends _$AccountService {
   }
 //     try {
 //       await state._db
-//           .collection('users')
+//           .ref('users')
 //           .doc(state._auth!.uid)
-//           .update(userSettings.toFirestore());
+//           .update(userSettings.toJSON());
 //       return null;
 //     } catch (e) {
 //       return state._errorHandler.call(e, this);
@@ -282,7 +279,7 @@ class AccountService extends _$AccountService {
 
 /// don't add AuthService, will cause circular dependency
 class AccountServiceState {
-  final _db = FirebaseFirestore.instance;
+  final _db = FirebaseDatabase.instance;
   final _userStorageRef = FirebaseStorage.instance.ref('users');
   final _adminStorageRef = FirebaseStorage.instance.ref('admins');
   final SharedPreferences sharedPref;

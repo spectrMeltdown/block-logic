@@ -1,6 +1,7 @@
 import 'package:block_logic/logic/firebase_models/challenge.dart';
 import 'package:block_logic/logic/services/error_handler.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_database/firebase_database.dart';
+
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'generated/selected_challenges.g.dart';
@@ -11,13 +12,13 @@ Future<List<Challenge>> selectedChallenges(
   List<String> challengeIDs,
 ) async {
   final errorhandler = ref.read(errorHandlerProvider.notifier);
-  final db = FirebaseFirestore.instance;
+  final db = FirebaseDatabase.instance;
   List<Challenge> challenges = [];
   for (final id in challengeIDs) {
     try {
-      final doc = await db.collection('challenges').doc(id).get();
+      final doc = await db.ref('challenges/$id').get();
       if (doc.exists) {
-        challenges.add(Challenge.fromFirestore(doc));
+        challenges.add(Challenge.fromRTDB(doc));
       }
     } catch (e) {
       errorhandler.call(e, 'selected challenges');

@@ -6,7 +6,7 @@ part of '../game_challenges.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$gameChallengesHash() => r'4b6267464774278bb0391feb248fc49ee9b07a88';
+String _$gameChallengesHash() => r'61f5fac837cfcb6808ca412550412153d084180c';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -56,14 +56,12 @@ class GameChallengesFamily extends Family<AsyncValue<List<Challenge>>> {
     );
   }
 
-  static final Iterable<ProviderOrFamily> _dependencies =
-      const <ProviderOrFamily>[];
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
 
   @override
   Iterable<ProviderOrFamily>? get dependencies => _dependencies;
 
-  static final Iterable<ProviderOrFamily> _allTransitiveDependencies =
-      const <ProviderOrFamily>{};
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
 
   @override
   Iterable<ProviderOrFamily>? get allTransitiveDependencies =>

@@ -7,7 +7,7 @@ part of '../selected_leaderboards.dart';
 // **************************************************************************
 
 String _$selectedLeaderboardsHash() =>
-    r'623daca07075fbfb07620561d66b3117e65b4285';
+    r'f457b39b8e535ec40531c2986198d5132adfe2cc';
 
 /// Copied from Dart SDK
 class _SystemHash {

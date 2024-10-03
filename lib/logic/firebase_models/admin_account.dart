@@ -1,60 +1,41 @@
 import 'package:block_logic/logic/firebase_models/account_model.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 class AdminAccount extends AccountModel {
-  //final bool? isApproved;
   AdminAccount({
     super.id,
-    // super.resendToken,
-    //this.isApproved,
     super.displayName,
-    // super.phoneNum,
     super.profilePicLink,
     super.createdAt,
-    // super.verificationID,
   });
 
-  factory AdminAccount.fromFirestore(DocumentSnapshot doc) {
-    Map<String, dynamic> data = {};
-    if (doc.data() != null) {
-      data = doc.data() as Map<String, dynamic>;
+  factory AdminAccount.fromRTDB(DataSnapshot doc) {
+    Map data = {};
+    if (doc.value != null) {
+      data = doc.value as Map;
     }
 
     return AdminAccount(
-      id: doc.id,
-      createdAt: data['createdAt'] == null ? null : (data['createdAt'] as Timestamp).toDate(),
+      id: doc.key,
+      createdAt: data['createdAt'] == null ? null : DateTime.fromMillisecondsSinceEpoch(data['createdAt']),
       displayName: data['displayName'] ?? '',
       profilePicLink: data['profilePicLink'] ?? '',
-      // phoneNum: data['phoneNum'],
-      // verificationID: data['verificationID'],
-      // resendToken: data['resendToken']
-      // isApproved: data['isApproved'],
     );
   }
 
-  Map<String, dynamic> toFirestore() {
-    Map<String, dynamic> toFirestoreMap = {};
+  Map<String, dynamic> toJSON() {
+    Map<String, dynamic> toJSONMap = {};
     if (createdAt != null) {
-      toFirestoreMap.addAll({'createdAt': Timestamp.fromDate(createdAt!)});
+      toJSONMap.addAll({'createdAt': createdAt!.millisecondsSinceEpoch});
     }
     if (displayName != null) {
-      toFirestoreMap.addAll({'displayName': displayName});
+      toJSONMap.addAll({'displayName': displayName});
     }
-    // if (phoneNum != null) {
-    //   toFirestoreMap.addAll({'phoneNum': phoneNum});
-    // }
+
     if (profilePicLink != null) {
-      toFirestoreMap.addAll({'profilePicLink': profilePicLink});
+      toJSONMap.addAll({'profilePicLink': profilePicLink});
     }
-    // if (verificationID != null) {
-    //   toFirestoreMap.addAll({'verificationID': verificationID});
-    // }
-    // if (resendToken != null) {
-    //   toFirestoreMap.addAll({'resendToken': resendToken});
-    // }
-    // if (isApproved != null) {
-    //   toFirestoreMap.addAll({'isApproved': isApproved});
-    // }
-    return toFirestoreMap;
+
+    return toJSONMap;
   }
 }

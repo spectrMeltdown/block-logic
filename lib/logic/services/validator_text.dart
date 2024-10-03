@@ -2,7 +2,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'generated/validator_text.g.dart';
 
-@Riverpod()
+@riverpod
 class TextValidator extends _$TextValidator {
   @override
   TextValidatorState build() => TextValidatorState();

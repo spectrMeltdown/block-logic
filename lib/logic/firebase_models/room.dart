@@ -1,8 +1,7 @@
 import 'package:block_logic/logic/enums.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 class Room {
-  //final String? icon;
   final String? id;
   final String? hostID;
   final String? name;
@@ -18,7 +17,6 @@ class Room {
     this.id,
     this.players,
     this.currentLeaderboardID,
-    //this.icon,
     this.hostID,
     this.challengeIDs,
     this.name,
@@ -27,10 +25,10 @@ class Room {
     this.maxPlayers,
   });
 
-  factory Room.fromFirestore(DocumentSnapshot doc) {
-    Map<String, dynamic> data = {};
-    if (doc.data() != null) {
-      data = doc.data() as Map<String, dynamic>;
+  factory Room.fromRTDB(DataSnapshot doc) {
+    Map data = {};
+    if (doc.value != null) {
+      data = doc.value as Map;
     }
     RoomStatus? status;
     if (data['status'] == RoomStatus.available.name) {
@@ -43,10 +41,9 @@ class Room {
       status = RoomStatus.locked;
     }
     return Room(
-      id: doc.id,
+      id: doc.key,
       players: data['players'] == null ? null : (data['players'] as List).map((item) => item as String).toList(),
       status: status,
-      // icon: data['icon'],
       hostID: data['hostID'],
       challengeIDs: data['challengeIDs'] == null ? null : (data['challengeIDs'] as List).map((item) => item as String).toList(),
       name: data['name'] ?? '',
@@ -83,40 +80,35 @@ class Room {
     );
   }
 
-  Map<String, dynamic> toFirestore() {
-    Map<String, dynamic> toFirestoreMap = {};
+  Map<String, dynamic> toJSON() {
+    Map<String, dynamic> toJSONMap = {};
     if (challengeIDs != null) {
-      toFirestoreMap.addAll({'challengeIDs': challengeIDs});
+      toJSONMap.addAll({'challengeIDs': challengeIDs});
     }
     if (players != null) {
-      toFirestoreMap.addAll({'players': players});
+      toJSONMap.addAll({'players': players});
     }
     if (maxPlayers != null) {
-      toFirestoreMap.addAll({'maxPlayers': maxPlayers});
+      toJSONMap.addAll({'maxPlayers': maxPlayers});
     }
     if (hostID != null) {
-      toFirestoreMap.addAll({'hostID': hostID});
+      toJSONMap.addAll({'hostID': hostID});
     }
-    // if (icon != null) {
-    //   toFirestoreMap.addAll({'icon': icon});
-    // }
     if (name != null) {
-      toFirestoreMap.addAll({'name': name});
+      toJSONMap.addAll({'name': name});
     }
-
-    /// Password should be encrypted before passing to this function
     if (password != null) {
-      toFirestoreMap.addAll({'password': password});
+      toJSONMap.addAll({'password': password});
     }
     if (status != null) {
-      toFirestoreMap.addAll({'status': status!.name});
+      toJSONMap.addAll({'status': status!.name});
     }
     if (adminLocked != null) {
-      toFirestoreMap.addAll({'adminLocked': adminLocked});
+      toJSONMap.addAll({'adminLocked': adminLocked});
     }
     if (currentLeaderboardID != null) {
-      toFirestoreMap.addAll({'currentLeaderboardID': currentLeaderboardID});
+      toJSONMap.addAll({'currentLeaderboardID': currentLeaderboardID});
     }
-    return toFirestoreMap;
+    return toJSONMap;
   }
 }

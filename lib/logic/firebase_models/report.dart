@@ -1,5 +1,5 @@
 import 'package:block_logic/logic/enums.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 class Report {
   final String? id;
@@ -22,10 +22,10 @@ class Report {
     // super.createdAt,
   });
 
-  factory Report.fromFirestore(DocumentSnapshot doc) {
-    Map<String, dynamic> data = {};
-    if (doc.data() != null) {
-      data = doc.data() as Map<String, dynamic>;
+  factory Report.fromRTDB(DataSnapshot doc) {
+    Map data = {};
+    if (doc.value != null) {
+      data = doc.value as Map;
     }
 
     ReportType? type;
@@ -58,59 +58,59 @@ class Report {
     }
     // reportType: data['reportType'] ?? '',
     // data: data['data'] ?? '',
-    // startDate: (data['startDate'] as Timestamp).toDate(),
-    // endDate: (data['endDate'] as Timestamp).toDate(),
-    // createdAt: data['createdAt'] == null ? null : (data['createdAt'] as Timestamp).toDate(),
-    // modifiedAt: (data['modifiedAt'] as Timestamp).toDate(),
+    // startDate: (data['startDate'] as ServerValue.timestamp).toDate(),
+    // endDate: (data['endDate'] as ServerValue.timestamp).toDate(),
+    // createdAt: data['createdAt'] == null ? null : (data['createdAt'] as ServerValue.timestamp).toDate(),
+    // modifiedAt: (data['modifiedAt'] as ServerValue.timestamp).toDate(),
     return Report(
-      id: doc.id,
+      id: doc.key,
       count: data['count'],
       type: type,
-      date: data['date'] == null ? null : (data['date'] as Timestamp).toDate(),
+      date: data['date'] == null ? null : DateTime.fromMillisecondsSinceEpoch(data['date']),
       isTest: data['isTest'],
       userUID: data['userUID'],
       dataUID: data['dataUID'],
     );
   }
-  Map<String, dynamic> toFirestore() {
-    Map<String, dynamic> toFirestoreMap = {};
+  Map<String, dynamic> toJSON() {
+    Map<String, dynamic> toJSONMap = {};
     if (date != null) {
-      toFirestoreMap.addAll({'date': Timestamp.fromDate(date!)});
+      toJSONMap.addAll({'date': date!.millisecondsSinceEpoch});
     }
     if (type != null) {
-      toFirestoreMap.addAll({'type': type!.name});
+      toJSONMap.addAll({'type': type!.name});
     }
     if (count != null) {
-      toFirestoreMap.addAll({'count': count});
+      toJSONMap.addAll({'count': count});
     }
     if (isTest != null) {
-      toFirestoreMap.addAll({'isTest': isTest});
+      toJSONMap.addAll({'isTest': isTest});
     }
     if (userUID != null) {
-      toFirestoreMap.addAll({'userUID': userUID});
+      toJSONMap.addAll({'userUID': userUID});
     }
     if (dataUID != null) {
-      toFirestoreMap.addAll({'dataUID': dataUID});
+      toJSONMap.addAll({'dataUID': dataUID});
     }
     // if (createdAt != null) {
-    //   toFirestoreMap.addAll({'createdAt': Timestamp.fromDate(createdAt!)});
+    //   toJSONMap.addAll({'createdAt': ServerValue.timestamp.fromDate(createdAt!)});
     // }
     // if (modifiedAt != null) {
-    //   toFirestoreMap.addAll({'modifiedAt': modifiedAt});
+    //   toJSONMap.addAll({'modifiedAt': modifiedAt});
     // }
     // if (data != null) {
-    //   toFirestoreMap.addAll({'data': data});
+    //   toJSONMap.addAll({'data': data});
     // }
     // if (endDate != null) {
-    //   toFirestoreMap.addAll({'endDate': endDate});
+    //   toJSONMap.addAll({'endDate': endDate});
     // }
     // if (startDate != null) {
-    //   toFirestoreMap.addAll({'startDate': startDate});
+    //   toJSONMap.addAll({'startDate': startDate});
     // }
 
     // if (reportType != null) {
-    //   toFirestoreMap.addAll({'reportType': reportType});
+    //   toJSONMap.addAll({'reportType': reportType});
     // }
-    return toFirestoreMap;
+    return toJSONMap;
   }
 }

@@ -19,8 +19,9 @@ import 'package:block_logic/screens/premium_prompt_dialog.dart';
 import 'package:block_logic/screens/rooms/rooms.dart';
 import 'package:block_logic/screens/settings/settings_page.dart';
 import 'package:block_logic/screens/tutorials/tutorials.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -74,7 +75,7 @@ List<Widget> loggedInMenu(BuildContext context, CustomNavigation nav) {
       onPressed: () async {
         final uid = FirebaseAuth.instance.currentUser?.uid;
         if (uid != null) {
-          await FirebaseFirestore.instance.collection('users').doc(uid).update({'sessionID': FieldValue.delete()});
+          await FirebaseDatabase.instance.ref('users').child(uid).update({'sessionID': ''});
         }
         SystemNavigator.pop();
 
@@ -125,7 +126,7 @@ List<Widget> loggedOutMenu(BuildContext context, CustomNavigation nav) {
       onPressed: () async {
         final uid = FirebaseAuth.instance.currentUser?.uid;
         if (uid != null) {
-          await FirebaseFirestore.instance.collection('users').doc(uid).update({'sessionID': FieldValue.delete()});
+          await FirebaseDatabase.instance.ref('users').child(uid).update({'sessionID': ''});
         }
         SystemNavigator.pop();
 

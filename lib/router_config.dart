@@ -22,8 +22,9 @@ import 'package:block_logic/web/screens/reports/reports.dart';
 import 'package:block_logic/web/screens/rooms/rooms.dart';
 import 'package:block_logic/web/screens/settings/settings.dart';
 import 'package:block_logic/web/screens/web_scaffold.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -207,8 +208,8 @@ GoRouter router() {
           return '/verify-email';
         }
 
-        final doc = await FirebaseFirestore.instance.collection('admins').doc(user.uid).get();
-        // final adminFirestore = AdminAccount.fromFirestore(doc);
+        final doc = await FirebaseDatabase.instance.ref('admins').child(user.uid).get();
+        // final adminFirestore = AdminAccount.fromRTDB(doc);
         if (doc.exists == false) {
           return '/unauthorized';
         }

@@ -1,7 +1,8 @@
 import 'package:block_logic/logic/firebase_models/score.dart';
 import 'package:block_logic/logic/services/error_handler.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -18,7 +19,7 @@ class ScoreManager extends _$ScoreManager {
   Future<String?> create(String leaderboardID, Score score) async {
     if (leaderboardID.isEmpty) throw ('Must provide leaderboard id!');
     try {
-      await state._db.doc(leaderboardID).collection('scores').doc(FirebaseAuth.instance.currentUser!.uid).set(score.toFirestore());
+      await state._db.child('$leaderboardID/scores/${FirebaseAuth.instance.currentUser!.uid}').set(score.toJSON());
       return null;
     } catch (e) {
       return state._errorHandler.call(e, this);
@@ -28,7 +29,7 @@ class ScoreManager extends _$ScoreManager {
   Future<String?> update(String leaderboardID, Score score) async {
     if (score.id == null || score.id!.isEmpty) throw ('Score id not provided.');
     try {
-      await state._db.doc(leaderboardID).collection('scores').doc(score.id).update(score.toFirestore());
+      await state._db.child('$leaderboardID/scores/${score.id}').update(score.toJSON());
       return null;
     } catch (e) {
       return state._errorHandler.call(e, this);
@@ -43,9 +44,9 @@ class ScoreManager extends _$ScoreManager {
     if (leaderboardID.isEmpty || uid.isEmpty) throw ('Either leaderboardID or UID was blank.');
     try {
       debugPrint('Incrementing on $leaderboardID $uid $value');
-      await state._db.doc(leaderboardID).collection('scores').doc(uid).set({
+      await state._db.child('$leaderboardID/scores/$uid').update({
         'playerScore': value,
-      }, SetOptions(merge: true));
+      });
       return null;
     } catch (e) {
       return state._errorHandler.call(e, this);
@@ -55,6 +56,6 @@ class ScoreManager extends _$ScoreManager {
 
 class ScoreManagerState {
   final ErrorHandler _errorHandler;
-  final _db = FirebaseFirestore.instance.collection('leaderboards');
+  final _db = FirebaseDatabase.instance.ref('leaderboards');
   ScoreManagerState({required ErrorHandler errorHandler}) : _errorHandler = errorHandler;
 }

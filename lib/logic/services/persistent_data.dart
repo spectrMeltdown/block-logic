@@ -12,7 +12,7 @@ class PersistentData {
         _notifications = notifications;
 }
 
-@Riverpod(dependencies: [])
+@riverpod
 class PersistentDataState extends _$PersistentDataState {
   @override
   PersistentData build() {

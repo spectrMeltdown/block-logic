@@ -7,7 +7,7 @@ part of '../persistent_data.dart';
 // **************************************************************************
 
 String _$persistentDataStateHash() =>
-    r'7a6ca1f801ef185679ce770112af75e131a17a9a';
+    r'76fdc0cb3fe6e67690bc462048cf9803b673585a';
 
 /// See also [PersistentDataState].
 @ProviderFor(PersistentDataState)
@@ -18,8 +18,8 @@ final persistentDataStateProvider =
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
       : _$persistentDataStateHash,
-  dependencies: const <ProviderOrFamily>[],
-  allTransitiveDependencies: const <ProviderOrFamily>{},
+  dependencies: null,
+  allTransitiveDependencies: null,
 );
 
 typedef _$PersistentDataState = AutoDisposeNotifier<PersistentData>;

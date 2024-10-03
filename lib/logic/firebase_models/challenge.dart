@@ -1,6 +1,6 @@
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/game/block_data.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 class Challenge {
   final String? id;
@@ -24,14 +24,14 @@ class Challenge {
     this.tags,
   });
 
-  factory Challenge.fromFirestore(DocumentSnapshot doc) {
-    Map<String, dynamic> data = {};
-    if (doc.data() != null) {
-      data = doc.data() as Map<String, dynamic>;
+  factory Challenge.fromRTDB(DataSnapshot doc) {
+    Map data = {};
+    if (doc.value != null) {
+      data = doc.value as Map;
     }
 
     return Challenge(
-      id: doc.id,
+      id: doc.key,
       name: data['name'] ?? '',
       shortDescription: data['shortDescription'] ?? '',
       additionalInfo: data['additionalInfo'] ?? '',
@@ -53,35 +53,35 @@ class Challenge {
     );
   }
 
-  Map<String, dynamic> toFirestore() {
-    Map<String, dynamic> toFirestoreMap = {};
+  Map<String, dynamic> toJSON() {
+    Map<String, dynamic> toJSONMap = {};
     if (additionalInfo != null) {
-      toFirestoreMap.addAll({'additionalInfo': additionalInfo});
+      toJSONMap.addAll({'additionalInfo': additionalInfo});
     }
     if (blocks != null) {
       final blocksMap = blocks!.map((key, value) {
         return MapEntry(key.name, value.map((data) => data.toJSON()).toList());
       });
-      toFirestoreMap.addAll({'blocks': blocksMap});
+      toJSONMap.addAll({'blocks': blocksMap});
     }
     if (solutionMatch != null) {
-      toFirestoreMap.addAll({'solutionMatch': solutionMatch});
+      toJSONMap.addAll({'solutionMatch': solutionMatch});
     }
     if (difficulty != null) {
-      toFirestoreMap.addAll({'difficulty': difficulty?.name});
+      toJSONMap.addAll({'difficulty': difficulty?.name});
     }
     if (limitations != null) {
-      toFirestoreMap.addAll({'limitations': limitations});
+      toJSONMap.addAll({'limitations': limitations});
     }
     if (name != null) {
-      toFirestoreMap.addAll({'name': name});
+      toJSONMap.addAll({'name': name});
     }
     if (shortDescription != null) {
-      toFirestoreMap.addAll({'shortDescription': shortDescription});
+      toJSONMap.addAll({'shortDescription': shortDescription});
     }
     if (tags != null) {
-      toFirestoreMap.addAll({'tags': tags});
+      toJSONMap.addAll({'tags': tags});
     }
-    return toFirestoreMap;
+    return toJSONMap;
   }
 }

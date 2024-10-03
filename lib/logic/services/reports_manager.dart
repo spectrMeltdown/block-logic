@@ -1,8 +1,9 @@
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_models/report.dart';
 import 'package:block_logic/logic/services/error_handler.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -14,12 +15,12 @@ class ReportsManager extends _$ReportsManager {
     try {
       // check because web & mobile share some screens
       if (!kIsWeb) {
-        await state._db.doc().set(Report(
+        await state._db.push().set(Report(
               type: type,
               count: count,
               date: DateTime.now(),
               userUID: FirebaseAuth.instance.currentUser!.uid,
-            ).toFirestore());
+            ).toJSON());
       }
       return null;
     } catch (e) {
@@ -36,11 +37,16 @@ class ReportsManager extends _$ReportsManager {
     }
     try {
       // check because web & mobile share some screens
+      late final DataSnapshot query;
       if (!kIsWeb) {
-        final query = await state._db.where(dataUID.isNotEmpty ? 'dataUID' : 'userUID', isEqualTo: dataUID.isNotEmpty ? dataUID : userUID).get();
-        if (query.docs.isNotEmpty) {
-          for (final doc in query.docs) {
-            await doc.reference.delete();
+        if (dataUID.isNotEmpty) {
+          query = await state._db.equalTo(dataUID).get();
+        } else {
+          query = await state._db.equalTo(userUID).get();
+        }
+        if (query.children.isNotEmpty) {
+          for (final doc in query.children) {
+            await doc.ref.remove();
           }
         } else {
           return 'Report(s) not found.';
@@ -67,7 +73,7 @@ class ReportsManager extends _$ReportsManager {
   //     throw ('ID not provided');
   //   }
   //   try {
-  //     await state._db.doc(report.id).set(report.toFirestore(), SetOptions(merge: true));
+  //     await state._db.doc(report.id).set(report.toJSON(), SetOptions(merge: true));
   //     return null;
   //   } catch (e) {
   //     return state._errorHandler.call(e, this);
@@ -77,7 +83,7 @@ class ReportsManager extends _$ReportsManager {
 
 class ReportsState {
   final ErrorHandler _errorHandler;
-  final _db = FirebaseFirestore.instance.collection('reports');
+  final _db = FirebaseDatabase.instance.ref('reports');
   //final AccountService _accountService;
 
   ReportsState({

@@ -1,24 +1,20 @@
 import 'package:block_logic/logic/firebase_models/score.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_database/firebase_database.dart';
+
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'generated/scores.g.dart';
 
 /// stream all scores under a specific leaderboardID
-@Riverpod(dependencies: [])
+@riverpod
 Stream<List<Score>> scores(ScoresRef ref, String leaderboardID) async* {
-  final db = FirebaseFirestore.instance;
-  final stream = db
-      .collection('leaderboards')
-      .doc(leaderboardID)
-      .collection('scores')
-      .snapshots();
-
-  await for (final snapshot in stream) {
+  final db = FirebaseDatabase.instance;
+  final stream = db.ref('leaderboards/$leaderboardID/scores').onValue;
+  await for (final query in stream) {
     List<Score> result = [];
-    if (snapshot.docs.isNotEmpty) {
-      for (final score in snapshot.docs) {
-        result.add(Score.fromFirestore(score));
+    if (query.snapshot.children.isNotEmpty) {
+      for (final score in query.snapshot.children) {
+        result.add(Score.fromRTDB(score));
       }
     }
     yield result;

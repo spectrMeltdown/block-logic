@@ -6,7 +6,7 @@ part of '../scores.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$scoresHash() => r'8ffae2f2727036babfb0b8f2f98cef916c043cbd';
+String _$scoresHash() => r'203864eaed16961b9aea14f46b632760170ab6ff';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -64,14 +64,12 @@ class ScoresFamily extends Family<AsyncValue<List<Score>>> {
     );
   }
 
-  static final Iterable<ProviderOrFamily> _dependencies =
-      const <ProviderOrFamily>[];
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
 
   @override
   Iterable<ProviderOrFamily>? get dependencies => _dependencies;
 
-  static final Iterable<ProviderOrFamily> _allTransitiveDependencies =
-      const <ProviderOrFamily>{};
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
 
   @override
   Iterable<ProviderOrFamily>? get allTransitiveDependencies =>

@@ -5,7 +5,8 @@ import 'dart:math';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_models/report.dart';
 import 'package:block_logic/logic/services/error_handler.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_database/firebase_database.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -21,7 +22,7 @@ final testingProvider = StateNotifierProvider<Testing, TestingState>((ref) {
 
 class TestingState {
   final ErrorHandler errorHandler;
-  final db = FirebaseFirestore.instance;
+  final db = FirebaseDatabase.instance;
   TestingState(this.errorHandler);
 }
 
@@ -32,12 +33,12 @@ class Testing extends StateNotifier<TestingState> {
     if (number < 1) throw ('Cannot be less than 1!');
     try {
       for (int i = 0; i < number; i++) {
-        await state.db.collection('reports').doc().set(Report(
+        await state.db.ref('reports').push().set(Report(
               date: getRandomDateTime(DateTimeRange(start: dateRange.start, end: dateRange.end)),
               count: getRandomInt(1, 20),
               type: ReportType.values[getRandomInt(0, ReportType.values.length - 1)],
               isTest: true,
-            ).toFirestore());
+            ).toJSON());
       }
       return null;
     } catch (e) {
@@ -47,10 +48,10 @@ class Testing extends StateNotifier<TestingState> {
 
   Future<String?> deleteReports() async {
     try {
-      final query = await state.db.collection('reports').where('isTest', isEqualTo: true).get();
-      if (query.docs.isNotEmpty) {
-        for (final doc in query.docs) {
-          await doc.reference.delete();
+      final query = await state.db.ref('reports').equalTo(true).get();
+      if (query.children.isNotEmpty) {
+        for (final doc in query.children) {
+          await doc.ref.remove();
         }
       }
       return null;

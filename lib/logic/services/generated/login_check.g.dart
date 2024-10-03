@@ -6,7 +6,7 @@ part of '../login_check.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$loginCheckHash() => r'a1bb816b04ca6b09490544e9bd8cd92bcfdd4baf';
+String _$loginCheckHash() => r'0859fe78e0e992ce0672a9b496df82e136703a9a';
 
 /// See also [loginCheck].
 @ProviderFor(loginCheck)

@@ -1,23 +1,24 @@
 import 'package:block_logic/logic/firebase_models/challenge.dart';
 import 'package:block_logic/logic/services/error_handler.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_database/firebase_database.dart';
+
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'generated/challenge_manager.g.dart';
 
 @riverpod
 class ChallengeManager extends _$ChallengeManager {
-  FirebaseFirestore? _db;
+  FirebaseDatabase? _db;
   ErrorHandler? _errorHandler;
   @override
   void build() {
-    _db = FirebaseFirestore.instance;
+    _db = FirebaseDatabase.instance;
     _errorHandler = ref.read(errorHandlerProvider.notifier);
   }
 
   Future<String?> create(Challenge challenge) async {
     try {
-      await _db!.collection('challenges').doc(challenge.id).set(challenge.toFirestore());
+      await _db!.ref('challenges').push().set(challenge.toJSON());
       return null;
     } catch (e) {
       return _errorHandler?.call(e, this);
@@ -25,8 +26,9 @@ class ChallengeManager extends _$ChallengeManager {
   }
 
   Future<String?> delete(String id) async {
+    if (id.isEmpty) return 'Error getting ID';
     try {
-      await _db!.collection('challenges').doc(id).delete();
+      await _db!.ref('challenges').child(id).remove();
       return null;
     } catch (e) {
       return _errorHandler?.call(e, 'challenge manager');
@@ -34,8 +36,9 @@ class ChallengeManager extends _$ChallengeManager {
   }
 
   Future<String?> update(Challenge challenge) async {
+    if (challenge.id!.isEmpty) return 'Error getting ID';
     try {
-      await _db!.collection('challenges').doc(challenge.id).update(challenge.toFirestore());
+      await _db!.ref('challenges').child(challenge.id!).update(challenge.toJSON());
       return null;
     } catch (e) {
       return _errorHandler?.call(e, this);

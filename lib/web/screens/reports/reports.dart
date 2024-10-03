@@ -1,4 +1,3 @@
-
 import 'package:block_logic/components/async/loading.dart';
 import 'package:block_logic/components/dialog/dialog.dart';
 import 'package:block_logic/components/text/text.dart';
@@ -15,7 +14,8 @@ import 'package:block_logic/logic/testing.dart';
 import 'package:block_logic/web/components/button.dart';
 import 'package:block_logic/web/components/card_simple.dart';
 import 'package:block_logic/web/components/header.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_database/firebase_database.dart';
+
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/foundation.dart';
 // import 'package:fl_chart/fl_chart.dart';
@@ -35,7 +35,7 @@ class Reports extends ConsumerStatefulWidget {
 
 class _ReportsState extends ConsumerState<Reports> {
   final pageScrollController = ScrollController();
-  final db = FirebaseFirestore.instance;
+  final db = FirebaseDatabase.instance;
   Map<String, ReportType> reportOptions = {
     'Basic Users': ReportType.basicUsers,
     'Premium Users': ReportType.premiumUsers,
@@ -458,7 +458,7 @@ class _ReportsState extends ConsumerState<Reports> {
   void initState() {
     reportsManager = ref.read(reportsManagerProvider.notifier);
     toast = ref.read(toastProvider.notifier);
-    streams = {for (final type in ReportType.values) type: db.collection('reports').where('type', isEqualTo: type.name).snapshots()};
+    streams = {for (final type in ReportType.values) type: db.ref('reports').equalTo(type.name).onValue};
     super.initState();
   }
 

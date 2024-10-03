@@ -55,6 +55,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '1095252928508',
     projectId: 'block-logic-1d051',
     authDomain: 'block-logic-1d051.firebaseapp.com',
+    databaseURL: 'https://block-logic-1d051-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'block-logic-1d051.appspot.com',
     measurementId: 'G-BDY9NKSX9R',
   );
@@ -64,6 +65,7 @@ class DefaultFirebaseOptions {
     appId: '1:1095252928508:android:c4a3007c89bb450a66b479',
     messagingSenderId: '1095252928508',
     projectId: 'block-logic-1d051',
+    databaseURL: 'https://block-logic-1d051-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'block-logic-1d051.appspot.com',
   );
 

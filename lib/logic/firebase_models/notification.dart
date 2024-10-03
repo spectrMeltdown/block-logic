@@ -1,6 +1,6 @@
 // TODO: compare to other providers later when using it
 
-// import 'package:cloud_firestore/cloud_firestore.dart';
+// 
 
 // class Notification {
 //   final String id;
@@ -14,36 +14,36 @@
 //     required this.createdAt,
 //   });
 
-//   factory Notification.fromFirestore(dynamic doc) {
+//   factory Notification.fromRTDB(dynamic doc) {
 //     Map<String, dynamic> data = {};
-//     if (doc.data() != null) {
-//       data = doc.data() as Map<String, dynamic>;
+//     if (doc.value != null) {
+//       data = doc.value as Map<String, dynamic>;
 //     }
 
 //     return Notification(
-//       id: doc.id,
+//       id: doc.key,
 //       title: data['title'] ?? '',
 //       message: data['message'] ?? '',
-//       createdAt: data['createdAt'] == null ? null :(data['createdAt'] as Timestamp).toDate(),
+//       createdAt: data['createdAt'] == null ? null :(data['createdAt'] as ServerValue.timestamp).toDate(),
 //     );
 //   }
-// Map<String, dynamic> toFirestore() {
-//     Map<String, dynamic> toFirestoreMap = {};
+// Map<String, dynamic> toJSON() {
+//     Map<String, dynamic> toJSONMap = {};
 //     if (createdAt != null) {
-//       toFirestoreMap.addAll({'backgroundMusic': Timestamp.fromDate(createdAt!)});
+//       toJSONMap.addAll({'backgroundMusic': ServerValue.timestamp.fromDate(createdAt!)});
 //     }
 //     if (displayName != null) {
-//       toFirestoreMap.addAll({'backgroundMusic': displayName});
+//       toJSONMap.addAll({'backgroundMusic': displayName});
 //     }
 //     if (phoneNum != null) {
-//       toFirestoreMap.addAll({'backgroundMusic': phoneNum});
+//       toJSONMap.addAll({'backgroundMusic': phoneNum});
 //     }
 //     if (profilePicLink != null) {
-//       toFirestoreMap.addAll({'backgroundMusic': profilePicLink});
+//       toJSONMap.addAll({'backgroundMusic': profilePicLink});
 //     }
 //     if (isApproved != null) {
-//       toFirestoreMap.addAll({'backgroundMusic': isApproved});
+//       toJSONMap.addAll({'backgroundMusic': isApproved});
 //     }
-//     return toFirestoreMap;
+//     return toJSONMap;
 //   }
 // }

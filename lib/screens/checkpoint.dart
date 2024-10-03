@@ -13,8 +13,9 @@ import 'package:block_logic/logic/services/shared_pref.dart';
 import 'package:block_logic/screens/auth/duplicate_login.dart';
 import 'package:block_logic/screens/auth/verify_email.dart';
 import 'package:block_logic/screens/main_menu.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -27,7 +28,7 @@ class Checkpoint extends ConsumerStatefulWidget {
   ConsumerState<Checkpoint> createState() => _CheckpointState();
 }
 
-class _CheckpointState extends ConsumerState<Checkpoint> with WidgetsBindingObserver {
+class _CheckpointState extends ConsumerState<Checkpoint> {
   late final AuthService auth;
   late final SharedPreferences sharedPref;
   String sessionID = '';
@@ -152,29 +153,29 @@ class _CheckpointState extends ConsumerState<Checkpoint> with WidgetsBindingObse
       /// pause after track loaded
       FlameAudio.bgm.pause();
     }
-    WidgetsBinding.instance.addObserver(this);
+    // WidgetsBinding.instance.addObserver(this);
     super.initState();
   }
 
-  @override
-  void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    super.dispose();
-  }
+  // @override
+  // void dispose() {
+  //   WidgetsBinding.instance.removeObserver(this);
+  //   super.dispose();
+  // }
 
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    // debugPrint(state.toString());
-    final uid = FirebaseAuth.instance.currentUser?.uid;
-    if (state == AppLifecycleState.paused || state == AppLifecycleState.detached) {
-      if (uid != null) {
-        FirebaseFirestore.instance.collection('users').doc(uid).update({'sessionID': FieldValue.delete()});
-      }
-    }
-    if (state == AppLifecycleState.resumed) {
-      if (uid != null) {
-        FirebaseFirestore.instance.collection('users').doc(uid).update({'sessionID': sessionID});
-      }
-    }
-  }
+  // @override
+  // void didChangeAppLifecycleState(AppLifecycleState state) {
+  //   // debugPrint(state.toString());
+  //   final uid = FirebaseAuth.instance.currentUser?.uid;
+  //   if (state == AppLifecycleState.paused || state == AppLifecycleState.detached) {
+  //     if (uid != null) {
+  //       FirebaseDatabase.instance.ref('users').child(uid).update({'sessionID': ''});
+  //     }
+  //   }
+  //   if (state == AppLifecycleState.resumed) {
+  //     if (uid != null) {
+  //       FirebaseDatabase.instance.ref('users').child(uid).update({'sessionID': sessionID});
+  //     }
+  //   }
+  // }
 }

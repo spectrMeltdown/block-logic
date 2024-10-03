@@ -113,7 +113,7 @@ class _LeaderboardState extends ConsumerState<SelectedLeaderboard> {
                               ],
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 40,
                           ),
                           Column(

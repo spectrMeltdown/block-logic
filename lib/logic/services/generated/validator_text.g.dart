@@ -6,7 +6,7 @@ part of '../validator_text.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$textValidatorHash() => r'11652d5a3791ccf83df9260a65c54329c669444d';
+String _$textValidatorHash() => r'44962b0ea39a402aea6ab3aefce0cfeea8bdcdf3';
 
 /// See also [TextValidator].
 @ProviderFor(TextValidator)

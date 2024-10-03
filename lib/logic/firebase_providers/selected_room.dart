@@ -1,5 +1,6 @@
 import 'package:block_logic/logic/firebase_models/room.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_database/firebase_database.dart';
+
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'generated/selected_room.g.dart';
@@ -10,15 +11,15 @@ Stream<Room?> selectedRoom(
   String roomID, {
   bool futureOnly = false,
 }) async* {
-  final db = FirebaseFirestore.instance;
-  final ref = db.collection('rooms').doc(roomID);
+  final db = FirebaseDatabase.instance;
+  final ref = db.ref('rooms/$roomID');
   if (futureOnly) {
-    yield Room.fromFirestore(await ref.get());
+    yield Room.fromRTDB(await ref.get());
   } else {
-    final stream = ref.snapshots();
+    final stream = ref.onValue;
     await for (final doc in stream) {
-      if (doc.exists) {
-        yield Room.fromFirestore(doc);
+      if (doc.snapshot.exists) {
+        yield Room.fromRTDB(doc.snapshot);
       } else {
         yield null;
       }

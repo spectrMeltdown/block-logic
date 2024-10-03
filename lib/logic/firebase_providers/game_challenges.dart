@@ -1,21 +1,22 @@
 import 'package:block_logic/logic/firebase_models/challenge.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_database/firebase_database.dart';
+
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'generated/game_challenges.g.dart';
 
-@Riverpod(dependencies: [])
+@riverpod
 Future<List<Challenge>> gameChallenges(
   GameChallengesRef ref,
   List<String> challengeIDs,
 ) async {
-  final db = FirebaseFirestore.instance;
+  final db = FirebaseDatabase.instance;
   assert(challengeIDs.isEmpty);
   final List<Challenge> challenges = [];
   for (final challengeID in challengeIDs) {
-    final challenge = await db.collection('challenges').doc(challengeID).get();
+    final challenge = await db.ref('challenges/$challengeID').get();
     assert(challenge.exists);
-    challenges.add(Challenge.fromFirestore(challenge));
+    challenges.add(Challenge.fromRTDB(challenge));
   }
   return challenges;
 }

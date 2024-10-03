@@ -30,9 +30,9 @@ final reportsProvider = StreamProvider.family<Object, ReportParams>((ref, params
   await for (final query in params.stream) {
     final List<Report> list = [];
 
-    if (query.docs.isNotEmpty) {
-      for (final report in query.docs) {
-        list.add(Report.fromFirestore(report));
+    if (query.snapshot.children.isNotEmpty) {
+      for (final report in query.snapshot.children) {
+        list.add(Report.fromRTDB(report));
       }
       if (params.dateRange == null) {
         yield list;
@@ -138,14 +138,14 @@ extension DateTimeExtension on DateTime {
 //   required DateTime? from,
 //   required DateTime? to,
 // }) async* {
-//   final db = FirebaseFirestore.instance;
-//   final stream = db.collection('reports').where('type', isEqualTo: type.name).snapshots();
+//   final db = FirebaseDatabase.instance;
+//   final stream = db.ref('reports').where('type', isEqualTo: type.name).onValue;
 //   await for (final reports in stream) {
 //     final List<Report> unfilteredList = [];
 //     List<Report> filteredList = [];
-//     if (reports.docs.isNotEmpty) {
-//       for (final report in reports.docs) {
-//         unfilteredList.add(Report.fromFirestore(report));
+//     if (reports.snapshot.children.isNotEmpty) {
+//       for (final report in reports.snapshot.children) {
+//         unfilteredList.add(Report.fromRTDB(report));
 //       }
 //       if (from == null || to == null) {
 //         filteredList = unfilteredList;

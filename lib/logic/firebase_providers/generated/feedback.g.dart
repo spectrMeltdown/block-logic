@@ -6,7 +6,7 @@ part of '../feedback.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$feedbackHash() => r'e249c8a36f5b8aba960e2c5bfa2f75121ee1d2bb';
+String _$feedbackHash() => r'4e093fc03005f357620028b10ce09f310619e116';
 
 /// See also [feedback].
 @ProviderFor(feedback)
@@ -16,8 +16,8 @@ final feedbackProvider =
   name: r'feedbackProvider',
   debugGetCreateSourceHash:
       const bool.fromEnvironment('dart.vm.product') ? null : _$feedbackHash,
-  dependencies: const <ProviderOrFamily>[],
-  allTransitiveDependencies: const <ProviderOrFamily>{},
+  dependencies: null,
+  allTransitiveDependencies: null,
 );
 
 typedef FeedbackRef = AutoDisposeStreamProviderRef<List<FeedbackData?>>;

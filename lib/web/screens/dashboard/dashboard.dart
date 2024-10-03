@@ -8,7 +8,8 @@ import 'package:block_logic/web/components/bl_table.dart';
 import 'package:block_logic/web/components/card_simple.dart';
 import 'package:block_logic/web/components/header.dart';
 import 'package:block_logic/web/screens/dashboard/dashboard_card.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_database/firebase_database.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -184,8 +185,8 @@ class _DashboardState extends ConsumerState<Dashboard> {
   @override
   void initState() {
     generateMonths();
-    final db = FirebaseFirestore.instance;
-    streams = {for (final type in ReportType.values) type: db.collection('reports').where('type', isEqualTo: type.name).snapshots()};
+    final db = FirebaseDatabase.instance;
+    streams = {for (final type in ReportType.values) type: db.ref('reports').equalTo(type.name).onValue};
     toast = ref.read(toastProvider.notifier);
     super.initState();
   }

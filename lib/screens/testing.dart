@@ -8,7 +8,8 @@ import 'package:block_logic/logic/firebase_models/room.dart';
 import 'package:block_logic/logic/services/block_data_manager.dart';
 import 'package:block_logic/logic/services/error_handler.dart';
 import 'package:block_logic/logic/services/toast.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_database/firebase_database.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -35,7 +36,7 @@ class TestingPage extends ConsumerWidget {
                     child: const BLText('Notif')),
                 BLButton(
                   onPressed: () async {
-                    final db = FirebaseFirestore.instance;
+                    final db = FirebaseDatabase.instance;
                     try {
                       final room = Room(
                           id: 'testing',
@@ -71,9 +72,9 @@ class TestingPage extends ConsumerWidget {
                         //   ],
                         // )
                       ];
-                      await db.collection('rooms').doc('testing').update(room.toFirestore());
+                      await db.ref('rooms').child('testing').set(room.toJSON());
                       for (int i = 0; i <= challenges.length - 1; i++) {
-                        await db.collection('challenges').doc('testing$i').set(challenges[i].toFirestore(), SetOptions(merge: true));
+                        await db.ref('challenges').child('testing$i').set(challenges[i].toJSON());
                       }
                       if (!context.mounted) return;
                       toast.showToast(context, 'Creating success', type: NotifType.success);
@@ -88,11 +89,11 @@ class TestingPage extends ConsumerWidget {
                 ),
                 BLButton(
                   onPressed: () async {
-                    final db = FirebaseFirestore.instance;
+                    final db = FirebaseDatabase.instance;
                     try {
-                      await db.collection('rooms').doc('testing').delete();
-                      await db.collection('challenges').doc('testing1').delete();
-                      await db.collection('challenges').doc('testing2').delete();
+                      await db.ref('rooms').child('testing').remove();
+                      await db.ref('challenges').child('testing1').remove();
+                      await db.ref('challenges').child('testing2').remove();
                       if (!context.mounted) return;
                       toast.showToast(context, 'Deleting success', type: NotifType.success);
                     } catch (e) {

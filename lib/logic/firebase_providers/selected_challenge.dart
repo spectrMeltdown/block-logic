@@ -1,21 +1,22 @@
 import 'package:block_logic/logic/firebase_models/challenge.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_database/firebase_database.dart';
+
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'generated/selected_challenge.g.dart';
 
-@Riverpod(dependencies: [])
+@riverpod
 Stream<Challenge?> selectedChallenge(
   SelectedChallengeRef ref,
   String challengeID,
 ) async* {
-  final db = FirebaseFirestore.instance;
-  final stream = db.collection('challenges').doc(challengeID).snapshots();
+  final db = FirebaseDatabase.instance;
+  final stream = db.ref('challenges/$challengeID').onValue;
   await for (final doc in stream) {
-    if (!doc.exists) {
+    if (!doc.snapshot.exists) {
       yield null;
     } else {
-      yield Challenge.fromFirestore(doc);
+      yield Challenge.fromRTDB(doc.snapshot);
     }
   }
 }

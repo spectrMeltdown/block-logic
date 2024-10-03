@@ -1,6 +1,7 @@
 import 'package:block_logic/logic/firebase_models/leaderboard.dart';
 import 'package:block_logic/logic/services/error_handler.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_database/firebase_database.dart';
+
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'generated/leaderboard_manager.g.dart';
@@ -20,31 +21,31 @@ class LeaderboardManager extends _$LeaderboardManager {
   Future<String?> create(Leaderboard leaderboard) async {
     if (leaderboard.id == null || leaderboard.id!.isEmpty) return '';
     try {
-      final ref = state._db.doc(leaderboard.id);
-      await ref.set(leaderboard.toFirestore());
+      final ref = state._db.child(leaderboard.id!);
+      await ref.set(leaderboard.toJSON());
       return null;
     } catch (e) {
       return state._errorHandler.call(e, this);
     }
   }
 
-  Stream<String?> isLeaderboardCreated(String leaderboardID) async* {
-    if (leaderboardID.isNotEmpty) {
-      final stream = state._db.doc(leaderboardID).snapshots();
-      await for (final query in stream) {
-        if (query.exists) {
-          yield null;
-        }
-      }
-    } else {
-      yield 'leaderboardID was blank';
-    }
-  }
+  // Stream<String?> isLeaderboardCreated(String leaderboardID) async* {
+  //   if (leaderboardID.isNotEmpty) {
+  //     final stream = state._db.child(leaderboardID).onValue;
+  //     await for (final query in stream) {
+  //       if (query.exists) {
+  //         yield null;
+  //       }
+  //     }
+  //   } else {
+  //     yield 'leaderboardID was blank';
+  //   }
+  // }
 
   Future<String?> update(Leaderboard leaderboard) async {
     if (leaderboard.id == null || leaderboard.id!.isEmpty) return 'ID not provided';
     try {
-      await state._db.doc(leaderboard.id).set(leaderboard.toFirestore(), SetOptions(merge: true));
+      await state._db.child(leaderboard.id!).update(leaderboard.toJSON());
       return null;
     } catch (e) {
       return state._errorHandler.call(e, this);
@@ -52,12 +53,12 @@ class LeaderboardManager extends _$LeaderboardManager {
   }
 
   Future<String?> updatePlayers(String leaderboardID, Map<String, dynamic> players) async {
-    final ref = state._db.doc(leaderboardID);
+    final ref = state._db.child(leaderboardID);
     try {
-      await ref.set(players, SetOptions(merge: true));
-      final leaderboard = Leaderboard.fromFirestore(await ref.get());
+      await ref.update({'players': players});
+      final leaderboard = Leaderboard.fromRTDB(await ref.get());
       if (leaderboard.players!.isEmpty) {
-        ref.delete();
+        ref.remove();
       }
       return null;
     } catch (e) {
@@ -68,7 +69,7 @@ class LeaderboardManager extends _$LeaderboardManager {
 
 class LeaderboardManagerState {
   final ErrorHandler _errorHandler;
-  final _db = FirebaseFirestore.instance.collection('leaderboards');
+  final _db = FirebaseDatabase.instance.ref('leaderboards');
   //final AccountService _accountService;
 
   LeaderboardManagerState({

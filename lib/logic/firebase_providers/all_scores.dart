@@ -1,6 +1,7 @@
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_models/score.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_database/firebase_database.dart';
+
 import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -9,8 +10,8 @@ part 'generated/all_scores.g.dart';
 @riverpod
 Stream<Map<ScoreStatus, List<Score>>?> allScores(AllScoresRef ref, String leaderboardID) async* {
   if (leaderboardID.isNotEmpty) {
-    final db = FirebaseFirestore.instance;
-    final stream = db.collection('leaderboards').doc(leaderboardID).collection('scores').snapshots();
+    final db = FirebaseDatabase.instance;
+    final stream = db.ref('leaderboards/$leaderboardID/scores').onValue;
     await for (final query in stream) {
       final Map<ScoreStatus, List<Score>> result = {
         ScoreStatus.complete: [],
@@ -18,10 +19,10 @@ Stream<Map<ScoreStatus, List<Score>>?> allScores(AllScoresRef ref, String leader
         ScoreStatus.pending: [],
       };
       final List<Score> scores = [];
-      if (query.docs.isNotEmpty) {
+      if (query.snapshot.children.isNotEmpty) {
         /// convert doc to score
-        for (final doc in query.docs) {
-          scores.add(Score.fromFirestore(doc));
+        for (final doc in query.snapshot.children) {
+          scores.add(Score.fromRTDB(doc));
         }
 
         /// loop through scores

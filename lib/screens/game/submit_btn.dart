@@ -215,8 +215,8 @@ class _IncompleteBlocksState extends ConsumerState<IncompleteBlocks> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          BLSmallTitle('WARNING:'),
-          SizedBox(
+          const BLSmallTitle('WARNING:'),
+          const SizedBox(
             height: 5,
           ),
           const BLText(

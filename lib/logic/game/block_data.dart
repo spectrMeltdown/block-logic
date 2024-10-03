@@ -379,57 +379,57 @@ class GameBlockData {
   }
 
   Map<String, dynamic> toJSON() {
-    Map<String, dynamic> toFirestoreMap = {};
-    toFirestoreMap.addAll({'type': type.name});
-    toFirestoreMap.addAll({'state': state.name});
-    toFirestoreMap.addAll({'name': name});
+    Map<String, dynamic> toJSONMap = {};
+    toJSONMap.addAll({'type': type.name});
+    toJSONMap.addAll({'state': state.name});
+    toJSONMap.addAll({'name': name});
     if (uid != null) {
-      toFirestoreMap.addAll({'uid': uid});
+      toJSONMap.addAll({'uid': uid});
     }
     if (parentUID != null) {
-      toFirestoreMap.addAll({'parentUID': parentUID});
+      toJSONMap.addAll({'parentUID': parentUID});
     }
     if (returnValue != null) {
-      toFirestoreMap.addAll({'returnValue': returnValue?.toJSON()});
+      toJSONMap.addAll({'returnValue': returnValue?.toJSON()});
     }
     if (parameterUIDs != null) {
-      toFirestoreMap.addAll({'parameterUIDs': parameterUIDs});
+      toJSONMap.addAll({'parameterUIDs': parameterUIDs});
     }
     if (argumentUIDs != null) {
-      toFirestoreMap.addAll({'argumentUIDs': argumentUIDs});
+      toJSONMap.addAll({'argumentUIDs': argumentUIDs});
     }
     if (conditionUIDs != null) {
-      toFirestoreMap.addAll({'conditionUIDs': conditionUIDs});
+      toJSONMap.addAll({'conditionUIDs': conditionUIDs});
     }
     if (bodyUIDs != null) {
-      toFirestoreMap.addAll({'bodyUIDs': bodyUIDs});
+      toJSONMap.addAll({'bodyUIDs': bodyUIDs});
     }
     if (statementUIDs != null) {
-      toFirestoreMap.addAll({'statementUIDs': statementUIDs});
+      toJSONMap.addAll({'statementUIDs': statementUIDs});
     }
     if (inSelectorUID != null) {
-      toFirestoreMap.addAll({'inSelectorUID': inSelectorUID});
+      toJSONMap.addAll({'inSelectorUID': inSelectorUID});
     }
     if (inSelectorCount != null) {
-      toFirestoreMap.addAll({'inSelectorCount': inSelectorCount});
+      toJSONMap.addAll({'inSelectorCount': inSelectorCount});
     }
     if (inSelectorIndex != null) {
-      toFirestoreMap.addAll({'inSelectorIndex': inSelectorIndex});
+      toJSONMap.addAll({'inSelectorIndex': inSelectorIndex});
     }
     if (value != null) {
-      toFirestoreMap.addAll({'value': value?.toJSON()});
+      toJSONMap.addAll({'value': value?.toJSON()});
     }
     if (keyword != null) {
-      toFirestoreMap.addAll({'keyword': keyword?.name});
+      toJSONMap.addAll({'keyword': keyword?.name});
     }
     if (arrayUIDs != null) {
-      toFirestoreMap.addAll({'arrayUIDs': arrayUIDs});
+      toJSONMap.addAll({'arrayUIDs': arrayUIDs});
     }
     if (optional != null) {
-      toFirestoreMap.addAll({'optional': optional});
+      toJSONMap.addAll({'optional': optional});
     }
 
-    return toFirestoreMap;
+    return toJSONMap;
   }
 
   // Map<String, dynamic> toJSON() {

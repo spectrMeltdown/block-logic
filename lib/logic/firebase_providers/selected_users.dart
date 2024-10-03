@@ -1,20 +1,21 @@
 import 'package:block_logic/logic/firebase_models/user_account.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_database/firebase_database.dart';
+
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'generated/selected_users.g.dart';
 
-@Riverpod()
+@riverpod
 Future<List<UserAccount>?> selectedUsers(
   SelectedUsersRef ref,
   List<String> ids,
 ) async {
   if (ids.isNotEmpty) {
-    final db = FirebaseFirestore.instance;
+    final db = FirebaseDatabase.instance;
     final List<UserAccount> accounts = [];
     for (final id in ids) {
-      final user = await db.collection('users').doc(id).get();
-      accounts.add(UserAccount.fromFirestore(user));
+      final user = await db.ref('users/$id').get();
+      accounts.add(UserAccount.fromRTDB(user));
     }
     return accounts;
   }

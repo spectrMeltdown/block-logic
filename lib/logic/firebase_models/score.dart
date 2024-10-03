@@ -1,5 +1,5 @@
 import 'package:block_logic/logic/enums.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 class Score {
   final String? id;
@@ -17,10 +17,10 @@ class Score {
     this.status,
   });
 
-  factory Score.fromFirestore(DocumentSnapshot doc) {
-    Map<String, dynamic> data = {};
-    if (doc.data() != null) {
-      data = doc.data() as Map<String, dynamic>;
+  factory Score.fromRTDB(DataSnapshot doc) {
+    Map data = {};
+    if (doc.value != null) {
+      data = doc.value as Map;
     }
 
     ScoreStatus? status;
@@ -40,31 +40,27 @@ class Score {
     }
 
     return Score(
-      id: doc.id,
+      id: doc.key,
       accountID: data['accountID'],
       playerScore: data['playerScore'],
       timeElapsed: data['timeElapsed'],
-      // rank: data['rank'],
       status: status,
     );
   }
-  Map<String, dynamic> toFirestore() {
-    Map<String, dynamic> toFirestoreMap = {};
+  Map<String, dynamic> toJSON() {
+    Map<String, dynamic> toJSONMap = {};
     if (accountID != null) {
-      toFirestoreMap.addAll({'accountID': accountID});
+      toJSONMap.addAll({'accountID': accountID});
     }
     if (playerScore != null) {
-      toFirestoreMap.addAll({'playerScore': playerScore});
+      toJSONMap.addAll({'playerScore': playerScore});
     }
-    // if (rank != null) {
-    //   toFirestoreMap.addAll({'rank': rank});
-    // }
     if (status != null) {
-      toFirestoreMap.addAll({'status': status!.name});
+      toJSONMap.addAll({'status': status!.name});
     }
     if (timeElapsed != null) {
-      toFirestoreMap.addAll({'timeElapsed': timeElapsed});
+      toJSONMap.addAll({'timeElapsed': timeElapsed});
     }
-    return toFirestoreMap;
+    return toJSONMap;
   }
 }

@@ -4,8 +4,9 @@ import 'package:block_logic/logic/firebase_providers/auth.dart';
 import 'package:block_logic/logic/services/account.dart';
 import 'package:block_logic/logic/services/error_handler.dart';
 import 'package:block_logic/logic/services/shared_pref.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -77,10 +78,10 @@ class AuthService extends _$AuthService {
   Future<String?> checkPhoneNumDup(String phoneNum) async {
     if (phoneNum.isEmpty) throw ('Phone number was empty!');
     try {
-      final query = await state._db.collection('users').where('phoneNum', isEqualTo: phoneNum).get();
-      if (query.docs.isNotEmpty) {
-        for (final doc in query.docs) {
-          final userData = UserAccount.fromFirestore(doc);
+      final query = await state._db.ref('users').equalTo(phoneNum).get();
+      if (query.children.isNotEmpty) {
+        for (final doc in query.children) {
+          final userData = UserAccount.fromRTDB(doc);
           if (userData.phoneNum != null && userData.phoneNum == phoneNum) {
             return 'An account with this phone already exists';
           }
@@ -96,10 +97,10 @@ class AuthService extends _$AuthService {
   Future<String?> checkPhoneExists(String phoneNum) async {
     if (phoneNum.isEmpty) throw ('Phone number was empty!');
     try {
-      final query = await state._db.collection('users').where('phoneNum', isEqualTo: phoneNum).get();
-      if (query.docs.isNotEmpty) {
-        for (final doc in query.docs) {
-          final userData = UserAccount.fromFirestore(doc);
+      final query = await state._db.ref('users').equalTo(phoneNum).get();
+      if (query.children.isNotEmpty) {
+        for (final doc in query.children) {
+          final userData = UserAccount.fromRTDB(doc);
           if (userData.phoneNum != null && userData.phoneNum == phoneNum) {
             return null;
           }
@@ -286,9 +287,9 @@ class AuthService extends _$AuthService {
 
   Future<void> uploadSessionID(String sessionID) async {
     try {
-      await state._db.collection('users').doc(getUID()).set({
+      await state._db.ref('users').child(getUID()).update({
         'sessionID': sessionID,
-      }, SetOptions(merge: true));
+      });
     } catch (e) {
       debugPrint(state._errorHandler.call(e, this));
     }
@@ -362,7 +363,7 @@ class AuthServiceState {
   final ErrorHandler _errorHandler;
   final SharedPreferences _sharedPref;
   final _auth = FirebaseAuth.instance;
-  final _db = FirebaseFirestore.instance;
+  final _db = FirebaseDatabase.instance;
   final AccountService _account;
   AuthServiceState({
     required AccountService account,
