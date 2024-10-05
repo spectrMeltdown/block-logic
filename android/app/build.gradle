@@ -63,8 +63,18 @@ android {
     buildTypes {
         debug {
             signingConfig = signingConfigs.debug
+           android.applicationVariants.all { variant ->
+    variant.outputs.all {
+        outputFileName = "${variant.name}-${variant.versionName}.apk"
+    }
+}
         }
         release {
+           android.applicationVariants.all { variant ->
+    variant.outputs.all {
+        outputFileName = "${variant.name}-${variant.versionName}.apk"
+    }
+}
             // signingConfig = signingConfigs.debug
             signingConfig = signingConfigs.release
             // minifyEnabled true

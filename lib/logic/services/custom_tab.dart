@@ -11,7 +11,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 //   return result!;
 // }
 
-final customTabProvider = Provider.family.autoDispose<int, CodeBlockType>((ref, type) {
+final customTabProvider = Provider.family<int, CodeBlockType>((ref, type) {
   final result = ref.watch(gameManagerProvider.select((state) => state.categoryCount[type]));
   return result!;
 });

@@ -30,6 +30,7 @@ class _ChallengeSelectorState extends ConsumerState<ChallengeSelector> with Sing
   late final CustomNavigation nav;
   final List<String> difficulties = ['Beginner', 'Intermediate', 'Advanced']; // don't change the order
   late List<Challenge> selection;
+  late bool isset = false;
   @override
   void initState() {
     tabController = TabController(length: difficulties.length, vsync: this);
@@ -66,7 +67,11 @@ class _ChallengeSelectorState extends ConsumerState<ChallengeSelector> with Sing
             child: challenges.when(
                 data: (challenges) {
                   if (challenges.isEmpty) {
-                    return const Center(child: BLText('There are no available challenges at the moment.'));
+                    return const Center(
+                        child: BLText(
+                      'There are no available \nchallenges at the moment.',
+                      alignCenter: true,
+                    ));
                   }
                   final challengesCategory = [
                     challenges.where((i) => i.difficulty == Difficulty.beginner).toList(),

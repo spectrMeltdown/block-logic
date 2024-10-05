@@ -39,7 +39,7 @@ class Challenge {
       limitations: data['limitations'] == null ? [] : (data['limitations'] as List<dynamic>).map((i) => i as String).toList(),
       blocks: data['blocks'] == null
           ? null
-          : (data['blocks'] as Map<String, dynamic>).map<CodeBlockType, List<GameBlockData>>((key, value) {
+          : (data['blocks'] as Map<Object?, Object?>).map<CodeBlockType, List<GameBlockData>>((key, value) {
               // Convert the key to CodeBlockType
               CodeBlockType codeBlockType = CodeBlockType.values.firstWhere((e) => e.name == key);
 

@@ -10,34 +10,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class GameTestBtn extends ConsumerStatefulWidget {
+class GameTestBtn extends ConsumerWidget {
   final bool practiceMode;
   const GameTestBtn(this.practiceMode, {super.key});
 
   @override
-  ConsumerState<GameTestBtn> createState() => _GameRunButtonState();
-}
-
-class _GameRunButtonState extends ConsumerState<GameTestBtn> {
-  bool processing = false;
-  late final GameManager manager;
-  late final Toast toast;
-
-  @override
-  void initState() {
-    manager = ref.read(gameManagerProvider.notifier);
-    toast = ref.read(toastProvider.notifier);
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // final errorCount = ref.watch(gameManagerProvider.select((state) => state.errorCount));
-    // return Column(
-    //   crossAxisAlignment: CrossAxisAlignment.start,
-    //   children: [BLText('Error Count: \n${errorCount == -1 ? '--' : errorCount.toString()}')],
-    // );
+  Widget build(BuildContext context, WidgetRef ref) {
     final hasBlocks = ref.watch(getRootDataProvider).isNotEmpty;
+    final manager = ref.read(gameManagerProvider.notifier);
+    final toast = ref.read(toastProvider.notifier);
     return BLButton(
         type: hasBlocks ? BtnType.normal : BtnType.grey,
         onPressed: () async {
@@ -46,9 +27,7 @@ class _GameRunButtonState extends ConsumerState<GameTestBtn> {
             toast.showToast(context, 'Place a block first.', type: NotifType.error);
             return;
           }
-          if (processing) return;
-          processing = true;
-          if (!widget.practiceMode) {
+          if (!practiceMode) {
             manager.pauseTimer();
             ref.invalidate(runTimerProvider);
           }
@@ -57,8 +36,7 @@ class _GameRunButtonState extends ConsumerState<GameTestBtn> {
             barrierDismissible: false,
             builder: (context) => const TestDialog(),
           );
-          processing = false;
-          if (!widget.practiceMode) {
+          if (!practiceMode) {
             manager.resumeTimer();
             ref.invalidate(runTimerProvider);
           }

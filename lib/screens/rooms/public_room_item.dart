@@ -10,6 +10,7 @@ import 'package:block_logic/logic/services/room_manager.dart';
 import 'package:block_logic/logic/services/toast.dart';
 import 'package:block_logic/screens/rooms/room_password_dialog.dart';
 import 'package:block_logic/screens/rooms/room_state.dart';
+import 'package:block_logic/screens/rooms/user_room_item.dart';
 import 'package:block_logic/screens/rooms/waiting_room.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -33,6 +34,7 @@ class _PublicRoomItemState extends ConsumerState<PublicRoomItem> {
   late final RoomManager roomManager;
   late final Toast toast;
   int errorTap = 0;
+  bool called = false;
   List<String> bannedFromRooms = [];
 
   Future<void> joinRoom() async {
@@ -40,12 +42,18 @@ class _PublicRoomItemState extends ConsumerState<PublicRoomItem> {
     if (currentPlayers != null) {
       // check if room is full. Minus 1 so that the host can join.
 
-      if (currentPlayers.length <= widget.room.maxPlayers!) {
+      if (currentPlayers.length < widget.room.maxPlayers!) {
         final joinSuccess = await roomManager.joinRoom(widget.room.id!);
         if (joinSuccess) {
           if (!mounted) return;
-          final result = nav.push(context, WaitingRoom(widget.room.id!));
-          if (result is String) {}
+          final result = await nav.push(context, WaitingRoom(widget.room.id!));
+          if (result is String && result == 'kicked') {
+            if (!mounted) return;
+            toast.showToast(context, 'You have been kicked.', type: NotifType.error);
+          } else if (result is String && result == 'disbanded') {
+            if (!mounted) return;
+            toast.showToast(context, 'Room disbanded', type: NotifType.info);
+          }
           return;
         } else {
           if (!mounted) return;
@@ -71,6 +79,24 @@ class _PublicRoomItemState extends ConsumerState<PublicRoomItem> {
     final hostData = ref.watch(SelectedUserProvider(widget.room.hostID!));
     return hostData.when(
         data: (hostData) {
+          // remove any players that are no longer in the room
+          if (widget.room.players != null && widget.room.players!.entries.any((e) => e.value == false)) {
+            Future.microtask(() async {
+              if (called) return;
+              called = true;
+              await removePlayersWithFalseValue(widget.room.id!);
+              called = false;
+            });
+          }
+          // if no players & ingame, reset room (poissibly because all playsers left)
+          if ((widget.room.players == null || widget.room.players!.isEmpty) && widget.room.status == RoomStatus.inGame) {
+            Future.microtask(() async {
+              if (called) return;
+              called = true;
+              await resetRoom(widget.room.id!);
+              called = false;
+            });
+          }
           return BLTranslucentCard(
             onPressed: () async {
               if (widget.room.status != null && widget.room.status == RoomStatus.inGame) {
@@ -108,7 +134,7 @@ class _PublicRoomItemState extends ConsumerState<PublicRoomItem> {
             //icon: room.icon ?? '',
             title: widget.room.name ?? '',
             subTitle: hostData?.displayName ?? '--',
-            bottomRowStart: widget.room.players!.length == widget.room.maxPlayers
+            bottomRowStart: (widget.room.players?.length ?? widget.room.maxPlayers!) >= widget.room.maxPlayers!
                 ? const BLText(
                     'Full',
                     color: Colors.red,
@@ -121,7 +147,7 @@ class _PublicRoomItemState extends ConsumerState<PublicRoomItem> {
                   ? Colors.amber
                   : widget.room.maxPlayers == null
                       ? Colors.grey
-                      : widget.room.players!.length == widget.room.maxPlayers
+                      : (widget.room.players?.length ?? widget.room.maxPlayers!) >= widget.room.maxPlayers!
                           ? Colors.red
                           : Colors.green,
             ),

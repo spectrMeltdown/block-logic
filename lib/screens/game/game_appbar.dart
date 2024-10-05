@@ -23,7 +23,7 @@ import 'package:marquee/marquee.dart';
 /// - challenge title
 /// - room title
 /// - time box (track elapsed time)
-class GameAppbar extends ConsumerStatefulWidget {
+class GameAppbar extends ConsumerWidget {
   final String roomName;
   final Challenge challenge;
   final int currentIndex;
@@ -39,25 +39,18 @@ class GameAppbar extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _GameAppbarState();
-}
-
-class _GameAppbarState extends ConsumerState<GameAppbar> {
-  late final BLAudioState audio;
-  //late bool pauseTimer;
-  //late final GameManager GameManager;
-  late final DialogService dialog;
-  late final GameManager gameManager;
-  late final CustomNavigation nav;
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final nav = ref.read(customNavigationProvider.notifier);
+    final dialog = ref.read(dialogServiceProvider.notifier);
+    final audio = ref.read(bLAudioStateProvider.notifier);
+    final gameManager = ref.read(gameManagerProvider.notifier);
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
         GestureDetector(
           onTapDown: (details) => audio.playBtn(),
           onTapUp: (details) async {
-            if (!widget.practiceMode) {
+            if (!practiceMode) {
               gameManager.pauseTimer();
               ref.invalidate(runTimerProvider);
             }
@@ -65,7 +58,7 @@ class _GameAppbarState extends ConsumerState<GameAppbar> {
             // debugPrint('pause timer: ${gameManager.getTimer()}');
             final leave = await dialog.show(context, const PauseDialog());
             if (leave is bool && leave) {
-              if (widget.practiceMode) {
+              if (practiceMode) {
                 gameManager.resetTree();
                 gameManager.setShouldResetAllBlocks(true);
                 ref.invalidate(getRootDataProvider);
@@ -78,17 +71,17 @@ class _GameAppbarState extends ConsumerState<GameAppbar> {
               if (!context.mounted) return;
               final result = await showDialog(context: context, builder: (context) => const ConfirmDialog());
               if (result is bool && result) {
-                if (!context.mounted) return;
-                nav.pop(context);
                 await gameManager.leaveGame(false);
                 gameManager.resetTree();
                 gameManager.setShouldResetAllBlocks(true);
                 ref.invalidate(getRootDataProvider);
                 ref.invalidate(shouldResetAllBlocksProvider);
                 ref.invalidate(shouldResetBlockProvider);
+                if (!context.mounted) return;
+                nav.pop(context);
               }
             }
-            if (!widget.practiceMode) {
+            if (!practiceMode) {
               gameManager.resumeTimer();
               ref.invalidate(runTimerProvider);
             }
@@ -111,7 +104,7 @@ class _GameAppbarState extends ConsumerState<GameAppbar> {
         const SizedBox(
           width: 10,
         ),
-        Expanded(child: TimeBox(widget.practiceMode)),
+        Expanded(child: TimeBox(practiceMode)),
       ],
     );
   }
@@ -120,10 +113,10 @@ class _GameAppbarState extends ConsumerState<GameAppbar> {
     return LayoutBuilder(
       builder: (context, constraints) {
         final text = isChallenge
-            ? widget.challenge.name
-            : widget.maxIndex > 1
-                ? '${widget.roomName} (${widget.currentIndex + 1} / ${widget.maxIndex})'
-                : widget.roomName;
+            ? challenge.name
+            : maxIndex > 1
+                ? '$roomName (${currentIndex + 1} / $maxIndex)'
+                : roomName;
         final roomStyle = TextStyle(
           fontWeight: FontWeight.bold,
           color: BLUI().getAppColor('lightBlue'),
@@ -176,14 +169,5 @@ class _GameAppbarState extends ConsumerState<GameAppbar> {
         );
       },
     );
-  }
-
-  @override
-  void initState() {
-    nav = ref.read(customNavigationProvider.notifier);
-    dialog = ref.read(dialogServiceProvider.notifier);
-    audio = ref.read(bLAudioStateProvider.notifier);
-    gameManager = ref.read(gameManagerProvider.notifier);
-    super.initState();
   }
 }

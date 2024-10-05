@@ -61,7 +61,7 @@ class _PublicRoomsState extends ConsumerState<PublicRooms> {
                 visible: processing,
                 child: Positioned.fill(
                     child: Container(
-                        color: Colors.black.withOpacity(0.9),
+                        color: Colors.black.withOpacity(0.7),
                         child: const BLLoading(
                           message: 'Joining room...',
                         ))))

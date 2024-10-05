@@ -1,11 +1,16 @@
 import 'dart:async';
 
 import 'package:block_logic/app_theme.dart';
+import 'package:block_logic/components/async/loading.dart';
+import 'package:block_logic/components/background.dart';
+import 'package:block_logic/logic/firebase_models/challenge.dart';
 import 'package:block_logic/logic/services/audio.dart';
+import 'package:block_logic/logic/services/block_data_manager.dart';
 import 'package:block_logic/logic/services/shared_pref.dart';
 import 'package:block_logic/route_observer.dart';
 import 'package:block_logic/router_config.dart';
 import 'package:block_logic/screens/checkpoint.dart';
+import 'package:block_logic/screens/game/game_challenge.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
@@ -52,11 +57,24 @@ Future<void> main() async {
   ));
 }
 
-class BlockLogic extends ConsumerWidget {
+class BlockLogic extends ConsumerStatefulWidget {
   const BlockLogic({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<BlockLogic> createState() => _BlockLogicState();
+}
+
+class _BlockLogicState extends ConsumerState<BlockLogic> {
+  int currentChallenge = 0;
+  void updateChallenge() {
+    setState(() {
+      currentChallenge++;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final processing = ref.watch(processingProvider);
     final appTheme = AppTheme();
     if (!kIsWeb) {
       ref.read(audioInitProvider);
@@ -68,23 +86,70 @@ class BlockLogic extends ConsumerWidget {
         theme: appTheme.theme(),
         darkTheme: appTheme.theme(),
         // home: Login(accountType: FirestoreCollections.users),
-        home: const Checkpoint(),
+        // home: const Checkpoint(),
         // home: Scaffold(
-        //   body: Background(
-        //       child: SafeArea(
+        //   body: Stack(
+        //     fit: StackFit.expand,
+        //     children: [
+        //       Background(
+        //         child: SafeArea(
         //           child: GameChallenge(
-        //     currentChallenge: 1,
-        //     roomName: 'Testing',
-        //     challenge: Challenge(
-        //       name: 'Testing',
-        //       shortDescription: 'Testing',
-        //       solutionMatch: [5],
-        //       blocks: AllBlocks().getAll(),
-        //     ),
-        //     challengeCount: 1,
-        //     practiceMode: true,
-        //   ))),
+        //             currentChallenge: 1,
+        //             roomName: 'Testing',
+        //             challenge: Challenge(
+        //               name: 'Testing 1',
+        //               shortDescription: 'Testing 1',
+        //               solutionMatch: ['Hello, World!'],
+        //               blocks: AllBlocks().helloWorld(),
+        //             ),
+        //             challengeCount: 2,
+        //             practiceMode: true,
+        //           ),
+        //         ),
+        //       ),
+        //       Visibility(
+        //           visible: processing,
+        //           child: Container(
+        //             color: Colors.black.withOpacity(0.7),
+        //             child: const BLLoading(
+        //               message: 'Processing...',
+        //             ),
+        //           ))
+        //     ],
+        //   ),
         // ),
+        home: Scaffold(
+          body: Stack(
+            fit: StackFit.expand,
+            children: [
+              Background(
+                child: SafeArea(
+                  child: GameChallenge(
+                    updateChallenge: updateChallenge,
+                    currentChallenge: currentChallenge,
+                    roomName: 'Testing',
+                    challenge: Challenge(
+                      name: currentChallenge == 0 ? 'Testing 1' : 'Testing 2',
+                      shortDescription: currentChallenge == 0 ? 'Testing 1' : 'Testing 2',
+                      solutionMatch: currentChallenge == 0 ? ['Hello, World!'] : ['Python is Awesome!'],
+                      blocks: currentChallenge == 0 ? AllBlocks().helloWorld() : AllBlocks().pythonIsAwesome(),
+                    ),
+                    challengeCount: 2,
+                    // practiceMode: true,
+                  ),
+                ),
+              ),
+              Visibility(
+                  visible: processing,
+                  child: Container(
+                    color: Colors.black.withOpacity(0.7),
+                    child: const BLLoading(
+                      message: 'Processing...',
+                    ),
+                  ))
+            ],
+          ),
+        ),
       );
     }
     return MaterialApp.router(

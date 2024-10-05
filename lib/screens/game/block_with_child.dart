@@ -6,7 +6,6 @@ import 'package:block_logic/logic/services/game_provider.dart';
 import 'package:block_logic/screens/game/add_new_block_box.dart';
 import 'package:block_logic/screens/game/block.dart';
 import 'package:block_logic/screens/game/custom_box.dart';
-import 'package:block_logic/screens/game/validator.dart';
 import 'package:block_logic/screens/game/wrapper_blocks.dart';
 import 'package:block_logic/screens/game/wrapper_drag_target.dart';
 import 'package:flutter/material.dart';
@@ -14,60 +13,41 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 enum GameBox { parameters, arguments, conditions, array }
 
-class GameBlockWithChild extends ConsumerStatefulWidget {
-  // final String uid;
+class GameBlockWithChild extends ConsumerWidget {
   final GameBlockData data;
   final GameBox? box;
-  final VoidCallback refresh;
+
   const GameBlockWithChild({
-    // required this.uid,
     required this.data,
     this.box,
-    required this.refresh,
     super.key,
   });
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _GameBlockWithChildState();
-}
-
-class _GameBlockWithChildState extends ConsumerState<GameBlockWithChild> {
-  final BlockValidator validator = BlockValidator();
-  late final GameManager gameManager;
-  List<GameBlockData> data = [];
-
-  @override
-  void initState() {
-    gameManager = ref.read(gameManagerProvider.notifier);
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final data = ref.watch(getSelfDataProvider(widget.data.uid!));
-    final bodyData = ref.watch(getChildrenDataProvider(data?.bodyUIDs ?? []));
-    // final body = gameManager.getChildrenData(widget.data.bodyUIDs!);
-    // debugPrint(widget.data.name);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final GameManager gameManager = ref.read(gameManagerProvider.notifier);
+    final data = ref.watch(getSelfDataProvider(this.data.uid!));
+    final bodyData = ref.watch(getChildrenDataProvider(data?.bodyUIDs ?? [])) ?? [];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
-            BLText(widget.data.name),
+            BLText(data!.name),
             const SizedBox(
               width: 5,
             ),
-            if (shouldRenderParentheses(widget.data))
+            if (shouldRenderParentheses(data))
               const BLText(
                 '(',
                 size: 20,
               ),
-            if (shouldRenderBox(widget.data))
+            if (shouldRenderBox(data))
               CustomBox(
-                data: widget.data,
-                box: widget.box!,
+                data: data,
+                box: box!,
               ),
-            if (shouldRenderParentheses(widget.data))
+            if (shouldRenderParentheses(data))
               const BLText(
                 ')',
                 size: 20,
@@ -79,7 +59,7 @@ class _GameBlockWithChildState extends ConsumerState<GameBlockWithChild> {
             // if (widget.data.bodyUIDs != null) const BLText(' :')
           ],
         ),
-        if (widget.data.bodyUIDs != null)
+        if (data.bodyUIDs != null)
           Padding(
             padding: const EdgeInsets.only(left: 10),
             child: Column(
@@ -87,7 +67,7 @@ class _GameBlockWithChildState extends ConsumerState<GameBlockWithChild> {
               children: [
                 BlockWrapper(
                   widgetList: List.generate(
-                    bodyData!.length,
+                    bodyData.length,
                     (i) => GameBlock(
                       data: bodyData[i],
                     ),
@@ -97,20 +77,20 @@ class _GameBlockWithChildState extends ConsumerState<GameBlockWithChild> {
                   builderChild: () {
                     return const AddNewBlockBox(width: 120);
                   },
-                  onAcceptWithDetails: (initData, manager) {
-                    if (initData.state == CodeBlockState.inEditor) {
-                      gameManager.moveData(initData.uid!, data!.uid!);
+                  onAcceptWithDetails: (dataToAccept, manager) {
+                    if (dataToAccept.state == CodeBlockState.inEditor) {
+                      gameManager.moveData(data: dataToAccept, parentUID: data.uid!, type: ChildrenData.body, ref: ref);
                     } else {
                       // debugPrint('Parent: ${widget.data.uid}');
-                      gameManager.addData(initData, data!.uid!, ChildrenData.body);
+                      gameManager.addData(dataToAccept, data.uid!, ChildrenData.body);
                     }
                     ref.invalidate(getRootDataProvider);
                     ref.invalidate(getSelfDataProvider);
                     ref.invalidate(getChildrenDataProvider);
-                    setState(() {});
+                    // setState(() {});
                   },
-                  onWillAcceptWithDetails: (initData) {
-                    if (data!.bodyUIDs!.contains(initData.uid) || initData.uid == data.uid || initData.uid == data.parentUID) {
+                  onWillAcceptWithDetails: (dataToAccept) {
+                    if (data.bodyUIDs!.contains(dataToAccept.uid) || dataToAccept.uid == data.uid || dataToAccept.uid == data.parentUID) {
                       return false;
                     }
                     return true;

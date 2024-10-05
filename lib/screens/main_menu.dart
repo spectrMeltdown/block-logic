@@ -301,7 +301,9 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> with WidgetsBin
 
   @override
   void didPushNext() {
-    toast.dismissAllToast(context);
+    if (mounted) {
+      toast.dismissAllToast(context);
+    }
     super.didPushNext();
   }
 

@@ -9,7 +9,7 @@ part 'generated/selected_rooms.g.dart';
 Stream<List<Room>> selectedRooms(SelectedRoomsRef ref, String accountID, {String? searchQuery}) async* {
   if (accountID.isNotEmpty) {
     final db = FirebaseDatabase.instance;
-    final stream = db.ref('rooms').equalTo(accountID).onValue;
+    final stream = db.ref('rooms').orderByChild('hostID').equalTo(accountID).onValue;
     await for (final query in stream) {
       final List<Room> initData = [];
       final List<Room> result = [];

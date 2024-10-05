@@ -355,14 +355,14 @@ class GameBlockData {
     );
   }
 
-  factory GameBlockData.fromJSON(Map<String, dynamic> json) {
+  factory GameBlockData.fromJSON(Map<Object?, Object?> json) {
     return GameBlockData(
       uid: json['uid'] as String?,
       parentUID: json['parentUID'] as String?,
       type: CodeBlockType.values.firstWhere((e) => e.name == json['type']),
       state: CodeBlockState.values.firstWhere((e) => e.name == json['state']),
       name: json['name'] as String,
-      returnValue: json['returnValue'] != null ? PyLiteral.fromJSON(json['returnValue']) : null,
+      returnValue: json['returnValue'] != null ? PyLiteral.fromJSON(json['returnValue'] as Map<Object?, Object?>) : null,
       parameterUIDs: (json['parameterUIDs'] as List<dynamic>?)?.map((e) => e as String).toList(),
       argumentUIDs: (json['argumentUIDs'] as List<dynamic>?)?.map((e) => e as String).toList(),
       conditionUIDs: (json['conditionUIDs'] as List<dynamic>?)?.map((e) => e as String).toList(),
@@ -373,7 +373,7 @@ class GameBlockData {
       inSelectorCount: json['inSelectorCount'] as int?,
       inSelectorIndex: json['inSelectorIndex'] as int?,
       optional: json['optional'] as bool?,
-      value: json['value'] != null ? PyLiteral.fromJSON(json['value']) : null,
+      value: json['value'] != null ? PyLiteral.fromJSON(json['value'] as Map<Object?, Object?>) : null,
       keyword: json['keyword'] != null ? PyKeyword.values.firstWhere((e) => e.name == json['keyword']) : null,
     );
   }

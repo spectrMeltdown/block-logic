@@ -21,7 +21,6 @@ class UserAccount extends AccountModel {
     if (doc.value != null) {
       data = doc.value as Map;
     }
-
     return UserAccount(
       id: doc.key,
       createdAt: data['createdAt'] == null ? null : DateTime.fromMillisecondsSinceEpoch(data['createdAt']),

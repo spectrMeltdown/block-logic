@@ -11,24 +11,15 @@ import 'package:block_logic/logic/services/solution_checker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class TestDialog extends ConsumerStatefulWidget {
+class TestDialog extends ConsumerWidget {
   const TestDialog({super.key});
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _TestDialogState();
-}
-
-class _TestDialogState extends ConsumerState<TestDialog> {
-  late final Assets assets;
-  late final CustomNavigation nav;
-  late final SolutionChecker solutionCheck;
-  late final Widget loadingCode;
-  @override
-  void initState() {
-    assets = ref.read(assetsProvider);
-    nav = ref.read(customNavigationProvider.notifier);
-    solutionCheck = ref.read(solutionCheckerProvider.notifier);
-    loadingCode = Column(
+  Widget build(BuildContext context, WidgetRef ref) {
+    final assets = ref.read(assetsProvider);
+    final nav = ref.read(customNavigationProvider.notifier);
+    final solutionCheck = ref.read(solutionCheckerProvider.notifier);
+    final loadingCode = Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         BLAnimationPlayer(assets.testLoading),
@@ -38,12 +29,6 @@ class _TestDialogState extends ConsumerState<TestDialog> {
         const BLSmallTitle('Running your code ...')
       ],
     );
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // final gameState = ref.watch(gameManagerProvider);
     return BLDialog(
         child: FutureBuilder(
             future: solutionCheck.check(),

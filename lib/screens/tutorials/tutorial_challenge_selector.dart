@@ -6,7 +6,10 @@ import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_models/challenge.dart';
 import 'package:block_logic/logic/services/block_data_manager.dart';
 import 'package:block_logic/logic/services/navigation.dart';
+import 'package:block_logic/logic/services/ui.dart';
+import 'package:block_logic/logic/testing.dart';
 import 'package:block_logic/screens/game/game_challenge.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -29,6 +32,14 @@ class _TutorialChallengeSelectorState extends ConsumerState<TutorialChallengeSel
       blocks: AllBlocks().beginnerTesting(),
       solutionMatch: [5],
     ),
+    if (kDebugMode)
+      Challenge(
+        blocks: AllBlocks().getAll(),
+        difficulty: Difficulty.advanced,
+        shortDescription: 'No Challenge here!',
+        solutionMatch: [5],
+        name: 'Testing',
+      )
   ];
   @override
   void initState() {
@@ -64,30 +75,6 @@ class _TutorialChallengeSelectorState extends ConsumerState<TutorialChallengeSel
                 const SizedBox(
                   height: 10,
                 ),
-                BLCard(
-                    color: Colors.amber,
-                    onPressed: () {
-                      nav.push(
-                          context,
-                          Scaffold(
-                            body: Background(
-                                child: SafeArea(
-                                    child: GameChallenge(
-                              currentChallenge: 0,
-                              roomName: 'Practice Room',
-                              challenge: Challenge(
-                                blocks: AllBlocks().getAll(),
-                                difficulty: Difficulty.advanced,
-                                shortDescription: 'No Challenge here!',
-                                solutionMatch: [5],
-                                name: 'Testing',
-                              ),
-                              challengeCount: 1,
-                              practiceMode: true,
-                            ))),
-                          ));
-                    },
-                    child: const Center(child: BLSmallTitle('All blocks')))
               ],
             ),
           ),
@@ -104,23 +91,27 @@ class TutorialChallengeSelectorItem extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final nav = ref.read(customNavigationProvider.notifier);
-    return BLCard(
-        color: Colors.blue,
-        onPressed: () {
-          nav.push(
-              context,
-              Scaffold(
-                body: Background(
-                    child: SafeArea(
-                        child: GameChallenge(
-                  currentChallenge: 0,
-                  roomName: 'Practice Room',
-                  challenge: challenge,
-                  challengeCount: 1,
-                  practiceMode: true,
-                ))),
-              ));
-        },
-        child: Center(child: BLSmallTitle(challenge.name ?? '')));
+    final blui = ref.read(bLUIProvider.notifier);
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 5),
+      child: BLCard(
+          color: blui.getTutorialColor(TutorialType.values[getRandomInt(0, TutorialType.values.length - 1)]),
+          onPressed: () {
+            nav.push(
+                context,
+                Scaffold(
+                  body: Background(
+                      child: SafeArea(
+                          child: GameChallenge(
+                    currentChallenge: 0,
+                    roomName: 'Practice Room',
+                    challenge: challenge,
+                    challengeCount: 1,
+                    practiceMode: true,
+                  ))),
+                ));
+          },
+          child: Center(child: BLSmallTitle(challenge.name ?? ''))),
+    );
   }
 }

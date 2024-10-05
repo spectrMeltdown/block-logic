@@ -3,6 +3,7 @@ import 'package:block_logic/components/background.dart';
 import 'package:block_logic/components/dialog/confirm.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/util/provider_default.dart';
+import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_models/room.dart';
 import 'package:block_logic/logic/firebase_providers/selected_challenges.dart';
 import 'package:block_logic/logic/services/assets.dart';
@@ -16,6 +17,8 @@ import 'package:block_logic/logic/services/should_reset_all_blocks.dart';
 import 'package:block_logic/screens/game/finalizing_results.dart';
 import 'package:block_logic/screens/game/game_challenge.dart';
 import 'package:block_logic/screens/game/pause_dialog.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -37,10 +40,14 @@ class _GameRoomState extends ConsumerState<GameRoom> with WidgetsBindingObserver
   bool processing = false;
   int currentChallenge = 0;
   int? challengeLength;
+  final uid = FirebaseAuth.instance.currentUser!.uid;
   @override
   Widget build(BuildContext context) {
     // this is a Future, but it is set to ref.watch because read will return first value only, which may still be a loading/error state
     final challenges = ref.watch(SelectedChallengesProvider(widget.room.challengeIDs!));
+    final innerProcessing = ref.watch(processingProvider);
+
+    // if out of challenges, go to finalize result screen
     if (challengeLength != null && currentChallenge == challengeLength) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         nav.pushReplace(context, FinalizingResults(widget.room.currentLeaderboardID!));
@@ -51,39 +58,6 @@ class _GameRoomState extends ConsumerState<GameRoom> with WidgetsBindingObserver
           body: Background(child: SafeArea(child: BLLoading())),
         ),
       );
-      // Future.delayed(Duration.zero, () async {
-
-      // });
-
-      // return Scaffold(
-      //   body: Background(
-      //     child: FutureBuilder(
-      //         // future: finalizeGame(),
-      //         future: gameManager.leaveGame(true),
-      //         initialData: '',
-      //         builder: (context, snapshot) {
-      //           // if (snapshot.connectionState == ConnectionState.waiting) {
-      //           //   return Center(
-      //           //       child: BLLoading(
-      //           //     message: 'Loading leaderboard ..',
-      //           //   ));
-      //           // }
-      //           // if (snapshot.hasError) {
-      //           //   debugPrint(snapshot.error.toString());
-      //           //   return const BLText('Error!');
-      //           // }
-      //           final leaderboard = ref.watch(SelectedLeaderboardProvider(gameManager.getLeaderboardID()));
-      //           return leaderboard.when(
-      //               data: (leaderboard) {
-      //                 if (leaderboard == null) {
-      //                   return const BLText('Couldn\'t load the leaderboard ...');
-      //                 }
-      //               },
-      //               error: genericError,
-      //               loading: genericLoading);
-      //         }),
-      //   ),
-      // );
     }
     return PopScope(
       canPop: false,
@@ -128,7 +102,7 @@ class _GameRoomState extends ConsumerState<GameRoom> with WidgetsBindingObserver
                           ),
                         );
                       }
-                      challengeLength ??= challenges.length;
+                      challengeLength ??= challenges.length; // to switch to finalizing result if last challenge
                       // debugPrint('Challenge length: $challengeLength');
                       // debugPrint('current challenge: $currentChallenge');
                       return GameChallenge(
@@ -144,9 +118,9 @@ class _GameRoomState extends ConsumerState<GameRoom> with WidgetsBindingObserver
               ),
             ),
             Visibility(
-                visible: processing,
+                visible: processing || innerProcessing,
                 child: Container(
-                  color: Colors.black.withOpacity(0.9),
+                  color: Colors.black.withOpacity(0.7),
                   child: const BLLoading(
                     message: 'Loading ...',
                   ),
@@ -176,6 +150,8 @@ class _GameRoomState extends ConsumerState<GameRoom> with WidgetsBindingObserver
       FlameAudio.bgm.pause();
     }
     gameManager.init(widget.room);
+    FirebaseDatabase.instance.ref('rooms/${widget.room.id}/players/$uid').onDisconnect().set(false);
+    FirebaseDatabase.instance.ref('leaderboards/${widget.room.currentLeaderboardID}/scores/$uid').onDisconnect().update({'status': ScoreStatus.incomplete.name});
     sharedPref.setString('currentLeaderboardID', widget.room.currentLeaderboardID!);
     sharedPref.setString('currentRoomID', widget.room.id!);
     roomManager = ref.read(roomManagerProvider.notifier);

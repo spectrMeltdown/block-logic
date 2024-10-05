@@ -7,87 +7,66 @@ import 'package:block_logic/screens/game/wrapper_block_design.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class BlockRender extends ConsumerStatefulWidget {
+class BlockRender extends ConsumerWidget {
   final GameBlockData data;
-  final VoidCallback refresh;
   final bool feedback;
-  const BlockRender(this.data, this.refresh, {this.feedback = false, super.key});
-
+  const BlockRender(
+    this.data, {
+    this.feedback = false,
+    super.key,
+  });
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _BlockRenderState();
-}
-
-class _BlockRenderState extends ConsumerState<BlockRender> {
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     // debugPrint(state.toString());
-    switch (widget.data.state) {
+    switch (data.state) {
       case CodeBlockState.inSelector:
         return BlockDesignWrapper(
-          data: widget.data,
+          data: data,
           child: Center(
             child: BLText(
-              widget.data.name,
+              data.name,
               size: 14,
-              color: widget.data.type == CodeBlockType.keywords ? Colors.black : Colors.white,
+              color: data.type == CodeBlockType.keywords ? Colors.black : Colors.white,
             ),
           ),
         );
 
       case CodeBlockState.inEditor:
-        switch (widget.data.type) {
+        switch (data.type) {
           case CodeBlockType.statement:
-            // return BlockDesignWrapper(
-            //   data: widget.data,
-            //   child: Center(
-            //     child: BLText(
-            //       widget.data.name,
-            //       size: 14,
-            //       color: widget.data.type == CodeBlockType.keywords ? Colors.black : null,
-            //     ),
-            //   ),
-            // );
-            return StatementBox(data: widget.data);
+            return StatementBox(data: data);
           case CodeBlockType.loops:
           case CodeBlockType.conditionals:
             return BlockDesignWrapper(
-              data: widget.data,
+              data: data,
               child: GameBlockWithChild(
-                refresh: widget.refresh,
                 box: GameBox.conditions,
-                // uid: widget.data.uid!,
-                data: widget.data,
+                data: data,
               ),
             );
           case CodeBlockType.objects:
           case CodeBlockType.functions:
-            if (widget.data.name.contains('def')) {
+            if (data.name.contains('def')) {
               return BlockDesignWrapper(
-                data: widget.data,
+                data: data,
                 child: GameBlockWithChild(
-                  refresh: widget.refresh,
                   box: GameBox.parameters,
-                  // uid: widget.data.uid!,
-                  data: widget.data,
+                  data: data,
                 ),
               );
-            } else if (widget.data.name.contains('class')) {
+            } else if (data.name.contains('class')) {
               return BlockDesignWrapper(
-                data: widget.data,
+                data: data,
                 child: GameBlockWithChild(
-                  refresh: widget.refresh,
-                  // uid: widget.data.uid!,
-                  data: widget.data,
+                  data: data,
                 ),
               );
             }
             return BlockDesignWrapper(
-              data: widget.data,
+              data: data,
               child: GameBlockWithChild(
-                refresh: widget.refresh,
                 box: GameBox.arguments,
-                // uid: widget.data.uid!,
-                data: widget.data,
+                data: data,
               ),
             );
           case CodeBlockType.keywords:
@@ -95,12 +74,12 @@ class _BlockRenderState extends ConsumerState<BlockRender> {
           case CodeBlockType.literals:
           case CodeBlockType.variables:
             return BlockDesignWrapper(
-              data: widget.data,
+              data: data,
               child: Center(
                 child: BLText(
-                  widget.data.name,
+                  data.name,
                   size: 14,
-                  color: widget.data.type == CodeBlockType.keywords ? Colors.black : Colors.white,
+                  color: data.type == CodeBlockType.keywords ? Colors.black : Colors.white,
                 ),
               ),
             );

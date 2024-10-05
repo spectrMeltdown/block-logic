@@ -3,7 +3,7 @@ import 'package:block_logic/logic/enums.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class CustomTab extends ConsumerStatefulWidget {
+class CustomTab extends ConsumerWidget {
   const CustomTab({
     required this.type,
     required this.isSelected,
@@ -21,31 +21,16 @@ class CustomTab extends ConsumerStatefulWidget {
   final int count;
 
   @override
-  ConsumerState<CustomTab> createState() => _CustomTabState();
-}
-
-class _CustomTabState extends ConsumerState<CustomTab> with AutomaticKeepAliveClientMixin {
-  @override
-  bool get wantKeepAlive => true;
-  late final String firstLetter;
-  late final String word;
-  @override
-  void initState() {
-    firstLetter = widget.type.name[0].toUpperCase();
-    word = widget.type.name.substring(1, widget.type.name.length);
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    super.build(context);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final String firstLetter = type.name[0].toUpperCase();
+    final String word = type.name.substring(1, type.name.length);
     return Container(
-      decoration: BoxDecoration(color: widget.isSelected ? Colors.white : Colors.grey, borderRadius: const BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10))),
-      padding: EdgeInsets.symmetric(horizontal: widget.paddingX, vertical: widget.paddingY),
+      decoration: BoxDecoration(color: isSelected ? Colors.white : Colors.grey, borderRadius: const BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10))),
+      padding: EdgeInsets.symmetric(horizontal: paddingX, vertical: paddingY),
       child: BLText(
-        '$firstLetter$word (${widget.count})',
-        color: widget.textColor ?? Colors.black,
-        bold: widget.isSelected,
+        '$firstLetter$word ($count)',
+        color: textColor ?? Colors.black,
+        bold: isSelected,
         size: 16,
       ),
     );

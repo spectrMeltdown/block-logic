@@ -44,7 +44,7 @@ class _TopThreePlayersState extends ConsumerState<TopThreePlayers> {
                     width: 90,
                     child: WidgetAnimator(
                       incomingEffect: WidgetTransitionEffects.incomingSlideInFromBottom(delay: picStartDelay),
-                      child: widget.playerPhotoURL[i].isEmpty
+                      child: widget.playerPhotoURL[i].isEmpty || widget.playerPhotoURL[i] == 'default'
                           ? FittedBox(
                               fit: BoxFit.contain,
                               child: Container(
@@ -93,7 +93,7 @@ class _TopThreePlayersState extends ConsumerState<TopThreePlayers> {
                   width: 60,
                   child: WidgetAnimator(
                     incomingEffect: WidgetTransitionEffects.incomingSlideInFromBottom(delay: i == 0 ? picStartDelay + picDelay : picStartDelay + picDelay + picDelay),
-                    child: widget.playerPhotoURL[i].isEmpty
+                    child: widget.playerPhotoURL[i].isEmpty || widget.playerPhotoURL[i] == 'default'
                         ? FittedBox(
                             fit: BoxFit.contain,
                             child: Container(

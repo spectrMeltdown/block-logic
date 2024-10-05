@@ -78,7 +78,7 @@ class AuthService extends _$AuthService {
   Future<String?> checkPhoneNumDup(String phoneNum) async {
     if (phoneNum.isEmpty) throw ('Phone number was empty!');
     try {
-      final query = await state._db.ref('users').equalTo(phoneNum).get();
+      final query = await state._db.ref('users').orderByChild('phoneNum').equalTo(phoneNum).get();
       if (query.children.isNotEmpty) {
         for (final doc in query.children) {
           final userData = UserAccount.fromRTDB(doc);
@@ -97,7 +97,7 @@ class AuthService extends _$AuthService {
   Future<String?> checkPhoneExists(String phoneNum) async {
     if (phoneNum.isEmpty) throw ('Phone number was empty!');
     try {
-      final query = await state._db.ref('users').equalTo(phoneNum).get();
+      final query = await state._db.ref('users').orderByChild('phoneNum').equalTo(phoneNum).get();
       if (query.children.isNotEmpty) {
         for (final doc in query.children) {
           final userData = UserAccount.fromRTDB(doc);

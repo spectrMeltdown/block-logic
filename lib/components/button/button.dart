@@ -1,6 +1,8 @@
+import 'package:animate_do/animate_do.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/services/audio.dart';
 import 'package:block_logic/logic/services/ui.dart';
+import 'package:block_logic/logic/testing.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -48,31 +50,34 @@ class _BtnState extends ConsumerState<BLButton> {
   @override
   Widget build(BuildContext context) {
     getBtnColor();
-    return GestureDetector(
-      onTapDown: (details) {
-        audio?.playBtn();
-        _onTapDown();
-      },
-      onTapUp: _onTapUp,
-      onTapCancel: _onTapCancel,
-      child: Container(
-          key: containerKey,
-          padding: widget.padding ??
-              EdgeInsets.symmetric(
-                horizontal: widget.paddingX ?? 30,
-                vertical: widget.paddingY ?? 10,
+    return ElasticIn(
+      duration: Duration(milliseconds: getRandomInt(400, 700)),
+      child: GestureDetector(
+        onTapDown: (details) {
+          audio?.playBtn();
+          _onTapDown();
+        },
+        onTapUp: _onTapUp,
+        onTapCancel: _onTapCancel,
+        child: Container(
+            key: containerKey,
+            padding: widget.padding ??
+                EdgeInsets.symmetric(
+                  horizontal: widget.paddingX ?? 30,
+                  vertical: widget.paddingY ?? 10,
+                ),
+            decoration: BoxDecoration(
+              shape: BoxShape.rectangle,
+              borderRadius: BorderRadius.circular(12.0),
+              border: Border.all(color: Colors.white, width: 2.0),
+              gradient: RadialGradient(
+                colors: _isTapped ? btnPressedColor : btnColor,
+                radius: blui.getRadius(context, width),
               ),
-          decoration: BoxDecoration(
-            shape: BoxShape.rectangle,
-            borderRadius: BorderRadius.circular(12.0),
-            border: Border.all(color: Colors.white, width: 2.0),
-            gradient: RadialGradient(
-              colors: _isTapped ? btnPressedColor : btnColor,
-              radius: blui.getRadius(context, width),
+              boxShadow: (_isTapped ? btnShadow : null),
             ),
-            boxShadow: (_isTapped ? btnShadow : null),
-          ),
-          child: widget.child),
+            child: widget.child),
+      ),
     );
   }
 

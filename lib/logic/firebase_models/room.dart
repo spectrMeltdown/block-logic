@@ -6,7 +6,7 @@ class Room {
   final String? hostID;
   final String? name;
   final String? password;
-  final List<String>? players;
+  final Map<String, bool>? players;
   final List<String>? challengeIDs;
   final int? maxPlayers;
   final bool? adminLocked;
@@ -25,10 +25,12 @@ class Room {
     this.maxPlayers,
   });
 
-  factory Room.fromRTDB(DataSnapshot doc) {
+  factory Room.fromRTDB(Object? doc, [String? key]) {
     Map data = {};
-    if (doc.value != null) {
-      data = doc.value as Map;
+    if (doc is DataSnapshot) {
+      if (doc.value != null) {
+        data = doc.value as Map;
+      }
     }
     RoomStatus? status;
     if (data['status'] == RoomStatus.available.name) {
@@ -41,8 +43,8 @@ class Room {
       status = RoomStatus.locked;
     }
     return Room(
-      id: doc.key,
-      players: data['players'] == null ? null : (data['players'] as List).map((item) => item as String).toList(),
+      id: doc is DataSnapshot ? doc.key : key,
+      players: data['players'] == null ? <String, bool>{} : (data['players'] as Map<Object?, Object?>).map((k, v) => MapEntry(k as String, v as bool)).cast<String, bool>(),
       status: status,
       hostID: data['hostID'],
       challengeIDs: data['challengeIDs'] == null ? null : (data['challengeIDs'] as List).map((item) => item as String).toList(),
@@ -59,7 +61,7 @@ class Room {
     String? hostID,
     String? name,
     String? password,
-    List<String>? players,
+    Map<String, bool>? players,
     List<String>? challengeIDs,
     int? maxPlayers,
     bool? adminLocked,

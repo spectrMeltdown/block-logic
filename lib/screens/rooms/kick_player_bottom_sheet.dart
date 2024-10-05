@@ -14,7 +14,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class KickPlayerBottomSheet extends ConsumerStatefulWidget {
   final String roomID;
-  const KickPlayerBottomSheet(this.roomID, {super.key});
+  final bool notWaitingRoom;
+  const KickPlayerBottomSheet(this.roomID, {this.notWaitingRoom = false, super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _KickPlayerState();
@@ -91,33 +92,44 @@ class _KickPlayerState extends ConsumerState<KickPlayerBottomSheet> with TickerP
                         shrinkWrap: true,
                         itemCount: data.players!.length,
                         itemBuilder: (context, i) {
-                          return KickPlayerItem(data.players![i], update);
+                          if (data.players!.keys.toList()[i] == data.hostID) {
+                            return const BlankWidget();
+                          }
+                          return KickPlayerItem(data.players!.keys.toList()[i], update);
                         },
                       ),
                       const SizedBox(
                         height: 15,
                       ),
-                      BLButton(
-                          onPressed: () async {
-                            if (processing) return;
-                            toggleProcessing();
-                            final String? result = await roomM.removePlayers(widget.roomID, selectedIDs);
-                            if (result == null) {
-                              if (!context.mounted) return;
-                              nav.pop(context);
-                              if (!context.mounted) return;
-                              toast.showToast(context, 'Kick successful', type: NotifType.success);
-                            } else {
-                              setState(() {
-                                msg = BLText(
-                                  result,
-                                  color: Colors.red,
-                                );
-                              });
-                            }
-                            toggleProcessing();
-                          },
-                          child: const BLText('Kick'))
+                      if (data.players != null && data.players!.length == 1 && data.players!.keys.toList().contains(data.hostID))
+                        const Padding(
+                          padding: EdgeInsets.all(15),
+                          child: BLText('No players to kick.'),
+                        ),
+                      if (data.players != null && data.players!.length > 1 && data.players!.keys.toList().contains(data.hostID))
+                        BLButton(
+                            onPressed: () async {
+                              if (processing) return;
+                              toggleProcessing();
+                              final String? result = await roomM.removePlayers(widget.roomID, selectedIDs);
+                              if (result == null) {
+                                if (!context.mounted) return;
+                                if (!widget.notWaitingRoom) {
+                                  nav.pop(context);
+                                }
+                                if (!context.mounted) return;
+                                toast.showToast(context, 'Kick successful', type: NotifType.success);
+                              } else {
+                                setState(() {
+                                  msg = BLText(
+                                    result,
+                                    color: Colors.red,
+                                  );
+                                });
+                              }
+                              toggleProcessing();
+                            },
+                            child: const BLText('Kick'))
                     ],
                   ),
                 );

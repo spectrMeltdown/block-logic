@@ -1,4 +1,5 @@
 import 'package:block_logic/logic/enums.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 class Leaderboard {
   final String? id; // the doc id. Should be auto generated
@@ -18,11 +19,14 @@ class Leaderboard {
     this.totalScore,
   });
 
-  factory Leaderboard.fromRTDB(dynamic doc) {
+  factory Leaderboard.fromRTDB(Object? doc, [String? key]) {
     Map data = {};
-    if (doc.value != null) {
-      data = doc.value as Map;
+    if (doc is DataSnapshot) {
+      if (doc.value != null) {
+        data = doc.value as Map;
+      }
     }
+
     LeaderboardStatus? status;
     if (data['status'] == LeaderboardStatus.complete.name) {
       status = LeaderboardStatus.complete;
@@ -33,7 +37,7 @@ class Leaderboard {
     }
 
     return Leaderboard(
-      id: doc.key,
+      id: doc is DataSnapshot ? doc.key : key,
       roomName: data['roomName'] ?? '',
       roomID: data['roomID'] ?? '',
       totalScore: data['totalScore'],
@@ -42,6 +46,27 @@ class Leaderboard {
       date: data['date'] == null ? null : DateTime.fromMillisecondsSinceEpoch(data['date']),
     );
   }
+
+  Leaderboard copyWith({
+    String? id,
+    String? roomID,
+    String? roomName,
+    DateTime? date,
+    int? totalScore,
+    LeaderboardStatus? status,
+    List<String>? players,
+  }) {
+    return Leaderboard(
+      id: id ?? this.id,
+      roomID: roomID ?? this.roomID,
+      roomName: roomName ?? this.roomName,
+      date: date ?? this.date,
+      totalScore: totalScore ?? this.totalScore,
+      status: status ?? this.status,
+      players: players ?? this.players,
+    );
+  }
+
   Map<String, dynamic> toJSON() {
     Map<String, dynamic> toJSONMap = {};
     if (date != null) {

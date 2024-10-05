@@ -1,4 +1,3 @@
-import 'package:block_logic/components/async/loading.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_models/challenge.dart';
@@ -13,7 +12,6 @@ import 'package:block_logic/screens/game/game_appbar.dart';
 import 'package:block_logic/screens/game/submit_btn.dart';
 import 'package:block_logic/screens/game/test_btn.dart';
 import 'package:block_logic/screens/game/wrapper_drag_target.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widget_and_text_animator/widget_and_text_animator.dart';
@@ -22,7 +20,7 @@ final processingProvider = StateProvider.autoDispose<bool>((ref) {
   return ref.watch(gameManagerProvider.select((state) => state.processingOverlay));
 });
 
-class GameChallenge extends ConsumerStatefulWidget {
+class GameChallenge extends ConsumerWidget {
   final String roomName;
   final void Function()? updateChallenge;
   final Challenge challenge;
@@ -38,166 +36,136 @@ class GameChallenge extends ConsumerStatefulWidget {
     this.practiceMode = false,
     super.key,
   });
-  @override
-  ConsumerState<GameChallenge> createState() => _GameChallengeState();
-}
-
-class _GameChallengeState extends ConsumerState<GameChallenge> {
-  late final GameManager gameManager;
-  @override
-  void initState() {
-    gameManager = ref.read(gameManagerProvider.notifier);
-    gameManager.updateSolution(widget.challenge.solutionMatch!);
-    if (!kDebugMode) {
-      // gameManager.updateSolution(widget.challenge.solution!);
-    }
-    super.initState();
-  }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final gameManager = ref.read(gameManagerProvider.notifier);
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
     final returnBlock = ref.watch(returnBlockProvider);
-    final processing = ref.watch(processingProvider);
-    // debugPrint(widget.challengeCount.toString());
-    // debugPrint(widget.currentChallenge.toString());
-    debugPrint('${widget.challengeCount}');
-    debugPrint('${widget.currentChallenge}');
-    return Stack(
-      fit: StackFit.expand,
+    gameManager.updateSolution(challenge.solutionMatch!);
+    // debugPrint('${widget.challengeCount}');
+    // debugPrint('${widget.currentChallenge}');
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            GameAppbar(
-              roomName: widget.roomName,
-              challenge: widget.challenge,
-              currentIndex: widget.currentChallenge,
-              maxIndex: widget.challengeCount,
-              practiceMode: widget.practiceMode,
-            ),
-            Flexible(
-              flex: 0,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                  ConstrainedBox(
-                    constraints: BoxConstraints(maxHeight: height * 0.15, maxWidth: width * 0.5),
-                    child: ChallengeBox(
-                      challenge: widget.challenge,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 120),
-                    child: Column(
-                      children: [
-                        GameSubmitButton(
-                          widget.challengeCount == (widget.currentChallenge + 1),
-                          updateChallenge: widget.updateChallenge,
-                          practiceMode: widget.practiceMode,
-                          entries: widget.challenge.blocks!.entries.toList(),
-                        ),
-                        const SizedBox(height: 10),
-                        GameTestBtn(widget.practiceMode),
-                      ],
-                    ),
-                  )
-                ]),
+        GameAppbar(
+          roomName: roomName,
+          challenge: challenge,
+          currentIndex: currentChallenge,
+          maxIndex: challengeCount,
+          practiceMode: practiceMode,
+        ),
+        Flexible(
+          flex: 0,
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: width * 0.05, vertical: 5),
+            child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+              SizedBox(
+                height: height * 0.15,
+                width: width * 0.5,
+                child: ChallengeBox(
+                  challenge: challenge,
+                ),
               ),
-            ),
-            const SizedBox(height: 10),
-            Flexible(
-                child: Stack(
-              clipBehavior: Clip.none,
-              alignment: Alignment.bottomCenter,
-              children: [
-                Column(
+              const SizedBox(width: 10),
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 120),
+                child: Column(
                   children: [
-                    const Flexible(flex: 2, child: Editor()),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 20),
-                      child: GameBlocks(widget.challenge.blocks!),
+                    GameSubmitButton(
+                      challengeCount == (currentChallenge + 1),
+                      updateChallenge: updateChallenge,
+                      practiceMode: practiceMode,
+                      entries: challenge.blocks!.entries.toList(),
                     ),
+                    const SizedBox(height: 10),
+                    GameTestBtn(practiceMode),
                   ],
                 ),
-                Visibility(
-                    visible: returnBlock,
-                    child: WidgetAnimator(
-                      incomingEffect: WidgetTransitionEffects.incomingScaleUp(),
-                      outgoingEffect: WidgetTransitionEffects.outgoingScaleDown(),
-                      child: Container(
-                        margin: const EdgeInsets.only(bottom: 20, left: 10, right: 10),
-                        height: 120,
-                        width: double.maxFinite,
-                        child: DragTargetWrapper(
-                          builderChild: () {
-                            return Container(
-                              decoration: BoxDecoration(
-                                borderRadius: const BorderRadius.all(Radius.circular(10)),
-                                color: Colors.red.withOpacity(0.9),
-                                border: Border.all(
-                                  color: Colors.black12,
-                                  width: 2,
-                                ),
-                              ),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  WidgetAnimator(
-                                      atRestEffect: WidgetRestingEffects.bounce(effectStrength: 0.5, delay: const Duration(milliseconds: 500)),
-                                      child: const Icon(
-                                        Icons.download,
-                                        size: 40,
-                                      )),
-                                  const SizedBox(width: 5),
-                                  const BLText('Return to selector'),
-                                ],
-                              ),
-                            );
-                          },
-                          onAcceptWithDetails: (data, manager) {
-                            assert(data.uid != null);
-                            gameManager.deleteData(data);
-                            gameManager.removeInSelectorUIDs(data.type, data.inSelectorUID!);
-                            ref.invalidate(shouldResetBlockProvider);
-                            ref.invalidate(getRootDataProvider);
-                            ref.invalidate(getSelfDataProvider);
-                            ref.invalidate(getChildrenDataProvider);
-                            // switch (data.type) {
-                            //   case CodeBlockType.functions:
-                            //   case CodeBlockType.objects:
-                            //   case CodeBlockType.operators:
-                            //   case CodeBlockType.conditionals:
-                            //   case CodeBlockType.loops:
-                            //   case CodeBlockType.statement:
-                            //   default:
-                            // }
-                            setState(() {});
-                          },
-                          onWillAcceptWithDetails: (data) {
-                            if (data.state != CodeBlockState.inEditor) {
-                              return false;
-                            }
-                            return true;
-                          },
-                        ),
-                      ),
-                    )),
-              ],
-            ))
-          ],
+              )
+            ]),
+          ),
         ),
-        Visibility(
-            visible: processing,
-            child: Container(
-              color: Colors.black.withOpacity(0.9),
-              child: const BLLoading(
-                message: 'Processing...',
-              ),
-            ))
+        const SizedBox(height: 10),
+        Flexible(
+            child: Stack(
+          clipBehavior: Clip.none,
+          alignment: Alignment.bottomCenter,
+          children: [
+            Column(
+              children: [
+                const Flexible(flex: 2, child: Editor()),
+                Flexible(
+                  flex: 0,
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 20),
+                    child: GameBlocks(
+                      // purge all empty categories, if any
+                      challenge.blocks != null ? Map.fromEntries(challenge.blocks!.entries.where((e) => e.value.isNotEmpty)) : {},
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Visibility(
+                visible: returnBlock,
+                child: WidgetAnimator(
+                  incomingEffect: WidgetTransitionEffects.incomingScaleUp(),
+                  outgoingEffect: WidgetTransitionEffects.outgoingScaleDown(),
+                  child: Container(
+                    margin: const EdgeInsets.only(bottom: 20, left: 10, right: 10),
+                    height: 120,
+                    width: double.maxFinite,
+                    child: DragTargetWrapper(
+                      builderChild: () {
+                        return Container(
+                          decoration: BoxDecoration(
+                            borderRadius: const BorderRadius.all(Radius.circular(10)),
+                            color: Colors.red.withOpacity(0.9),
+                            border: Border.all(
+                              color: Colors.black12,
+                              width: 2,
+                            ),
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              WidgetAnimator(
+                                  atRestEffect: WidgetRestingEffects.bounce(effectStrength: 0.5, delay: const Duration(milliseconds: 500)),
+                                  child: const Icon(
+                                    Icons.download,
+                                    size: 40,
+                                  )),
+                              const SizedBox(width: 5),
+                              const BLText('Return to selector'),
+                            ],
+                          ),
+                        );
+                      },
+                      onAcceptWithDetails: (dataToAccept, manager) {
+                        assert(dataToAccept.uid != null);
+                        gameManager.deleteData(dataToAccept); //mark data to delete
+                        gameManager.removeInSelectorUIDs(dataToAccept);
+                        gameManager.removeSelectedInSelectorUIDs();
+                        gameManager.deleteSelectedData(); // delete
+                        ref.invalidate(shouldResetBlockProvider);
+                        ref.invalidate(getRootDataProvider);
+                        ref.invalidate(getSelfDataProvider);
+                        ref.invalidate(getChildrenDataProvider);
+                      },
+                      onWillAcceptWithDetails: (dataToAccept) {
+                        if (dataToAccept.state != CodeBlockState.inEditor) {
+                          return false;
+                        }
+                        return true;
+                      },
+                    ),
+                  ),
+                )),
+          ],
+        ))
       ],
     );
   }

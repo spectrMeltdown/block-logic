@@ -40,7 +40,7 @@ class TestingPage extends ConsumerWidget {
                     try {
                       final room = Room(
                           id: 'testing',
-                          players: [],
+                          players: <String, bool>{},
                           challengeIDs: ['testing1', 'testing2'],
                           hostID: 'CVWQCLBCpSMr8t739d8xFlTMETF2',
                           // icon: 'default',

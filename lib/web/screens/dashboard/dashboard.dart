@@ -186,7 +186,7 @@ class _DashboardState extends ConsumerState<Dashboard> {
   void initState() {
     generateMonths();
     final db = FirebaseDatabase.instance;
-    streams = {for (final type in ReportType.values) type: db.ref('reports').equalTo(type.name).onValue};
+    streams = {for (final type in ReportType.values) type: db.ref('reports').orderByChild('type').equalTo(type.name).onValue};
     toast = ref.read(toastProvider.notifier);
     super.initState();
   }

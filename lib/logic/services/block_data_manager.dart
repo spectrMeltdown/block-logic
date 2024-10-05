@@ -171,7 +171,6 @@ class AllBlocks {
       CodeBlockType.functions: [
         GameBlockData.createFunction(name: 'print'),
       ],
-      CodeBlockType.objects: [],
       CodeBlockType.operators: [
         GameBlockData.createOperator(
           operatorType: PyOperatorTypes.arithmetic,
@@ -184,14 +183,11 @@ class AllBlocks {
           count: 4,
         ),
       ],
-      CodeBlockType.keywords: [],
       CodeBlockType.literals: [
         GameBlockData.createLiteral(literal: PyLiteral.string('Python')),
         GameBlockData.createLiteral(literal: PyLiteral.string(' is ')),
         GameBlockData.createLiteral(literal: PyLiteral.string('Awesome!')),
       ],
-      CodeBlockType.conditionals: [],
-      CodeBlockType.loops: [],
     };
   }
 

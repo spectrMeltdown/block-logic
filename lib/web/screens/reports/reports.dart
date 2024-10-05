@@ -458,7 +458,7 @@ class _ReportsState extends ConsumerState<Reports> {
   void initState() {
     reportsManager = ref.read(reportsManagerProvider.notifier);
     toast = ref.read(toastProvider.notifier);
-    streams = {for (final type in ReportType.values) type: db.ref('reports').equalTo(type.name).onValue};
+    streams = {for (final type in ReportType.values) type: db.ref('reports').orderByChild('type').equalTo(type.name).onValue};
     super.initState();
   }
 

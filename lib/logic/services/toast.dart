@@ -20,6 +20,7 @@ class Toast extends _$Toast {
   ToastState build() => ToastState();
 
   void dismissAllToast(BuildContext context) {
+    if (!context.mounted) return;
     final toast = FToast().init(context);
     toast.removeCustomToast();
     // toastification.dismissAll();

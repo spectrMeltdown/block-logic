@@ -30,10 +30,7 @@ class _GameDragTargetState extends ConsumerState<DragTargetWrapper> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: editorOutline
-          ? BoxDecoration(
-              borderRadius: const BorderRadius.all(Radius.circular(10)), border: Border.all(color: Colors.white))
-          : null,
+      decoration: editorOutline ? BoxDecoration(borderRadius: const BorderRadius.all(Radius.circular(10)), border: Border.all(color: Colors.white)) : null,
       child: DragTarget<GameBlockData>(
         builder: (context, accepted, rejected) {
           widget.builder?.call();

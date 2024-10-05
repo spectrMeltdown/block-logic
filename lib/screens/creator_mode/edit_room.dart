@@ -259,14 +259,20 @@ class _EditRoomBottomSheetState extends ConsumerState<EditRoomBottomSheet> {
                                                                           ),
                                                                         ),
                                                                         const SizedBox(width: 10),
-                                                                        BLText(
-                                                                          currentChallenge.difficulty?.name ?? '--',
-                                                                          bold: true,
-                                                                          color: currentChallenge.difficulty == Difficulty.beginner
-                                                                              ? Colors.green
-                                                                              : currentChallenge.difficulty == Difficulty.intermediate
-                                                                                  ? Colors.amber
-                                                                                  : Colors.deepOrange,
+                                                                        ConstrainedBox(
+                                                                          constraints: const BoxConstraints(maxWidth: 50),
+                                                                          child: SingleChildScrollView(
+                                                                            scrollDirection: Axis.horizontal,
+                                                                            child: BLText(
+                                                                              currentChallenge.difficulty?.name ?? '--',
+                                                                              bold: true,
+                                                                              color: currentChallenge.difficulty == Difficulty.beginner
+                                                                                  ? Colors.green
+                                                                                  : currentChallenge.difficulty == Difficulty.intermediate
+                                                                                      ? Colors.amber
+                                                                                      : Colors.deepOrange,
+                                                                            ),
+                                                                          ),
                                                                         ),
                                                                         CloseButton(
                                                                           onPressed: () {
@@ -411,7 +417,7 @@ class _EditRoomBottomSheetState extends ConsumerState<EditRoomBottomSheet> {
               Visibility(
                 visible: processing,
                 child: Container(
-                  color: Colors.black.withOpacity(0.9),
+                  color: Colors.black.withOpacity(0.7),
                   child: const BLLoading(
                     message: 'Processing ...',
                   ),

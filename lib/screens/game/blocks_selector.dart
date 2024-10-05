@@ -20,11 +20,59 @@ class GameBlocks extends ConsumerStatefulWidget {
 class _GameBlocksState extends ConsumerState<GameBlocks> with TickerProviderStateMixin {
   late TabController blocksTabController;
   late GameManager gameManager;
-  Map<CodeBlockType, int> countPerCategory = {};
+  int? previousBlockCount;
   // bool firstBuild = true;
   // late List<String> topBlocksList;
   // late List<String> bottomBlocksList;
-  late Map<CodeBlockType, List<GameBlockData>> blocks;
+
+  bool newBuild() {
+    int currentBlockCount = 0;
+    for (int i = 0; i < widget.blocks.values.length; i++) {
+      for (final data in widget.blocks.values.toList()[i]) {
+        if (data.inSelectorCount != null) {
+          currentBlockCount += data.inSelectorCount!;
+        } else {
+          currentBlockCount++;
+        }
+      }
+    }
+    if (previousBlockCount == null || previousBlockCount != currentBlockCount) {
+      debugPrint('Previous count: $previousBlockCount');
+      debugPrint('Current count: $currentBlockCount');
+      previousBlockCount = currentBlockCount;
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  void buildSelector() {
+    debugPrint('Build selector called');
+    debugPrint(widget.blocks.values.length.toString());
+    final gameState = ref.read(gameManagerProvider);
+    setState(() {
+      blocksTabController = TabController(length: widget.blocks.keys.length, vsync: this);
+      blocksTabController.addListener(() {
+        setState(() {});
+      });
+    });
+    Map<CodeBlockType, int> countPerCategory = {};
+    for (final entry in widget.blocks.entries) {
+      int count = 0;
+      for (final block in entry.value) {
+        if (block.inSelectorCount == null) {
+          count++;
+        } else {
+          count += block.inSelectorCount!;
+        }
+      }
+      countPerCategory[entry.key] = count;
+    }
+    for (final entry in countPerCategory.entries) {
+      gameState.categoryCount[entry.key] = entry.value;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
@@ -35,6 +83,8 @@ class _GameBlocksState extends ConsumerState<GameBlocks> with TickerProviderStat
     //     });
     //   });
     // }
+    if (newBuild()) buildSelector();
+    // buildSelector();
     return Column(
       children: [
         Padding(
@@ -53,14 +103,14 @@ class _GameBlocksState extends ConsumerState<GameBlocks> with TickerProviderStat
                       labelPadding: const EdgeInsets.symmetric(horizontal: 3),
                       indicatorColor: BLUI().getAppColor(''),
                       controller: blocksTabController,
-                      tabs: List.generate(blocks.keys.length, (i) {
+                      tabs: List.generate(widget.blocks.keys.length, (i) {
                         return Consumer(builder: (context, ref, child) {
-                          final type = blocks.keys.toList()[i];
-                          // final count = ref.watch(CustomTabProvider(type));
+                          final type = widget.blocks.keys.toList()[i];
                           final count = ref.watch(customTabProvider(type));
+                          debugPrint('Count from customTabProvider: $count');
                           return CustomTab(
                             type: type,
-                            count: count,
+                            count: count < 0 ? 0 : count,
                             isSelected: i == blocksTabController.index,
                             paddingX: 10,
                           );
@@ -80,9 +130,11 @@ class _GameBlocksState extends ConsumerState<GameBlocks> with TickerProviderStat
               physics: const NeverScrollableScrollPhysics(),
               controller: blocksTabController,
               children: List.generate(
-                blocks.keys.length,
+                widget.blocks.keys.length,
                 (index) {
-                  return BlockSelectorView(blockData: widget.blocks[blocks.keys.toList()[index]]!);
+                  return BlockSelectorView(
+                    blockData: widget.blocks[widget.blocks.keys.toList()[index]] ?? [],
+                  );
                 },
               ),
             ),
@@ -101,29 +153,7 @@ class _GameBlocksState extends ConsumerState<GameBlocks> with TickerProviderStat
   @override
   void initState() {
     gameManager = ref.read(gameManagerProvider.notifier);
-    final gameManagerState = ref.read(gameManagerProvider);
-    // topBlocksList = blocksTabList.where((a) => a == 'Variables' || a == 'Literals' || a == 'Keywords').toList();
-    blocks = widget.blocks;
-
-    // blocksTabList.remove('FunctionDefinition');
-    for (final entry in blocks.entries) {
-      int count = 0;
-      for (final block in entry.value) {
-        if (block.inSelectorCount == null) {
-          count++;
-        } else {
-          count += block.inSelectorCount!;
-        }
-      }
-      countPerCategory[entry.key] = count;
-    }
-    for (final entry in countPerCategory.entries) {
-      gameManagerState.categoryCount[entry.key] = entry.value;
-    }
-    blocksTabController = TabController(length: blocks.keys.length, vsync: this);
-    blocksTabController.addListener(() {
-      setState(() {});
-    });
+    buildSelector();
     super.initState();
   }
 }

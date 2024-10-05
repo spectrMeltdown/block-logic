@@ -1,3 +1,4 @@
+import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_models/leaderboard.dart';
 import 'package:block_logic/logic/services/error_handler.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -45,7 +46,13 @@ class LeaderboardManager extends _$LeaderboardManager {
   Future<String?> update(Leaderboard leaderboard) async {
     if (leaderboard.id == null || leaderboard.id!.isEmpty) return 'ID not provided';
     try {
-      await state._db.child(leaderboard.id!).update(leaderboard.toJSON());
+      await state._db.child(leaderboard.id!).runTransaction((obj) {
+        final lb = Leaderboard.fromRTDB(obj, leaderboard.id);
+        if (lb.status == null || lb.status != LeaderboardStatus.complete) {
+          return Transaction.success(lb.copyWith(status: LeaderboardStatus.complete).toJSON());
+        }
+        return Transaction.abort();
+      });
       return null;
     } catch (e) {
       return state._errorHandler.call(e, this);

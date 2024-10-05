@@ -37,7 +37,7 @@ class PyLiteral {
     return PyLiteral._(PyDataType.array, array);
   }
 
-  factory PyLiteral.fromJSON(Map<String, dynamic> json) {
+  factory PyLiteral.fromJSON(Map<Object?, Object?> json) {
     return PyLiteral._(
       json['dataType'] != null ? PyDataType.values.firstWhere((e) => e.name == json['dataType']) : null,
       json['value'] as String,

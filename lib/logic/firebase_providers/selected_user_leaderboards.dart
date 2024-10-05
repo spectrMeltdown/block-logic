@@ -9,7 +9,7 @@ part 'generated/selected_user_leaderboards.g.dart';
 Stream<List<Leaderboard>> selectedUserLeaderboards(SelectedUserLeaderboardsRef ref, String uid) async* {
   if (uid.isNotEmpty) {
     final db = FirebaseDatabase.instance;
-    final stream = db.ref('leaderboards').equalTo(uid).onValue;
+    final stream = db.ref('leaderboards').onValue;
     await for (final query in stream) {
       List<Leaderboard> result = [];
       if (query.snapshot.children.isNotEmpty) {
@@ -19,6 +19,7 @@ Stream<List<Leaderboard>> selectedUserLeaderboards(SelectedUserLeaderboardsRef r
         // TODO: filter based on datetime, return the list
         //result.sort((a, b) {return DateTime.;});
       }
+      result = result.where((i) => i.players!.contains(uid)).toList();
       yield result;
     }
   }

@@ -41,6 +41,7 @@ class SelectedLeaderboard extends ConsumerStatefulWidget {
 
 class _LeaderboardState extends ConsumerState<SelectedLeaderboard> {
   final double horizontalPadding = 10;
+  List<String> topThree = [];
   late final BLUI blui;
   late final CustomNavigation nav;
   late final SharedPreferences sharedPref;
@@ -64,7 +65,7 @@ class _LeaderboardState extends ConsumerState<SelectedLeaderboard> {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
-    final players = ref.watch(SelectedUsersProvider(widget.leaderboard.players!));
+    final players = ref.watch(SelectedUsersProvider(topThree));
     final scores = ref.watch(AllScoresProvider(widget.leaderboard.id!));
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -144,9 +145,20 @@ class _LeaderboardState extends ConsumerState<SelectedLeaderboard> {
                             Center(
                               child: scores.when(
                                   data: (scores) {
-                                    if (scores == null) {
+                                    if (scores == null || scores.values.isEmpty) {
                                       return const BLText('Players not found.');
                                     }
+                                    if (scores[ScoreStatus.complete]!.isEmpty) {
+                                      return const BLText('Sorry, no top players.');
+                                    }
+                                    List<String> completedTopThree = [];
+                                    for (int i = 0; i < 4; i++) {
+                                      completedTopThree.add(scores[ScoreStatus.complete]?[i].accountID ?? '');
+                                    }
+                                    setState(() {
+                                      topThree = List.from(completedTopThree);
+                                    });
+                                    completedTopThree.clear();
                                     return players.when(
                                         data: (players) {
                                           if (players == null) {

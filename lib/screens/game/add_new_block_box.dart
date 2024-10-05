@@ -13,10 +13,9 @@ class AddNewBlockBox extends ConsumerWidget {
       margin: const EdgeInsets.all(5),
       width: width,
       height: height,
-      decoration: BoxDecoration(
-          borderRadius: const BorderRadius.all(Radius.circular(10)), color: Colors.black.withOpacity(0.5)),
+      decoration: BoxDecoration(borderRadius: const BorderRadius.all(Radius.circular(10)), color: Colors.black.withOpacity(0.3)),
       child: Icon(
-        Icons.add,
+        Icons.add_outlined,
         color: Colors.white.withOpacity(0.3),
       ),
     );

@@ -345,6 +345,7 @@ class _SignupState extends ConsumerState<Signup> with RouteAware {
                                                       : BtnType.green,
                                           padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 10),
                                           onPressed: () async {
+                                            FocusScope.of(context).unfocus();
                                             if (processing == true) return;
                                             setState(() {
                                               processing = true;
@@ -459,7 +460,7 @@ class _SignupState extends ConsumerState<Signup> with RouteAware {
             Visibility(
                 visible: processing,
                 child: Container(
-                  color: Colors.black.withOpacity(0.9),
+                  color: Colors.black.withOpacity(0.7),
                   child: const BLLoading(message: 'Creating account ...'),
                 ))
           ],

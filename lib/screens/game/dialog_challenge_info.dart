@@ -23,13 +23,13 @@ class DialogChallengeInfo extends ConsumerWidget {
         const BLSmallTitle('Challenge:'),
         Padding(
           padding: const EdgeInsets.only(left: 8),
-          child: Wrap(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               BLText(
                 challenge.shortDescription ?? 'No description provided.',
                 softWrap: true,
               ),
-              const BLText('\n'),
               BLText(
                 challenge.additionalInfo ?? 'No additional info provided.',
                 softWrap: true,

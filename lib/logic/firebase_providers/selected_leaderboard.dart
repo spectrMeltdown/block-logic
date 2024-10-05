@@ -12,7 +12,7 @@ Stream<Leaderboard?> selectedLeaderboard(SelectedLeaderboardRef ref, String lead
     final stream = db.ref('leaderboards/$leaderboardID').onValue;
     await for (final doc in stream) {
       if (doc.snapshot.exists) {
-        yield Leaderboard.fromRTDB(doc);
+        yield Leaderboard.fromRTDB(doc.snapshot);
       }
     }
   } else {

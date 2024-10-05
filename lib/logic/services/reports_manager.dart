@@ -40,9 +40,9 @@ class ReportsManager extends _$ReportsManager {
       late final DataSnapshot query;
       if (!kIsWeb) {
         if (dataUID.isNotEmpty) {
-          query = await state._db.equalTo(dataUID).get();
+          query = await state._db.orderByChild('dataUID').equalTo(dataUID).get();
         } else {
-          query = await state._db.equalTo(userUID).get();
+          query = await state._db.orderByChild('userUID').equalTo(userUID).get();
         }
         if (query.children.isNotEmpty) {
           for (final doc in query.children) {

@@ -13,7 +13,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class InGameControlsDialog extends ConsumerStatefulWidget {
   final String roomID;
-  const InGameControlsDialog(this.roomID, {super.key});
+  final bool notWaitingRoom;
+  const InGameControlsDialog(this.roomID, {this.notWaitingRoom = false, super.key});
 
   @override
   ConsumerState<InGameControlsDialog> createState() => _InGameControlsState();
@@ -66,9 +67,9 @@ class _InGameControlsState extends ConsumerState<InGameControlsDialog> {
               final String? result = await roomM.removePlayers(widget.roomID, [], removeAll: true);
               if (result == null) {
                 if (!context.mounted) return;
-                nav.pop(context);
-                if (!context.mounted) return;
-                toast.showToast(context, 'Room disbanded', type: NotifType.info);
+                if (!widget.notWaitingRoom) {
+                  nav.pop(context);
+                }
               } else {
                 setState(() {
                   msg = BLText(

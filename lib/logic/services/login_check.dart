@@ -7,7 +7,10 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'generated/login_check.g.dart';
 
 @riverpod
-Future<String?> loginCheck(LoginCheckRef ref) async {
-  final account = await FirebaseDatabase.instance.ref('users').child(FirebaseAuth.instance.currentUser!.uid).get();
-  return UserAccount.fromRTDB(account).sessionID;
+Stream<String?> loginCheck(LoginCheckRef ref) async* {
+  final uid = FirebaseAuth.instance.currentUser!.uid;
+  final stream = FirebaseDatabase.instance.ref('users/$uid').onValue;
+  await for (final doc in stream) {
+    yield UserAccount.fromRTDB(doc.snapshot).sessionID;
+  }
 }

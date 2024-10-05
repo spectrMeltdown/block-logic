@@ -15,8 +15,10 @@ import 'package:tuple/tuple.dart';
 class GameBlock extends ConsumerStatefulWidget {
   final GameBlockData data;
   final void Function({bool add})? updateStackCount;
+  final void Function(String, int)? updateInSelectorUID;
   final void Function()? resetCount;
-  const GameBlock({required this.data, this.updateStackCount, this.resetCount, super.key});
+  final int? stackIndex;
+  const GameBlock({required this.data, this.updateStackCount, this.stackIndex, this.updateInSelectorUID, this.resetCount, super.key});
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => GameCodeBlockState();
 }
@@ -24,56 +26,37 @@ class GameBlock extends ConsumerStatefulWidget {
 class GameCodeBlockState extends ConsumerState<GameBlock> with TickerProviderStateMixin {
   late final GameManager gameManager;
   late final BLUI blui;
-  // bool firstBuild = true;
-  bool shouldBounce = false;
   bool shouldResetSelf = false;
-  // late final String id;
   late Widget block;
   late Widget defaultWithPadding;
   GameBlockData? finalData;
-
-  void refresh() {
-    setState(() {});
-  }
 
   @override
   void initState() {
     gameManager = ref.read(gameManagerProvider.notifier);
     blui = ref.read(bLUIProvider.notifier);
-    // _controller = AnimationController(
-    //   duration: const Duration(milliseconds: 300),
-    //   vsync: this,
-    // );
-    // _controller.addListener(() {
-    //   setState(() {
-    //     position = _animation.value;
-    //   });
-    // });
+
     defaultWithPadding = Padding(
       padding: const EdgeInsets.symmetric(horizontal: 5),
-      child: BlockRender(widget.data, refresh),
+      child: BlockRender(widget.data),
     );
     if (widget.data.state == CodeBlockState.inSelector) {
       // debugPrint('Built as inSelector');
       block = defaultWithPadding;
-      finalData = widget.data.copyWith(inSelectorUID: gameManager.getUID());
+      final uid = gameManager.getUID();
+      finalData = widget.data.copyWith(inSelectorUID: uid);
       gameManager.addInSelectorUIDs(finalData!.type, finalData!.inSelectorUID!);
+      if (widget.updateInSelectorUID != null && widget.stackIndex != null) {
+        widget.updateInSelectorUID!(uid, widget.stackIndex!);
+      }
     } else {
-      block = BlockRender(widget.data, refresh);
+      block = BlockRender(widget.data);
     }
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    // if (widget.data.state == CodeBlockState.inSelector && firstBuild) {
-    //   debugPrint('firstBuild');
-    //   gameManager.incrementCategory(widget.data.type);
-    //   ref.invalidate(customTabProvider);
-    //   setState(() {
-    //     firstBuild = false;
-    //   });
-    // }
     final shouldResetFromAll = ref.watch(shouldResetAllBlocksProvider);
     if (widget.data.state == CodeBlockState.inSelector) {
       shouldResetSelf = ref.watch(
@@ -100,18 +83,62 @@ class GameCodeBlockState extends ConsumerState<GameBlock> with TickerProviderSta
         setState(() {
           block = defaultWithPadding;
         });
-        if (widget.updateStackCount != null) {
-          // widget.resetCount!();
-          widget.updateStackCount!(add: true);
-        }
+        // if (widget.updateStackCount != null) {
+        //   // widget.resetCount!();
+        //   widget.updateStackCount!(add: true);
+        // }
         gameManager.addInSelectorUIDs(finalData!.type, finalData!.inSelectorUID!);
         gameManager.incrementCategory(widget.data.type);
         ref.invalidate(customTabProvider);
         ref.invalidate(shouldResetBlockProvider);
       }
     }
-    // TODO: animate when cancelled
+
+    if (widget.data.state == CodeBlockState.inSelector) {
+      return Draggable<GameBlockData>(
+          hitTestBehavior: HitTestBehavior.opaque,
+          // delay: const Duration(milliseconds: 100),
+          data: finalData ?? widget.data, // drag target will not detect if data is null
+          onDragUpdate: (details) {},
+          dragAnchorStrategy: (draggable, context, position) {
+            return const Offset(-30, 50);
+          },
+          onDragStarted: () {
+            if (widget.data.state == CodeBlockState.inEditor) {
+              gameManager.toggleReturnBlock(true);
+              ref.invalidate(returnBlockProvider);
+            }
+          },
+          onDraggableCanceled: (velocity, offset) {},
+          onDragEnd: (details) {
+            if (widget.data.state == CodeBlockState.inEditor) {
+              gameManager.toggleReturnBlock(false);
+              ref.invalidate(returnBlockProvider);
+            }
+          },
+          onDragCompleted: () {
+            if (widget.data.state == CodeBlockState.inSelector) {
+              if (widget.data.inSelectorCount != null) {
+                widget.updateStackCount!(add: false);
+              }
+              debugPrint('Decrement ${widget.data.type}');
+              gameManager.decrementCategory(widget.data.type);
+              ref.invalidate(customTabProvider);
+              setState(() {
+                block = const BlankWidget();
+              });
+            }
+          },
+          childWhenDragging: AnimatedOpacity(
+            opacity: 0.3,
+            duration: Duration.zero,
+            child: block,
+          ),
+          feedback: Transform.scale(scale: 0.8, child: block), // the widget that follws the touch position
+          child: block);
+    }
     return LongPressDraggable<GameBlockData>(
+        hitTestBehavior: HitTestBehavior.opaque,
         delay: const Duration(milliseconds: 100),
         data: finalData ?? widget.data, // drag target will not detect if data is null
         onDragUpdate: (details) {},
@@ -123,24 +150,12 @@ class GameCodeBlockState extends ConsumerState<GameBlock> with TickerProviderSta
             gameManager.toggleReturnBlock(true);
             ref.invalidate(returnBlockProvider);
           }
-          // TODO: add bouncing animation on feedback,
-          // gameManager.passBlockData(widget.data);
-          //startPosition = position;
-        },
-        onDraggableCanceled: (velocity, offset) {
-          // gameManager.removePassedBlockData();
-          // gameManager.isDropCancelled(true);
-          //_animateBackToStartPosition(offset);
         },
         onDragEnd: (details) {
           if (widget.data.state == CodeBlockState.inEditor) {
             gameManager.toggleReturnBlock(false);
             ref.invalidate(returnBlockProvider);
           }
-          // Ensure that the item snaps back only when it's not dropped on a valid DragTarget.
-          // if (details.wasAccepted == false) {
-          //   _animateBackToStartPosition(details.offset);
-          // }
         },
         onDragCompleted: () {
           if (widget.data.state == CodeBlockState.inSelector) {
@@ -161,29 +176,6 @@ class GameCodeBlockState extends ConsumerState<GameBlock> with TickerProviderSta
           child: block,
         ),
         feedback: Transform.scale(scale: 0.8, child: block), // the widget that follws the touch position
-        child: block
-
-        // the normal display
-        // childWhenDragging: buildBlockState(CodeBlockState.faded),
-        // feedback: buildBlockState(CodeBlockState.unselected),
-        // child: buildBlockState(widget.data),
-        );
+        child: block);
   }
-
-  // @override
-  // void dispose() {
-  //   _controller.dispose();
-  //   super.dispose();
-  // }
-
-  // void _animateBackToStartPosition(Offset offset) {
-  //   _animation =
-  //       Tween<Offset>(begin: offset, end: startPosition).animate(_controller);
-  //   _controller.forward(from: 0.0);
-  // }
-
-  // Offset position = const Offset(100, 100);
-  // Offset startPosition = const Offset(100, 100);
-  // late AnimationController _controller;
-  // late Animation<Offset> _animation;
 }

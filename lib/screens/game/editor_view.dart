@@ -63,10 +63,7 @@ class _CustomTabViewState extends ConsumerState<EditorView> with AutomaticKeepAl
                     // debugPrint(blockData.toString());
                     return GameBlock(data: blockData[i]);
                   }),
-                  ConstrainedBox(
-                      constraints: BoxConstraints(
-                          minWidth: widget.parentConstraints.minWidth, minHeight: widget.parentConstraints.minHeight),
-                      child: buildDragTarget(blockData)),
+                  ConstrainedBox(constraints: BoxConstraints(minWidth: widget.parentConstraints.minWidth, minHeight: widget.parentConstraints.minHeight), child: buildDragTarget(blockData)),
                 ],
               )
             ],
@@ -87,17 +84,18 @@ class _CustomTabViewState extends ConsumerState<EditorView> with AutomaticKeepAl
         }
         return const Center(child: BLText('Drop a block'));
       },
-      onWillAcceptWithDetails: (initData) {
-        if (initData.parentUID == 'root' || rootBlockIDs.contains(initData.parentUID)) {
+      onWillAcceptWithDetails: (dataToAccept) {
+        if (rootBlockIDs.contains(dataToAccept.uid)) {
           return false;
         }
         return true;
       },
-      onAcceptWithDetails: (initData, gameManager) {
-        if (initData.state == CodeBlockState.inEditor) {
-          gameManager.moveToRoot(initData.uid!);
+      onAcceptWithDetails: (dataToAccept, gameManager) {
+        if (dataToAccept.state == CodeBlockState.inEditor) {
+          // gameManager.moveToRoot(initData.uid!);
+          gameManager.moveToRoot(dataToAccept.uid!);
         } else {
-          gameManager.addRootData(initData);
+          gameManager.addRootData(dataToAccept);
         }
         ref.invalidate(getRootDataProvider);
         setState(() {});

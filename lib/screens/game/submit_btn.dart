@@ -5,18 +5,17 @@ import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/text/title_small.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/game/block_data.dart';
-import 'package:block_logic/logic/services/custom_tab.dart';
 import 'package:block_logic/logic/services/game_manager.dart';
 import 'package:block_logic/logic/services/game_provider.dart';
 import 'package:block_logic/logic/services/navigation.dart';
 import 'package:block_logic/logic/services/score_manager.dart';
-import 'package:block_logic/logic/services/should_reset_all_blocks.dart';
 import 'package:block_logic/logic/services/solution_checker.dart';
 import 'package:block_logic/logic/services/time_box.dart';
 import 'package:block_logic/logic/services/toast.dart';
 import 'package:block_logic/screens/game/game_challenge.dart';
 import 'package:block_logic/screens/tutorials/practice_dialog.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -45,7 +44,6 @@ class _GameSubmitButtonState extends ConsumerState<GameSubmitButton> {
   late final GameState gameState;
   bool dontShowAgain = false;
   bool autoProceed = false;
-  int challengeBlockCount = 0;
 
   @override
   void initState() {
@@ -54,19 +52,12 @@ class _GameSubmitButtonState extends ConsumerState<GameSubmitButton> {
     toast = ref.read(toastProvider.notifier);
     solutionMatch = ref.read(gameManagerProvider).solution;
     gameState = ref.read(gameManagerProvider);
-    for (final entry in widget.entries) {
-      for (final data in entry.value) {
-        if (data.optional != null && !data.optional!) {
-          challengeBlockCount++;
-        }
-      }
-    }
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    final check = ref.watch(solutionCheckerProvider.notifier);
+    final checker = ref.watch(solutionCheckerProvider.notifier);
 
     void toggleProcessing() {
       manager.toggleProcessingOverlay();
@@ -77,18 +68,39 @@ class _GameSubmitButtonState extends ConsumerState<GameSubmitButton> {
         type: BtnType.green,
         onPressed: () async {
           toggleProcessing();
+          // pause if not practice mode
           if (!widget.practiceMode) {
             manager.pauseTimer();
             ref.invalidate(runTimerProvider);
           }
+          // re evaluate total blocks (changes when challenge is changed)
+          int challengeBlockCount = 0;
+          for (final entry in widget.entries) {
+            for (final data in entry.value) {
+              if (data.optional == null || data.optional == true) {
+                challengeBlockCount++;
+              }
+            }
+          }
+          // if the user didn't use all required blocks
           late final bool incompleteBlocks;
+
+          // blocks the player used
           int usedBlockCount = 0;
+
+          // count all blocks except statements
           for (final data in gameState.dataTree.values) {
-            if (data.statementUIDs != null) {
+            if (data.statementUIDs == null) {
               usedBlockCount++;
             }
           }
-          incompleteBlocks = usedBlockCount >= challengeBlockCount;
+
+          debugPrint('Used blocks: $usedBlockCount');
+          debugPrint('total blocks: $challengeBlockCount');
+
+          // if used blocks are not equal to or higher than total, then it is incomplete
+          incompleteBlocks = !(usedBlockCount >= challengeBlockCount);
+
           if (!widget.practiceMode) {
             // if (!dontShowAgain) {
             //   bool result = await showDialog(context: context, builder: (context) => const NoSolution());
@@ -130,12 +142,12 @@ class _GameSubmitButtonState extends ConsumerState<GameSubmitButton> {
           }
           bool correct = false;
           String? result;
-          final userOutput = await check.check();
+          final userOutput = await checker.check();
           // loop through correct answers
           for (final match in solutionMatch) {
             debugPrint('match is: $match');
             debugPrint(userOutput.toString());
-            if (userOutput.toString().trim() == match.toString().trim()) {
+            if (match.toString().trim().contains(userOutput.toString().trim())) {
               correct = true;
             } else {
               correct = false;
@@ -149,32 +161,45 @@ class _GameSubmitButtonState extends ConsumerState<GameSubmitButton> {
               builder: (context) => PracticeDialog(userOutput == null ? null : correct),
             );
           }
-          // if correct, add score
+          // if correct, complete blocks, and not practice mode
           if (correct && !incompleteBlocks && !widget.practiceMode) {
-            result = await score.increment(
-              leaderboardID: manager.getLeaderboardID(),
-              uid: FirebaseAuth.instance.currentUser!.uid,
-              value: 1,
-            );
+            // don't write score in debug mode
+            if (!kDebugMode) {
+              result = await score.increment(
+                leaderboardID: manager.getLeaderboardID(),
+                uid: FirebaseAuth.instance.currentUser!.uid,
+                value: 1,
+              );
+            }
           }
+          // updateChallenge is null in practice mode!
           if (widget.updateChallenge != null) {
+            // move to next challenge
+            widget.updateChallenge!();
+            // remove all used blocks
             manager.resetTree();
-            manager.setShouldResetAllBlocks(true);
+            // manager.setShouldResetAllBlocks(true);
+            // refresh providers
             ref.invalidate(getRootDataProvider);
-            ref.invalidate(shouldResetAllBlocksProvider);
-            ref.invalidate(customTabProvider);
+            // ref.invalidate(shouldResetAllBlocksProvider);
+            // ref.invalidate(customTabProvider);
+            // resume timer
             if (!widget.practiceMode) {
               manager.resumeTimer();
               ref.invalidate(runTimerProvider);
             }
-            widget.updateChallenge!();
           }
+
+          // if there was an error updating score, notify the player
           if (result != null) {
             if (!context.mounted) return;
             toast.showToast(context, result, type: NotifType.error);
           }
 
+          // remove overlay
           toggleProcessing();
+
+          // resume timer
           if (!widget.practiceMode) {
             manager.resumeTimer();
             ref.invalidate(runTimerProvider);

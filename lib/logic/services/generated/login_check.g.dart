@@ -6,11 +6,11 @@ part of '../login_check.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$loginCheckHash() => r'0859fe78e0e992ce0672a9b496df82e136703a9a';
+String _$loginCheckHash() => r'061fe27981c7b0b30f2dd32a3d233b5671de5005';
 
 /// See also [loginCheck].
 @ProviderFor(loginCheck)
-final loginCheckProvider = AutoDisposeFutureProvider<String?>.internal(
+final loginCheckProvider = AutoDisposeStreamProvider<String?>.internal(
   loginCheck,
   name: r'loginCheckProvider',
   debugGetCreateSourceHash:
@@ -19,6 +19,6 @@ final loginCheckProvider = AutoDisposeFutureProvider<String?>.internal(
   allTransitiveDependencies: null,
 );
 
-typedef LoginCheckRef = AutoDisposeFutureProviderRef<String?>;
+typedef LoginCheckRef = AutoDisposeStreamProviderRef<String?>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

@@ -23,9 +23,10 @@ class ChallengeSelectorList extends ConsumerStatefulWidget {
 }
 
 class _ChallengeSelectorListState extends ConsumerState<ChallengeSelectorList> {
+  // TODO: might add AutomaticKeepAliveClientMixin to avoid rerender
   @override
   Widget build(BuildContext context) {
-    debugPrint('REBUILT LIST');
+    // debugPrint('REBUILT LIST');
     if (widget.challenges.isEmpty) {
       return const Center(
           child: Padding(
@@ -88,7 +89,7 @@ class _ChallengeItemState extends ConsumerState<ChallengeItem> with AutomaticKee
   Widget build(BuildContext context) {
     super.build(context);
 
-    debugPrint('REBUILT');
+    // debugPrint('REBUILT');
     return GestureDetector(
       onLongPress: () {
         dialog.show(
@@ -99,7 +100,7 @@ class _ChallengeItemState extends ConsumerState<ChallengeItem> with AutomaticKee
       child: SwitchListTile(
         value: selected,
         onChanged: (value) {
-          debugPrint(value.toString());
+          // debugPrint(value.toString());
           if (value) {
             if (widget.updateSelection(widget.challenge) == false) {
               if (!context.mounted) return;

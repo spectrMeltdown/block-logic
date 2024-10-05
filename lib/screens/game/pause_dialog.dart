@@ -11,30 +11,15 @@ import 'package:block_logic/logic/services/should_reset_all_blocks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class PauseDialog extends ConsumerStatefulWidget {
-  // final void Function() refreshState;
-  const PauseDialog(
-      // this.refreshState,
-      {
+class PauseDialog extends ConsumerWidget {
+  const PauseDialog({
     super.key,
   });
 
   @override
-  ConsumerState<PauseDialog> createState() => _PauseDialogState();
-}
-
-class _PauseDialogState extends ConsumerState<PauseDialog> {
-  late final CustomNavigation nav;
-  late final GameManager gameManager;
-  @override
-  void initState() {
-    nav = ref.read(customNavigationProvider.notifier);
-    gameManager = ref.read(gameManagerProvider.notifier);
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final nav = ref.read(customNavigationProvider.notifier);
+    final gameManager = ref.read(gameManagerProvider.notifier);
     return BLDialog(
         child: Column(
       mainAxisSize: MainAxisSize.min,
@@ -49,8 +34,6 @@ class _PauseDialogState extends ConsumerState<PauseDialog> {
               gameManager.setShouldResetAllBlocks(true);
               ref.invalidate(getRootDataProvider);
               ref.invalidate(shouldResetAllBlocksProvider);
-              // ref.invalidate(getSelfDataProvider);
-              // ref.invalidate(getChildrenDataProvider);
             },
             child: const Row(
               mainAxisSize: MainAxisSize.min,

@@ -113,7 +113,7 @@ class AccountService extends _$AccountService {
     try {
       if (type == AccountType.user) {
         await state._db.ref('users').child(uid).remove();
-        final rooms = await state._db.ref('rooms').equalTo(uid).get();
+        final rooms = await state._db.ref('rooms').orderByChild('hostID').equalTo(uid).get();
         for (final room in rooms.children) {
           room.ref.remove();
         }

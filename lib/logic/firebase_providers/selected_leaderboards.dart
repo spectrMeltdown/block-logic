@@ -10,7 +10,7 @@ part 'generated/selected_leaderboards.g.dart';
 Stream<List<Leaderboard>?> selectedLeaderboards(SelectedLeaderboardsRef ref, String roomID) async* {
   if (roomID.isNotEmpty) {
     final db = FirebaseDatabase.instance;
-    final stream = db.ref('leaderboards').equalTo(roomID).onValue;
+    final stream = db.ref('leaderboards').orderByChild('roomID').equalTo(roomID).onValue;
     await for (final query in stream) {
       List<Leaderboard> result = [];
       if (query.snapshot.children.isNotEmpty) {

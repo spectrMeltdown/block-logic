@@ -20,25 +20,31 @@ class BlockSelectorStack extends ConsumerStatefulWidget {
 class _BlockSelectorStackState extends ConsumerState<BlockSelectorStack> {
   late int count;
   late final GameManager gameManager;
-  Tuple2<CodeBlockType, String>? currentTuple;
+  Map<int, String> blockIDs = {};
   @override
   void initState() {
     count = widget.data.inSelectorCount!;
+    debugPrint('Initial Count: $count');
     gameManager = ref.read(gameManagerProvider.notifier);
+    blockIDs = {for (int i = 0; i < count; i++) i: ''};
     super.initState();
   }
 
   void updateStackCount({
     bool add = true,
-  }) {
+  }) async {
     if (add) {
-      setState(() {
-        count++;
-      });
+      if (count < widget.data.inSelectorCount!) {
+        setState(() {
+          count++;
+        });
+      }
     } else {
-      setState(() {
-        count--;
-      });
+      if (count > 0) {
+        setState(() {
+          count--;
+        });
+      }
     }
   }
 
@@ -48,27 +54,38 @@ class _BlockSelectorStackState extends ConsumerState<BlockSelectorStack> {
     });
   }
 
+  void updateInSelectorUID(String uid, int index) {
+    if (uid.isNotEmpty) {
+      blockIDs.addAll({index: uid});
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final shouldReset = ref.watch(shouldResetAllBlocksProvider);
-    final shouldResetBlock = ref.watch(shouldResetBlockProvider(currentTuple));
     if (shouldReset) {
+      debugPrint('should reset all from block stack');
       resetCount();
       // no need to ref.invalidate because the GameBlock will do so.
-    }
-    if (shouldResetBlock) {
-      updateStackCount(add: true);
     }
     return Visibility(
         visible: count > 0,
         child: Stack(
           clipBehavior: Clip.none,
           children: [
-            ...List.generate(count, (i) {
+            ...List.generate(widget.data.inSelectorCount!, (i) {
+              final Tuple2<CodeBlockType, String> blockID = Tuple2(widget.data.type, blockIDs[i]!);
+              final shouldResetBlock = ref.watch(shouldResetBlockProvider(blockID));
+              if (shouldResetBlock) {
+                debugPrint('should reset block from block stack');
+                updateStackCount(add: true);
+              }
               return GameBlock(
                 data: widget.data,
                 updateStackCount: updateStackCount,
+                updateInSelectorUID: updateInSelectorUID,
                 resetCount: resetCount,
+                stackIndex: i,
               );
             }),
             Positioned(

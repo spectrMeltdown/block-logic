@@ -289,7 +289,7 @@ class _AddRoomBottomSheetState extends ConsumerState<AddRoomBottomSheet> {
                                                   Room(
                                                     adminLocked: false,
                                                     hostID: FirebaseAuth.instance.currentUser!.uid,
-                                                    players: [],
+                                                    players: <String, bool>{},
                                                     status: RoomStatus.available,
                                                     name: roomNameController.text.trim(),
                                                     maxPlayers: int.parse(maxPlayersController.text.trim()),
@@ -341,7 +341,7 @@ class _AddRoomBottomSheetState extends ConsumerState<AddRoomBottomSheet> {
               Visibility(
                 visible: processing,
                 child: Container(
-                  color: Colors.black.withOpacity(0.9),
+                  color: Colors.black.withOpacity(0.7),
                   child: const BLLoading(
                     message: 'Processing ...',
                   ),

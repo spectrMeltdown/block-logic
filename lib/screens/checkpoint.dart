@@ -14,8 +14,6 @@ import 'package:block_logic/screens/auth/duplicate_login.dart';
 import 'package:block_logic/screens/auth/verify_email.dart';
 import 'package:block_logic/screens/main_menu.dart';
 
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -31,7 +29,7 @@ class Checkpoint extends ConsumerStatefulWidget {
 class _CheckpointState extends ConsumerState<Checkpoint> {
   late final AuthService auth;
   late final SharedPreferences sharedPref;
-  String sessionID = '';
+  // String sessionID = '';
   final Widget errorWidget = const Scaffold(
     body: Background(
       child: BLError(),
@@ -56,17 +54,12 @@ class _CheckpointState extends ConsumerState<Checkpoint> {
           final dupLoginCheck = ref.watch(loginCheckProvider);
           return dupLoginCheck.when(
             data: (sessionID) {
+              // debugPrint(sessionID);
               if (sessionID != null && sessionID.isNotEmpty) {
-                this.sessionID = sessionID;
+                // debugPrint(sessionID);
                 if (sessionID != sharedPref.getString('sessionID')) {
                   return const DuplicateLogin();
                 }
-              } else {
-                // get the saved sessionID
-                final savedSessionID = sharedPref.getString('sessionID') ?? '';
-                this.sessionID = savedSessionID;
-                // upload sessionID to prevent login on other devices
-                auth.uploadSessionID(savedSessionID);
               }
 
               /// check if email is not verified

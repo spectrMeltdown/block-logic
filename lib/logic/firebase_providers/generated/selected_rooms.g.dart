@@ -6,7 +6,7 @@ part of '../selected_rooms.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$selectedRoomsHash() => r'6521b0226f9f4a5b5f6472ffe8a64f3f3f604143';
+String _$selectedRoomsHash() => r'c6ae552653ba6daacbf7d8b2d64a02330396b39d';
 
 /// Copied from Dart SDK
 class _SystemHash {

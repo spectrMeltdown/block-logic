@@ -1,5 +1,6 @@
 import 'package:block_logic/components/account/display_name.dart';
 import 'package:block_logic/components/account/profile_pic.dart';
+import 'package:block_logic/components/async/loading.dart';
 import 'package:block_logic/components/background.dart';
 import 'package:block_logic/components/button/button.dart';
 import 'package:block_logic/components/dialog/confirm.dart';
@@ -22,6 +23,7 @@ import 'package:block_logic/screens/game/game_room.dart';
 import 'package:block_logic/screens/rooms/in_game_controls_dialog.dart';
 import 'package:block_logic/screens/rooms/kick_player_bottom_sheet.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widget_and_text_animator/widget_and_text_animator.dart';
@@ -42,7 +44,9 @@ class _WaitingRoomState extends ConsumerState<WaitingRoom> {
   late final Toast toast;
   late final AuthService auth;
   late final LeaderboardManager leaderboardManager;
-
+  bool alreadyPopped = false;
+  bool playerLeave = false;
+  bool called = false;
   void toggleProcessing() {
     if (mounted) {
       setState(() {
@@ -56,10 +60,29 @@ class _WaitingRoomState extends ConsumerState<WaitingRoom> {
     toggleProcessing();
     final exit = await dialog.show(context, const ConfirmDialog());
     if (mounted && exit is bool && exit) {
-      nav.pop(context);
+      // player leave to prevent duplicate popping
+      setState(() {
+        playerLeave = true;
+      });
       await roomManager.leaveRoom(widget.roomID);
+      await FirebaseDatabase.instance.ref('rooms/${widget.roomID}/players/${auth.getUID()}').onDisconnect().cancel();
+      if (!mounted) return;
+      nav.pop(context);
     }
     toggleProcessing();
+  }
+
+  Future<void> pop(String result) async {
+    await FirebaseDatabase.instance.ref('rooms/${widget.roomID}/players/${auth.getUID()}').onDisconnect().cancel();
+    if (!alreadyPopped) {
+      setState(() {
+        alreadyPopped = true;
+      });
+      if (!playerLeave) {
+        if (!mounted) return;
+        nav.pop(context, result);
+      }
+    }
   }
 
   @override
@@ -73,142 +96,172 @@ class _WaitingRoomState extends ConsumerState<WaitingRoom> {
       },
       child: Scaffold(
           resizeToAvoidBottomInset: false,
-          body: Background(
-              child: SafeArea(
-            child: Column(
-              children: [
-                const Padding(
-                  padding: EdgeInsets.only(bottom: 10),
-                  child: BLSmallTitle('Waiting for other players ...'), // TODO: have the title flash
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: BLBorderedPanel(
-                      child: room.when(
-                          data: (room) {
-                            final uid = FirebaseAuth.instance.currentUser!.uid;
-                            if (room == null || !room.players!.contains(uid) && room.hostID != uid) {
-                              // if room was deleted
-                              WidgetsBinding.instance.addPostFrameCallback((duration) {
-                                nav.pop(context);
-                                // toast.showToast(context, 'You have been kicked.', type: NotifType.error);
-                              });
-                              return const BLError();
-                            }
-                            if (room.players!.isEmpty) {
-                              return const Center(child: BLText('No players yet ...'));
-                            }
-                            if (room.status == RoomStatus.inGame) {
-                              Future.microtask(() async {
-                                if (!context.mounted) return;
-                                nav.pushReplace(context, GameRoom(room));
-                              });
-                            }
-                            return Column(
-                              children: [
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                BLText(
-                                  '${room.players?.length} / ${room.maxPlayers}',
-                                  color: room.players!.length == room.maxPlayers! ? Colors.orange : Colors.white,
-                                ),
-                                Flexible(
-                                  child: Stack(
-                                    children: [
-                                      ListView(
-                                        padding: EdgeInsets.zero,
-                                        children: List.generate(room.players!.length, (i) {
-                                          return Padding(
-                                            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                                            child: WidgetAnimator(
-                                                incomingEffect: WidgetTransitionEffects.incomingScaleUp(),
-                                                child: ListTile(
-                                                  leading: BLProfilePic(type: AccountType.user, room.players![i]),
-                                                  title: BLDisplayName(
-                                                    room.players![i],
-                                                    AccountType.user,
-                                                    size: 16,
-                                                  ),
-                                                )),
-                                          );
-                                        }),
-                                      ),
-                                      if (auth.getUID() == room.hostID)
-                                        Align(
-                                          alignment: Alignment.bottomCenter,
-                                          child: Row(
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            children: [
-                                              BLButton(
-                                                  type: processing ? BtnType.grey : BtnType.normal,
-                                                  paddingX: 10,
-                                                  onPressed: () async {
-                                                    final result = await showDialog(
-                                                      context: context,
-                                                      builder: (context) => InGameControlsDialog(room.id!),
-                                                    );
-                                                    if (result is String && result == 'kickPlayer') {
-                                                      if (!context.mounted) return;
-                                                      showBottomSheet(
-                                                        context: context,
-                                                        builder: (context) => KickPlayerBottomSheet(room.id!),
-                                                      );
-                                                    }
-                                                  },
-                                                  child: const Icon(Icons.settings)),
-                                              const SizedBox(
-                                                width: 5,
-                                              ),
-                                              BLButton(
-                                                  type: processing ? BtnType.grey : BtnType.orange,
-                                                  onPressed: () {
-                                                    start(context, room, true);
-                                                  },
-                                                  child: const BLText(
-                                                    'Start\n& leave',
-                                                    alignCenter: true,
-                                                    color: Colors.white,
-                                                  )),
-                                              const SizedBox(
-                                                width: 5,
-                                              ),
-                                              BLButton(
-                                                  type: processing ? BtnType.grey : BtnType.green,
-                                                  onPressed: () {
-                                                    start(context, room);
-                                                  },
-                                                  child: const BLText(
-                                                    'Start\n& join',
-                                                    color: Colors.white,
-                                                  )),
-                                            ],
-                                          ),
-                                        )
-                                    ],
-                                  ),
-                                )
-                              ],
-                            );
-                          },
-                          error: genericError,
-                          loading: genericLoading),
+          body: Stack(
+            fit: StackFit.expand,
+            children: [
+              Background(
+                  child: SafeArea(
+                child: Column(
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.only(bottom: 10),
+                      child: BLSmallTitle('Waiting for other players ...'), // TODO: have the title flash
                     ),
-                  ),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: BLBorderedPanel(
+                          child: room.when(
+                              data: (room) {
+                                final uid = FirebaseAuth.instance.currentUser!.uid;
+                                // internet problem, room deleted, etc
+                                if (room == null) {
+                                  return const BLText('Failed getting room details.');
+                                }
+                                // if any player has false value (left the room by purposely disconnecting), remove that player
+                                if (room.players != null && room.players!.entries.any((e) => e.value == false)) {
+                                  Future.microtask(() async {
+                                    if (called) return;
+                                    called = true;
+                                    await removePlayersWithFalseValue(widget.roomID);
+                                    called = false;
+                                  });
+                                }
+                                // if host has started the game, join the game
+                                if (room.status == RoomStatus.inGame) {
+                                  Future.microtask(() async {
+                                    if (!context.mounted) return;
+                                    nav.pushReplace(context, GameRoom(room));
+                                  });
+                                }
+                                // if room not empty, and player is not in it
+                                if (room.players != null && room.players!.isNotEmpty && !room.players!.keys.toList().contains(uid)) {
+                                  Future.microtask(() {
+                                    if (!context.mounted) return;
+                                    pop('kicked');
+                                  });
+                                  return const BLError();
+                                }
+                                // if room is empty, it was disbanded
+                                if (room.players == null || room.players!.isEmpty) {
+                                  Future.microtask(() {
+                                    if (!context.mounted) return;
+                                    pop('disbanded');
+                                  });
+                                }
+                                return Column(
+                                  children: [
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+                                    BLText(
+                                      '${room.players?.length} / ${room.maxPlayers}',
+                                      color: room.players!.length >= room.maxPlayers! ? Colors.orange : Colors.white,
+                                    ),
+                                    Flexible(
+                                      child: Stack(
+                                        children: [
+                                          ListView(
+                                            padding: EdgeInsets.zero,
+                                            children: List.generate(room.players!.length, (i) {
+                                              return Padding(
+                                                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                                                child: WidgetAnimator(
+                                                    incomingEffect: WidgetTransitionEffects.incomingScaleUp(),
+                                                    child: ListTile(
+                                                      leading: BLProfilePic(type: AccountType.user, room.players!.keys.toList()[i]),
+                                                      title: BLDisplayName(
+                                                        room.players!.keys.toList()[i],
+                                                        AccountType.user,
+                                                        size: 16,
+                                                      ),
+                                                    )),
+                                              );
+                                            }),
+                                          ),
+                                          if (auth.getUID() == room.hostID)
+                                            Align(
+                                              alignment: Alignment.bottomCenter,
+                                              child: Row(
+                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                children: [
+                                                  BLButton(
+                                                      type: processing ? BtnType.grey : BtnType.normal,
+                                                      paddingX: 10,
+                                                      onPressed: () async {
+                                                        final result = await showDialog(
+                                                          context: context,
+                                                          builder: (context) => InGameControlsDialog(room.id!),
+                                                        );
+                                                        if (result is String && result == 'kickPlayer') {
+                                                          if (!context.mounted) return;
+                                                          showModalBottomSheet(
+                                                            context: context,
+                                                            builder: (context) => KickPlayerBottomSheet(room.id!),
+                                                          );
+                                                        }
+                                                      },
+                                                      child: const Icon(Icons.settings)),
+                                                  const SizedBox(
+                                                    width: 5,
+                                                  ),
+                                                  BLButton(
+                                                      type: processing ? BtnType.grey : BtnType.orange,
+                                                      onPressed: () {
+                                                        start(context, room, true);
+                                                      },
+                                                      child: const BLText(
+                                                        'Start\n& leave',
+                                                        alignCenter: true,
+                                                        color: Colors.white,
+                                                      )),
+                                                  const SizedBox(
+                                                    width: 5,
+                                                  ),
+                                                  BLButton(
+                                                      type: processing ? BtnType.grey : BtnType.green,
+                                                      onPressed: () {
+                                                        start(context, room);
+                                                      },
+                                                      child: const BLText(
+                                                        'Start\n& join',
+                                                        color: Colors.white,
+                                                      )),
+                                                ],
+                                              ),
+                                            )
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                );
+                              },
+                              error: genericError,
+                              loading: genericLoading),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 15),
+                    BLButton(
+                        type: processing ? BtnType.grey : BtnType.red,
+                        paddingX: MediaQuery.of(context).size.width / 3,
+                        onPressed: () {
+                          exit();
+                        },
+                        child: const BLText('Leave')),
+                    const SizedBox(height: 30),
+                  ],
                 ),
-                const SizedBox(height: 15),
-                BLButton(
-                    type: processing ? BtnType.grey : BtnType.red,
-                    paddingX: MediaQuery.of(context).size.width / 3,
-                    onPressed: () {
-                      exit();
-                    },
-                    child: const BLText('Leave')),
-                const SizedBox(height: 30),
-              ],
-            ),
-          ))),
+              )),
+              if (processing)
+                Container(
+                  color: Colors.black.withOpacity(0.6),
+                  child: const BLLoading(
+                    message: 'Loading...',
+                  ),
+                )
+            ],
+          )),
     );
   }
 
@@ -220,13 +273,14 @@ class _WaitingRoomState extends ConsumerState<WaitingRoom> {
     roomManager = ref.read(roomManagerProvider.notifier);
     auth = ref.read(authServiceProvider.notifier);
     leaderboardManager = ref.read(leaderboardManagerProvider.notifier);
+    FirebaseDatabase.instance.ref('rooms/${widget.roomID}/players/${auth.getUID()}').onDisconnect().set(false);
     super.initState();
   }
 
   void start(BuildContext context, Room room, [bool startLeave = false]) async {
     if (processing) return;
     toggleProcessing();
-    final leaderboardID = '${room.id}${DateTime.now()}';
+    final leaderboardID = '${room.id}--${DateTime.now().millisecondsSinceEpoch}';
 
     /// create leaderboard ahead of time
     final result = await leaderboardManager.create(
@@ -234,7 +288,7 @@ class _WaitingRoomState extends ConsumerState<WaitingRoom> {
         id: leaderboardID,
         roomID: room.id,
         roomName: room.name,
-        players: room.players,
+        players: room.players!.keys.toList(),
         totalScore: room.challengeIDs!.length,
         status: LeaderboardStatus.pending,
         date: DateTime.now(),
@@ -271,5 +325,31 @@ class _WaitingRoomState extends ConsumerState<WaitingRoom> {
         nav.pushReplace(context, GameRoom(updatedRoom));
       }
     }
+  }
+}
+
+Future<void> removePlayersWithFalseValue(String roomID) async {
+  final result = await FirebaseDatabase.instance.ref('rooms/$roomID/players').runTransaction((obj) {
+    var players = (obj as Map<Object?, Object?>?)?.map((k, v) => MapEntry<String, Object?>(k as String, v as bool)).cast<String, Object?>();
+    if (players != null && players.entries.any((e) => e.value == false)) {
+      List<String> keysToRemove = [];
+      // debugPrint(players.toString());
+      for (final player in players.entries) {
+        if (player.value == false) {
+          keysToRemove.add(player.key);
+        }
+      }
+      for (final key in keysToRemove) {
+        players.removeWhere((k, v) => k == key);
+      }
+      // debugPrint(players.toString());
+      return Transaction.success(players);
+    }
+    return Transaction.abort();
+  });
+  if (result.committed) {
+    // debugPrint('Commited');
+  } else {
+    // debugPrint('Aborted');
   }
 }
