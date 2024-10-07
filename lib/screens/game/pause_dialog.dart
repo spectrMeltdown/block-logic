@@ -4,10 +4,11 @@ import 'package:block_logic/components/dialog/dialog.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/text/title.dart';
 import 'package:block_logic/logic/enums.dart';
-import 'package:block_logic/logic/services/game_manager.dart';
-import 'package:block_logic/logic/services/game_provider.dart';
+import 'package:block_logic/logic/services/game/tab_num_provider.dart';
+import 'package:block_logic/logic/services/game/game_manager.dart';
+import 'package:block_logic/logic/services/game/game_provider.dart';
 import 'package:block_logic/logic/services/navigation.dart';
-import 'package:block_logic/logic/services/should_reset_all_blocks.dart';
+import 'package:block_logic/logic/services/game/should_reset_all_blocks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -34,6 +35,7 @@ class PauseDialog extends ConsumerWidget {
               gameManager.setShouldResetAllBlocks(true);
               ref.invalidate(getRootDataProvider);
               ref.invalidate(shouldResetAllBlocksProvider);
+              ref.invalidate(tabNumberProvider);
             },
             child: const Row(
               mainAxisSize: MainAxisSize.min,

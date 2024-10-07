@@ -57,17 +57,17 @@ class _EditRoomBottomSheetState extends ConsumerState<EditRoomBottomSheet> {
 
   bool updateSelection(Challenge challenge, {bool remove = false}) {
     if (remove) {
-      debugPrint('updated in remove');
+      // debugPrint('updated in remove');
       setState(() {
         selectedChallenges.removeWhere((i) => i.id == challenge.id);
       });
       return true;
     } else {
       if (selectedChallenges.length == 5) {
-        debugPrint('updated in length');
+        // debugPrint('updated in length');
         return false;
       }
-      debugPrint('updated in add');
+      // debugPrint('updated in add');
       setState(() {
         selectedChallenges.add(challenge);
       });

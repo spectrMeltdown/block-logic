@@ -11,7 +11,7 @@ import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_models/leaderboard.dart';
 import 'package:block_logic/logic/firebase_providers/all_scores.dart';
 import 'package:block_logic/logic/firebase_providers/selected_users.dart';
-import 'package:block_logic/logic/services/game_manager.dart';
+import 'package:block_logic/logic/services/game/game_manager.dart';
 import 'package:block_logic/logic/services/navigation.dart';
 import 'package:block_logic/logic/services/shared_pref.dart';
 import 'package:block_logic/logic/services/ui.dart';

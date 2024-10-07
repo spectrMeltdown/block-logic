@@ -2,10 +2,10 @@ import 'package:block_logic/components/button/text.dart';
 import 'package:block_logic/components/dialog/dialog.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/text/title_small.dart';
-import 'package:block_logic/logic/services/game_manager.dart';
-import 'package:block_logic/logic/services/game_provider.dart';
+import 'package:block_logic/logic/services/game/game_manager.dart';
+import 'package:block_logic/logic/services/game/game_provider.dart';
 import 'package:block_logic/logic/services/navigation.dart';
-import 'package:block_logic/logic/services/should_reset_all_blocks.dart';
+import 'package:block_logic/logic/services/game/should_reset_all_blocks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -60,7 +60,7 @@ class PracticeDialog extends ConsumerWidget {
             BLTextButton(
                 onPressed: () async {
                   gameManager.resetTree();
-                  gameManager.setShouldResetAllBlocks(true);
+                  // gameManager.setShouldResetAllBlocks(true);
                   ref.invalidate(getRootDataProvider);
                   ref.invalidate(shouldResetAllBlocksProvider);
                   if (!context.mounted) return;
@@ -77,7 +77,7 @@ class PracticeDialog extends ConsumerWidget {
             BLTextButton(
                 onPressed: () async {
                   gameManager.resetTree();
-                  gameManager.setShouldResetAllBlocks(true);
+                  // gameManager.setShouldResetAllBlocks(true);
                   ref.invalidate(getRootDataProvider);
                   ref.invalidate(shouldResetAllBlocksProvider);
                   if (!context.mounted) return;

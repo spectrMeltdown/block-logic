@@ -1,13 +1,14 @@
 import 'package:block_logic/logic/game/block_data.dart';
-import 'package:block_logic/logic/services/game_manager.dart';
+import 'package:block_logic/logic/services/game/game_manager.dart';
 import 'package:block_logic/screens/game/block.dart';
 import 'package:block_logic/screens/game/block_selector_stack.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class BlockSelectorView extends ConsumerStatefulWidget {
-  const BlockSelectorView({required this.blockData, super.key});
+  const BlockSelectorView({required this.challengeUID, required this.blockData, super.key});
   final List<GameBlockData> blockData;
+  final String challengeUID;
   @override
   ConsumerState<BlockSelectorView> createState() => _BlockSelectorViewState();
 }
@@ -15,46 +16,38 @@ class BlockSelectorView extends ConsumerStatefulWidget {
 class _BlockSelectorViewState extends ConsumerState<BlockSelectorView> with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
-  bool? shouldReset;
+
   late final GameManager gameManager;
   final scrollController = ScrollController();
-  // bool isScrollbarVisible = false;
+  List<GameBlockData> blockData = [];
+
   @override
   void initState() {
     gameManager = ref.read(gameManagerProvider.notifier);
-    // checkScrollbarVisibility();
-    // scrollController.addListener();
+    blockData = widget.blockData;
     super.initState();
   }
 
-  // void checkScrollbarVisibility() {
-  //   // Check if the scroll extent is greater than 0, which indicates content is scrollable
-  //   if (scrollController.position.maxScrollExtent > 0) {
-  //     setState(() {
-  //       isScrollbarVisible = true;
-  //     });
-  //   } else {
-  //     setState(() {
-  //       isScrollbarVisible = false;
-  //     });
-  //   }
-  // }
-
   @override
   void dispose() {
-    // scrollController.removeListener(checkScrollbarVisibility);
     scrollController.dispose();
     super.dispose();
   }
 
   @override
+  void didUpdateWidget(covariant BlockSelectorView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.challengeUID != oldWidget.challengeUID) {
+      debugPrint('rebuild selector');
+      setState(() {
+        blockData = widget.blockData;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    super.build(context); // TODO: MUST KEEP BECAUSE ADDING/REMOVING BLOCKS WONT WORK WIHTOUT IT
-    // shouldReset = ref.watch(shouldResetBlockProvider);
-    // if (shouldReset!) {
-    //   gameManager.setshouldRedisplay(false);
-    //   ref.invalidate(shouldRedisplayProvider);
-    // }
+    super.build(context);
     return Scrollbar(
       controller: scrollController,
       thumbVisibility: true,
@@ -69,15 +62,16 @@ class _BlockSelectorViewState extends ConsumerState<BlockSelectorView> with Auto
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 5),
             child: Row(
-              // spacing: 10,
-              children: List.generate(widget.blockData.length, (i) {
-                final data = widget.blockData[i];
-                final count = data.inSelectorCount;
-                if (count != null) {
-                  debugPrint('Count from selector view: $count');
-                  return BlockSelectorStack(data);
+              children: List.generate(blockData.length, (i) {
+                if (blockData[i].inSelectorCount != null) {
+                  // debugPrint('Count from selector view: ${widget.blockData[i].inSelectorCount}');
+                  return BlockSelectorStack(blockData[i]);
                 }
-                return GameBlock(data: data);
+                return GameBlock(
+                  data: blockData[i],
+                  topLevelBlock: true,
+                  challengeUID: widget.challengeUID,
+                );
               }),
             ),
           ),

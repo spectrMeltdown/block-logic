@@ -82,7 +82,7 @@ class RoomPasswordDialogState extends ConsumerState<RoomPasswordDialog> {
                     if (processing) return;
                     processing = true;
                     if (formKey.currentState!.validate()) {
-                      debugPrint(widget.hostID);
+                      // debugPrint(widget.hostID);
                       final correctInput = await roomManager.validatePassword(
                         input: passController.text.trim(),
                         pass: widget.pass,

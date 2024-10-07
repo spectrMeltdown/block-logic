@@ -4,12 +4,9 @@ import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/logic/firebase_models/challenge.dart';
 import 'package:block_logic/logic/services/audio.dart';
 import 'package:block_logic/logic/services/dialog.dart';
-import 'package:block_logic/logic/services/game_manager.dart';
-import 'package:block_logic/logic/services/game_provider.dart';
+import 'package:block_logic/logic/services/game/game_manager.dart';
 import 'package:block_logic/logic/services/navigation.dart';
-import 'package:block_logic/logic/services/should_reset_all_blocks.dart';
-import 'package:block_logic/logic/services/should_reset_block.dart';
-import 'package:block_logic/logic/services/time_box.dart';
+import 'package:block_logic/logic/services/game/time_box.dart';
 import 'package:block_logic/logic/services/ui.dart';
 import 'package:block_logic/screens/game/pause_dialog.dart';
 import 'package:block_logic/screens/game/time_box.dart';
@@ -60,9 +57,9 @@ class GameAppbar extends ConsumerWidget {
             if (leave is bool && leave) {
               if (practiceMode) {
                 gameManager.resetTree();
-                gameManager.setShouldResetAllBlocks(true);
-                ref.invalidate(getRootDataProvider);
-                ref.invalidate(shouldResetAllBlocksProvider);
+                // gameManager.setShouldResetAllBlocks(true);
+                // ref.invalidate(getRootDataProvider);
+                // ref.invalidate(shouldResetAllBlocksProvider);
                 if (!context.mounted) return;
                 nav.pop(context);
                 nav.pop(context);
@@ -73,10 +70,10 @@ class GameAppbar extends ConsumerWidget {
               if (result is bool && result) {
                 await gameManager.leaveGame(false);
                 gameManager.resetTree();
-                gameManager.setShouldResetAllBlocks(true);
-                ref.invalidate(getRootDataProvider);
-                ref.invalidate(shouldResetAllBlocksProvider);
-                ref.invalidate(shouldResetBlockProvider);
+                // gameManager.setShouldResetAllBlocks(true);
+                // ref.invalidate(getRootDataProvider);
+                // ref.invalidate(shouldResetAllBlocksProvider);
+                // ref.invalidate(shouldResetBlockProvider);
                 if (!context.mounted) return;
                 nav.pop(context);
               }

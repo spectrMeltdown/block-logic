@@ -5,37 +5,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class BLBackButton extends ConsumerStatefulWidget {
+class BLBackButton extends ConsumerWidget {
   final VoidCallback? onPressed;
   final double paddingY;
   final bool disabled;
   const BLBackButton({this.onPressed, this.paddingY = 7, this.disabled = false, super.key});
 
   @override
-  ConsumerState<BLBackButton> createState() => _BLBackButtonState();
-}
-
-class _BLBackButtonState extends ConsumerState<BLBackButton> {
-  BLAudioState? audio;
-  late final CustomNavigation nav;
-
-  @override
-  void initState() {
+  Widget build(BuildContext context, WidgetRef ref) {
+    late final BLAudioState? audio;
     if (!kIsWeb) audio = ref.read(bLAudioStateProvider.notifier);
-    nav = ref.read(customNavigationProvider.notifier);
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
+    final nav = ref.read(customNavigationProvider.notifier);
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: widget.paddingY, vertical: 0),
+      padding: EdgeInsets.symmetric(horizontal: paddingY, vertical: 0),
       child: IconButton(
           onPressed: () {
-            if (widget.disabled) return;
+            if (disabled) return;
             audio?.playBtn();
-            if (widget.onPressed != null) {
-              widget.onPressed?.call();
+            if (onPressed != null) {
+              onPressed?.call();
             } else {
               nav.pop(context);
             }

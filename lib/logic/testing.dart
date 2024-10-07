@@ -5,7 +5,7 @@ import 'dart:math';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_models/challenge.dart';
 import 'package:block_logic/logic/firebase_models/report.dart';
-import 'package:block_logic/logic/services/block_data_manager.dart';
+import 'package:block_logic/logic/services/game/all_blocks.dart';
 import 'package:block_logic/logic/services/error_handler.dart';
 import 'package:firebase_database/firebase_database.dart';
 

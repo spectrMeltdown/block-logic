@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
-class SelectedLeaderboardItem extends ConsumerStatefulWidget {
+class SelectedLeaderboardItem extends ConsumerWidget {
   final int rank;
   final String playerUID;
   final DateTime? time;
@@ -22,15 +22,17 @@ class SelectedLeaderboardItem extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<SelectedLeaderboardItem> createState() => _SelectedLeaderboardItemState();
-}
-
-class _SelectedLeaderboardItemState extends ConsumerState<SelectedLeaderboardItem> {
-  final type = AccountType.user;
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, ref) {
+    const type = AccountType.user;
     return Row(
-      children: [BLText(widget.rank.toString()), BLProfilePic(widget.playerUID, type: type), BLDisplayName(widget.playerUID, type), BLText(widget.time == null ? '--' : DateFormat('hh:mm').format(widget.time!))],
+      children: [
+        BLText(rank.toString()),
+        BLProfilePic(playerUID, type: type),
+        BLDisplayName(playerUID, type),
+        BLText(
+          time == null ? '--' : DateFormat('hh:mm').format(time!),
+        ),
+      ],
     );
   }
 }

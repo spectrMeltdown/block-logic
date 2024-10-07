@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:video_player/video_player.dart';
 
-class Background extends ConsumerStatefulWidget {
+class Background extends ConsumerWidget {
   final Widget child;
   final VideoPlayerController? controller;
   final bool grid;
@@ -22,37 +22,28 @@ class Background extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<Background> createState() => _BackgroundState();
-}
-
-class _BackgroundState extends ConsumerState<Background> {
-  late final VideoPlayerController? controller;
-  late final Assets assets;
-
-  // late final VideoPlayerController _controller;
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, ref) {
+    final assets = ref.read(assetsProvider);
     final blui = ref.read(bLUIProvider.notifier);
     return Stack(
-      fit: widget.fit,
+      fit: fit,
       children: [
         // (asset != null)
         //     ? BLAnimationPlayer(
         //         asset!,
         //         size: double.maxFinite,
         //       )
-        (widget.asset != null)
-            ? widget.controller != null && widget.controller!.value.isInitialized
+        (asset != null)
+            ? controller != null && controller!.value.isInitialized
                 ? VideoPlayer(controller!)
                 : const BlankWidget()
             : Container(
                 decoration: !kIsWeb
                     ? BoxDecoration(
                         image: DecorationImage(
-                            image: (widget.grid == true
-                                ? AssetImage(assets.backgroundGrid)
-                                : AssetImage(assets.backgroundNoGrid)),
-                            fit: BoxFit.cover),
+                          image: (grid == true ? AssetImage(assets.backgroundGrid) : AssetImage(assets.backgroundNoGrid)),
+                          fit: BoxFit.cover,
+                        ),
                       )
                     : BoxDecoration(
                         gradient: RadialGradient(colors: [
@@ -60,17 +51,8 @@ class _BackgroundState extends ConsumerState<Background> {
                           Colors.black87,
                         ], radius: 1.5),
                       )),
-        Padding(
-            padding: kIsWeb ? EdgeInsets.zero : const EdgeInsets.symmetric(horizontal: 5, vertical: 0),
-            child: widget.child)
+        Padding(padding: kIsWeb ? EdgeInsets.zero : const EdgeInsets.symmetric(horizontal: 5, vertical: 0), child: child)
       ],
     );
-  }
-
-  @override
-  void initState() {
-    assets = ref.read(assetsProvider);
-    controller = widget.controller;
-    super.initState();
   }
 }

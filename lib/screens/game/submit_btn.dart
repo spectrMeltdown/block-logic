@@ -5,12 +5,15 @@ import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/text/title_small.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/game/block_data.dart';
-import 'package:block_logic/logic/services/game_manager.dart';
-import 'package:block_logic/logic/services/game_provider.dart';
+import 'package:block_logic/logic/services/game/tab_num_provider.dart';
+import 'package:block_logic/logic/services/game/game_manager.dart';
+import 'package:block_logic/logic/services/game/game_provider.dart';
 import 'package:block_logic/logic/services/navigation.dart';
 import 'package:block_logic/logic/services/score_manager.dart';
+import 'package:block_logic/logic/services/game/should_reset_all_blocks.dart';
+import 'package:block_logic/logic/services/game/should_reset_block.dart';
 import 'package:block_logic/logic/services/solution_checker.dart';
-import 'package:block_logic/logic/services/time_box.dart';
+import 'package:block_logic/logic/services/game/time_box.dart';
 import 'package:block_logic/logic/services/toast.dart';
 import 'package:block_logic/screens/game/game_challenge.dart';
 import 'package:block_logic/screens/tutorials/practice_dialog.dart';
@@ -95,8 +98,8 @@ class _GameSubmitButtonState extends ConsumerState<GameSubmitButton> {
             }
           }
 
-          debugPrint('Used blocks: $usedBlockCount');
-          debugPrint('total blocks: $challengeBlockCount');
+          // debugPrint('Used blocks: $usedBlockCount');
+          // debugPrint('total blocks: $challengeBlockCount');
 
           // if used blocks are not equal to or higher than total, then it is incomplete
           incompleteBlocks = !(usedBlockCount >= challengeBlockCount);
@@ -141,12 +144,13 @@ class _GameSubmitButtonState extends ConsumerState<GameSubmitButton> {
             }
           }
           bool correct = false;
+
           String? result;
-          final userOutput = await checker.check();
+          final userOutput = !kDebugMode ? await checker.check() : '';
           // loop through correct answers
           for (final match in solutionMatch) {
-            debugPrint('match is: $match');
-            debugPrint(userOutput.toString());
+            // debugPrint('match is: $match');
+            // debugPrint(userOutput.toString());
             if (match.toString().trim().contains(userOutput.toString().trim())) {
               correct = true;
             } else {
@@ -175,19 +179,20 @@ class _GameSubmitButtonState extends ConsumerState<GameSubmitButton> {
           // updateChallenge is null in practice mode!
           if (widget.updateChallenge != null) {
             // move to next challenge
-            widget.updateChallenge!();
-            // remove all used blocks
-            manager.resetTree();
+            gameState.dataTree = {}; // remove all used blocks
+            gameState.countsPerTab.clear(); // different from resetAllCategory!
+            gameState.inSelectorUIDs.clear();
+            gameState.solution = [];
+            ref.invalidate(tabNumberProvider);
+            // ref.invalidate(getRootDataProvider);
             // manager.setShouldResetAllBlocks(true);
-            // refresh providers
-            ref.invalidate(getRootDataProvider);
             // ref.invalidate(shouldResetAllBlocksProvider);
-            // ref.invalidate(customTabProvider);
-            // resume timer
-            if (!widget.practiceMode) {
-              manager.resumeTimer();
-              ref.invalidate(runTimerProvider);
-            }
+            // manager.setShouldResetAllBlocks(false);
+            // ref.invalidate(shouldResetAllBlocksProvider);
+            Future.delayed(Duration.zero, () {
+              widget.updateChallenge!();
+            });
+            // refresh providers
           }
 
           // if there was an error updating score, notify the player

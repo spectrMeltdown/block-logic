@@ -33,18 +33,6 @@ class _VerifyEmailState extends ConsumerState<VerifyEmail> with TickerProviderSt
   late final Assets assets;
   bool processing = false;
   bool isEmailVerified = false;
-  // void emailVerified() async {
-  //   if (processed) return;
-  //   timer.cancel();
-  //   WidgetsBinding.instance.addPostFrameCallback((_) {
-  //     if (processed) return;
-  //     processed = true;
-  //     if (context.mounted) {
-  //       nav.push(context, const MainMenuScreen());
-  //     }
-  //     showToast(context,"Email verified successfully");
-  //   });
-  // }
 
   @override
   Widget build(BuildContext context) {

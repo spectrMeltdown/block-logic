@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/game/block_data.dart';
 import 'package:block_logic/logic/services/error_handler.dart';
-import 'package:block_logic/logic/services/game_manager.dart';
+import 'package:block_logic/logic/services/game/game_manager.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
@@ -31,6 +31,8 @@ class SolutionChecker extends StateNotifier<SolutionCheckerState> {
 
   Future<String?> executePythonCode(String code) async {
     const String apiUrl = 'https://6ijw09yzs1.execute-api.ap-southeast-2.amazonaws.com/v1/run-code';
+
+    debugPrint(code);
 
     final Map<String, dynamic> body = {
       'code': code,

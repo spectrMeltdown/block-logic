@@ -25,18 +25,22 @@ class LeaderboardItem extends ConsumerStatefulWidget {
   ConsumerState<ConsumerStatefulWidget> createState() => _LeaderboardItemState();
 }
 
-class _LeaderboardItemState extends ConsumerState<LeaderboardItem> {
+class _LeaderboardItemState extends ConsumerState<LeaderboardItem> with AutomaticKeepAliveClientMixin {
   late final CustomNavigation nav;
   late final AuthService auth;
   bool selected = false;
+
+  @override
+  bool get wantKeepAlive => true;
+
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     if (!widget.deleteMode) {
       setState(() {
         selected = false;
       });
     }
-
     return BLCard(
         outerPadding: const EdgeInsets.symmetric(horizontal: 5),
         borderColor: widget.deleteMode

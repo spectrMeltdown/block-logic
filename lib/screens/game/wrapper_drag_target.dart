@@ -1,5 +1,5 @@
 import 'package:block_logic/logic/game/block_data.dart';
-import 'package:block_logic/logic/services/game_manager.dart';
+import 'package:block_logic/logic/services/game/game_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -26,11 +26,11 @@ class _GameDragTargetState extends ConsumerState<DragTargetWrapper> {
   // GameBlockData? blockData;
   bool editorOutline = false;
   late final GameManager gameManager;
-
+  final outlineDecor = BoxDecoration(borderRadius: const BorderRadius.all(Radius.circular(10)), border: Border.all(color: Colors.white));
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: editorOutline ? BoxDecoration(borderRadius: const BorderRadius.all(Radius.circular(10)), border: Border.all(color: Colors.white)) : null,
+      decoration: editorOutline ? outlineDecor : null,
       child: DragTarget<GameBlockData>(
         builder: (context, accepted, rejected) {
           widget.builder?.call();

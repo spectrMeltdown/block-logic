@@ -5,7 +5,7 @@ import 'package:block_logic/components/util/spaced_col.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_models/challenge.dart';
 import 'package:block_logic/logic/firebase_models/room.dart';
-import 'package:block_logic/logic/services/block_data_manager.dart';
+import 'package:block_logic/logic/services/game/all_blocks.dart';
 import 'package:block_logic/logic/services/error_handler.dart';
 import 'package:block_logic/logic/services/toast.dart';
 import 'package:firebase_database/firebase_database.dart';

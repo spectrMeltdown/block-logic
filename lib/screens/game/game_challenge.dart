@@ -1,20 +1,14 @@
-import 'package:block_logic/components/text/text.dart';
-import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_models/challenge.dart';
-import 'package:block_logic/logic/services/game_manager.dart';
-import 'package:block_logic/logic/services/game_provider.dart';
-import 'package:block_logic/logic/services/return_block.dart';
-import 'package:block_logic/logic/services/should_reset_block.dart';
+import 'package:block_logic/logic/services/game/game_manager.dart';
 import 'package:block_logic/screens/game/blocks_selector.dart';
 import 'package:block_logic/screens/game/challange_box.dart';
 import 'package:block_logic/screens/game/editor.dart';
 import 'package:block_logic/screens/game/game_appbar.dart';
+import 'package:block_logic/screens/game/return_block_overlay.dart';
 import 'package:block_logic/screens/game/submit_btn.dart';
 import 'package:block_logic/screens/game/test_btn.dart';
-import 'package:block_logic/screens/game/wrapper_drag_target.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:widget_and_text_animator/widget_and_text_animator.dart';
 
 final processingProvider = StateProvider.autoDispose<bool>((ref) {
   return ref.watch(gameManagerProvider.select((state) => state.processingOverlay));
@@ -39,10 +33,10 @@ class GameChallenge extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final gameManager = ref.read(gameManagerProvider.notifier);
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
-    final returnBlock = ref.watch(returnBlockProvider);
+    final gameManager = ref.read(gameManagerProvider.notifier);
+
     gameManager.updateSolution(challenge.solutionMatch!);
     // debugPrint('${widget.challengeCount}');
     // debugPrint('${widget.currentChallenge}');
@@ -101,69 +95,14 @@ class GameChallenge extends ConsumerWidget {
                   child: Padding(
                     padding: const EdgeInsets.only(bottom: 20),
                     child: GameBlocks(
-                      // purge all empty categories, if any
-                      challenge.blocks != null ? Map.fromEntries(challenge.blocks!.entries.where((e) => e.value.isNotEmpty)) : {},
-                    ),
+                        // purge all empty categories
+                        challenge.blocks != null ? Map.fromEntries(challenge.blocks!.entries.where((e) => e.value.isNotEmpty)) : {},
+                        challenge.id!),
                   ),
                 ),
               ],
             ),
-            Visibility(
-                visible: returnBlock,
-                child: WidgetAnimator(
-                  incomingEffect: WidgetTransitionEffects.incomingScaleUp(),
-                  outgoingEffect: WidgetTransitionEffects.outgoingScaleDown(),
-                  child: Container(
-                    margin: const EdgeInsets.only(bottom: 20, left: 10, right: 10),
-                    height: 120,
-                    width: double.maxFinite,
-                    child: DragTargetWrapper(
-                      builderChild: () {
-                        return Container(
-                          decoration: BoxDecoration(
-                            borderRadius: const BorderRadius.all(Radius.circular(10)),
-                            color: Colors.red.withOpacity(0.9),
-                            border: Border.all(
-                              color: Colors.black12,
-                              width: 2,
-                            ),
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              WidgetAnimator(
-                                  atRestEffect: WidgetRestingEffects.bounce(effectStrength: 0.5, delay: const Duration(milliseconds: 500)),
-                                  child: const Icon(
-                                    Icons.download,
-                                    size: 40,
-                                  )),
-                              const SizedBox(width: 5),
-                              const BLText('Return to selector'),
-                            ],
-                          ),
-                        );
-                      },
-                      onAcceptWithDetails: (dataToAccept, manager) {
-                        assert(dataToAccept.uid != null);
-                        gameManager.deleteData(dataToAccept); //mark data to delete
-                        gameManager.removeInSelectorUIDs(dataToAccept);
-                        gameManager.removeSelectedInSelectorUIDs();
-                        gameManager.deleteSelectedData(); // delete
-                        ref.invalidate(shouldResetBlockProvider);
-                        ref.invalidate(getRootDataProvider);
-                        ref.invalidate(getSelfDataProvider);
-                        ref.invalidate(getChildrenDataProvider);
-                      },
-                      onWillAcceptWithDetails: (dataToAccept) {
-                        if (dataToAccept.state != CodeBlockState.inEditor) {
-                          return false;
-                        }
-                        return true;
-                      },
-                    ),
-                  ),
-                )),
+            const ReturnBlockOverlay()
           ],
         ))
       ],

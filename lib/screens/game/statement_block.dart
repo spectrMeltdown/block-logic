@@ -1,7 +1,7 @@
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/game/block_data.dart';
-import 'package:block_logic/logic/services/game_manager.dart';
-import 'package:block_logic/logic/services/game_provider.dart';
+import 'package:block_logic/logic/services/game/game_manager.dart';
+import 'package:block_logic/logic/services/game/game_provider.dart';
 import 'package:block_logic/screens/game/add_new_block_box.dart';
 import 'package:block_logic/screens/game/block.dart';
 import 'package:block_logic/screens/game/wrapper_drag_target.dart';
@@ -16,8 +16,8 @@ class StatementBox extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final gameManager = ref.read(gameManagerProvider.notifier);
     // final validator = BlockValidator()
-    final data = ref.watch(getSelfDataProvider(this.data.uid))!;
-    final blocks = ref.watch(getChildrenDataProvider(data.statementUIDs ?? []));
+    final data = ref.watch(getSelfDataProvider(this.data.uid));
+    final blocks = ref.watch(getChildrenDataProvider(data?.statementUIDs ?? []));
     // debugPrint(blocks.toString());
     // debugPrint('${widget.data.name} ${widget.data.statementUIDs}');
 
@@ -41,19 +41,26 @@ class StatementBox extends ConsumerWidget {
             onAcceptWithDetails: (dataToAccept, manager) {
               // debugPrint(initData.toString());
               if (dataToAccept.state == CodeBlockState.inEditor) {
-                // gameManager.moveData(dataToAccept, data.uid!, ChildrenData.statement);
+                gameManager.moveData(
+                  data: dataToAccept,
+                  parent: data!,
+                  type: ChildrenData.statementUIDs,
+                );
               } else {
                 // debugPrint('parent id: ${data!.uid}');
                 // debugPrint('initData name: ${initData.name}');
-                gameManager.addData(dataToAccept, data.uid!, ChildrenData.statement);
+                gameManager.addData(dataToAccept, data?.uid ?? '', ChildrenData.statementUIDs);
               }
               ref.invalidate(getRootDataProvider);
               ref.invalidate(getSelfDataProvider);
               ref.invalidate(getChildrenDataProvider);
+
               // debugPrint(gameManager.getRootData().toString());
             },
             onWillAcceptWithDetails: (dataToAccept) {
-              if (data.statementUIDs?.contains(dataToAccept.uid) ?? false || dataToAccept.uid == data.uid || dataToAccept.uid == data.parentUID) {
+              // debugPrint(data!.uid);
+              // debugPrint(dataToAccept.uid);
+              if (data?.statementUIDs?.contains(dataToAccept.uid) ?? false || dataToAccept.uid == data!.uid || dataToAccept.uid == data.parentUID) {
                 return false;
               }
               return true;

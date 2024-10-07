@@ -6,23 +6,12 @@ import 'package:block_logic/logic/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class DuplicateLogin extends ConsumerStatefulWidget {
+class DuplicateLogin extends ConsumerWidget {
   const DuplicateLogin({super.key});
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _DuplicateLoginState();
-}
-
-class _DuplicateLoginState extends ConsumerState<DuplicateLogin> {
-  late final AuthService auth;
-  @override
-  void initState() {
-    auth = ref.read(authServiceProvider.notifier);
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, ref) {
+    final auth = ref.read(authServiceProvider.notifier);
     return PopScope(
       canPop: false,
       child: Scaffold(

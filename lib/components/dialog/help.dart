@@ -7,25 +7,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class BLHelpDialog extends ConsumerStatefulWidget {
+class BLHelpDialog extends ConsumerWidget {
   final Widget child;
   const BLHelpDialog({super.key, required this.child});
 
   @override
-  ConsumerState<BLHelpDialog> createState() => _BLHelpDialogState();
-}
-
-class _BLHelpDialogState extends ConsumerState<BLHelpDialog> {
-  late final CustomNavigation nav;
-
-  @override
-  void initState() {
-    nav = ref.read(customNavigationProvider.notifier);
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, ref) {
+    final nav = ref.read(customNavigationProvider.notifier);
     return BLDialog(
         child: Column(
       mainAxisSize: MainAxisSize.min,
@@ -42,7 +30,7 @@ class _BLHelpDialogState extends ConsumerState<BLHelpDialog> {
           ],
         ),
         const SizedBox(height: 10),
-        widget.child,
+        child,
         const SizedBox(height: 15),
         BLTextButton(
           onPressed: () => nav.pop(context),

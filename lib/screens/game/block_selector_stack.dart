@@ -1,9 +1,9 @@
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/game/block_data.dart';
-import 'package:block_logic/logic/services/game_manager.dart';
-import 'package:block_logic/logic/services/should_reset_all_blocks.dart';
-import 'package:block_logic/logic/services/should_reset_block.dart';
+import 'package:block_logic/logic/services/game/game_manager.dart';
+import 'package:block_logic/logic/services/game/should_reset_all_blocks.dart';
+import 'package:block_logic/logic/services/game/should_reset_block.dart';
 import 'package:block_logic/screens/game/block.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -18,21 +18,45 @@ class BlockSelectorStack extends ConsumerStatefulWidget {
 }
 
 class _BlockSelectorStackState extends ConsumerState<BlockSelectorStack> {
+  //   @override
+  // bool get wantKeepAlive => true;
+
   late int count;
   late final GameManager gameManager;
-  Map<int, String> blockIDs = {};
+  List<String> blockIDs = [];
+  int lastHashCode = 0;
+
   @override
   void initState() {
-    count = widget.data.inSelectorCount!;
-    debugPrint('Initial Count: $count');
     gameManager = ref.read(gameManagerProvider.notifier);
-    blockIDs = {for (int i = 0; i < count; i++) i: ''};
+    createStackCount();
     super.initState();
   }
 
-  void updateStackCount({
+  void createStackCount() {
+    // debugPrint('Initial Count: $count');
+    final gameState = ref.read(gameManagerProvider);
+    setState(() {
+      count = widget.data.inSelectorCount!;
+      // generate map of ids based on inSelectorCount
+      blockIDs = List.generate(count, (i) => '${widget.data.inSelectorUID}$i');
+    });
+    final Map<CodeBlockType, List<String>> insUIDs = Map.from(gameState.inSelectorUIDs);
+    final dataInsUID = widget.data.inSelectorUID;
+    for (final list in insUIDs.values) {
+      if (list.contains(dataInsUID)) {
+        final index = list.indexWhere((i) => i == dataInsUID);
+        list.removeAt(index);
+        list.insertAll(index, blockIDs);
+      }
+    }
+    gameState.inSelectorUIDs = insUIDs;
+  }
+
+  Future<void> updateStackCount({
     bool add = true,
   }) async {
+    debugPrint('Updating Count: $count');
     if (add) {
       if (count < widget.data.inSelectorCount!) {
         setState(() {
@@ -54,38 +78,55 @@ class _BlockSelectorStackState extends ConsumerState<BlockSelectorStack> {
     });
   }
 
-  void updateInSelectorUID(String uid, int index) {
-    if (uid.isNotEmpty) {
-      blockIDs.addAll({index: uid});
-    }
-  }
+  // void updateInSelectorUID(int index, String uid) {
+  //   if (uid.isNotEmpty) {
+  //     Future.delayed(Duration.zero, () {
+  //       setState(() {
+  //         blockIDs[index] = uid;
+  //       });
+  //     });
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
+    // super.build(context);
+    // create stack count when data changes (e.g. changing the challenge)
+    // if (lastHashCode != widget.data.hashCode) {
+    //   debugPrint('NEW STACK');
+    //   setState(() {
+    //     lastHashCode = widget.data.hashCode;
+    //   });
+    //   createStackCount();
+    // }
     final shouldReset = ref.watch(shouldResetAllBlocksProvider);
+    // reset the entire stack
     if (shouldReset) {
       debugPrint('should reset all from block stack');
       resetCount();
-      // no need to ref.invalidate because the GameBlock will do so.
     }
+    // debugPrint(ref.read(gameManagerProvider).inSelectorUIDs.toString());
     return Visibility(
         visible: count > 0,
         child: Stack(
           clipBehavior: Clip.none,
           children: [
+            // generate stack based on inSelectorCount
             ...List.generate(widget.data.inSelectorCount!, (i) {
-              final Tuple2<CodeBlockType, String> blockID = Tuple2(widget.data.type, blockIDs[i]!);
-              final shouldResetBlock = ref.watch(shouldResetBlockProvider(blockID));
+              // get id from blockIDs (will be empty string at first, updated later by the child block)
+              final shouldResetBlock = ref.watch(shouldResetBlockProvider(Tuple2(widget.data.type, blockIDs[i])));
+              // when resetting an individual block from this stack (e.g. returning the block to selector)
               if (shouldResetBlock) {
                 debugPrint('should reset block from block stack');
                 updateStackCount(add: true);
               }
+              // debugPrint(blockIDs[i].toString());
               return GameBlock(
-                data: widget.data,
+                data: widget.data.copyWith(inSelectorUID: blockIDs[i]),
                 updateStackCount: updateStackCount,
-                updateInSelectorUID: updateInSelectorUID,
+                // updateInSelectorUID: updateInSelectorUID,
                 resetCount: resetCount,
-                stackIndex: i,
+                // stackIndex: i,
               );
             }),
             Positioned(

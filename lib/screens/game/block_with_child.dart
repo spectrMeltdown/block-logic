@@ -1,8 +1,8 @@
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/game/block_data.dart';
-import 'package:block_logic/logic/services/game_manager.dart';
-import 'package:block_logic/logic/services/game_provider.dart';
+import 'package:block_logic/logic/services/game/game_manager.dart';
+import 'package:block_logic/logic/services/game/game_provider.dart';
 import 'package:block_logic/screens/game/add_new_block_box.dart';
 import 'package:block_logic/screens/game/block.dart';
 import 'package:block_logic/screens/game/custom_box.dart';
@@ -79,10 +79,14 @@ class GameBlockWithChild extends ConsumerWidget {
                   },
                   onAcceptWithDetails: (dataToAccept, manager) {
                     if (dataToAccept.state == CodeBlockState.inEditor) {
-                      gameManager.moveData(data: dataToAccept, parentUID: data.uid!, type: ChildrenData.body, ref: ref);
+                      gameManager.moveData(
+                        data: dataToAccept,
+                        parent: data,
+                        type: ChildrenData.bodyUIDs,
+                      );
                     } else {
                       // debugPrint('Parent: ${widget.data.uid}');
-                      gameManager.addData(dataToAccept, data.uid!, ChildrenData.body);
+                      gameManager.addData(dataToAccept, data.uid!, ChildrenData.bodyUIDs);
                     }
                     ref.invalidate(getRootDataProvider);
                     ref.invalidate(getSelfDataProvider);

@@ -17,33 +17,41 @@ import 'package:block_logic/screens/main_menu.dart';
 import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-class Checkpoint extends ConsumerStatefulWidget {
+class Checkpoint extends ConsumerWidget {
   const Checkpoint({super.key});
 
   @override
-  ConsumerState<Checkpoint> createState() => _CheckpointState();
-}
-
-class _CheckpointState extends ConsumerState<Checkpoint> {
-  late final AuthService auth;
-  late final SharedPreferences sharedPref;
-  // String sessionID = '';
-  final Widget errorWidget = const Scaffold(
-    body: Background(
-      child: BLError(),
-    ),
-  );
-  final Widget loadingWidget = const Scaffold(
-    body: Background(
-      child: BLLoading(
-        message: 'Loading...',
+  Widget build(BuildContext context, ref) {
+    const Widget errorWidget = Scaffold(
+      body: Background(
+        child: BLError(),
       ),
-    ),
-  );
-  @override
-  Widget build(BuildContext context) {
+    );
+    const Widget loadingWidget = Scaffold(
+      body: Background(
+        child: BLLoading(
+          message: 'Loading...',
+        ),
+      ),
+    );
+    final auth = ref.read(authServiceProvider.notifier);
+    final sharedPref = ref.read(sharedPrefProvider);
+    final assets = ref.read(assetsProvider);
+    FlameAudio.bgm.initialize();
+
+    /// check if a backgroundMusic setting exists
+    final backgroundMusic = sharedPref.getBool('backgroundMusic');
+    if (backgroundMusic == null || backgroundMusic == true) {
+      /// initialize the audio
+      FlameAudio.bgm.play(assets.audioBG1);
+    } else {
+      /// play silently to load the track
+      FlameAudio.bgm.play(assets.audioBG1, volume: 0);
+
+      /// pause after track loaded
+      FlameAudio.bgm.pause();
+    }
     final user = ref.watch(authChangesProvider);
     return user.when(
       data: (user) {
@@ -75,7 +83,7 @@ class _CheckpointState extends ConsumerState<Checkpoint> {
                 data: (userAccount) {
                   /// if not initialized
                   if (userAccount == null) {
-                    debugPrint('account not initialized');
+                    // debugPrint('account not initialized');
 
                     /// initialize user details in firestore
                     accountService.initFirestoreData(type: AccountType.user);
@@ -117,58 +125,4 @@ class _CheckpointState extends ConsumerState<Checkpoint> {
       },
     );
   }
-
-  @override
-  void initState() {
-    auth = ref.read(authServiceProvider.notifier);
-    // final manager = ref.read(challengeManagerProvider.notifier);
-    // manager.create(Challenge(
-    //   id: 'testing3',
-    //   name: 'Give me a five!',
-    //   shortDescription: 'Print the number 5',
-    //   additionalInfo: 'This should be a simple one..',
-    //   difficulty: Difficulty.beginner,
-    //   blocks: AllBlocks().beginnerTesting(),
-    // ));
-    sharedPref = ref.read(sharedPrefProvider);
-    final assets = ref.read(assetsProvider);
-    FlameAudio.bgm.initialize();
-
-    /// check if a backgroundMusic setting exists
-    final backgroundMusic = sharedPref.getBool('backgroundMusic');
-    if (backgroundMusic == null || backgroundMusic == true) {
-      /// initialize the audio
-      FlameAudio.bgm.play(assets.audioBG1);
-    } else {
-      /// play silently to load the track
-      FlameAudio.bgm.play(assets.audioBG1, volume: 0);
-
-      /// pause after track loaded
-      FlameAudio.bgm.pause();
-    }
-    // WidgetsBinding.instance.addObserver(this);
-    super.initState();
-  }
-
-  // @override
-  // void dispose() {
-  //   WidgetsBinding.instance.removeObserver(this);
-  //   super.dispose();
-  // }
-
-  // @override
-  // void didChangeAppLifecycleState(AppLifecycleState state) {
-  //   // debugPrint(state.toString());
-  //   final uid = FirebaseAuth.instance.currentUser?.uid;
-  //   if (state == AppLifecycleState.paused || state == AppLifecycleState.detached) {
-  //     if (uid != null) {
-  //       FirebaseDatabase.instance.ref('users').child(uid).update({'sessionID': ''});
-  //     }
-  //   }
-  //   if (state == AppLifecycleState.resumed) {
-  //     if (uid != null) {
-  //       FirebaseDatabase.instance.ref('users').child(uid).update({'sessionID': sessionID});
-  //     }
-  //   }
-  // }
 }

@@ -1,4 +1,4 @@
-import 'package:block_logic/logic/services/game_manager.dart';
+import 'package:block_logic/logic/services/game/game_manager.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 // import 'package:riverpod_annotation/riverpod_annotation.dart';
 

@@ -28,9 +28,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-class AccountSettingsWidget extends ConsumerStatefulWidget {
+class AccountSettingsWidget extends ConsumerWidget {
   final Widget editIcon = const Padding(
     padding: EdgeInsets.only(left: 8.0),
     child: Icon(
@@ -42,21 +41,103 @@ class AccountSettingsWidget extends ConsumerStatefulWidget {
   final bool processing;
   final void Function(bool) toggleProcessing;
   const AccountSettingsWidget(this.processing, this.toggleProcessing, {super.key});
-  @override
-  ConsumerState<AccountSettingsWidget> createState() => _AccountSettingsWidgetState();
-}
-
-class _AccountSettingsWidgetState extends ConsumerState<AccountSettingsWidget> {
-  late final AuthService auth;
-  late final AccountService accountService;
-  late final Toast toast;
-  late final CustomNavigation nav;
-  late final SharedPreferences sharedPref;
-  late final ReportsManager reportManager;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, ref) {
+    final auth = ref.read(authServiceProvider.notifier);
+    final nav = ref.read(customNavigationProvider.notifier);
+    final toast = ref.read(toastProvider.notifier);
+    final accountService = ref.read(accountServiceProvider.notifier);
+    final sharedPref = ref.read(sharedPrefProvider);
+    final reportManager = ref.read(reportsManagerProvider.notifier);
     final user = ref.watch(authChangesProvider);
+
+    void changeEmail() async {
+      if (processing) return;
+      // toggleProcessing.call(true);
+      // final reauth = null;
+      final reauth = await showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) => const ReauthDialog(),
+      );
+      if (reauth == null) {
+        if (!context.mounted) {
+          toggleProcessing.call(false);
+          return;
+        }
+        await showDialog(context: context, builder: (context) => const ChangeEmail());
+      }
+      toggleProcessing.call(false);
+    }
+
+    void changePass() async {
+      if (processing) return;
+      toggleProcessing.call(true);
+      final reauth = await showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) => const ReauthDialog(),
+      );
+      if (reauth == null) {
+        if (!context.mounted) {
+          toggleProcessing.call(false);
+          return;
+        }
+        await showDialog(context: context, builder: (context) => const ChangePassword());
+      } else if (reauth == 'failed') {
+        if (!context.mounted) {
+          toggleProcessing.call(false);
+          return;
+        }
+        if (!context.mounted) return;
+        toast.showToast(context, 'Wrong password', type: NotifType.error);
+      } else if (reauth == 'cancelled') {
+        if (!context.mounted) {
+          toggleProcessing.call(true);
+          return;
+        }
+      } else if (reauth == 'TOA') {
+        if (!context.mounted) return;
+        toast.showToast(context, 'Too many attempts, try again later', type: NotifType.error);
+      }
+      toggleProcessing.call(false);
+    }
+
+    void changePhoneNum() async {
+      if (processing) return;
+      toggleProcessing(true);
+
+      final reauth = await showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) => const ReauthDialog(),
+      );
+      if (reauth == null) {
+        if (!context.mounted) {
+          toggleProcessing.call(false);
+          return;
+        }
+        await showDialog(context: context, builder: (context) => const ChangePhoneNum(AccountType.user));
+      } else if (reauth == 'failed') {
+        if (!context.mounted) {
+          toggleProcessing.call(false);
+          return;
+        }
+        if (!context.mounted) return;
+        toast.showToast(context, 'Wrong password', type: NotifType.error);
+      } else if (reauth == 'cancelled') {
+        if (!context.mounted) {
+          toggleProcessing.call(true);
+          return;
+        }
+      } else if (reauth == 'TOA') {
+        if (!context.mounted) return;
+        toast.showToast(context, 'Too many attempts, try again later', type: NotifType.error);
+      }
+      toggleProcessing(false);
+    }
+
     return BLPanel(
         child: Column(
       mainAxisSize: MainAxisSize.min,
@@ -80,10 +161,10 @@ class _AccountSettingsWidgetState extends ConsumerState<AccountSettingsWidget> {
                     type: AccountType.user,
                     auth.getUID(),
                     onPressed: () async {
-                      if (widget.processing) return;
-                      widget.toggleProcessing.call(true);
+                      if (processing) return;
+                      toggleProcessing.call(true);
                       await accountService.changeProfilePic(FirestoreCollections.users);
-                      widget.toggleProcessing.call(false);
+                      toggleProcessing.call(false);
                     },
                     size: 100,
                   ),
@@ -104,10 +185,10 @@ class _AccountSettingsWidgetState extends ConsumerState<AccountSettingsWidget> {
                     children: [
                       BLTextButton(
                           onPressed: () async {
-                            if (widget.processing) return;
-                            widget.toggleProcessing.call(true);
+                            if (processing) return;
+                            toggleProcessing.call(true);
                             await showDialog(context: context, builder: (context) => const ChangeDisplayName());
-                            widget.toggleProcessing.call(false);
+                            toggleProcessing.call(false);
                           },
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -120,7 +201,7 @@ class _AccountSettingsWidgetState extends ConsumerState<AccountSettingsWidget> {
                                 AccountType.user,
                               )),
                               const SizedBox(width: 5),
-                              widget.editIcon
+                              editIcon
                             ],
                           )),
                       BLTextButton(
@@ -138,7 +219,7 @@ class _AccountSettingsWidgetState extends ConsumerState<AccountSettingsWidget> {
                                 nullMessage: 'Add email',
                               )),
                               const SizedBox(width: 5),
-                              widget.editIcon,
+                              editIcon,
                             ],
                           )),
                       BLTextButton(
@@ -156,7 +237,7 @@ class _AccountSettingsWidgetState extends ConsumerState<AccountSettingsWidget> {
                                 nullMessage: 'Add phone',
                               )),
                               const SizedBox(width: 5),
-                              widget.editIcon,
+                              editIcon,
                             ],
                           )),
                       if (email != null && email.isNotEmpty)
@@ -172,7 +253,7 @@ class _AccountSettingsWidgetState extends ConsumerState<AccountSettingsWidget> {
                                 const SizedBox(width: 15),
                                 const BLText('Change password'),
                                 const SizedBox(width: 5),
-                                widget.editIcon,
+                                editIcon,
                               ],
                             )),
                       const SizedBox(height: 20),
@@ -181,14 +262,14 @@ class _AccountSettingsWidgetState extends ConsumerState<AccountSettingsWidget> {
                           BLTextButton(
                               // type: BtnType.red,
                               onPressed: () async {
-                                if (widget.processing) return;
-                                widget.toggleProcessing.call(true);
+                                if (processing) return;
+                                toggleProcessing.call(true);
                                 String? reauth = await showDialog(
                                   context: context,
                                   barrierDismissible: false,
                                   builder: (BuildContext context) => const ReauthDialog(),
                                 );
-                                debugPrint('Reauth result = $reauth');
+                                // debugPrint('Reauth result = $reauth');
                                 if (reauth == null) {
                                   if (!kIsWeb) {
                                     await reportManager.remove(userUID: user.uid);
@@ -197,7 +278,7 @@ class _AccountSettingsWidgetState extends ConsumerState<AccountSettingsWidget> {
                                   if (!context.mounted) return;
                                   nav.pushAndRemove(context, const Checkpoint());
                                 } else {
-                                  widget.toggleProcessing.call(false);
+                                  toggleProcessing.call(false);
                                 }
                               },
                               child: const Row(
@@ -221,8 +302,8 @@ class _AccountSettingsWidgetState extends ConsumerState<AccountSettingsWidget> {
                           BLButton(
                               type: BtnType.red,
                               onPressed: () async {
-                                if (widget.processing) return;
-                                widget.toggleProcessing.call(true);
+                                if (processing) return;
+                                toggleProcessing.call(true);
                                 // TODO: Temporarily changed firebase rules to public because providers need to die when logging out.
                                 // - tried using ref.invalidate after logging out, but exception still happens
                                 // - must try doing:
@@ -233,7 +314,7 @@ class _AccountSettingsWidgetState extends ConsumerState<AccountSettingsWidget> {
                                 await auth.uploadSessionID('');
                                 await auth.logout();
                                 ref.invalidate(authServiceProvider);
-                                widget.toggleProcessing.call(false);
+                                toggleProcessing.call(false);
                                 if (!context.mounted) return;
                                 nav.pushAndRemove(context, const Checkpoint());
                               },
@@ -265,102 +346,5 @@ class _AccountSettingsWidgetState extends ConsumerState<AccountSettingsWidget> {
         const SizedBox(height: 15),
       ],
     ));
-  }
-
-  void changeEmail() async {
-    if (widget.processing) return;
-    // widget.toggleProcessing.call(true);
-    // final reauth = null;
-    final reauth = await showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) => const ReauthDialog(),
-    );
-    if (reauth == null) {
-      if (!mounted) {
-        widget.toggleProcessing.call(false);
-        return;
-      }
-      await showDialog(context: context, builder: (context) => const ChangeEmail());
-    }
-    widget.toggleProcessing.call(false);
-  }
-
-  void changePass() async {
-    if (widget.processing) return;
-    widget.toggleProcessing.call(true);
-    final reauth = await showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) => const ReauthDialog(),
-    );
-    if (reauth == null) {
-      if (!mounted) {
-        widget.toggleProcessing.call(false);
-        return;
-      }
-      await showDialog(context: context, builder: (context) => const ChangePassword());
-    } else if (reauth == 'failed') {
-      if (!context.mounted) {
-        widget.toggleProcessing.call(false);
-        return;
-      }
-      if (!mounted) return;
-      toast.showToast(context, 'Wrong password', type: NotifType.error);
-    } else if (reauth == 'cancelled') {
-      if (!context.mounted) {
-        widget.toggleProcessing.call(true);
-        return;
-      }
-    } else if (reauth == 'TOA') {
-      if (!mounted) return;
-      toast.showToast(context, 'Too many attempts, try again later', type: NotifType.error);
-    }
-    widget.toggleProcessing.call(false);
-  }
-
-  void changePhoneNum() async {
-    if (widget.processing) return;
-    widget.toggleProcessing(true);
-
-    final reauth = await showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) => const ReauthDialog(),
-    );
-    if (reauth == null) {
-      if (!mounted) {
-        widget.toggleProcessing.call(false);
-        return;
-      }
-      await showDialog(context: context, builder: (context) => const ChangePhoneNum(AccountType.user));
-    } else if (reauth == 'failed') {
-      if (!context.mounted) {
-        widget.toggleProcessing.call(false);
-        return;
-      }
-      if (!mounted) return;
-      toast.showToast(context, 'Wrong password', type: NotifType.error);
-    } else if (reauth == 'cancelled') {
-      if (!context.mounted) {
-        widget.toggleProcessing.call(true);
-        return;
-      }
-    } else if (reauth == 'TOA') {
-      if (!mounted) return;
-      toast.showToast(context, 'Too many attempts, try again later', type: NotifType.error);
-    }
-    widget.toggleProcessing(false);
-  }
-
-  @override
-  void initState() {
-    auth = ref.read(authServiceProvider.notifier);
-    nav = ref.read(customNavigationProvider.notifier);
-    toast = ref.read(toastProvider.notifier);
-    accountService = ref.read(accountServiceProvider.notifier);
-    sharedPref = ref.read(sharedPrefProvider);
-    reportManager = ref.read(reportsManagerProvider.notifier);
-    super.initState();
   }
 }

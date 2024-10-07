@@ -7,12 +7,13 @@ import 'package:block_logic/screens/game/wrapper_block_design.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+// renders block based on data
 class BlockRender extends ConsumerWidget {
   final GameBlockData data;
-  final bool feedback;
+  // final bool feedback;
   const BlockRender(
     this.data, {
-    this.feedback = false,
+    // this.feedback = false,
     super.key,
   });
   @override

@@ -4,7 +4,7 @@ import 'package:block_logic/components/card/card.dart';
 import 'package:block_logic/components/text/title_small.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_models/challenge.dart';
-import 'package:block_logic/logic/services/block_data_manager.dart';
+import 'package:block_logic/logic/services/game/all_blocks.dart';
 import 'package:block_logic/logic/services/navigation.dart';
 import 'package:block_logic/logic/services/ui.dart';
 import 'package:block_logic/logic/testing.dart';

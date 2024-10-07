@@ -3,18 +3,13 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class BLTextButton extends ConsumerStatefulWidget {
+class BLTextButton extends ConsumerWidget {
   final VoidCallback onPressed;
   final Widget child;
   const BLTextButton({required this.onPressed, required this.child, super.key});
 
   @override
-  ConsumerState<BLTextButton> createState() => _BLTextButtonState();
-}
-
-class _BLTextButtonState extends ConsumerState<BLTextButton> {
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, ref) {
     BLAudioState? audio;
     if (!kIsWeb) {
       audio = ref.read(bLAudioStateProvider.notifier);
@@ -22,8 +17,8 @@ class _BLTextButtonState extends ConsumerState<BLTextButton> {
     return TextButton(
         onPressed: () {
           audio?.playBtn();
-          widget.onPressed.call();
+          onPressed.call();
         },
-        child: widget.child);
+        child: child);
   }
 }

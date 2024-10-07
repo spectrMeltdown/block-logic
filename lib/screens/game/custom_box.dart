@@ -1,7 +1,7 @@
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/game/block_data.dart';
-import 'package:block_logic/logic/services/game_manager.dart';
-import 'package:block_logic/logic/services/game_provider.dart';
+import 'package:block_logic/logic/services/game/game_manager.dart';
+import 'package:block_logic/logic/services/game/game_provider.dart';
 import 'package:block_logic/screens/game/add_new_block_box.dart';
 import 'package:block_logic/screens/game/block.dart';
 import 'package:block_logic/screens/game/block_with_child.dart';
@@ -40,9 +40,13 @@ class CustomBox extends ConsumerWidget {
               },
               onAcceptWithDetails: (dataToAccept, manager) {
                 if (dataToAccept.state == CodeBlockState.inEditor) {
-                  // gameManager.moveData(dataToAccept, data.uid!, ChildrenData.parameters);
+                  gameManager.moveData(
+                    data: dataToAccept,
+                    parent: data,
+                    type: ChildrenData.parameterUIDs,
+                  );
                 } else {
-                  gameManager.addData(dataToAccept, data.uid!, ChildrenData.parameters);
+                  gameManager.addData(dataToAccept, data.uid!, ChildrenData.parameterUIDs);
                 }
                 ref.invalidate(getRootDataProvider);
                 ref.invalidate(getSelfDataProvider);
@@ -50,11 +54,11 @@ class CustomBox extends ConsumerWidget {
                 // setState(() {});
               },
               onWillAcceptWithDetails: (dataToAccept) {
-                if (data.parameterUIDs?.contains(dataToAccept.uid) ?? false || dataToAccept.uid == data.uid) {
+                if (data.parameterUIDs?.contains(dataToAccept.uid) ?? false || dataToAccept.uid == data.uid || dataToAccept.uid == data.parentUID) {
                   return false;
                 }
-                return true;
-                // return validator.parameterBox(data: data!, dataToAccept: data!);
+                // return true;
+                return validator.parameterBox(data: data, dataToAccept: data); // TODO: update later
               },
             )
           ],
@@ -77,9 +81,13 @@ class CustomBox extends ConsumerWidget {
             },
             onAcceptWithDetails: (dataToAccept, manager) {
               if (dataToAccept.state == CodeBlockState.inEditor) {
-                // gameManager.moveData(dataToAccept, data.uid!, ChildrenData.arguments);
+                gameManager.moveData(
+                  data: dataToAccept,
+                  parent: data,
+                  type: ChildrenData.argumentUIDs,
+                );
               } else {
-                gameManager.addData(dataToAccept, data.uid!, ChildrenData.arguments);
+                gameManager.addData(dataToAccept, data.uid!, ChildrenData.argumentUIDs);
               }
               ref.invalidate(getRootDataProvider);
               ref.invalidate(getChildrenDataProvider);
@@ -116,9 +124,13 @@ class CustomBox extends ConsumerWidget {
               },
               onAcceptWithDetails: (dataToAccept, manager) {
                 if (dataToAccept.state == CodeBlockState.inEditor) {
-                  // gameManager.moveData(dataToAccept, data.uid!, ChildrenData.condition);
+                  gameManager.moveData(
+                    data: dataToAccept,
+                    parent: data,
+                    type: ChildrenData.conditionUIDs,
+                  );
                 } else {
-                  gameManager.addData(dataToAccept, data.uid!, ChildrenData.condition);
+                  gameManager.addData(dataToAccept, data.uid!, ChildrenData.conditionUIDs);
                 }
                 ref.invalidate(getRootDataProvider);
                 ref.invalidate(getSelfDataProvider);
@@ -155,9 +167,13 @@ class CustomBox extends ConsumerWidget {
               },
               onAcceptWithDetails: (dataToAccept, manager) {
                 if (dataToAccept.state == CodeBlockState.inEditor) {
-                  // gameManager.moveData(dataToAccept, data.uid!, ChildrenData.array);
+                  gameManager.moveData(
+                    data: dataToAccept,
+                    parent: data,
+                    type: ChildrenData.arrayUIDs,
+                  );
                 } else {
-                  gameManager.addData(dataToAccept, data.uid!, ChildrenData.array);
+                  gameManager.addData(dataToAccept, data.uid!, ChildrenData.arrayUIDs);
                 }
                 ref.invalidate(getRootDataProvider);
                 ref.invalidate(getSelfDataProvider);

@@ -1,11 +1,11 @@
 import 'package:block_logic/components/util/blank_widget.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/game/block_data.dart';
-import 'package:block_logic/logic/services/custom_tab.dart';
-import 'package:block_logic/logic/services/game_manager.dart';
-import 'package:block_logic/logic/services/return_block.dart';
-import 'package:block_logic/logic/services/should_reset_all_blocks.dart';
-import 'package:block_logic/logic/services/should_reset_block.dart';
+import 'package:block_logic/logic/services/game/tab_num_provider.dart';
+import 'package:block_logic/logic/services/game/game_manager.dart';
+import 'package:block_logic/logic/services/game/return_block.dart';
+import 'package:block_logic/logic/services/game/should_reset_all_blocks.dart';
+import 'package:block_logic/logic/services/game/should_reset_block.dart';
 import 'package:block_logic/logic/services/ui.dart';
 import 'package:block_logic/screens/game/block_render.dart';
 import 'package:flutter/material.dart';
@@ -15,120 +15,143 @@ import 'package:tuple/tuple.dart';
 class GameBlock extends ConsumerStatefulWidget {
   final GameBlockData data;
   final void Function({bool add})? updateStackCount;
-  final void Function(String, int)? updateInSelectorUID;
+  // final void Function(int, String)? updateInSelectorUID;
   final void Function()? resetCount;
   final int? stackIndex;
-  const GameBlock({required this.data, this.updateStackCount, this.stackIndex, this.updateInSelectorUID, this.resetCount, super.key});
+  final String? challengeUID;
+  final bool topLevelBlock;
+  const GameBlock({
+    this.challengeUID,
+    this.topLevelBlock = false,
+    required this.data,
+    this.updateStackCount,
+    this.stackIndex,
+    // this.updateInSelectorUID,
+    this.resetCount,
+    super.key,
+  });
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => GameCodeBlockState();
 }
 
-class GameCodeBlockState extends ConsumerState<GameBlock> with TickerProviderStateMixin {
+class GameCodeBlockState extends ConsumerState<GameBlock> {
+  // @override
+  // bool get wantKeepAlive => true;
   late final GameManager gameManager;
   late final BLUI blui;
-  bool shouldResetSelf = false;
   late Widget block;
   late Widget defaultWithPadding;
-  GameBlockData? finalData;
+  String? previousChallengeUID;
+  // bool shouldResetSelf = false;
+  // GameBlockData? finalData;
 
   @override
   void initState() {
+    // debugPrint('Init block: ${widget.data.name}');
     gameManager = ref.read(gameManagerProvider.notifier);
     blui = ref.read(bLUIProvider.notifier);
+    create();
+    super.initState();
+  }
 
+  void create() {
+    previousChallengeUID = widget.challengeUID;
     defaultWithPadding = Padding(
       padding: const EdgeInsets.symmetric(horizontal: 5),
       child: BlockRender(widget.data),
     );
     if (widget.data.state == CodeBlockState.inSelector) {
-      // debugPrint('Built as inSelector');
       block = defaultWithPadding;
-      final uid = gameManager.getUID();
-      finalData = widget.data.copyWith(inSelectorUID: uid);
-      gameManager.addInSelectorUIDs(finalData!.type, finalData!.inSelectorUID!);
-      if (widget.updateInSelectorUID != null && widget.stackIndex != null) {
-        widget.updateInSelectorUID!(uid, widget.stackIndex!);
-      }
     } else {
       block = BlockRender(widget.data);
     }
-    super.initState();
+  }
+
+  void onDragCompleted() {
+    if (widget.data.state == CodeBlockState.inSelector) {
+      debugPrint('decrement count');
+      if (widget.updateStackCount != null) {
+        widget.updateStackCount!(add: false);
+      }
+      // debugPrint('Decrement ${widget.data.type}');
+      gameManager.decrementCategory(widget.data.type);
+      ref.invalidate(tabNumberProvider);
+      setState(() {
+        block = const BlankWidget();
+      });
+    }
+  }
+
+  void onDragEnd(details) {
+    if (widget.data.state == CodeBlockState.inEditor) {
+      gameManager.toggleReturnBlock(false);
+      ref.invalidate(returnBlockProvider);
+    }
+  }
+
+  void onDragStarted() {
+    if (widget.data.state == CodeBlockState.inEditor) {
+      gameManager.toggleReturnBlock(true);
+      ref.invalidate(returnBlockProvider);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    // super.build(context);
+    debugPrint('Previous challenge uid was $previousChallengeUID');
+    debugPrint('Current challenge uid was ${widget.challengeUID}');
+    if (widget.topLevelBlock && previousChallengeUID != widget.challengeUID) {
+      create();
+      debugPrint('rebuild block triggered');
+      setState(() {});
+    }
+    // debugPrint('BLOCK REBUILT');
+    // debugPrint(widget.data.toJSON().toString());
     final shouldResetFromAll = ref.watch(shouldResetAllBlocksProvider);
+
     if (widget.data.state == CodeBlockState.inSelector) {
-      shouldResetSelf = ref.watch(
-        shouldResetBlockProvider(
-          Tuple2(finalData!.type, finalData!.inSelectorUID!),
-        ),
-      );
       if (shouldResetFromAll) {
-        debugPrint('shouldResetFromAll');
+        // debugPrint('shouldResetFromAll');
         setState(() {
           block = defaultWithPadding;
         });
+        // reset all tabs counts to 0
         gameManager.resetAllCategory();
-        Future.delayed(Duration.zero, () {
-          gameManager.incrementCategory(widget.data.type);
-          ref.invalidate(customTabProvider);
-        });
+        // switch reset all block to false (future.delayed to prevent race condition)
         Future.delayed(Duration.zero, () {
           gameManager.setShouldResetAllBlocks(false);
           ref.invalidate(shouldResetAllBlocksProvider);
         });
-      } else if (shouldResetSelf) {
-        debugPrint('shouldResetSelf');
+      }
+
+      final shouldResetBlock = ref.watch(shouldResetBlockProvider(Tuple2(widget.data.type, widget.data.inSelectorUID!)));
+      // redisplay block if requested
+      if (shouldResetBlock) {
+        // debugPrint('shouldResetSelf');
+        // if (widget.updateStackCount != null) {
+        //   debugPrint('increment count');
+        //   widget.updateStackCount!(add: true);
+        // }
+        gameManager.addInSelectorUIDs(widget.data.type, widget.data.inSelectorUID!);
+        gameManager.incrementCategory(widget.data.type);
+        ref.invalidate(shouldResetBlockProvider);
+        ref.invalidate(tabNumberProvider);
         setState(() {
           block = defaultWithPadding;
         });
-        // if (widget.updateStackCount != null) {
-        //   // widget.resetCount!();
-        //   widget.updateStackCount!(add: true);
-        // }
-        gameManager.addInSelectorUIDs(finalData!.type, finalData!.inSelectorUID!);
-        gameManager.incrementCategory(widget.data.type);
-        ref.invalidate(customTabProvider);
-        ref.invalidate(shouldResetBlockProvider);
+        // Future.delayed(Duration.zero, () {});
       }
-    }
 
-    if (widget.data.state == CodeBlockState.inSelector) {
+      // draggable in selector
       return Draggable<GameBlockData>(
           hitTestBehavior: HitTestBehavior.opaque,
-          // delay: const Duration(milliseconds: 100),
-          data: finalData ?? widget.data, // drag target will not detect if data is null
-          onDragUpdate: (details) {},
+          data: widget.data, // drag target will not detect if data is null
           dragAnchorStrategy: (draggable, context, position) {
+            // make feedback block appear on the right top corner
             return const Offset(-30, 50);
           },
-          onDragStarted: () {
-            if (widget.data.state == CodeBlockState.inEditor) {
-              gameManager.toggleReturnBlock(true);
-              ref.invalidate(returnBlockProvider);
-            }
-          },
-          onDraggableCanceled: (velocity, offset) {},
-          onDragEnd: (details) {
-            if (widget.data.state == CodeBlockState.inEditor) {
-              gameManager.toggleReturnBlock(false);
-              ref.invalidate(returnBlockProvider);
-            }
-          },
-          onDragCompleted: () {
-            if (widget.data.state == CodeBlockState.inSelector) {
-              if (widget.data.inSelectorCount != null) {
-                widget.updateStackCount!(add: false);
-              }
-              debugPrint('Decrement ${widget.data.type}');
-              gameManager.decrementCategory(widget.data.type);
-              ref.invalidate(customTabProvider);
-              setState(() {
-                block = const BlankWidget();
-              });
-            }
-          },
+          onDragCompleted: onDragCompleted,
           childWhenDragging: AnimatedOpacity(
             opacity: 0.3,
             duration: Duration.zero,
@@ -139,37 +162,14 @@ class GameCodeBlockState extends ConsumerState<GameBlock> with TickerProviderSta
     }
     return LongPressDraggable<GameBlockData>(
         hitTestBehavior: HitTestBehavior.opaque,
-        delay: const Duration(milliseconds: 100),
-        data: finalData ?? widget.data, // drag target will not detect if data is null
+        delay: const Duration(milliseconds: 200),
+        data: widget.data, // drag target will not detect if data is null
         onDragUpdate: (details) {},
         dragAnchorStrategy: (draggable, context, position) {
           return const Offset(-30, 50);
         },
-        onDragStarted: () {
-          if (widget.data.state == CodeBlockState.inEditor) {
-            gameManager.toggleReturnBlock(true);
-            ref.invalidate(returnBlockProvider);
-          }
-        },
-        onDragEnd: (details) {
-          if (widget.data.state == CodeBlockState.inEditor) {
-            gameManager.toggleReturnBlock(false);
-            ref.invalidate(returnBlockProvider);
-          }
-        },
-        onDragCompleted: () {
-          if (widget.data.state == CodeBlockState.inSelector) {
-            if (widget.data.inSelectorCount != null) {
-              widget.updateStackCount!(add: false);
-            }
-            debugPrint('Decrement ${widget.data.type}');
-            gameManager.decrementCategory(widget.data.type);
-            ref.invalidate(customTabProvider);
-            setState(() {
-              block = const BlankWidget();
-            });
-          }
-        },
+        onDragStarted: onDragStarted,
+        onDragEnd: onDragEnd,
         childWhenDragging: AnimatedOpacity(
           opacity: 0.3,
           duration: Duration.zero,

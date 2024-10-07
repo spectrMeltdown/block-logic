@@ -1,36 +1,32 @@
 import 'package:block_logic/components/circular_image.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/util/blank_widget.dart';
+
 import 'package:block_logic/logic/services/assets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:widget_and_text_animator/widget_and_text_animator.dart';
 
-class TopThreePlayers extends ConsumerStatefulWidget {
+class TopThreePlayers extends ConsumerWidget {
   final List<String> playerPhotoURL;
   const TopThreePlayers(this.playerPhotoURL, {super.key});
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _TopThreePlayersState();
-}
-
-class _TopThreePlayersState extends ConsumerState<TopThreePlayers> {
-  final picStartDelay = const Duration(milliseconds: 500);
-  final picDelay = const Duration(milliseconds: 300);
-  late final Duration iconStartDelay;
-  late final Duration iconDelay;
-  late final Assets assets;
-  @override
-  Widget build(BuildContext context) {
-    if (widget.playerPhotoURL.isEmpty) {
+  Widget build(BuildContext context, ref) {
+    const picStartDelay = Duration(milliseconds: 500);
+    const picDelay = Duration(milliseconds: 300);
+    final iconStartDelay = picStartDelay + picDelay + picDelay;
+    const iconDelay = picDelay;
+    final assets = ref.read(assetsProvider);
+    if (playerPhotoURL.isEmpty) {
       return const Center(
         child: BLText('No players..'),
       );
     }
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: List.generate(widget.playerPhotoURL.length, (i) {
+      children: List.generate(playerPhotoURL.length, (i) {
         if (i == 1) {
           return Padding(
             padding: const EdgeInsets.only(bottom: 10),
@@ -44,7 +40,7 @@ class _TopThreePlayersState extends ConsumerState<TopThreePlayers> {
                     width: 90,
                     child: WidgetAnimator(
                       incomingEffect: WidgetTransitionEffects.incomingSlideInFromBottom(delay: picStartDelay),
-                      child: widget.playerPhotoURL[i].isEmpty || widget.playerPhotoURL[i] == 'default'
+                      child: playerPhotoURL[i].isEmpty || playerPhotoURL[i] == 'default'
                           ? FittedBox(
                               fit: BoxFit.contain,
                               child: Container(
@@ -61,7 +57,7 @@ class _TopThreePlayersState extends ConsumerState<TopThreePlayers> {
                               ),
                             )
                           : BLCircular(
-                              url: widget.playerPhotoURL[i],
+                              url: playerPhotoURL[i],
                               iconSize: 100,
                             ),
                     ),
@@ -93,7 +89,7 @@ class _TopThreePlayersState extends ConsumerState<TopThreePlayers> {
                   width: 60,
                   child: WidgetAnimator(
                     incomingEffect: WidgetTransitionEffects.incomingSlideInFromBottom(delay: i == 0 ? picStartDelay + picDelay : picStartDelay + picDelay + picDelay),
-                    child: widget.playerPhotoURL[i].isEmpty || widget.playerPhotoURL[i] == 'default'
+                    child: playerPhotoURL[i].isEmpty || playerPhotoURL[i] == 'default'
                         ? FittedBox(
                             fit: BoxFit.contain,
                             child: Container(
@@ -110,7 +106,7 @@ class _TopThreePlayersState extends ConsumerState<TopThreePlayers> {
                             ),
                           )
                         : BLCircular(
-                            url: widget.playerPhotoURL[i],
+                            url: playerPhotoURL[i],
                             iconSize: 60,
                           ),
                   ),
@@ -138,17 +134,9 @@ class _TopThreePlayersState extends ConsumerState<TopThreePlayers> {
             ),
           );
         }
-        debugPrint('Received an extra $i top player.');
+        // debugPrint('Received an extra $i top player.');
         return const BlankWidget();
       }),
     );
-  }
-
-  @override
-  void initState() {
-    iconStartDelay = picStartDelay + picDelay + picDelay;
-    iconDelay = picDelay;
-    assets = ref.read(assetsProvider);
-    super.initState();
   }
 }

@@ -6,7 +6,7 @@ import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/util/provider_default.dart';
 import 'package:block_logic/logic/firebase_providers/selected_leaderboard.dart';
 import 'package:block_logic/logic/services/assets.dart';
-import 'package:block_logic/logic/services/game_manager.dart';
+import 'package:block_logic/logic/services/game/game_manager.dart';
 import 'package:block_logic/logic/services/navigation.dart';
 import 'package:block_logic/logic/services/shared_pref.dart';
 import 'package:block_logic/screens/leaderboard/selected_leaderboard.dart';
