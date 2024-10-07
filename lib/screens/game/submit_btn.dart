@@ -10,8 +10,6 @@ import 'package:block_logic/logic/services/game/game_manager.dart';
 import 'package:block_logic/logic/services/game/game_provider.dart';
 import 'package:block_logic/logic/services/navigation.dart';
 import 'package:block_logic/logic/services/score_manager.dart';
-import 'package:block_logic/logic/services/game/should_reset_all_blocks.dart';
-import 'package:block_logic/logic/services/game/should_reset_block.dart';
 import 'package:block_logic/logic/services/solution_checker.dart';
 import 'package:block_logic/logic/services/game/time_box.dart';
 import 'package:block_logic/logic/services/toast.dart';
@@ -50,12 +48,12 @@ class _GameSubmitButtonState extends ConsumerState<GameSubmitButton> {
 
   @override
   void initState() {
+    super.initState();
     manager = ref.read(gameManagerProvider.notifier);
     score = ref.read(scoreManagerProvider.notifier);
     toast = ref.read(toastProvider.notifier);
     solutionMatch = ref.read(gameManagerProvider).solution;
     gameState = ref.read(gameManagerProvider);
-    super.initState();
   }
 
   @override
@@ -184,11 +182,7 @@ class _GameSubmitButtonState extends ConsumerState<GameSubmitButton> {
             gameState.inSelectorUIDs.clear();
             gameState.solution = [];
             ref.invalidate(tabNumberProvider);
-            // ref.invalidate(getRootDataProvider);
-            // manager.setShouldResetAllBlocks(true);
-            // ref.invalidate(shouldResetAllBlocksProvider);
-            // manager.setShouldResetAllBlocks(false);
-            // ref.invalidate(shouldResetAllBlocksProvider);
+            ref.invalidate(getRootDataProvider);
             Future.delayed(Duration.zero, () {
               widget.updateChallenge!();
             });

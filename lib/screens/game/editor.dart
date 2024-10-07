@@ -77,6 +77,7 @@ class _EditorState extends ConsumerState<Editor> with TickerProviderStateMixin {
 
   @override
   void initState() {
+    super.initState();
     mainTabList = ['Main'];
     // mainTabViewList = [EditorView(parentConstraints: constraints!)];
     mainTabController = TabController(length: mainTabList.length + 1, vsync: this);
@@ -84,6 +85,5 @@ class _EditorState extends ConsumerState<Editor> with TickerProviderStateMixin {
     mainTabController.addListener(() {
       setState(() {});
     });
-    super.initState();
   }
 }

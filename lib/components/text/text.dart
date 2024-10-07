@@ -71,6 +71,7 @@ class _BLTextState extends ConsumerState<BLText> with SingleTickerProviderStateM
 
   @override
   void initState() {
+    super.initState();
     _controller = AnimationController(
       duration: widget.duration,
       vsync: this,
@@ -82,6 +83,5 @@ class _BLTextState extends ConsumerState<BLText> with SingleTickerProviderStateM
       });
 
     _controller.forward();
-    super.initState();
   }
 }

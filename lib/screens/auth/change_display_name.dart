@@ -119,6 +119,7 @@ class _ChangeDisplayNameState extends ConsumerState<ChangeDisplayName> {
 
   @override
   void initState() {
+    super.initState();
     nav = ref.read(customNavigationProvider.notifier);
     accountService = ref.read(accountServiceProvider.notifier);
     validator = ref.read(textValidatorProvider.notifier);
@@ -131,7 +132,6 @@ class _ChangeDisplayNameState extends ConsumerState<ChangeDisplayName> {
       oldDisplayName = user?.displayName ?? '';
     }
     displayNameController = TextEditingController(text: oldDisplayName);
-    super.initState();
   }
 
   void toggleProcessing() {

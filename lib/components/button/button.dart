@@ -108,6 +108,7 @@ class _BtnState extends ConsumerState<BLButton> {
 
   @override
   void initState() {
+    super.initState();
     if (!kIsWeb) audio = ref.read(bLAudioStateProvider.notifier);
     blui = ref.read(bLUIProvider.notifier);
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -117,7 +118,6 @@ class _BtnState extends ConsumerState<BLButton> {
         width = renderBox.size.width;
       });
     });
-    super.initState();
   }
 
   void _onTapCancel() {

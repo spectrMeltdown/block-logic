@@ -26,9 +26,9 @@ class _GameBlocksState extends ConsumerState<GameBlocks> with TickerProviderStat
 
   @override
   void initState() {
+    super.initState();
     gameManager = ref.read(gameManagerProvider.notifier);
     // buildSelector();
-    super.initState();
   }
 
   bool newBuild() {

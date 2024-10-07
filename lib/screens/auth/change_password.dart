@@ -28,10 +28,10 @@ class _ChangePasswordState extends ConsumerState<ChangePassword> {
 
   @override
   void initState() {
+    super.initState();
     nav = ref.read(customNavigationProvider.notifier);
     auth = ref.read(authServiceProvider.notifier);
     validator = ref.read(textValidatorProvider.notifier);
-    super.initState();
   }
 
   @override

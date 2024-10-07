@@ -8,17 +8,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // renders block based on data
-class BlockRender extends ConsumerWidget {
+class BlockRender extends StatelessWidget {
   final GameBlockData data;
-  // final bool feedback;
   const BlockRender(
     this.data, {
-    // this.feedback = false,
     super.key,
   });
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    // debugPrint(state.toString());
+  Widget build(BuildContext context) {
+    // debugPrint(data.state.toString());
     switch (data.state) {
       case CodeBlockState.inSelector:
         return BlockDesignWrapper(

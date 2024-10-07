@@ -33,6 +33,7 @@ class PauseDialog extends ConsumerWidget {
             onPressed: () {
               gameManager.resetTree();
               gameManager.setShouldResetAllBlocks(true);
+              gameManager.resetAllCategory();
               ref.invalidate(getRootDataProvider);
               ref.invalidate(shouldResetAllBlocksProvider);
               ref.invalidate(tabNumberProvider);

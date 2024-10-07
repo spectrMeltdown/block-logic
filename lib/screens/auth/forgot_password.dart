@@ -111,11 +111,11 @@ class _ForgotPasswordDialogState extends ConsumerState<ForgotPasswordDialog> {
 
   @override
   void initState() {
+    super.initState();
     validator = ref.read(textValidatorProvider.notifier);
     auth = ref.read(authServiceProvider.notifier);
     nav = ref.read(customNavigationProvider.notifier);
     toast = ref.read(toastProvider.notifier);
-    super.initState();
   }
 
   void toggleProcessing() {

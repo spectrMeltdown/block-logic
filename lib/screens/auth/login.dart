@@ -348,6 +348,7 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
 
   @override
   void initState() {
+    super.initState();
     otpCooldownTimer = Timer(Duration.zero, () {});
     otpCooldownTimer.cancel();
     accountService = ref.read(accountServiceProvider.notifier);
@@ -356,7 +357,6 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
     toast = ref.read(toastProvider.notifier);
     nav = ref.read(customNavigationProvider.notifier);
     sharedPref = ref.read(sharedPrefProvider);
-    super.initState();
   }
 
   Future<void> submit() async {

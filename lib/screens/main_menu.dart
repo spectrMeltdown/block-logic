@@ -317,6 +317,7 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> with WidgetsBin
 
   @override
   void initState() {
+    super.initState();
     toast = ref.read(toastProvider.notifier);
     assets = ref.read(assetsProvider);
     auth = ref.read(authServiceProvider.notifier);
@@ -348,6 +349,5 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> with WidgetsBin
     //   });
     //_controller.setLooping(true);
     WidgetsBinding.instance.addObserver(this);
-    super.initState();
   }
 }

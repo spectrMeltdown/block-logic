@@ -23,9 +23,9 @@ class _BlockSelectorViewState extends ConsumerState<BlockSelectorView> with Auto
 
   @override
   void initState() {
+    super.initState();
     gameManager = ref.read(gameManagerProvider.notifier);
     blockData = widget.blockData;
-    super.initState();
   }
 
   @override

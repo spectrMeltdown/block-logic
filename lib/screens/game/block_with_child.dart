@@ -86,7 +86,7 @@ class GameBlockWithChild extends ConsumerWidget {
                       );
                     } else {
                       // debugPrint('Parent: ${widget.data.uid}');
-                      gameManager.addData(dataToAccept, data.uid!, ChildrenData.bodyUIDs);
+                      gameManager.addData(dataToAccept, data, ChildrenData.bodyUIDs);
                     }
                     ref.invalidate(getRootDataProvider);
                     ref.invalidate(getSelfDataProvider);

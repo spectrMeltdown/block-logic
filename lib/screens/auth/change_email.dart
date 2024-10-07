@@ -31,13 +31,13 @@ class _ChangeEmailState extends ConsumerState<ChangeEmail> {
 
   @override
   void initState() {
+    super.initState();
     auth = ref.read(authServiceProvider.notifier);
     nav = ref.read(customNavigationProvider.notifier);
     validator = ref.read(textValidatorProvider.notifier);
     oldEmail = FirebaseAuth.instance.currentUser?.email ?? '';
     usePass = oldEmail.isEmpty;
     emailController = TextEditingController(text: oldEmail.isEmpty ? null : oldEmail);
-    super.initState();
   }
 
   void toggleProcessing() {

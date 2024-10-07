@@ -67,6 +67,7 @@ class _SignupState extends ConsumerState<Signup> with RouteAware {
 
   @override
   void initState() {
+    super.initState();
     toast = ref.read(toastProvider.notifier);
     validator = ref.read(textValidatorProvider.notifier);
     nav = ref.read(customNavigationProvider.notifier);
@@ -77,7 +78,6 @@ class _SignupState extends ConsumerState<Signup> with RouteAware {
     timer = Timer(Duration.zero, () {});
     timer.cancel();
     msg = const BlankWidget();
-    super.initState();
   }
 
   void updateCallBack({

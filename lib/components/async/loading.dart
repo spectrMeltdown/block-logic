@@ -84,8 +84,8 @@ class _BLLoadingState extends ConsumerState<BLLoading> with TickerProviderStateM
 
   @override
   void initState() {
+    super.initState();
     if (!kIsWeb) _controller = AnimationController(vsync: this);
     assets = ref.read(assetsProvider);
-    super.initState();
   }
 }

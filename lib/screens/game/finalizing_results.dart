@@ -34,6 +34,7 @@ class _FinalizingResultsState extends ConsumerState<FinalizingResults> {
 
   @override
   void initState() {
+    super.initState();
     manager = ref.read(gameManagerProvider.notifier);
     nav = ref.read(customNavigationProvider.notifier);
     final assets = ref.read(assetsProvider);
@@ -66,7 +67,6 @@ class _FinalizingResultsState extends ConsumerState<FinalizingResults> {
         )
       ],
     );
-    super.initState();
   }
 
   void leave() async {

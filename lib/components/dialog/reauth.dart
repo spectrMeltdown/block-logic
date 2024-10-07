@@ -43,6 +43,7 @@ class _ReauthDialogState extends ConsumerState<ReauthDialog> {
 
   @override
   void initState() {
+    super.initState();
     phoneNum = FirebaseAuth.instance.currentUser?.phoneNumber ?? '';
     useEmail = phoneNum.isEmpty;
     firstOTPSent = useEmail;
@@ -53,7 +54,6 @@ class _ReauthDialogState extends ConsumerState<ReauthDialog> {
     msg = const BlankWidget();
     timer = Timer(Duration.zero, () {});
     timer.cancel();
-    super.initState();
   }
 
   @override

@@ -28,9 +28,9 @@ class _BlockSelectorStackState extends ConsumerState<BlockSelectorStack> {
 
   @override
   void initState() {
+    super.initState();
     gameManager = ref.read(gameManagerProvider.notifier);
     createStackCount();
-    super.initState();
   }
 
   void createStackCount() {

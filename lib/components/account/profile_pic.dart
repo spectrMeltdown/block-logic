@@ -82,8 +82,8 @@ class _BLProfilePicState extends ConsumerState<BLProfilePic> {
 
   @override
   void initState() {
-    if (!kIsWeb) audio = ref.read(bLAudioStateProvider.notifier);
     super.initState();
+    if (!kIsWeb) audio = ref.read(bLAudioStateProvider.notifier);
   }
 
   void onTapCancel() {

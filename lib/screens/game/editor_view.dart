@@ -55,25 +55,21 @@ class EditorView extends ConsumerWidget {
       child: SingleChildScrollView(
           clipBehavior: Clip.antiAlias,
           scrollDirection: Axis.horizontal,
-          child: Stack(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  ...List.generate(blockData.length, (i) {
-                    // debugPrint(blockData.toString());
-                    return GameBlock(data: blockData[i]);
-                  }),
-                  ConstrainedBox(
-                    constraints: BoxConstraints(
-                      minWidth: parentConstraints.minWidth,
-                      minHeight: parentConstraints.minHeight,
-                    ),
-                    child: buildDragTarget(blockData),
-                  ),
-                ],
-              )
+              ...List.generate(blockData.length, (i) {
+                // debugPrint(blockData.toString());
+                return GameBlock(data: blockData[i]);
+              }),
+              ConstrainedBox(
+                constraints: BoxConstraints(
+                  minWidth: parentConstraints.minWidth,
+                  minHeight: parentConstraints.minHeight,
+                ),
+                child: buildDragTarget(blockData),
+              ),
             ],
           )),
     );

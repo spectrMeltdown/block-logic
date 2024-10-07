@@ -46,7 +46,7 @@ class CustomBox extends ConsumerWidget {
                     type: ChildrenData.parameterUIDs,
                   );
                 } else {
-                  gameManager.addData(dataToAccept, data.uid!, ChildrenData.parameterUIDs);
+                  gameManager.addData(dataToAccept, data, ChildrenData.parameterUIDs);
                 }
                 ref.invalidate(getRootDataProvider);
                 ref.invalidate(getSelfDataProvider);
@@ -87,7 +87,7 @@ class CustomBox extends ConsumerWidget {
                   type: ChildrenData.argumentUIDs,
                 );
               } else {
-                gameManager.addData(dataToAccept, data.uid!, ChildrenData.argumentUIDs);
+                gameManager.addData(dataToAccept, data, ChildrenData.argumentUIDs);
               }
               ref.invalidate(getRootDataProvider);
               ref.invalidate(getChildrenDataProvider);
@@ -130,7 +130,7 @@ class CustomBox extends ConsumerWidget {
                     type: ChildrenData.conditionUIDs,
                   );
                 } else {
-                  gameManager.addData(dataToAccept, data.uid!, ChildrenData.conditionUIDs);
+                  gameManager.addData(dataToAccept, data, ChildrenData.conditionUIDs);
                 }
                 ref.invalidate(getRootDataProvider);
                 ref.invalidate(getSelfDataProvider);
@@ -173,7 +173,7 @@ class CustomBox extends ConsumerWidget {
                     type: ChildrenData.arrayUIDs,
                   );
                 } else {
-                  gameManager.addData(dataToAccept, data.uid!, ChildrenData.arrayUIDs);
+                  gameManager.addData(dataToAccept, data, ChildrenData.arrayUIDs);
                 }
                 ref.invalidate(getRootDataProvider);
                 ref.invalidate(getSelfDataProvider);
@@ -185,7 +185,7 @@ class CustomBox extends ConsumerWidget {
                   return false;
                 }
                 // return true;
-                return validator.conditionBox(data: data, dataToAccept: dataToAccept);
+                return validator.arrayBox(data: data, dataToAccept: dataToAccept);
               },
             )
           ],

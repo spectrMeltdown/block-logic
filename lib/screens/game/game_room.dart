@@ -31,7 +31,7 @@ class GameRoom extends ConsumerStatefulWidget {
   ConsumerState<GameRoom> createState() => _GameRoomState();
 }
 
-class _GameRoomState extends ConsumerState<GameRoom> with WidgetsBindingObserver {
+class _GameRoomState extends ConsumerState<GameRoom> {
   late final GameManager gameManager;
   late final CustomNavigation nav;
   // late final AsyncValue<List<Challenge>> challenges;
@@ -41,6 +41,7 @@ class _GameRoomState extends ConsumerState<GameRoom> with WidgetsBindingObserver
   int currentChallenge = 0;
   int? challengeLength;
   final uid = FirebaseAuth.instance.currentUser!.uid;
+
   @override
   Widget build(BuildContext context) {
     // this is a Future, but it is set to ref.watch because read will return first value only, which may still be a loading/error state
@@ -133,6 +134,7 @@ class _GameRoomState extends ConsumerState<GameRoom> with WidgetsBindingObserver
 
   @override
   void initState() {
+    super.initState();
     gameManager = ref.read(gameManagerProvider.notifier);
     final assets = ref.read(assetsProvider);
     final sharedPref = ref.read(sharedPrefProvider);
@@ -157,14 +159,6 @@ class _GameRoomState extends ConsumerState<GameRoom> with WidgetsBindingObserver
     roomManager = ref.read(roomManagerProvider.notifier);
     dialog = ref.read(dialogServiceProvider.notifier);
     nav = ref.read(customNavigationProvider.notifier);
-    WidgetsBinding.instance.addObserver(this);
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    super.dispose();
   }
 
   void updateChallenge() {

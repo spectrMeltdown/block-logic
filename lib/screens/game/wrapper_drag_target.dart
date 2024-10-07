@@ -23,14 +23,26 @@ class DragTargetWrapper extends ConsumerStatefulWidget {
 }
 
 class _GameDragTargetState extends ConsumerState<DragTargetWrapper> {
-  // GameBlockData? blockData;
   bool editorOutline = false;
   late final GameManager gameManager;
-  final outlineDecor = BoxDecoration(borderRadius: const BorderRadius.all(Radius.circular(10)), border: Border.all(color: Colors.white));
+
+  @override
+  void initState() {
+    super.initState();
+    gameManager = ref.read(gameManagerProvider.notifier);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: editorOutline ? outlineDecor : null,
+      decoration: editorOutline
+          ? BoxDecoration(
+              borderRadius: const BorderRadius.all(Radius.circular(10)),
+              border: Border.all(
+                color: Colors.white,
+              ),
+            )
+          : null,
       child: DragTarget<GameBlockData>(
         builder: (context, accepted, rejected) {
           widget.builder?.call();
@@ -62,11 +74,5 @@ class _GameDragTargetState extends ConsumerState<DragTargetWrapper> {
         },
       ),
     );
-  }
-
-  @override
-  void initState() {
-    gameManager = ref.read(gameManagerProvider.notifier);
-    super.initState();
   }
 }

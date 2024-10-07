@@ -47,11 +47,11 @@ class GameCodeBlockState extends ConsumerState<GameBlock> {
 
   @override
   void initState() {
+    super.initState();
     // debugPrint('Init block: ${widget.data.name}');
     gameManager = ref.read(gameManagerProvider.notifier);
     blui = ref.read(bLUIProvider.notifier);
     create();
-    super.initState();
   }
 
   void create() {
@@ -69,7 +69,7 @@ class GameCodeBlockState extends ConsumerState<GameBlock> {
 
   void onDragCompleted() {
     if (widget.data.state == CodeBlockState.inSelector) {
-      debugPrint('decrement count');
+      // debugPrint('decrement count');
       if (widget.updateStackCount != null) {
         widget.updateStackCount!(add: false);
       }
@@ -99,11 +99,15 @@ class GameCodeBlockState extends ConsumerState<GameBlock> {
   @override
   Widget build(BuildContext context) {
     // super.build(context);
-    debugPrint('Previous challenge uid was $previousChallengeUID');
-    debugPrint('Current challenge uid was ${widget.challengeUID}');
+    // debugPrint('Previous challenge uid was $previousChallengeUID');
+    // debugPrint('Current challenge uid was ${widget.challengeUID}');
+    if (widget.data.type == CodeBlockType.statement) {
+      debugPrint('${widget.data.statementUIDs}');
+    }
+    // trigger rebuilds when the challenge has changed
     if (widget.topLevelBlock && previousChallengeUID != widget.challengeUID) {
       create();
-      debugPrint('rebuild block triggered');
+      // debugPrint('rebuild block triggered');
       setState(() {});
     }
     // debugPrint('BLOCK REBUILT');

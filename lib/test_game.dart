@@ -21,6 +21,7 @@ class _TestGameState extends ConsumerState<TestGame> {
   int currentChallenge = 0;
   @override
   void initState() {
+    super.initState();
     gameManager = ref.read(gameManagerProvider.notifier);
     challenges = [
       Challenge(
@@ -45,8 +46,6 @@ class _TestGameState extends ConsumerState<TestGame> {
         blocks: AllBlocks().pythonIsAwesome(),
       ),
     ];
-
-    super.initState();
   }
 
   void updateChallenge() {

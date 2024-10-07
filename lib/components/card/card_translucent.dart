@@ -149,9 +149,9 @@ class _BLCardState extends ConsumerState<BLTranslucentCard> {
 
   @override
   void initState() {
+    super.initState();
     cardColor = [Colors.grey.withOpacity(0.5), darkShade];
     cardColorPressed = [Colors.grey.brighten(0.2), darkShade];
-    super.initState();
   }
 
   void _onTapCancel() {

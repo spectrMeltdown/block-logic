@@ -44,11 +44,6 @@ class _BLCheckboxState extends State<BLCheckbox> {
   // }
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTapUp: _onTapUp,
@@ -58,12 +53,8 @@ class _BLCheckboxState extends State<BLCheckbox> {
           width: 25,
           height: 25,
           decoration: ShapeDecoration(
-            gradient: RadialGradient(
-                colors: [Colors.blueGrey[900]!, Colors.black87], radius: 1.5),
-            shape: BeveledRectangleBorder(
-                borderRadius:
-                    const BorderRadius.only(bottomRight: Radius.circular(7)),
-                side: BorderSide(color: BLUI().getAppColor('lightblue'))),
+            gradient: RadialGradient(colors: [Colors.blueGrey[900]!, Colors.black87], radius: 1.5),
+            shape: BeveledRectangleBorder(borderRadius: const BorderRadius.only(bottomRight: Radius.circular(7)), side: BorderSide(color: BLUI().getAppColor('lightblue'))),
           ),
           child: AnimatedOpacity(
             duration: const Duration(milliseconds: 400),
@@ -71,14 +62,11 @@ class _BLCheckboxState extends State<BLCheckbox> {
             child: AnimatedContainer(
                 duration: const Duration(milliseconds: 100),
                 curve: Curves.easeInOut,
-                margin: _isChecked
-                    ? const EdgeInsets.all(4)
-                    : const EdgeInsets.all(20),
+                margin: _isChecked ? const EdgeInsets.all(4) : const EdgeInsets.all(20),
                 decoration: const ShapeDecoration(
                   color: Colors.white,
                   shape: BeveledRectangleBorder(
-                    borderRadius:
-                        BorderRadius.only(bottomRight: Radius.circular(5)),
+                    borderRadius: BorderRadius.only(bottomRight: Radius.circular(5)),
                   ),
                 )),
           )),

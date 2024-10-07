@@ -60,22 +60,22 @@ class ReturnBlockOverlay extends ConsumerWidget {
                 // actual removal from tree
                 gameManager.removeSelectedInSelectorUIDs();
                 gameManager.deleteSelectedData();
-                Future.delayed(Duration.zero, () {
-                  ref.invalidate(getRootDataProvider);
-                });
-                Future.delayed(Duration.zero, () {
-                  ref.invalidate(getSelfDataProvider);
-                });
-                Future.delayed(Duration.zero, () {
-                  ref.invalidate(getChildrenDataProvider);
-                });
-                Future.delayed(Duration.zero, () {
-                  ref.invalidate(shouldResetBlockProvider);
-                });
+                // Future.delayed(Duration.zero, () {
+                //   ref.invalidate(getRootDataProvider);
+                // });
+                // Future.delayed(Duration.zero, () {
+                //   ref.invalidate(getSelfDataProvider);
+                // });
+                // Future.delayed(Duration.zero, () {
+                //   ref.invalidate(getChildrenDataProvider);
+                // });
+                // Future.delayed(Duration.zero, () {
+                //   ref.invalidate(shouldResetBlockProvider);
+                // });
 
-                // ref.invalidate(getRootDataProvider);
-                // ref.invalidate(getSelfDataProvider);
-                // ref.invalidate(getChildrenDataProvider);
+                ref.invalidate(getRootDataProvider);
+                ref.invalidate(getSelfDataProvider);
+                ref.invalidate(getChildrenDataProvider);
                 ref.invalidate(shouldResetBlockProvider);
               },
               onWillAcceptWithDetails: (dataToAccept) {

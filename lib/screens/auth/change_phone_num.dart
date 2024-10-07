@@ -172,11 +172,11 @@ class _ChangePhoneNumState extends ConsumerState<ChangePhoneNum> {
 
   @override
   void initState() {
+    super.initState();
     accountService = ref.read(accountServiceProvider.notifier);
     authService = ref.read(authServiceProvider.notifier);
     nav = ref.read(customNavigationProvider.notifier);
     user = ref.read(authChangesProvider);
     validator = ref.read(textValidatorProvider.notifier);
-    super.initState();
   }
 }

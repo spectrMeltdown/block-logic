@@ -37,7 +37,7 @@ class _BLSwitchState extends ConsumerState<BLSwitch> {
 
   @override
   void initState() {
-    state = widget.state;
     super.initState();
+    state = widget.state;
   }
 }

@@ -16,10 +16,10 @@ class StatementBox extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final gameManager = ref.read(gameManagerProvider.notifier);
     // final validator = BlockValidator()
-    final data = ref.watch(getSelfDataProvider(this.data.uid));
+    // final data = ref.watch(getSelfDataProvider(this.data.uid));
     final blocks = ref.watch(getChildrenDataProvider(data?.statementUIDs ?? []));
     // debugPrint(blocks.toString());
-    // debugPrint('${widget.data.name} ${widget.data.statementUIDs}');
+    // debugPrint('${data?.name} - ${data?.uid} ${data?.statementUIDs}');
 
     return Padding(
       padding: const EdgeInsets.all(2),
@@ -49,7 +49,7 @@ class StatementBox extends ConsumerWidget {
               } else {
                 // debugPrint('parent id: ${data!.uid}');
                 // debugPrint('initData name: ${initData.name}');
-                gameManager.addData(dataToAccept, data?.uid ?? '', ChildrenData.statementUIDs);
+                gameManager.addData(dataToAccept, data!, ChildrenData.statementUIDs);
               }
               ref.invalidate(getRootDataProvider);
               ref.invalidate(getSelfDataProvider);
@@ -60,7 +60,7 @@ class StatementBox extends ConsumerWidget {
             onWillAcceptWithDetails: (dataToAccept) {
               // debugPrint(data!.uid);
               // debugPrint(dataToAccept.uid);
-              if (data?.statementUIDs?.contains(dataToAccept.uid) ?? false || dataToAccept.uid == data!.uid || dataToAccept.uid == data.parentUID) {
+              if (data?.statementUIDs?.contains(dataToAccept.uid) ?? false || dataToAccept.uid == data?.uid || dataToAccept.uid == data?.parentUID) {
                 return false;
               }
               return true;

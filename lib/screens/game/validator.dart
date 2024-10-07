@@ -1,5 +1,6 @@
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/game/block_data.dart';
+import 'package:flutter/src/widgets/framework.dart';
 
 class BlockValidator {
   // bool topLevelBox(GameBlockData data) {
@@ -28,7 +29,19 @@ class BlockValidator {
     required GameBlockData data,
     required GameBlockData dataToAccept,
   }) {
-    return true;
+    switch (data.type) {
+      case CodeBlockType.variables:
+      case CodeBlockType.functions:
+      case CodeBlockType.objects:
+      case CodeBlockType.operators:
+      case CodeBlockType.keywords:
+      case CodeBlockType.literals:
+        return true;
+      case CodeBlockType.conditionals:
+      case CodeBlockType.statement:
+      case CodeBlockType.loops:
+        return false;
+    }
   }
 
   bool conditionBox({
@@ -127,5 +140,12 @@ class BlockValidator {
       default:
         return false;
     }
+  }
+
+  bool arrayBox({
+    required GameBlockData data,
+    required GameBlockData dataToAccept,
+  }) {
+    return true;
   }
 }

@@ -9,6 +9,7 @@ import 'package:block_logic/logic/services/leaderboard_manager.dart';
 import 'package:block_logic/logic/services/room_manager.dart';
 import 'package:block_logic/logic/services/score_manager.dart';
 import 'package:block_logic/logic/services/shared_pref.dart';
+import 'package:block_logic/logic/testing.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -176,48 +177,33 @@ class GameManager extends StateNotifier<GameState> {
   }
 
   void addRootData(GameBlockData data) {
-    // debugPrint('addRootData');
-    final newStatementUID = getUID();
-    GameBlockData newStatement = GameBlockData.createStatement();
-    GameBlockData newData = data.copyWith();
-    if (newData.uid == null) {
-      final newUID = getUID();
+    // assign uid
+    data = data.copyWith(
+      uid: getUID(),
+      state: CodeBlockState.inEditor,
+    );
 
-      newData = newData.copyWith(
-        uid: newUID,
-        parentUID: newStatementUID,
-        state: CodeBlockState.inEditor,
-      );
+    // create new statement
+    GameBlockData statement = GameBlockData.createStatement();
 
-      newStatement = newStatement.copyWith(
-        uid: newStatementUID,
-        parentUID: 'root',
-        statementUIDs: [newUID],
-        state: CodeBlockState.inEditor,
-      );
-      // debugPrint('New data: ${newData.uid}');
-      // debugPrint('New statement data: ${newStatement.uid}');
-      state.dataTree.addAll({newStatementUID: newStatement, newUID: newData});
-    }
-    // if newData UID already exists
-    else {
-      newData = newData.copyWith(
-        parentUID: newStatementUID,
-        state: CodeBlockState.inEditor,
-      );
-      newStatement = newStatement.copyWith(
-        uid: newStatementUID,
-        parentUID: 'root',
-        statementUIDs: [newData.uid!],
-        state: CodeBlockState.inEditor,
-      );
-      // debugPrint('New data: ${newData.uid}');
-      // debugPrint('New root data: ${newStatement.uid}');
-      state.dataTree[newData.uid!] = newData;
-      state.dataTree.addAll({newStatementUID: newStatement});
-    }
-    // ref.invalidateSelf();
-    // // debugPrint('REACHED HERE');
+    // init
+    statement = statement.copyWith(
+      uid: getUID(),
+      parentUID: 'root',
+      statementUIDs: [data.uid!],
+      state: CodeBlockState.inEditor,
+    );
+
+    // update data
+    data = data.copyWith(
+      parentUID: statement.uid,
+    );
+
+    // add all to tree
+    state.dataTree.addAll({
+      statement.uid!: statement,
+      data.uid!: data,
+    });
   }
 
   List<GameBlockData> getRootData() {
@@ -227,75 +213,74 @@ class GameManager extends StateNotifier<GameState> {
         result.add(data);
       }
     }
-    // // debugPrint(result.toString());
-    // // debugPrint('GOT THE ROOT DATA');
     return result;
   }
 
-  void addData(GameBlockData data, String parentUID, ChildrenData type) {
-    GameBlockData newData = data.copyWith();
-    final newDataUID = newData.uid ?? getUID();
-    if (newData.uid == null) {
-      debugPrint('UID was null, assigning new one');
-      newData = newData.copyWith(
-        uid: newDataUID,
-        parentUID: parentUID,
-        state: CodeBlockState.inEditor,
-      );
-    } else {
-      newData = newData.copyWith(
-        parentUID: parentUID,
-      );
-    }
-    state.dataTree.addAll({
-      newDataUID: newData,
-    });
-    // add newData uid to parent
-    GameBlockData parent = state.dataTree[parentUID]!.copyWith();
-    // // debugPrint('Parent from tree: ${parent.uid} ${parent.name}');
+  void addData(GameBlockData data, GameBlockData parent, ChildrenData type) {
+    // create new data
+    data = data.copyWith(
+      uid: getUID(),
+      parentUID: parent.uid,
+      state: CodeBlockState.inEditor,
+    );
+
+    // add the uid of the data to appropriate list
     switch (type) {
       case ChildrenData.bodyUIDs:
-        // // debugPrint('passed here');
-        GameBlockData newStatement = GameBlockData.createStatement();
-        final newStatementUID = getUID();
-        newStatement = newStatement.copyWith(
-          uid: newStatementUID,
-          parentUID: parentUID,
-          statementUIDs: [newDataUID],
+        // init new statement
+        GameBlockData statement = GameBlockData.createStatement();
+
+        // fill in new statement
+        statement = statement.copyWith(
+          uid: getUID(),
+          parentUID: parent.uid,
+          statementUIDs: [data.uid!],
           state: CodeBlockState.inEditor,
         );
+
+        // update parent with new statement
         parent = parent.copyWith(
-          bodyUIDs: [...parent.bodyUIDs ?? [], newStatementUID],
+          bodyUIDs: [...parent.bodyUIDs ?? [], statement.uid!],
         );
-        newData = newData.copyWith(parentUID: newStatementUID);
+
+        // change data's parent to statement instead
+        data = data.copyWith(parentUID: statement.uid);
+
+        // add statement
         state.dataTree.addAll({
-          newStatementUID: newStatement,
-          newData.uid!: newData,
+          statement.uid!: statement,
         });
-        state.dataTree[parentUID] = parent;
+
+        // update parent
+        state.dataTree[parent.uid!] = parent;
         break;
       case ChildrenData.argumentUIDs:
-        parent = parent.copyWith(argumentUIDs: [...parent.argumentUIDs ?? [], newDataUID]);
-        state.dataTree[parentUID] = parent;
+        parent = parent.copyWith(argumentUIDs: [...parent.argumentUIDs ?? [], data.uid!]);
+        state.dataTree[parent.uid!] = parent;
         break;
       case ChildrenData.parameterUIDs:
-        parent = parent.copyWith(parameterUIDs: [...parent.parameterUIDs ?? [], newDataUID]);
-        state.dataTree[parentUID] = parent;
+        parent = parent.copyWith(parameterUIDs: [...parent.parameterUIDs ?? [], data.uid!]);
+        state.dataTree[parent.uid!] = parent;
         break;
       case ChildrenData.conditionUIDs:
-        parent = parent.copyWith(conditionUIDs: [...parent.conditionUIDs ?? [], newDataUID]);
-        state.dataTree[parentUID] = parent.copyWith();
+        parent = parent.copyWith(conditionUIDs: [...parent.conditionUIDs ?? [], data.uid!]);
+        state.dataTree[parent.uid!] = parent.copyWith();
         break;
       case ChildrenData.statementUIDs:
-        parent = parent.copyWith(statementUIDs: [...parent.statementUIDs ?? [], newDataUID]);
-        state.dataTree[parentUID] = parent.copyWith();
+        parent = parent.copyWith(statementUIDs: [...parent.statementUIDs ?? [], data.uid!]);
+        state.dataTree[parent.uid!] = parent.copyWith();
         break;
       case ChildrenData.arrayUIDs:
-        parent = parent.copyWith(arrayUIDs: [...parent.arrayUIDs ?? [], newDataUID]);
-        state.dataTree[parentUID] = parent;
+        parent = parent.copyWith(arrayUIDs: [...parent.arrayUIDs ?? [], data.uid!]);
+        state.dataTree[parent.uid!] = parent;
     }
+    // lastly, add the data
+    state.dataTree.addAll({
+      data.uid!: data,
+    });
   }
 
+  /// used when children of a data update
   GameBlockData? getSelfData(String uid) {
     if (uid.isEmpty) throw ('UID was empty!');
     return state.dataTree[uid];
@@ -316,46 +301,52 @@ class GameManager extends StateNotifier<GameState> {
 
   void resetTree() {
     state.dataTree = {};
-    // setShouldResetAllBlocks(true);
   }
 
   void setShouldResetAllBlocks(bool newState) => state.shouldResetAllBlocks = newState;
 
   void moveToRoot(String uid) {
     if (uid.isEmpty) throw ('UID was empty!');
-    GameBlockData data = state.dataTree[uid]!;
-    final parent = state.dataTree[data.parentUID];
+    GameBlockData data = state.dataTree[uid]!.copyWith();
+
+    // copy the parent
+    final parent = state.dataTree[data.parentUID]?.copyWith();
     if (parent != null) {
       updateParentChildren(parent, data.uid ?? '');
     }
+
     // if not statement
     if (data.statementUIDs == null) {
       // create new statement
       final statmentUID = getUID();
+      final dataUID = getUID();
       GameBlockData newStatement = GameBlockData.createStatement();
       newStatement = newStatement.copyWith(
         uid: statmentUID,
         parentUID: 'root',
-        statementUIDs: [uid],
+        statementUIDs: [dataUID],
         state: CodeBlockState.inEditor,
       );
       // assign data to new statement
       final newData = data.copyWith(
+        uid: dataUID,
         parentUID: statmentUID,
       );
-      // delete old value
+
+      // delete old value (keep children)
       deleteData(data);
       deleteSelectedData();
 
       // add again
       state.dataTree.addAll({
         statmentUID: newStatement,
-        data.uid!: newData,
+        newData.uid!: newData,
       });
     }
     // if is statement
     else {
-      GameBlockData statement = data.copyWith(parentUID: 'root');
+      final statmentUID = getUID();
+      GameBlockData statement = data.copyWith(uid: statmentUID, parentUID: 'root');
       // delete old value
       deleteData(data.copyWith(), recurse: false);
       deleteSelectedData();
@@ -416,7 +407,8 @@ class GameManager extends StateNotifier<GameState> {
         parent = parent.copyWith(arrayUIDs: [...parent.arrayUIDs ?? [], data.uid!]);
         break;
     }
-    // don't recurse, just delete top level data
+
+    // delete old value (keep children)
     deleteData(originalData, recurse: false);
     deleteSelectedData();
 
@@ -487,26 +479,28 @@ class GameManager extends StateNotifier<GameState> {
     if (data.parentUID != 'root') {
       parent = state.dataTree[data.parentUID]!.copyWith();
     }
-    // first, delete children
+
+    // iterate through all children (also adds self)
     if (recurse) {
       recurseDeleteChildren(data);
     } else {
+      // if not recursing, just add self
       state.uidsToDelete.add(data.uid!);
     }
 
     // next, update parent list
     if (parent != null) {
       if (parent.type == CodeBlockType.statement && (parent.statementUIDs!.length == 1 || parent.statementUIDs!.isEmpty)) {
+        debugPrint('Deleting parent (statement)');
         state.uidsToDelete.add(parent.uid!);
       } else {
+        debugPrint('Modifying parent');
         state.uidParentsToModify.addAll({data.uid!: parent});
       }
     }
-    // lastly, add self
-    state.uidsToDelete.add(data.uid!);
   }
 
-  String getUID() => DateTime.now().microsecondsSinceEpoch.toString();
+  String getUID() => '${DateTime.now().microsecondsSinceEpoch}${getRandomInt(0, 1000)}';
 
   void toggleProcessingOverlay() {
     state.processingOverlay = !state.processingOverlay;
@@ -606,7 +600,7 @@ class GameManager extends StateNotifier<GameState> {
     if (parent.bodyUIDs != null) {
       final List<String> list = List.from(parent.bodyUIDs!);
       list.removeWhere((i) => i == childUID);
-      newParent = newParent.copyWith(bodyUIDs: list);
+      newParent = newParent.copyWith(bodyUIDs: List.from(list));
     }
     if (parent.conditionUIDs != null) {
       final List<String> list = List.from(parent.conditionUIDs!);
@@ -622,6 +616,7 @@ class GameManager extends StateNotifier<GameState> {
       }
       newParent = newParent.copyWith(statementUIDs: list);
     }
+
     if (removeInstead) {
       state.uidsToDelete.add(newParent.uid!);
     } else {
@@ -630,13 +625,20 @@ class GameManager extends StateNotifier<GameState> {
   }
 
   void deleteSelectedData() {
-    // update parents first, uids to delete may increase
-    for (final parent in state.uidParentsToModify.entries) {
-      updateParentChildren(parent.value.copyWith(), parent.key);
+    debugPrint('Data to delete: ${state.uidsToDelete}');
+    // update parents first, uidsToDelete may increase
+    for (final data in state.uidParentsToModify.entries) {
+      updateParentChildren(data.value.copyWith(), data.key);
+      debugPrint('Parents to modify: \nChild: ${data.key} \n Parent:${data.value.uid}');
     }
+    debugPrint('Data to delete (with addons): ${state.uidsToDelete}');
     // remove from tree
     for (final uid in state.uidsToDelete) {
       state.dataTree.remove(uid);
+      // final result = state.dataTree.remove(uid);
+      // if (result == null) {
+      //   debugPrint('Didnt find the uid');
+      // }
     }
     state.uidsToDelete.clear();
     state.uidParentsToModify.clear();
