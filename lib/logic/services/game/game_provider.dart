@@ -2,26 +2,41 @@ import 'package:block_logic/logic/game/block_data.dart';
 import 'package:block_logic/logic/services/game/game_manager.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-final getSelfDataProvider = Provider.family<GameBlockData?, String?>((ref, uid) {
+final getSelfDataProvider = Provider.family.autoDispose<GameBlockData?, String?>((ref, uid) {
   // ref.watch(gameManagerProvider.select((tree) => tree.dataTree[uid]));
-  final gameManager = ref.read(gameManagerProvider.notifier);
+  final state = ref.read(gameManagerProvider);
   if (uid == null) {
     return null;
   }
-  return gameManager.getSelfData(uid);
+  return state.dataTree[uid];
 });
 
-final getChildrenDataProvider = Provider.family<List<GameBlockData>?, List<String>?>((ref, uids) {
+final getChildrenDataProvider = Provider.family.autoDispose<List<GameBlockData>, List<String>?>((ref, uids) {
   // ref.watch(gameManagerProvider.select((tree) => tree.dataTree));
-  final gameManager = ref.read(gameManagerProvider.notifier);
+  final state = ref.read(gameManagerProvider);
   if (uids == null) {
-    return null;
+    return [];
   }
-  return gameManager.getChildrenData(uids);
+  final List<GameBlockData> result = [];
+  for (final uid in uids) {
+    if (state.dataTree[uid] == null) {
+      // debugPrint(uid);
+      // debugPrint('UID does not exist!');
+      continue;
+    }
+    result.add(state.dataTree[uid]!);
+  }
+  return result;
 });
 
-final getRootDataProvider = Provider<List<GameBlockData>>((ref) {
+final getRootDataProvider = Provider.autoDispose<List<GameBlockData>>((ref) {
   // ref.watch(gameManagerProvider.select((tree) => tree.dataTree));
-  final gameManager = ref.read(gameManagerProvider.notifier);
-  return gameManager.getRootData();
+  final state = ref.read(gameManagerProvider);
+  final List<GameBlockData> result = [];
+  for (final data in state.dataTree.values) {
+    if (data.parentUID == 'root') {
+      result.add(data);
+    }
+  }
+  return result;
 });

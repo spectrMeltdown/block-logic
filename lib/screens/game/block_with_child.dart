@@ -25,15 +25,15 @@ class GameBlockWithChild extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final GameManager gameManager = ref.read(gameManagerProvider.notifier);
-    final data = ref.watch(getSelfDataProvider(this.data.uid!));
-    final bodyData = ref.watch(getChildrenDataProvider(data?.bodyUIDs ?? [])) ?? [];
+    final gameManager = ref.read(gameManagerProvider.notifier);
+    final data = ref.watch(getSelfDataProvider(this.data.uid!))!;
+    final bodyData = ref.watch(getChildrenDataProvider(data.bodyUIDs));
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
-            BLText(data!.name),
+            BLText(data.name),
             const SizedBox(
               width: 5,
             ),
@@ -94,7 +94,7 @@ class GameBlockWithChild extends ConsumerWidget {
                     // setState(() {});
                   },
                   onWillAcceptWithDetails: (dataToAccept) {
-                    if (data.bodyUIDs!.contains(dataToAccept.uid) || dataToAccept.uid == data.uid || dataToAccept.uid == data.parentUID) {
+                    if (data?.bodyUIDs?.contains(dataToAccept.uid) ?? false || dataToAccept.uid == data.uid || dataToAccept.uid == data.parentUID) {
                       return false;
                     }
                     return true;

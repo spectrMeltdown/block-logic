@@ -1,6 +1,5 @@
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/game/block_data.dart';
-import 'package:flutter/src/widgets/framework.dart';
 
 class BlockValidator {
   // bool topLevelBox(GameBlockData data) {

@@ -1,12 +1,11 @@
 import 'dart:async';
 
 import 'package:block_logic/app_theme.dart';
-import 'package:block_logic/logic/services/audio.dart';
 
 import 'package:block_logic/logic/services/shared_pref.dart';
 import 'package:block_logic/route_observer.dart';
 import 'package:block_logic/router_config.dart';
-import 'package:block_logic/test_game.dart';
+import 'package:block_logic/screens/checkpoint.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
@@ -48,19 +47,13 @@ Future<void> main() async {
   ));
 }
 
-class BlockLogic extends ConsumerStatefulWidget {
+class BlockLogic extends StatelessWidget {
   const BlockLogic({super.key});
 
-  @override
-  ConsumerState<BlockLogic> createState() => _BlockLogicState();
-}
-
-class _BlockLogicState extends ConsumerState<BlockLogic> {
   @override
   Widget build(BuildContext context) {
     final appTheme = AppTheme();
     if (!kIsWeb) {
-      ref.read(audioInitProvider);
       //ref.watch(internetStatusProvider);
       return MaterialApp(
         title: 'Block-Logic',
@@ -68,8 +61,8 @@ class _BlockLogicState extends ConsumerState<BlockLogic> {
         navigatorObservers: [routeObserver],
         theme: appTheme.theme(),
         darkTheme: appTheme.theme(),
-        // home: const Checkpoint(),
-        home: const TestGame(),
+        home: const Checkpoint(),
+        // home: const TestGame(),
       );
     }
     return MaterialApp.router(

@@ -152,13 +152,15 @@ class _LeaderboardState extends ConsumerState<SelectedLeaderboard> {
                                       return const BLText('Sorry, no top players.');
                                     }
                                     List<String> completedTopThree = [];
-                                    for (int i = 0; i < 4; i++) {
-                                      completedTopThree.add(scores[ScoreStatus.complete]?[i].accountID ?? '');
+                                    if (completedTopThree.isNotEmpty) {
+                                      for (int i = 0; i < 4; i++) {
+                                        completedTopThree.add(scores[ScoreStatus.complete]?[i].accountID ?? '');
+                                      }
+                                      setState(() {
+                                        topThree = List.from(completedTopThree);
+                                      });
+                                      completedTopThree.clear();
                                     }
-                                    setState(() {
-                                      topThree = List.from(completedTopThree);
-                                    });
-                                    completedTopThree.clear();
                                     return players.when(
                                         data: (players) {
                                           if (players == null) {

@@ -206,16 +206,6 @@ class GameManager extends StateNotifier<GameState> {
     });
   }
 
-  List<GameBlockData> getRootData() {
-    final List<GameBlockData> result = [];
-    for (final data in state.dataTree.values) {
-      if (data.parentUID == 'root') {
-        result.add(data);
-      }
-    }
-    return result;
-  }
-
   void addData(GameBlockData data, GameBlockData parent, ChildrenData type) {
     // create new data
     data = data.copyWith(
@@ -280,25 +270,6 @@ class GameManager extends StateNotifier<GameState> {
     });
   }
 
-  /// used when children of a data update
-  GameBlockData? getSelfData(String uid) {
-    if (uid.isEmpty) throw ('UID was empty!');
-    return state.dataTree[uid];
-  }
-
-  List<GameBlockData> getChildrenData(List<String> uids) {
-    final List<GameBlockData> result = [];
-    for (final uid in uids) {
-      if (state.dataTree[uid] == null) {
-        // debugPrint(uid);
-        // debugPrint('UID does not exist!');
-        continue;
-      }
-      result.add(state.dataTree[uid]!);
-    }
-    return result;
-  }
-
   void resetTree() {
     state.dataTree = {};
   }
@@ -306,6 +277,7 @@ class GameManager extends StateNotifier<GameState> {
   void setShouldResetAllBlocks(bool newState) => state.shouldResetAllBlocks = newState;
 
   void moveToRoot(String uid) {
+    debugPrint('move to root');
     if (uid.isEmpty) throw ('UID was empty!');
     GameBlockData data = state.dataTree[uid]!.copyWith();
 
@@ -334,7 +306,7 @@ class GameManager extends StateNotifier<GameState> {
       );
 
       // delete old value (keep children)
-      deleteData(data);
+      deleteData(data, recurse: false);
       deleteSelectedData();
 
       // add again
@@ -367,33 +339,60 @@ class GameManager extends StateNotifier<GameState> {
     // assign new parent
     // final originalParent = state.dataTree[data.parentUID]!.copyWith();
     final originalData = data.copyWith();
+    GameBlockData? originalParent;
+    if (originalData.parentUID != 'root') {
+      originalParent = state.dataTree[originalData.parentUID]!.copyWith();
+    }
     data = data.copyWith(parentUID: parent.uid);
 
     // assign new child
     switch (type) {
       case ChildrenData.bodyUIDs:
-        // create new statement for the data
-        final statementUID = getUID();
-        var statement = GameBlockData.createStatement();
-        statement = statement.copyWith(
-          uid: statementUID,
-          parentUID: parent.uid,
-          statementUIDs: [data.uid!],
-          state: CodeBlockState.inEditor,
-        );
-        data = data.copyWith(parentUID: statementUID);
+        if (originalParent != null && originalParent.type == CodeBlockType.statement) {
+          debugPrint('parent was statement, not root');
+          originalParent.copyWith(parentUID: parent.uid);
+          parent = parent.copyWith(bodyUIDs: [...parent.bodyUIDs ?? [], originalParent.uid!]);
+        } else if (data.type == CodeBlockType.statement) {
+          debugPrint('parent was statement, root!');
+          data.copyWith(parentUID: parent.uid);
+          parent = parent.copyWith(bodyUIDs: [...parent.bodyUIDs ?? [], data.uid!]);
+        } else {
+          // create new statement for the data
+          final statementUID = getUID();
+          var statement = GameBlockData.createStatement();
+          statement = statement.copyWith(
+            uid: statementUID,
+            parentUID: parent.uid,
+            statementUIDs: [data.uid!],
+            state: CodeBlockState.inEditor,
+          );
+          data = data.copyWith(parentUID: statementUID);
 
-        parent = parent.copyWith(bodyUIDs: [...parent.bodyUIDs ?? [], statementUID]);
-        state.dataTree.addAll({statement.uid!: statement});
+          parent = parent.copyWith(bodyUIDs: [...parent.bodyUIDs ?? [], statementUID]);
+          state.dataTree.addAll({statement.uid!: statement});
+        }
         break;
       case ChildrenData.argumentUIDs:
-        parent = parent.copyWith(argumentUIDs: [...parent.argumentUIDs ?? [], data.uid!]);
+        // if statement copy to statment, just get children and put to parent
+        if (data.statementUIDs != null) {
+          parent = parent.copyWith(argumentUIDs: [...parent.argumentUIDs ?? [], ...data.statementUIDs ?? []]);
+        } else {
+          parent = parent.copyWith(argumentUIDs: [...parent.argumentUIDs ?? [], data.uid!]);
+        }
         break;
       case ChildrenData.parameterUIDs:
-        parent = parent.copyWith(parameterUIDs: [...parent.parameterUIDs ?? [], data.uid!]);
+        if (data.statementUIDs != null) {
+          parent = parent.copyWith(parameterUIDs: [...parent.parameterUIDs ?? [], ...data.statementUIDs ?? []]);
+        } else {
+          parent = parent.copyWith(parameterUIDs: [...parent.parameterUIDs ?? [], data.uid!]);
+        }
         break;
       case ChildrenData.conditionUIDs:
-        parent = parent.copyWith(conditionUIDs: [...parent.conditionUIDs ?? [], data.uid!]);
+        if (data.statementUIDs != null) {
+          parent = parent.copyWith(conditionUIDs: [...parent.conditionUIDs ?? [], ...data.statementUIDs ?? []]);
+        } else {
+          parent = parent.copyWith(conditionUIDs: [...parent.conditionUIDs ?? [], data.uid!]);
+        }
         break;
       case ChildrenData.statementUIDs:
         // if statement copy to statment, just get children and put to parent
@@ -404,7 +403,11 @@ class GameManager extends StateNotifier<GameState> {
         }
         break;
       case ChildrenData.arrayUIDs:
-        parent = parent.copyWith(arrayUIDs: [...parent.arrayUIDs ?? [], data.uid!]);
+        if (data.statementUIDs != null) {
+          parent = parent.copyWith(arrayUIDs: [...parent.arrayUIDs ?? [], ...data.statementUIDs ?? []]);
+        } else {
+          parent = parent.copyWith(arrayUIDs: [...parent.arrayUIDs ?? [], data.uid!]);
+        }
         break;
     }
 
@@ -476,6 +479,7 @@ class GameManager extends StateNotifier<GameState> {
   void deleteData(GameBlockData data, {bool recurse = true}) {
     if (data.uid == null || data.uid!.isEmpty) throw ('UID was empty!');
     GameBlockData? parent;
+    final uid = data.uid;
     if (data.parentUID != 'root') {
       parent = state.dataTree[data.parentUID]!.copyWith();
     }
@@ -490,7 +494,7 @@ class GameManager extends StateNotifier<GameState> {
 
     // next, update parent list
     if (parent != null) {
-      if (parent.type == CodeBlockType.statement && (parent.statementUIDs!.length == 1 || parent.statementUIDs!.isEmpty)) {
+      if (parent.type == CodeBlockType.statement && ((parent.statementUIDs!.length == 1 && parent.statementUIDs!.contains(uid)) || parent.statementUIDs!.isEmpty)) {
         debugPrint('Deleting parent (statement)');
         state.uidsToDelete.add(parent.uid!);
       } else {

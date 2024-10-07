@@ -5,7 +5,6 @@ import 'package:block_logic/screens/game/block_with_child.dart';
 import 'package:block_logic/screens/game/statement_block.dart';
 import 'package:block_logic/screens/game/wrapper_block_design.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // renders block based on data
 class BlockRender extends StatelessWidget {

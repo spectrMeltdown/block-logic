@@ -10,16 +10,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class EditorView extends ConsumerWidget {
   final BoxConstraints parentConstraints;
   const EditorView({required this.parentConstraints, super.key});
+
   @override
   Widget build(BuildContext context, ref) {
     // final validator = BlockValidator();
     final blockData = ref.watch(getRootDataProvider);
+    debugPrint(blockData.toString());
     Widget buildDragTarget(List<GameBlockData> blockData) {
       // debugPrint(gameState.dataTree.toString());
-      List<String> rootBlockIDs = [];
-      for (final block in blockData) {
-        rootBlockIDs.add(block.uid!);
-      }
       return DragTargetWrapper(
         builderChild: () {
           if (blockData.isNotEmpty) {
@@ -28,7 +26,7 @@ class EditorView extends ConsumerWidget {
           return const Center(child: BLText('Drop a block'));
         },
         onWillAcceptWithDetails: (dataToAccept) {
-          if (rootBlockIDs.contains(dataToAccept.uid)) {
+          if (blockData.any((i) => i.uid == dataToAccept.uid)) {
             return false;
           }
           return true;
@@ -43,6 +41,10 @@ class EditorView extends ConsumerWidget {
           ref.invalidate(getRootDataProvider);
           ref.invalidate(getSelfDataProvider);
           ref.invalidate(getChildrenDataProvider);
+          // for (final entry in ref.read(gameManagerProvider).dataTree.entries) {
+          //   debugPrint(entry.toString());
+          // }
+
           // setState(() {});
         },
       );
@@ -60,8 +62,7 @@ class EditorView extends ConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               ...List.generate(blockData.length, (i) {
-                // debugPrint(blockData.toString());
-                return GameBlock(data: blockData[i]);
+                return GameBlock(key: ValueKey(blockData[i].uid), data: blockData[i]);
               }),
               ConstrainedBox(
                 constraints: BoxConstraints(

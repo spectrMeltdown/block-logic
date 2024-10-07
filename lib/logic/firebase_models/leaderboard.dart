@@ -1,5 +1,6 @@
 import 'package:block_logic/logic/enums.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/material.dart';
 
 class Leaderboard {
   final String? id; // the doc id. Should be auto generated
@@ -22,10 +23,13 @@ class Leaderboard {
   factory Leaderboard.fromRTDB(Object? doc, [String? key]) {
     Map data = {};
     if (doc is DataSnapshot) {
+      debugPrint('Is datasnapshot');
       if (doc.value != null) {
+        debugPrint('Converted to map');
         data = doc.value as Map;
       }
     }
+    debugPrint('RTBD type was $doc, ${doc.runtimeType}');
 
     LeaderboardStatus? status;
     if (data['status'] == LeaderboardStatus.complete.name) {

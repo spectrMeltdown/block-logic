@@ -122,6 +122,7 @@ class _BlockSelectorStackState extends ConsumerState<BlockSelectorStack> {
               }
               // debugPrint(blockIDs[i].toString());
               return GameBlock(
+                key: ValueKey(blockIDs[i]),
                 data: widget.data.copyWith(inSelectorUID: blockIDs[i]),
                 updateStackCount: updateStackCount,
                 // updateInSelectorUID: updateInSelectorUID,

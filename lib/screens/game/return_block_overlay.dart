@@ -64,7 +64,7 @@ class ReturnBlockOverlay extends ConsumerWidget {
                 //   ref.invalidate(getRootDataProvider);
                 // });
                 // Future.delayed(Duration.zero, () {
-                //   ref.invalidate(getSelfDataProvider);
+                //   // ref.invalidate(getSelfDataProvider);
                 // });
                 // Future.delayed(Duration.zero, () {
                 //   ref.invalidate(getChildrenDataProvider);
@@ -72,11 +72,22 @@ class ReturnBlockOverlay extends ConsumerWidget {
                 // Future.delayed(Duration.zero, () {
                 //   ref.invalidate(shouldResetBlockProvider);
                 // });
-
+                // final state = ref.read(gameManagerProvider);
+                // state.dataTree = Map.from(state.dataTree);
                 ref.invalidate(getRootDataProvider);
                 ref.invalidate(getSelfDataProvider);
                 ref.invalidate(getChildrenDataProvider);
                 ref.invalidate(shouldResetBlockProvider);
+
+                // ref.invalidate(getRootDataProvider);
+                // ref.invalidate(getSelfDataProvider);
+                // ref.invalidate(getChildrenDataProvider);
+                // ref.invalidate(shouldResetBlockProvider);
+                // for (final entry in ref.read(gameManagerProvider).dataTree.entries) {
+                //   debugPrint('\n');
+                //   debugPrint(entry.key);
+                //   debugPrint(entry.value.statementUIDs.toString());
+                // }
               },
               onWillAcceptWithDetails: (dataToAccept) {
                 if (dataToAccept.state != CodeBlockState.inEditor) {

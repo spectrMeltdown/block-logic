@@ -7,6 +7,7 @@ import 'package:block_logic/logic/firebase_providers/auth.dart';
 import 'package:block_logic/logic/firebase_providers/selected_user.dart';
 import 'package:block_logic/logic/services/account.dart';
 import 'package:block_logic/logic/services/assets.dart';
+import 'package:block_logic/logic/services/audio.dart';
 import 'package:block_logic/logic/services/auth.dart';
 import 'package:block_logic/logic/services/login_check.dart';
 import 'package:block_logic/logic/services/shared_pref.dart';
@@ -38,6 +39,7 @@ class Checkpoint extends ConsumerWidget {
     final auth = ref.read(authServiceProvider.notifier);
     final sharedPref = ref.read(sharedPrefProvider);
     final assets = ref.read(assetsProvider);
+    ref.read(audioInitProvider);
     FlameAudio.bgm.initialize();
 
     /// check if a backgroundMusic setting exists

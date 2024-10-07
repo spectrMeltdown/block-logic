@@ -18,17 +18,17 @@ class CustomBox extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final validator = BlockValidator();
-    // final data = ref.watch(getSelfDataProvider(this.data.uid));
+    final data = ref.watch(getSelfDataProvider(this.data.uid))!;
     final gameManager = ref.read(gameManagerProvider.notifier);
     switch (box) {
       case GameBox.parameters:
-        final parameters = ref.watch(getChildrenDataProvider(data.parameterUIDs ?? []));
+        final parameters = ref.watch(getChildrenDataProvider(data.parameterUIDs));
         return Row(
           children: [
-            ...List.generate(parameters!.length, (index) {
+            ...List.generate(parameters.length, (i) {
               return Padding(
                 padding: const EdgeInsets.all(3),
-                child: GameBlock(data: parameters[index]),
+                child: GameBlock(key: ValueKey(parameters[i].uid), data: parameters[i]),
               );
             }),
             DragTargetWrapper(
@@ -39,6 +39,7 @@ class CustomBox extends ConsumerWidget {
                 );
               },
               onAcceptWithDetails: (dataToAccept, manager) {
+                // debugPrint('Data to accept: ${dataToAccept.name}');
                 if (dataToAccept.state == CodeBlockState.inEditor) {
                   gameManager.moveData(
                     data: dataToAccept,
@@ -64,12 +65,12 @@ class CustomBox extends ConsumerWidget {
           ],
         );
       case GameBox.arguments:
-        final arguments = ref.watch(getChildrenDataProvider(data.argumentUIDs ?? []));
+        final arguments = ref.watch(getChildrenDataProvider(data.argumentUIDs));
         return Row(children: [
-          ...List.generate(arguments!.length, (index) {
+          ...List.generate(arguments.length, (i) {
             return Padding(
               padding: const EdgeInsets.all(3),
-              child: GameBlock(data: arguments[index]),
+              child: GameBlock(key: ValueKey(arguments[i].uid), data: arguments[i]),
             );
           }),
           DragTargetWrapper(
@@ -90,8 +91,8 @@ class CustomBox extends ConsumerWidget {
                 gameManager.addData(dataToAccept, data, ChildrenData.argumentUIDs);
               }
               ref.invalidate(getRootDataProvider);
-              ref.invalidate(getChildrenDataProvider);
               ref.invalidate(getSelfDataProvider);
+              ref.invalidate(getChildrenDataProvider);
               // setState(() {});
             },
             onWillAcceptWithDetails: (dataToAccept) {
@@ -105,14 +106,14 @@ class CustomBox extends ConsumerWidget {
         ]);
 
       case GameBox.conditions:
-        final conditions = ref.watch(getChildrenDataProvider(data.conditionUIDs ?? []));
+        final conditions = ref.watch(getChildrenDataProvider(data.conditionUIDs));
 
         return Row(
           children: [
-            ...List.generate(conditions!.length, (index) {
+            ...List.generate(conditions.length, (i) {
               return Padding(
                 padding: const EdgeInsets.all(3),
-                child: GameBlock(data: conditions[index]),
+                child: GameBlock(key: ValueKey(conditions[i].uid), data: conditions[i]),
               );
             }),
             DragTargetWrapper(
@@ -148,14 +149,14 @@ class CustomBox extends ConsumerWidget {
           ],
         );
       case GameBox.array:
-        final items = ref.watch(getChildrenDataProvider(data.arrayUIDs ?? []));
+        final items = ref.watch(getChildrenDataProvider(data.arrayUIDs));
 
         return Row(
           children: [
-            ...List.generate(items!.length, (index) {
+            ...List.generate(items.length, (i) {
               return Padding(
                 padding: const EdgeInsets.all(3),
-                child: GameBlock(data: items[index]),
+                child: GameBlock(key: ValueKey(items[i].uid), data: items[i]),
               );
             }),
             DragTargetWrapper(

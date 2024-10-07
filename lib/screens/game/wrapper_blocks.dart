@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Wraps topLevel box in a SingleChildScrollView, or wraps children of a block in a column
 class BlockWrapper extends StatelessWidget {

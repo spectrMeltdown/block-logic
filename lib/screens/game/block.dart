@@ -35,15 +35,11 @@ class GameBlock extends ConsumerStatefulWidget {
 }
 
 class GameCodeBlockState extends ConsumerState<GameBlock> {
-  // @override
-  // bool get wantKeepAlive => true;
   late final GameManager gameManager;
   late final BLUI blui;
   late Widget block;
   late Widget defaultWithPadding;
   String? previousChallengeUID;
-  // bool shouldResetSelf = false;
-  // GameBlockData? finalData;
 
   @override
   void initState() {
@@ -102,7 +98,8 @@ class GameCodeBlockState extends ConsumerState<GameBlock> {
     // debugPrint('Previous challenge uid was $previousChallengeUID');
     // debugPrint('Current challenge uid was ${widget.challengeUID}');
     if (widget.data.type == CodeBlockType.statement) {
-      debugPrint('${widget.data.statementUIDs}');
+      debugPrint('from block ${widget.data.uid}');
+      debugPrint('from block ${widget.data.statementUIDs}\n');
     }
     // trigger rebuilds when the challenge has changed
     if (widget.topLevelBlock && previousChallengeUID != widget.challengeUID) {
