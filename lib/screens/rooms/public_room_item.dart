@@ -76,6 +76,7 @@ class _PublicRoomItemState extends ConsumerState<PublicRoomItem> {
 
   @override
   Widget build(BuildContext context) {
+    // debugPrint('public room item ${widget.room.name}');
     final hostData = ref.watch(SelectedUserProvider(widget.room.hostID!));
     return hostData.when(
         data: (hostData) {

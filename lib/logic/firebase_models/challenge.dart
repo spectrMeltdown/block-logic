@@ -24,14 +24,19 @@ class Challenge {
     this.tags,
   });
 
-  factory Challenge.fromRTDB(DataSnapshot doc) {
-    Map data = {};
-    if (doc.value != null) {
-      data = doc.value as Map;
+  factory Challenge.fromRTDB(Object? doc, [String? key]) {
+    Map<String, dynamic> data = {};
+
+    if (doc is Map<Object?, Object?>) {
+      data = (doc).map((k, v) => MapEntry(k as String, v));
+    } else if (doc is DataSnapshot) {
+      data = (doc.value as Map<Object?, Object?>).map((k, v) => MapEntry(k as String, v));
+    } else {
+      throw ('Unknown type!!');
     }
 
     return Challenge(
-      id: doc.key,
+      id: doc is DataSnapshot ? doc.key : key,
       name: data['name'] ?? '',
       shortDescription: data['shortDescription'] ?? '',
       additionalInfo: data['additionalInfo'] ?? '',

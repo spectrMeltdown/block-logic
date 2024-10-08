@@ -6,7 +6,7 @@ part of '../selected_users.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$selectedUsersHash() => r'ea95beae1841c75757f0d71833f392c2bb1a6eda';
+String _$selectedUsersHash() => r'945ee300d4c4b90a948ad45cff6b9a27ae8e8ac3';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -34,7 +34,7 @@ class _SystemHash {
 const selectedUsersProvider = SelectedUsersFamily();
 
 /// See also [selectedUsers].
-class SelectedUsersFamily extends Family<AsyncValue<List<UserAccount>?>> {
+class SelectedUsersFamily extends Family<AsyncValue<List<UserAccount>>> {
   /// See also [selectedUsers].
   const SelectedUsersFamily();
 
@@ -73,7 +73,7 @@ class SelectedUsersFamily extends Family<AsyncValue<List<UserAccount>?>> {
 
 /// See also [selectedUsers].
 class SelectedUsersProvider
-    extends AutoDisposeFutureProvider<List<UserAccount>?> {
+    extends AutoDisposeFutureProvider<List<UserAccount>> {
   /// See also [selectedUsers].
   SelectedUsersProvider(
     List<String> ids,
@@ -108,7 +108,7 @@ class SelectedUsersProvider
 
   @override
   Override overrideWith(
-    FutureOr<List<UserAccount>?> Function(SelectedUsersRef provider) create,
+    FutureOr<List<UserAccount>> Function(SelectedUsersRef provider) create,
   ) {
     return ProviderOverride(
       origin: this,
@@ -125,7 +125,7 @@ class SelectedUsersProvider
   }
 
   @override
-  AutoDisposeFutureProviderElement<List<UserAccount>?> createElement() {
+  AutoDisposeFutureProviderElement<List<UserAccount>> createElement() {
     return _SelectedUsersProviderElement(this);
   }
 
@@ -143,13 +143,13 @@ class SelectedUsersProvider
   }
 }
 
-mixin SelectedUsersRef on AutoDisposeFutureProviderRef<List<UserAccount>?> {
+mixin SelectedUsersRef on AutoDisposeFutureProviderRef<List<UserAccount>> {
   /// The parameter `ids` of this provider.
   List<String> get ids;
 }
 
 class _SelectedUsersProviderElement
-    extends AutoDisposeFutureProviderElement<List<UserAccount>?>
+    extends AutoDisposeFutureProviderElement<List<UserAccount>>
     with SelectedUsersRef {
   _SelectedUsersProviderElement(super.provider);
 

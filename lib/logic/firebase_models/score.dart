@@ -17,10 +17,15 @@ class Score {
     this.status,
   });
 
-  factory Score.fromRTDB(DataSnapshot doc) {
-    Map data = {};
-    if (doc.value != null) {
-      data = doc.value as Map;
+  factory Score.fromRTDB(Object? doc, [String? key]) {
+    Map<String, dynamic> data = {};
+
+    if (doc is Map<Object?, Object?>) {
+      data = (doc).map((k, v) => MapEntry(k as String, v));
+    } else if (doc is DataSnapshot) {
+      data = (doc.value as Map<Object?, Object?>).map((k, v) => MapEntry(k as String, v));
+    } else {
+      throw ('Unknown type!!');
     }
 
     ScoreStatus? status;
@@ -40,7 +45,7 @@ class Score {
     }
 
     return Score(
-      id: doc.key,
+      id: doc is DataSnapshot ? doc.key : key,
       accountID: data['accountID'],
       playerScore: data['playerScore'],
       timeElapsed: data['timeElapsed'],

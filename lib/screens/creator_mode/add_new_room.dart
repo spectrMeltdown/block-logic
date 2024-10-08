@@ -169,6 +169,7 @@ class _AddRoomBottomSheetState extends ConsumerState<AddRoomBottomSheet> {
                                             ...List.generate(selectedChallenges.length, (i) {
                                               final currentChallenge = selectedChallenges[i];
                                               return Padding(
+                                                key: ValueKey(currentChallenge.id),
                                                 padding: const EdgeInsets.symmetric(vertical: 5),
                                                 child: Row(
                                                   mainAxisAlignment: MainAxisAlignment.center,

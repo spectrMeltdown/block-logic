@@ -9,6 +9,7 @@ import 'package:block_logic/components/text/title_small.dart';
 import 'package:block_logic/components/util/provider_default.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_models/leaderboard.dart';
+import 'package:block_logic/logic/firebase_models/score.dart';
 import 'package:block_logic/logic/firebase_providers/all_scores.dart';
 import 'package:block_logic/logic/firebase_providers/selected_users.dart';
 import 'package:block_logic/logic/services/game/game_manager.dart';
@@ -39,12 +40,22 @@ class SelectedLeaderboard extends ConsumerStatefulWidget {
   ConsumerState<SelectedLeaderboard> createState() => _LeaderboardState();
 }
 
+// Memoize the topThree list using a StateProvider
+final finalTopThreeProvider = StateProvider.family<List<String>, List<Score>>((ref, scores) {
+  List<String> topThree = [];
+
+  for (int i = 0; i < scores.length; i++) {
+    topThree.add(scores[i].accountID ?? '');
+  }
+  return topThree;
+});
+
 class _LeaderboardState extends ConsumerState<SelectedLeaderboard> {
   final double horizontalPadding = 10;
-  List<String> topThree = [];
   late final BLUI blui;
   late final CustomNavigation nav;
   late final SharedPreferences sharedPref;
+  bool processing = false;
 
   String formatTime(int seconds) {
     final int hours = seconds ~/ 3600;
@@ -56,16 +67,16 @@ class _LeaderboardState extends ConsumerState<SelectedLeaderboard> {
 
   @override
   void initState() {
+    super.initState();
     blui = ref.read(bLUIProvider.notifier);
     nav = ref.read(customNavigationProvider.notifier);
     sharedPref = ref.read(sharedPrefProvider);
-    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
-    final players = ref.watch(SelectedUsersProvider(topThree));
+
     final scores = ref.watch(AllScoresProvider(widget.leaderboard.id!));
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -80,8 +91,6 @@ class _LeaderboardState extends ConsumerState<SelectedLeaderboard> {
                     onPressed: () async {
                       ref.invalidate(gameManagerProvider);
                       nav.pop(context);
-                      // TODO: rate on playstore!
-                      // showDialog(context: context, builder: );
                     },
                   )),
             if (!widget.showBackButton) const SizedBox(height: 20),
@@ -148,23 +157,17 @@ class _LeaderboardState extends ConsumerState<SelectedLeaderboard> {
                                     if (scores == null || scores.values.isEmpty) {
                                       return const BLText('Players not found.');
                                     }
-                                    if (scores[ScoreStatus.complete]!.isEmpty) {
+                                    if (scores[ScoreStatus.complete] == null || scores[ScoreStatus.complete]!.isEmpty) {
                                       return const BLText('Sorry, no top players.');
                                     }
-                                    List<String> completedTopThree = [];
-                                    if (completedTopThree.isNotEmpty) {
-                                      for (int i = 0; i < 4; i++) {
-                                        completedTopThree.add(scores[ScoreStatus.complete]?[i].accountID ?? '');
-                                      }
-                                      setState(() {
-                                        topThree = List.from(completedTopThree);
-                                      });
-                                      completedTopThree.clear();
-                                    }
+
+                                    final finalTop = ref.watch(finalTopThreeProvider(scores[ScoreStatus.complete]!));
+
+                                    final players = ref.watch(SelectedUsersProvider(finalTop));
                                     return players.when(
                                         data: (players) {
-                                          if (players == null) {
-                                            return const BLText('No players found.');
+                                          if (players.isEmpty) {
+                                            return const BLText('No top players..');
                                           }
                                           if (players.length == 1) {
                                             return const BLText('You are the only player.');

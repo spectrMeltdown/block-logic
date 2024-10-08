@@ -16,13 +16,19 @@ class UserAccount extends AccountModel {
     this.sessionID,
   });
 
-  factory UserAccount.fromRTDB(DataSnapshot doc) {
-    Map data = {};
-    if (doc.value != null) {
-      data = doc.value as Map;
+  factory UserAccount.fromRTDB(Object? doc, [String? key]) {
+    Map<String, dynamic> data = {};
+
+    if (doc is Map<Object?, Object?>) {
+      data = (doc).map((k, v) => MapEntry(k as String, v));
+    } else if (doc is DataSnapshot) {
+      data = (doc.value as Map<Object?, Object?>).map((k, v) => MapEntry(k as String, v));
+    } else {
+      throw ('Unknown type!!');
     }
+
     return UserAccount(
-      id: doc.key,
+      id: doc is DataSnapshot ? doc.key : key,
       createdAt: data['createdAt'] == null ? null : DateTime.fromMillisecondsSinceEpoch(data['createdAt']),
       displayName: data['displayName'] ?? '',
       profilePicLink: data['profilePicLink'] ?? '',

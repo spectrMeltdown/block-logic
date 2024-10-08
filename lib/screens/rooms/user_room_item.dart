@@ -142,9 +142,8 @@ Future<void> resetRoom(String roomID) async {
   String leaderboardID = '';
   final result = await FirebaseDatabase.instance.ref('rooms/$roomID').runTransaction((obj) {
     var room = obj == null ? null : Room.fromRTDB(obj);
-    // debugPrint(room?.toJSON().toString());
     if (room != null) {
-      leaderboardID = room.currentLeaderboardID ?? '';
+      // leaderboardID = room.currentLeaderboardID ?? '';
       room = room.copyWith(status: RoomStatus.available);
       return Transaction.success(room.toJSON());
     }

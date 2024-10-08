@@ -47,6 +47,9 @@ class _WaitingRoomState extends ConsumerState<WaitingRoom> {
   bool alreadyPopped = false;
   bool playerLeave = false;
   bool called = false;
+  bool hostInRoom = false;
+  bool roomFull = false;
+
   void toggleProcessing() {
     if (mounted) {
       setState(() {
@@ -85,6 +88,18 @@ class _WaitingRoomState extends ConsumerState<WaitingRoom> {
     }
   }
 
+  Future<void> updateRoomState(Room room) async {
+    if (processing) return;
+    processing = true;
+    if (mounted) {
+      setState(() {
+        hostInRoom = room.players != null && room.players!.keys.toList().contains(room.hostID);
+        roomFull = room.players != null && room.players!.length >= room.maxPlayers!;
+      });
+    }
+    processing = false;
+  }
+
   @override
   Widget build(BuildContext context) {
     final room = ref.watch(SelectedRoomProvider(widget.roomID));
@@ -103,9 +118,15 @@ class _WaitingRoomState extends ConsumerState<WaitingRoom> {
                   child: SafeArea(
                 child: Column(
                   children: [
-                    const Padding(
-                      padding: EdgeInsets.only(bottom: 10),
-                      child: BLSmallTitle('Waiting for other players ...'), // TODO: have the title flash
+                    if (roomFull == false) BLSmallTitle('Waiting for other players ...'),
+                    if (roomFull && hostInRoom)
+                      BLText(
+                        'Waiting for host to start game ...',
+                        size: 18,
+                      ),
+                    if (!hostInRoom) BLText('Waiting for host ...'),
+                    SizedBox(
+                      height: 10,
                     ),
                     Expanded(
                       child: Padding(
@@ -113,11 +134,15 @@ class _WaitingRoomState extends ConsumerState<WaitingRoom> {
                         child: BLBorderedPanel(
                           child: room.when(
                               data: (room) {
-                                final uid = FirebaseAuth.instance.currentUser!.uid;
                                 // internet problem, room deleted, etc
                                 if (room == null) {
                                   return const BLText('Failed getting room details.');
                                 }
+                                final uid = FirebaseAuth.instance.currentUser!.uid;
+                                Future.delayed(Duration(milliseconds: 500), () {
+                                  updateRoomState(room);
+                                });
+                                // debugPrint(hostInRoom.toString());
                                 // if any player has false value (left the room by purposely disconnecting), remove that player
                                 if (room.players != null && room.players!.entries.any((e) => e.value == false)) {
                                   Future.microtask(() async {
@@ -129,7 +154,7 @@ class _WaitingRoomState extends ConsumerState<WaitingRoom> {
                                 }
                                 // if host has started the game, join the game
                                 if (room.status == RoomStatus.inGame) {
-                                  Future.microtask(() async {
+                                  WidgetsBinding.instance.addPostFrameCallback((d) {
                                     if (!context.mounted) return;
                                     nav.pushReplace(context, GameRoom(room));
                                   });
@@ -165,6 +190,7 @@ class _WaitingRoomState extends ConsumerState<WaitingRoom> {
                                             padding: EdgeInsets.zero,
                                             children: List.generate(room.players!.length, (i) {
                                               return Padding(
+                                                key: ValueKey(room.players!.keys.toList()[i]),
                                                 padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                                                 child: WidgetAnimator(
                                                     incomingEffect: WidgetTransitionEffects.incomingScaleUp(),
@@ -267,6 +293,7 @@ class _WaitingRoomState extends ConsumerState<WaitingRoom> {
 
   @override
   void initState() {
+    super.initState();
     toast = ref.read(toastProvider.notifier);
     nav = ref.read(customNavigationProvider.notifier);
     dialog = ref.read(dialogServiceProvider.notifier);
@@ -274,7 +301,6 @@ class _WaitingRoomState extends ConsumerState<WaitingRoom> {
     auth = ref.read(authServiceProvider.notifier);
     leaderboardManager = ref.read(leaderboardManagerProvider.notifier);
     FirebaseDatabase.instance.ref('rooms/${widget.roomID}/players/${auth.getUID()}').onDisconnect().set(false);
-    super.initState();
   }
 
   void start(BuildContext context, Room room, [bool startLeave = false]) async {

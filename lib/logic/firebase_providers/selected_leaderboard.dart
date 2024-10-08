@@ -6,13 +6,18 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'generated/selected_leaderboard.g.dart';
 
 @riverpod
-Stream<Leaderboard?> selectedLeaderboard(SelectedLeaderboardRef ref, String leaderboardID) async* {
+Stream<Leaderboard?> selectedLeaderboard(SelectedLeaderboardRef ref, String leaderboardID, {bool futureOnly = false}) async* {
   if (leaderboardID.isNotEmpty) {
     final db = FirebaseDatabase.instance;
-    final stream = db.ref('leaderboards/$leaderboardID').onValue;
-    await for (final doc in stream) {
-      if (doc.snapshot.exists) {
-        yield Leaderboard.fromRTDB(doc.snapshot);
+    final ref = db.ref('leaderboards/$leaderboardID');
+    if (futureOnly) {
+      yield Leaderboard.fromRTDB(await ref.get());
+    } else {
+      final stream = ref.onValue;
+      await for (final doc in stream) {
+        if (doc.snapshot.exists) {
+          yield Leaderboard.fromRTDB(doc.snapshot);
+        }
       }
     }
   } else {

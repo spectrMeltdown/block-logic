@@ -32,7 +32,7 @@ class Checkpoint extends ConsumerWidget {
     const Widget loadingWidget = Scaffold(
       body: Background(
         child: BLLoading(
-          message: 'Loading...',
+          message: 'Loading Game...',
         ),
       ),
     );

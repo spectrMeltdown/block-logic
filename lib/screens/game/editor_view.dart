@@ -15,7 +15,7 @@ class EditorView extends ConsumerWidget {
   Widget build(BuildContext context, ref) {
     // final validator = BlockValidator();
     final blockData = ref.watch(getRootDataProvider);
-    debugPrint(blockData.toString());
+    // debugPrint(blockData.toString());
     Widget buildDragTarget(List<GameBlockData> blockData) {
       // debugPrint(gameState.dataTree.toString());
       return DragTargetWrapper(

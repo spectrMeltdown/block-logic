@@ -45,13 +45,18 @@ Stream<Map<ScoreStatus, List<Score>>?> allScores(AllScoresRef ref, String leader
         /// do a ranking on ScoreStatus.complete
         if (result[ScoreStatus.complete]!.isNotEmpty) {
           /// sort time elapsed
-          result[ScoreStatus.complete]!.sort((a, b) => a.timeElapsed!.compareTo(b.timeElapsed!));
-
-          /// sort score first
-          result[ScoreStatus.complete]!.sort((a, b) => a.playerScore!.compareTo(b.playerScore!));
-          result[ScoreStatus.complete] = result[ScoreStatus.complete]!.reversed.toList();
+          result[ScoreStatus.complete]!.sort((a, b) {
+            if (b.playerScore != a.playerScore) {
+              // Primary sort by score (higher score first)
+              return b.playerScore!.compareTo(a.playerScore!);
+            } else {
+              // Secondary sort by timeElapsed (lower time first)
+              return DateTime.fromMillisecondsSinceEpoch(a.timeElapsed!).compareTo(DateTime.fromMillisecondsSinceEpoch(b.timeElapsed!));
+            }
+          });
         }
       }
+
       for (final scores in result.entries) {
         // debugPrint(score.key.toString());
         for (final score in scores.value) {

@@ -7,7 +7,7 @@ part of '../selected_leaderboard.dart';
 // **************************************************************************
 
 String _$selectedLeaderboardHash() =>
-    r'd7aa50da211270bdcd2e63f853b2b668dc40103d';
+    r'228fd191e0541ce1c3170b95cde48e67578e867f';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -41,10 +41,12 @@ class SelectedLeaderboardFamily extends Family<AsyncValue<Leaderboard?>> {
 
   /// See also [selectedLeaderboard].
   SelectedLeaderboardProvider call(
-    String leaderboardID,
-  ) {
+    String leaderboardID, {
+    bool futureOnly = false,
+  }) {
     return SelectedLeaderboardProvider(
       leaderboardID,
+      futureOnly: futureOnly,
     );
   }
 
@@ -54,6 +56,7 @@ class SelectedLeaderboardFamily extends Family<AsyncValue<Leaderboard?>> {
   ) {
     return call(
       provider.leaderboardID,
+      futureOnly: provider.futureOnly,
     );
   }
 
@@ -77,11 +80,13 @@ class SelectedLeaderboardProvider
     extends AutoDisposeStreamProvider<Leaderboard?> {
   /// See also [selectedLeaderboard].
   SelectedLeaderboardProvider(
-    String leaderboardID,
-  ) : this._internal(
+    String leaderboardID, {
+    bool futureOnly = false,
+  }) : this._internal(
           (ref) => selectedLeaderboard(
             ref as SelectedLeaderboardRef,
             leaderboardID,
+            futureOnly: futureOnly,
           ),
           from: selectedLeaderboardProvider,
           name: r'selectedLeaderboardProvider',
@@ -93,6 +98,7 @@ class SelectedLeaderboardProvider
           allTransitiveDependencies:
               SelectedLeaderboardFamily._allTransitiveDependencies,
           leaderboardID: leaderboardID,
+          futureOnly: futureOnly,
         );
 
   SelectedLeaderboardProvider._internal(
@@ -103,9 +109,11 @@ class SelectedLeaderboardProvider
     required super.debugGetCreateSourceHash,
     required super.from,
     required this.leaderboardID,
+    required this.futureOnly,
   }) : super.internal();
 
   final String leaderboardID;
+  final bool futureOnly;
 
   @override
   Override overrideWith(
@@ -121,6 +129,7 @@ class SelectedLeaderboardProvider
         allTransitiveDependencies: null,
         debugGetCreateSourceHash: null,
         leaderboardID: leaderboardID,
+        futureOnly: futureOnly,
       ),
     );
   }
@@ -133,13 +142,15 @@ class SelectedLeaderboardProvider
   @override
   bool operator ==(Object other) {
     return other is SelectedLeaderboardProvider &&
-        other.leaderboardID == leaderboardID;
+        other.leaderboardID == leaderboardID &&
+        other.futureOnly == futureOnly;
   }
 
   @override
   int get hashCode {
     var hash = _SystemHash.combine(0, runtimeType.hashCode);
     hash = _SystemHash.combine(hash, leaderboardID.hashCode);
+    hash = _SystemHash.combine(hash, futureOnly.hashCode);
 
     return _SystemHash.finish(hash);
   }
@@ -148,6 +159,9 @@ class SelectedLeaderboardProvider
 mixin SelectedLeaderboardRef on AutoDisposeStreamProviderRef<Leaderboard?> {
   /// The parameter `leaderboardID` of this provider.
   String get leaderboardID;
+
+  /// The parameter `futureOnly` of this provider.
+  bool get futureOnly;
 }
 
 class _SelectedLeaderboardProviderElement
@@ -158,6 +172,8 @@ class _SelectedLeaderboardProviderElement
   @override
   String get leaderboardID =>
       (origin as SelectedLeaderboardProvider).leaderboardID;
+  @override
+  bool get futureOnly => (origin as SelectedLeaderboardProvider).futureOnly;
 }
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

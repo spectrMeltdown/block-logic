@@ -56,7 +56,7 @@ class _BlockSelectorStackState extends ConsumerState<BlockSelectorStack> {
   Future<void> updateStackCount({
     bool add = true,
   }) async {
-    debugPrint('Updating Count: $count');
+    // debugPrint('Updating Count: $count');
     if (add) {
       if (count < widget.data.inSelectorCount!) {
         setState(() {
@@ -102,7 +102,7 @@ class _BlockSelectorStackState extends ConsumerState<BlockSelectorStack> {
     final shouldReset = ref.watch(shouldResetAllBlocksProvider);
     // reset the entire stack
     if (shouldReset) {
-      debugPrint('should reset all from block stack');
+      // debugPrint('should reset all from block stack');
       resetCount();
     }
     // debugPrint(ref.read(gameManagerProvider).inSelectorUIDs.toString());
@@ -117,7 +117,7 @@ class _BlockSelectorStackState extends ConsumerState<BlockSelectorStack> {
               final shouldResetBlock = ref.watch(shouldResetBlockProvider(Tuple2(widget.data.type, blockIDs[i])));
               // when resetting an individual block from this stack (e.g. returning the block to selector)
               if (shouldResetBlock) {
-                debugPrint('should reset block from block stack');
+                // debugPrint('should reset block from block stack');
                 updateStackCount(add: true);
               }
               // debugPrint(blockIDs[i].toString());

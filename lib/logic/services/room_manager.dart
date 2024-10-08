@@ -58,7 +58,12 @@ class RoomManager extends _$RoomManager {
         return Transaction.success(players);
       });
       if (result.committed) {
-        return null;
+        final room = result.snapshot.value == null ? null : Room.fromRTDB(result.snapshot);
+        if (room == null || room.players!.isEmpty) {
+          return 'true';
+        } else {
+          return 'false';
+        }
       }
       return 'Error leaving the room. Please try again.';
     } catch (e) {
@@ -76,20 +81,28 @@ class RoomManager extends _$RoomManager {
     }
   }
 
-  Future<String?> update(Room room) async {
-    if (room.id == null) {
+  Future<String?> update(Room newRoom) async {
+    if (newRoom.id == null) {
       throw ('You must provide a room id!');
     }
     try {
-      final lockedRoom = room.copyWith(status: RoomStatus.locked);
-      await state._db.child(room.id!).runTransaction((obj) {
-        final status = Room.fromRTDB(obj).status;
-        if (status != null && status == RoomStatus.locked) {
-          return Transaction.success(lockedRoom.toJSON());
+      await state._db.child(newRoom.id!).runTransaction((obj) {
+        final room = Room.fromRTDB(obj);
+        if (room.status != null && room.status == RoomStatus.locked) {
+          // update this later when working on admin
+          return Transaction.success(room.copyWith(status: RoomStatus.locked).toJSON());
         }
-        if (status != null && status == RoomStatus.available) {
-          return Transaction.success(room.toJSON());
+        if (room.status != null && room.status == RoomStatus.available) {
+          return Transaction.success(
+            room
+                .copyWith(
+                  status: newRoom.status,
+                  currentLeaderboardID: newRoom.currentLeaderboardID,
+                )
+                .toJSON(),
+          );
         }
+        debugPrint('nothing!');
         return Transaction.abort();
       });
       return null;

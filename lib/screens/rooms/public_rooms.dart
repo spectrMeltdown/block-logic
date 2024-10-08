@@ -54,7 +54,7 @@ class _PublicRoomsState extends ConsumerState<PublicRooms> {
                 itemBuilder: (context, i) {
                   return Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
-                    child: PublicRoomItem(room: rooms[i], toggleProcessing: toggleProcessing),
+                    child: PublicRoomItem(key: ValueKey(rooms[i].id), room: rooms[i], toggleProcessing: toggleProcessing),
                   );
                 }),
             Visibility(

@@ -13,7 +13,7 @@ import 'package:tuple/tuple.dart';
 //   return result;
 // }
 
-final shouldResetBlockProvider = Provider.family<bool, Tuple2<CodeBlockType, String>?>((ref, req) {
+final shouldResetBlockProvider = Provider.family.autoDispose<bool, Tuple2<CodeBlockType, String>?>((ref, req) {
   if (req == null) {
     debugPrint('Tuple was null!!');
     return false;
@@ -24,12 +24,10 @@ final shouldResetBlockProvider = Provider.family<bool, Tuple2<CodeBlockType, Str
     gameManagerProvider.select(
       (state) {
         // debugPrint('${state.inSelectorUIDs[req.item1]} ITEMS');
-        // if (state.inSelectorUIDs[req.item1] != null) {}
-        // debugPrint(req.item2);
-        // debugPrint(state.inSelectorUIDs[req.item1].toString());
-        return !state.inSelectorUIDs[req.item1]!.contains(req.item2);
-        // debugPrint('Type ${req.item1.name} was null !');
-        // return true;
+        if (state.inSelectorUIDs[req.item1] != null) {
+          return !state.inSelectorUIDs[req.item1]!.contains(req.item2);
+        }
+        return true;
       },
     ),
   );

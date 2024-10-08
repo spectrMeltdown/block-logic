@@ -50,9 +50,9 @@ class LeaderboardManager extends _$LeaderboardManager {
       // debugPrint(leaderboard.id);
       await state._db.child(leaderboard.id!).runTransaction((obj) {
         final lb = Leaderboard.fromRTDB(obj, leaderboard.id);
-        if (lb.roomName!.isNotEmpty && (lb.status != null || lb.status != LeaderboardStatus.complete)) {
+        if (lb.id!.isNotEmpty && (lb.status != null || lb.status != LeaderboardStatus.complete)) {
           debugPrint('transaction success');
-          return Transaction.success(lb.copyWith(status: LeaderboardStatus.complete).toJSON());
+          return Transaction.success(lb.copyWith(status: LeaderboardStatus.complete, players: null).toJSON());
         }
         debugPrint('transaction abort');
         return Transaction.abort();

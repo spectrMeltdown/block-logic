@@ -129,22 +129,22 @@ class GameManager extends StateNotifier<GameState> {
         timeElapsed: state._timeElapsed,
         status: isComplete ? ScoreStatus.complete : ScoreStatus.incomplete,
       );
+      debugPrint('0');
       // upload final score in db
       final scoreUpdate = await state.scoreManager.update(state._leaderboardID!, finalScore);
       if (scoreUpdate != null) {
         return scoreUpdate;
       }
-      // execute leaveRoom method
-      final leaveRoomResult = await state.roomManager.leaveRoom(state._roomID!);
-      if (leaveRoomResult != null) {
-        return leaveRoomResult;
-      }
-
+      debugPrint('1');
       // get current list of players after leaving
-      final playerListResult = await state.roomManager.currentPlayers(state._roomID!);
-
+      final leave = await state.roomManager.leaveRoom(state._roomID!);
+      if (leave != null) {
+        return leave;
+      }
+      debugPrint('2');
       // if this player is the last to leave the room
-      if (playerListResult!.isEmpty) {
+      final lastPlayer = bool.tryParse(leave ?? '');
+      if (lastPlayer != null && lastPlayer) {
         // finalize the leaderboard
         await state.leaderboardManager.update(
           Leaderboard(
@@ -152,19 +152,19 @@ class GameManager extends StateNotifier<GameState> {
             status: LeaderboardStatus.complete,
           ),
         );
-
+        debugPrint('3');
         // reset the room status to available
         await state.roomManager.update(Room(
           id: state._roomID,
           status: RoomStatus.available,
-          currentLeaderboardID: null,
+          currentLeaderboardID: '',
         ));
-
+        debugPrint('4');
         // leave room successful, detach disconnection watchers
         FirebaseDatabase.instance.ref('rooms/${state._roomID}/players/${state._auth.getUID()}').onDisconnect().cancel();
         FirebaseDatabase.instance.ref('leaderboards/${state._leaderboardID}/scores/${state._auth.getUID()}').onDisconnect().cancel();
       } else {
-        return 'Error leaving the room.';
+        return leave;
       }
       state.sharedPref.remove('currentLeaderboardID');
       state.sharedPref.remove('currentRoomID');

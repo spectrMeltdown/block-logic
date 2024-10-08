@@ -21,15 +21,15 @@ class Leaderboard {
   });
 
   factory Leaderboard.fromRTDB(Object? doc, [String? key]) {
-    Map data = {};
-    if (doc is DataSnapshot) {
-      debugPrint('Is datasnapshot');
-      if (doc.value != null) {
-        debugPrint('Converted to map');
-        data = doc.value as Map;
-      }
+    Map<String, dynamic> data = {};
+
+    if (doc is Map<Object?, Object?>) {
+      data = (doc).map((k, v) => MapEntry(k as String, v));
+    } else if (doc is DataSnapshot) {
+      data = (doc.value as Map<Object?, Object?>).map((k, v) => MapEntry(k as String, v));
+    } else {
+      throw ('Unknown type!!');
     }
-    debugPrint('RTBD type was $doc, ${doc.runtimeType}');
 
     LeaderboardStatus? status;
     if (data['status'] == LeaderboardStatus.complete.name) {

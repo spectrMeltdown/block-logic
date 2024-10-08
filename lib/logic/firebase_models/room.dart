@@ -1,5 +1,6 @@
 import 'package:block_logic/logic/enums.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/material.dart';
 
 class Room {
   final String? id;
@@ -26,12 +27,16 @@ class Room {
   });
 
   factory Room.fromRTDB(Object? doc, [String? key]) {
-    Map data = {};
-    if (doc is DataSnapshot) {
-      if (doc.value != null) {
-        data = doc.value as Map;
-      }
+    Map<String, dynamic> data = {};
+
+    if (doc is Map<Object?, Object?>) {
+      data = (doc).map((k, v) => MapEntry(k as String, v));
+    } else if (doc is DataSnapshot) {
+      data = (doc.value as Map<Object?, Object?>).map((k, v) => MapEntry(k as String, v));
+    } else {
+      throw ('Unknown type!!');
     }
+
     RoomStatus? status;
     if (data['status'] == RoomStatus.available.name) {
       status = RoomStatus.available;

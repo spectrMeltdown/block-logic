@@ -98,8 +98,8 @@ class GameCodeBlockState extends ConsumerState<GameBlock> {
     // debugPrint('Previous challenge uid was $previousChallengeUID');
     // debugPrint('Current challenge uid was ${widget.challengeUID}');
     if (widget.data.type == CodeBlockType.statement) {
-      debugPrint('from block ${widget.data.uid}');
-      debugPrint('from block ${widget.data.statementUIDs}\n');
+      // debugPrint('from block ${widget.data.uid}');
+      // debugPrint('from block ${widget.data.statementUIDs}\n');
     }
     // trigger rebuilds when the challenge has changed
     if (widget.topLevelBlock && previousChallengeUID != widget.challengeUID) {

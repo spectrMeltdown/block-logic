@@ -58,8 +58,8 @@ class StatementBox extends ConsumerWidget {
               // debugPrint(gameManager.getRootData().toString());
             },
             onWillAcceptWithDetails: (dataToAccept) {
-              debugPrint('Self: ${data?.uid}');
-              debugPrint('To accept: ${dataToAccept.uid}');
+              // debugPrint('Self: ${data?.uid}');
+              // debugPrint('To accept: ${dataToAccept.uid}');
               if (data?.statementUIDs?.contains(dataToAccept.uid) ?? false || dataToAccept.uid == data!.uid || dataToAccept.uid == data.parentUID) {
                 return false;
               }
