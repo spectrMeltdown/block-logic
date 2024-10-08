@@ -198,7 +198,7 @@ GoRouter router() {
         ],
       ),
     ],
-    observers: [routeObserver],
+    // observers: [routeObserver],
     redirect: (context, state) async {
       // return '/accounts';
       final user = FirebaseAuth.instance.currentUser;

@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:block_logic/components/panel/bordered.dart';
 import 'package:block_logic/components/text/text.dart';
-import 'package:block_logic/logic/services/game/game_manager.dart';
-import 'package:block_logic/logic/services/game/time_box.dart';
+import 'package:block_logic/logic/game/logic/game_manager.dart';
+import 'package:block_logic/logic/game/logic/time_box.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';

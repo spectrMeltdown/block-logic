@@ -1,5 +1,5 @@
 import 'package:block_logic/logic/enums.dart';
-import 'package:block_logic/logic/services/game/game_manager.dart';
+import 'package:block_logic/logic/game/logic/game_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tuple/tuple.dart';
@@ -13,7 +13,7 @@ import 'package:tuple/tuple.dart';
 //   return result;
 // }
 
-final shouldResetBlockProvider = Provider.family.autoDispose<bool, Tuple2<CodeBlockType, String>?>((ref, req) {
+final shouldResetBlockProvider = Provider.family<bool, Tuple2<CodeBlockType, String>?>((ref, req) {
   if (req == null) {
     debugPrint('Tuple was null!!');
     return false;

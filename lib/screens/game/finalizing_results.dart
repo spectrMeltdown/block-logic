@@ -6,7 +6,7 @@ import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/util/provider_default.dart';
 import 'package:block_logic/logic/firebase_providers/selected_leaderboard.dart';
 import 'package:block_logic/logic/services/assets.dart';
-import 'package:block_logic/logic/services/game/game_manager.dart';
+import 'package:block_logic/logic/game/logic/game_manager.dart';
 import 'package:block_logic/logic/services/navigation.dart';
 import 'package:block_logic/logic/services/shared_pref.dart';
 import 'package:block_logic/screens/leaderboard/selected_leaderboard.dart';
@@ -26,7 +26,7 @@ class FinalizingResults extends ConsumerStatefulWidget {
 class _FinalizingResultsState extends ConsumerState<FinalizingResults> {
   late final GameManager manager;
   late final CustomNavigation nav;
-  String leaderboardID = '';
+  late String leaderboardID;
   final loading = const BLLoading(
     message: 'Loading leaderboard ...',
   );
@@ -52,7 +52,6 @@ class _FinalizingResultsState extends ConsumerState<FinalizingResults> {
       /// pause after track loaded
       FlameAudio.bgm.pause();
     }
-    leave();
     errorWidget = Column(
       children: [
         const BLError(
@@ -67,19 +66,8 @@ class _FinalizingResultsState extends ConsumerState<FinalizingResults> {
         )
       ],
     );
-  }
-
-  void leave() async {
-    setState(() {
-      leaderboardID = manager.getLeaderboardID();
-    });
-    await manager.leaveGame(true);
-  }
-
-  @override
-  void dispose() {
-    // manager.dispose();
-    super.dispose();
+    leaderboardID = manager.getLeaderboardID();
+    manager.leaveGame(true);
   }
 
   @override

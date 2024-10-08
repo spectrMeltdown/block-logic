@@ -1,8 +1,8 @@
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/game/block_data.dart';
-import 'package:block_logic/logic/services/game/game_manager.dart';
-import 'package:block_logic/logic/services/game/game_provider.dart';
+import 'package:block_logic/logic/game/logic/game_manager.dart';
+import 'package:block_logic/logic/game/logic/game_provider.dart';
 import 'package:block_logic/screens/game/add_new_block_box.dart';
 import 'package:block_logic/screens/game/block.dart';
 import 'package:block_logic/screens/game/custom_box.dart';
@@ -52,10 +52,11 @@ class GameBlockWithChild extends ConsumerWidget {
                 ')',
                 size: 20,
               ),
-            const BLText(
-              ':',
-              size: 20,
-            ),
+            if (shouldRenderColon(data))
+              const BLText(
+                ':',
+                size: 20,
+              ),
             // if (widget.data.bodyUIDs != null) const BLText(' :')
           ],
         ),
@@ -69,6 +70,7 @@ class GameBlockWithChild extends ConsumerWidget {
                   widgetList: List.generate(
                     bodyData.length,
                     (i) => GameBlock(
+                      key: ValueKey(bodyData[i].uid),
                       data: bodyData[i],
                     ),
                   ),
@@ -94,7 +96,7 @@ class GameBlockWithChild extends ConsumerWidget {
                     // setState(() {});
                   },
                   onWillAcceptWithDetails: (dataToAccept) {
-                    if (data?.bodyUIDs?.contains(dataToAccept.uid) ?? false || dataToAccept.uid == data.uid || dataToAccept.uid == data.parentUID) {
+                    if (data.bodyUIDs?.contains(dataToAccept.uid) ?? false || dataToAccept.uid == data.uid || dataToAccept.uid == data.parentUID) {
                       return false;
                     }
                     return true;
@@ -119,5 +121,27 @@ class GameBlockWithChild extends ConsumerWidget {
     if (data.name == 'else') return false;
     if (data.name.contains('class')) return false;
     return true;
+  }
+
+  bool shouldRenderColon(GameBlockData data) {
+    switch (data.type) {
+      case CodeBlockType.functions:
+        if (data.name.substring(0, 3).contains('def')) {
+          return true;
+        }
+      case CodeBlockType.objects:
+        if (data.name.substring(0, 5).contains('class')) {
+          return true;
+        }
+      case CodeBlockType.conditionals:
+      case CodeBlockType.loops:
+        return true;
+      case CodeBlockType.operators:
+      case CodeBlockType.keywords:
+      case CodeBlockType.literals:
+      case CodeBlockType.variables:
+      case CodeBlockType.statement:
+    }
+    return false;
   }
 }

@@ -1,6 +1,6 @@
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/logic/enums.dart';
-import 'package:block_logic/logic/services/game/tab_num_provider.dart';
+import 'package:block_logic/logic/game/logic/tab_num_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

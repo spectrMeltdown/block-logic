@@ -359,6 +359,7 @@ class _EditRoomBottomSheetState extends ConsumerState<EditRoomBottomSheet> {
                                                         final error = await creatorMode.editRoom(
                                                             Room(
                                                               id: selectedRoom.id,
+                                                              hostID: FirebaseAuth.instance.currentUser!.uid,
                                                               name: selectedRoom.name == roomNameController.text.trim() ? null : roomNameController.text.trim(),
                                                               maxPlayers: selectedRoom.maxPlayers == int.parse(maxPlayersController.text.trim()) ? null : int.parse(maxPlayersController.text.trim()),
                                                               challengeIDs: selectedRoom.challengeIDs == selectedChallenges.map((i) => i.id!).toList() ? null : selectedChallenges.map((i) => i.id!).toList(),

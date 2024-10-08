@@ -4,11 +4,11 @@ import 'package:block_logic/components/dialog/dialog.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/text/title.dart';
 import 'package:block_logic/logic/enums.dart';
-import 'package:block_logic/logic/services/game/tab_num_provider.dart';
-import 'package:block_logic/logic/services/game/game_manager.dart';
-import 'package:block_logic/logic/services/game/game_provider.dart';
+import 'package:block_logic/logic/game/logic/tab_num_provider.dart';
+import 'package:block_logic/logic/game/logic/game_manager.dart';
+import 'package:block_logic/logic/game/logic/game_provider.dart';
 import 'package:block_logic/logic/services/navigation.dart';
-import 'package:block_logic/logic/services/game/should_reset_all_blocks.dart';
+import 'package:block_logic/logic/game/logic/should_reset_all_blocks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

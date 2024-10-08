@@ -1,7 +1,7 @@
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/game/block_data.dart';
-import 'package:block_logic/logic/services/game/game_provider.dart';
+import 'package:block_logic/logic/game/logic/game_provider.dart';
 import 'package:block_logic/screens/game/block.dart';
 import 'package:block_logic/screens/game/wrapper_drag_target.dart';
 import 'package:flutter/material.dart';
@@ -62,7 +62,10 @@ class EditorView extends ConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               ...List.generate(blockData.length, (i) {
-                return GameBlock(key: ValueKey(blockData[i].uid), data: blockData[i]);
+                return GameBlock(
+                  key: ValueKey(blockData[i].uid),
+                  data: blockData[i],
+                );
               }),
               ConstrainedBox(
                 constraints: BoxConstraints(

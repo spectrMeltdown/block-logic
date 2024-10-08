@@ -1,6 +1,5 @@
 import 'package:block_logic/logic/enums.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:flutter/material.dart';
 
 class Leaderboard {
   final String? id; // the doc id. Should be auto generated

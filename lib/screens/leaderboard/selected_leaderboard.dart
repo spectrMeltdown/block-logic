@@ -12,7 +12,7 @@ import 'package:block_logic/logic/firebase_models/leaderboard.dart';
 import 'package:block_logic/logic/firebase_models/score.dart';
 import 'package:block_logic/logic/firebase_providers/all_scores.dart';
 import 'package:block_logic/logic/firebase_providers/selected_users.dart';
-import 'package:block_logic/logic/services/game/game_manager.dart';
+import 'package:block_logic/logic/game/logic/game_manager.dart';
 import 'package:block_logic/logic/services/navigation.dart';
 import 'package:block_logic/logic/services/shared_pref.dart';
 import 'package:block_logic/logic/services/ui.dart';
@@ -43,8 +43,8 @@ class SelectedLeaderboard extends ConsumerStatefulWidget {
 // Memoize the topThree list using a StateProvider
 final finalTopThreeProvider = StateProvider.family<List<String>, List<Score>>((ref, scores) {
   List<String> topThree = [];
-
-  for (int i = 0; i < scores.length; i++) {
+  final count = scores.length > 4 ? 4 : scores.length;
+  for (int i = 0; i < count; i++) {
     topThree.add(scores[i].accountID ?? '');
   }
   return topThree;
@@ -172,9 +172,11 @@ class _LeaderboardState extends ConsumerState<SelectedLeaderboard> {
                                           if (players.length == 1) {
                                             return const BLText('You are the only player.');
                                           }
-                                          return TopThreePlayers(List.generate(players.length, (i) {
-                                            return players[i].profilePicLink!;
-                                          }));
+                                          return TopThreePlayers(
+                                              key: ValueKey('${players[0].id}${players[1].id}'),
+                                              List.generate(players.length, (i) {
+                                                return players[i].profilePicLink!;
+                                              }));
                                         },
                                         error: genericError,
                                         loading: genericLoading);

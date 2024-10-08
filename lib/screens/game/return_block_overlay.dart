@@ -1,11 +1,11 @@
-import 'package:block_logic/logic/services/game/game_manager.dart';
-import 'package:block_logic/logic/services/game/return_block.dart';
+import 'package:block_logic/logic/game/logic/game_manager.dart';
+import 'package:block_logic/logic/game/logic/return_block.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/logic/enums.dart';
-import 'package:block_logic/logic/services/game/game_provider.dart';
-import 'package:block_logic/logic/services/game/should_reset_block.dart';
+import 'package:block_logic/logic/game/logic/game_provider.dart';
+import 'package:block_logic/logic/game/logic/should_reset_block.dart';
 import 'package:block_logic/screens/game/wrapper_drag_target.dart';
 import 'package:widget_and_text_animator/widget_and_text_animator.dart';
 
@@ -60,34 +60,11 @@ class ReturnBlockOverlay extends ConsumerWidget {
                 // actual removal from tree
                 gameManager.removeSelectedInSelectorUIDs();
                 gameManager.deleteSelectedData();
-                // Future.delayed(Duration.zero, () {
-                //   ref.invalidate(getRootDataProvider);
-                // });
-                // Future.delayed(Duration.zero, () {
-                //   // ref.invalidate(getSelfDataProvider);
-                // });
-                // Future.delayed(Duration.zero, () {
-                //   ref.invalidate(getChildrenDataProvider);
-                // });
-                // Future.delayed(Duration.zero, () {
-                //   ref.invalidate(shouldResetBlockProvider);
-                // });
-                // final state = ref.read(gameManagerProvider);
-                // state.dataTree = Map.from(state.dataTree);
+
                 ref.invalidate(getRootDataProvider);
                 ref.invalidate(getSelfDataProvider);
                 ref.invalidate(getChildrenDataProvider);
                 ref.invalidate(shouldResetBlockProvider);
-
-                // ref.invalidate(getRootDataProvider);
-                // ref.invalidate(getSelfDataProvider);
-                // ref.invalidate(getChildrenDataProvider);
-                // ref.invalidate(shouldResetBlockProvider);
-                // for (final entry in ref.read(gameManagerProvider).dataTree.entries) {
-                //   debugPrint('\n');
-                //   debugPrint(entry.key);
-                //   debugPrint(entry.value.statementUIDs.toString());
-                // }
               },
               onWillAcceptWithDetails: (dataToAccept) {
                 if (dataToAccept.state != CodeBlockState.inEditor) {

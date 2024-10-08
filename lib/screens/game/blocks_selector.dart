@@ -1,8 +1,8 @@
 import 'package:block_logic/components/panel/bordered.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/game/block_data.dart';
-import 'package:block_logic/logic/services/game/tab_num_provider.dart';
-import 'package:block_logic/logic/services/game/game_manager.dart';
+import 'package:block_logic/logic/game/logic/tab_num_provider.dart';
+import 'package:block_logic/logic/game/logic/game_manager.dart';
 import 'package:block_logic/logic/services/ui.dart';
 import 'package:block_logic/screens/game/blocks_selector_view.dart';
 import 'package:block_logic/screens/game/custom_tab.dart';

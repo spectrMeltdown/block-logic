@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:block_logic/components/async/loading.dart';
 import 'package:block_logic/components/background.dart';
 import 'package:block_logic/logic/firebase_models/challenge.dart';
-import 'package:block_logic/logic/services/game/all_blocks.dart';
-import 'package:block_logic/logic/services/game/game_manager.dart';
+import 'package:block_logic/logic/game/logic/all_blocks.dart';
+import 'package:block_logic/logic/game/logic/game_manager.dart';
 import 'package:block_logic/screens/game/game_challenge.dart';
 
 class TestGame extends ConsumerStatefulWidget {

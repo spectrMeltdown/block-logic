@@ -76,7 +76,7 @@ class GameManager extends StateNotifier<GameState> {
 
 // void removeFromSelector(Map<CodeBlockType, int> ) =>
 
-  void getScrollController() {}
+  // void getScrollController() {}
 
   void setIsDropCancelled(bool newState) => state.isDropCancelled = newState;
 
@@ -164,6 +164,10 @@ class GameManager extends StateNotifier<GameState> {
         FirebaseDatabase.instance.ref('rooms/${state._roomID}/players/${state._auth.getUID()}').onDisconnect().cancel();
         FirebaseDatabase.instance.ref('leaderboards/${state._leaderboardID}/scores/${state._auth.getUID()}').onDisconnect().cancel();
       } else {
+        debugPrint('4');
+        // leave room successful, detach disconnection watchers
+        FirebaseDatabase.instance.ref('rooms/${state._roomID}/players/${state._auth.getUID()}').onDisconnect().cancel();
+        FirebaseDatabase.instance.ref('leaderboards/${state._leaderboardID}/scores/${state._auth.getUID()}').onDisconnect().cancel();
         return leave;
       }
       state.sharedPref.remove('currentLeaderboardID');
@@ -204,6 +208,9 @@ class GameManager extends StateNotifier<GameState> {
       statement.uid!: statement,
       data.uid!: data,
     });
+
+    debugPrint('Added data: ${data.uid}');
+    debugPrint('Added statement: ${statement.uid}');
   }
 
   void addData(GameBlockData data, GameBlockData parent, ChildrenData type) {
@@ -268,6 +275,7 @@ class GameManager extends StateNotifier<GameState> {
     state.dataTree.addAll({
       data.uid!: data,
     });
+    debugPrint('Addded data: ${data.uid}');
   }
 
   void resetTree() {

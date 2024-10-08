@@ -104,7 +104,7 @@ class _ChallengeItemState extends ConsumerState<ChallengeItem> with AutomaticKee
           if (value) {
             if (widget.updateSelection(widget.challenge) == false) {
               if (!context.mounted) return;
-              toast.showToast(context, 'Maximum challenges selected.', type: NotifType.error);
+              toast.showToast(context, 'Maximum challenges selected.', type: NotifType.error, alignment: Alignment.bottomCenter);
             } else {
               setState(() {
                 selected = value;

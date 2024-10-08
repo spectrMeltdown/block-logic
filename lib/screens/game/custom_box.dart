@@ -1,7 +1,7 @@
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/game/block_data.dart';
-import 'package:block_logic/logic/services/game/game_manager.dart';
-import 'package:block_logic/logic/services/game/game_provider.dart';
+import 'package:block_logic/logic/game/logic/game_manager.dart';
+import 'package:block_logic/logic/game/logic/game_provider.dart';
 import 'package:block_logic/screens/game/add_new_block_box.dart';
 import 'package:block_logic/screens/game/block.dart';
 import 'package:block_logic/screens/game/block_with_child.dart';
@@ -20,6 +20,7 @@ class CustomBox extends ConsumerWidget {
     final validator = BlockValidator();
     final data = ref.watch(getSelfDataProvider(this.data.uid))!;
     final gameManager = ref.read(gameManagerProvider.notifier);
+
     switch (box) {
       case GameBox.parameters:
         final parameters = ref.watch(getChildrenDataProvider(data.parameterUIDs));

@@ -1,5 +1,5 @@
 import 'package:block_logic/logic/game/block_data.dart';
-import 'package:block_logic/logic/services/game/game_manager.dart';
+import 'package:block_logic/logic/game/logic/game_manager.dart';
 import 'package:block_logic/screens/game/block.dart';
 import 'package:block_logic/screens/game/block_selector_stack.dart';
 import 'package:flutter/material.dart';

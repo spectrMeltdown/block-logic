@@ -469,11 +469,11 @@ class _SignupState extends ConsumerState<Signup> with RouteAware {
     );
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    routeObserver.subscribe(this, ModalRoute.of(context) as PageRoute);
-  }
+  // @override
+  // void didChangeDependencies() {
+  //   super.didChangeDependencies();
+  //   routeObserver.subscribe(this, ModalRoute.of(context) as PageRoute);
+  // }
 
   @override
   void didPopNext() {

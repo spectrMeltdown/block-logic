@@ -1,9 +1,9 @@
 import 'package:block_logic/components/button/button.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/logic/enums.dart';
-import 'package:block_logic/logic/services/game/game_manager.dart';
-import 'package:block_logic/logic/services/game/game_provider.dart';
-import 'package:block_logic/logic/services/game/time_box.dart';
+import 'package:block_logic/logic/game/logic/game_manager.dart';
+import 'package:block_logic/logic/game/logic/game_provider.dart';
+import 'package:block_logic/logic/game/logic/time_box.dart';
 import 'package:block_logic/logic/services/toast.dart';
 import 'package:block_logic/screens/game/test_dialog.dart';
 import 'package:flutter/material.dart';

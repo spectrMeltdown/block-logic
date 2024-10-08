@@ -8,12 +8,12 @@ import 'package:block_logic/logic/firebase_models/room.dart';
 import 'package:block_logic/logic/firebase_providers/selected_challenges.dart';
 import 'package:block_logic/logic/services/assets.dart';
 import 'package:block_logic/logic/services/dialog.dart';
-import 'package:block_logic/logic/services/game/game_manager.dart';
-import 'package:block_logic/logic/services/game/game_provider.dart';
+import 'package:block_logic/logic/game/logic/game_manager.dart';
+import 'package:block_logic/logic/game/logic/game_provider.dart';
 import 'package:block_logic/logic/services/navigation.dart';
 import 'package:block_logic/logic/services/room_manager.dart';
 import 'package:block_logic/logic/services/shared_pref.dart';
-import 'package:block_logic/logic/services/game/should_reset_all_blocks.dart';
+import 'package:block_logic/logic/game/logic/should_reset_all_blocks.dart';
 import 'package:block_logic/screens/game/finalizing_results.dart';
 import 'package:block_logic/screens/game/game_challenge.dart';
 import 'package:block_logic/screens/game/pause_dialog.dart';
@@ -135,6 +135,8 @@ class _GameRoomState extends ConsumerState<GameRoom> {
   @override
   void initState() {
     super.initState();
+    FirebaseDatabase.instance.ref('rooms/${widget.room.id}/players/$uid').onDisconnect().set(false);
+    FirebaseDatabase.instance.ref('leaderboards/${widget.room.currentLeaderboardID}/scores/$uid').onDisconnect().update({'status': ScoreStatus.incomplete.name});
     gameManager = ref.read(gameManagerProvider.notifier);
     final assets = ref.read(assetsProvider);
     final sharedPref = ref.read(sharedPrefProvider);
@@ -152,8 +154,6 @@ class _GameRoomState extends ConsumerState<GameRoom> {
       FlameAudio.bgm.pause();
     }
     gameManager.init(widget.room);
-    FirebaseDatabase.instance.ref('rooms/${widget.room.id}/players/$uid').onDisconnect().set(false);
-    FirebaseDatabase.instance.ref('leaderboards/${widget.room.currentLeaderboardID}/scores/$uid').onDisconnect().update({'status': ScoreStatus.incomplete.name});
     sharedPref.setString('currentLeaderboardID', widget.room.currentLeaderboardID!);
     sharedPref.setString('currentRoomID', widget.room.id!);
     roomManager = ref.read(roomManagerProvider.notifier);

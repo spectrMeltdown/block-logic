@@ -4,9 +4,10 @@ import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/logic/firebase_models/challenge.dart';
 import 'package:block_logic/logic/services/audio.dart';
 import 'package:block_logic/logic/services/dialog.dart';
-import 'package:block_logic/logic/services/game/game_manager.dart';
+import 'package:block_logic/logic/game/logic/game_manager.dart';
+import 'package:block_logic/logic/game/logic/game_provider.dart';
 import 'package:block_logic/logic/services/navigation.dart';
-import 'package:block_logic/logic/services/game/time_box.dart';
+import 'package:block_logic/logic/game/logic/time_box.dart';
 import 'package:block_logic/logic/services/ui.dart';
 import 'package:block_logic/screens/game/pause_dialog.dart';
 import 'package:block_logic/screens/game/time_box.dart';
@@ -70,8 +71,8 @@ class GameAppbar extends ConsumerWidget {
               if (result is bool && result) {
                 await gameManager.leaveGame(false);
                 gameManager.resetTree();
+                ref.invalidate(getRootDataProvider);
                 // gameManager.setShouldResetAllBlocks(true);
-                // ref.invalidate(getRootDataProvider);
                 // ref.invalidate(shouldResetAllBlocksProvider);
                 // ref.invalidate(shouldResetBlockProvider);
                 if (!context.mounted) return;

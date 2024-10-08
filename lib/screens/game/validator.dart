@@ -2,43 +2,24 @@ import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/game/block_data.dart';
 
 class BlockValidator {
-  // bool topLevelBox(GameBlockData data) {
-  //   if (data == CodeBlockState.unselected) {
-  //     return true;
-  //   }
-  //   switch (data.type) {
-  //     case CodeBlockType.classes:
-  //     case CodeBlockType.conditionals:
-  //     case CodeBlockType.functions:
-  //     case CodeBlockType.literals:
-  //     case CodeBlockType.loops:
-  //     case CodeBlockType.operators:
-  //     case CodeBlockType.variables:
-  //     case CodeBlockType.functionDefinition:
-  //       return true;
-  //     case CodeBlockType.objects:
-  //
-  //     case CodeBlockType.keyword:
-  //
-  //   }
-  //   return false;
-  // }
-
   bool parameterBox({
     required GameBlockData data,
     required GameBlockData dataToAccept,
   }) {
     switch (data.type) {
-      case CodeBlockType.variables:
-      case CodeBlockType.functions:
       case CodeBlockType.objects:
-      case CodeBlockType.operators:
-      case CodeBlockType.keywords:
-      case CodeBlockType.literals:
-        return true;
-      case CodeBlockType.conditionals:
-      case CodeBlockType.statement:
-      case CodeBlockType.loops:
+      case CodeBlockType.functions:
+        switch (dataToAccept.type) {
+          case CodeBlockType.objects:
+          case CodeBlockType.functions:
+          case CodeBlockType.operators:
+          case CodeBlockType.literals:
+          case CodeBlockType.variables:
+            return true;
+          default:
+            return false;
+        }
+      default:
         return false;
     }
   }
@@ -145,6 +126,16 @@ class BlockValidator {
     required GameBlockData data,
     required GameBlockData dataToAccept,
   }) {
-    return true;
+    switch (data.type) {
+      case CodeBlockType.objects:
+      // case CodeBlockType.functions:
+      case CodeBlockType.keywords:
+      case CodeBlockType.operators:
+      case CodeBlockType.literals:
+      case CodeBlockType.variables:
+        return true;
+      default:
+        return false;
+    }
   }
 }

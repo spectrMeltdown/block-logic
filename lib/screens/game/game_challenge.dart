@@ -1,5 +1,5 @@
 import 'package:block_logic/logic/firebase_models/challenge.dart';
-import 'package:block_logic/logic/services/game/game_manager.dart';
+import 'package:block_logic/logic/game/logic/game_manager.dart';
 import 'package:block_logic/screens/game/blocks_selector.dart';
 import 'package:block_logic/screens/game/challange_box.dart';
 import 'package:block_logic/screens/game/editor.dart';
@@ -10,7 +10,7 @@ import 'package:block_logic/screens/game/test_btn.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final processingProvider = StateProvider.autoDispose<bool>((ref) {
+final processingProvider = StateProvider((ref) {
   return ref.watch(gameManagerProvider.select((state) => state.processingOverlay));
 });
 
@@ -95,9 +95,10 @@ class GameChallenge extends ConsumerWidget {
                   child: Padding(
                     padding: const EdgeInsets.only(bottom: 20),
                     child: GameBlocks(
-                        // purge all empty categories
-                        challenge.blocks != null ? Map.fromEntries(challenge.blocks!.entries.where((e) => e.value.isNotEmpty)) : {},
-                        challenge.id!),
+                      // purge all empty categories
+                      challenge.blocks != null ? Map.fromEntries(challenge.blocks!.entries.where((e) => e.value.isNotEmpty)) : {},
+                      challenge.id!,
+                    ),
                   ),
                 ),
               ],

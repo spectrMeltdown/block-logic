@@ -1,11 +1,11 @@
 import 'package:block_logic/components/util/blank_widget.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/game/block_data.dart';
-import 'package:block_logic/logic/services/game/tab_num_provider.dart';
-import 'package:block_logic/logic/services/game/game_manager.dart';
-import 'package:block_logic/logic/services/game/return_block.dart';
-import 'package:block_logic/logic/services/game/should_reset_all_blocks.dart';
-import 'package:block_logic/logic/services/game/should_reset_block.dart';
+import 'package:block_logic/logic/game/logic/tab_num_provider.dart';
+import 'package:block_logic/logic/game/logic/game_manager.dart';
+import 'package:block_logic/logic/game/logic/return_block.dart';
+import 'package:block_logic/logic/game/logic/should_reset_all_blocks.dart';
+import 'package:block_logic/logic/game/logic/should_reset_block.dart';
 import 'package:block_logic/logic/services/ui.dart';
 import 'package:block_logic/screens/game/block_render.dart';
 import 'package:flutter/material.dart';
@@ -97,6 +97,8 @@ class GameCodeBlockState extends ConsumerState<GameBlock> {
     // super.build(context);
     // debugPrint('Previous challenge uid was $previousChallengeUID');
     // debugPrint('Current challenge uid was ${widget.challengeUID}');
+    debugPrint('from block ${widget.data.uid}');
+
     if (widget.data.type == CodeBlockType.statement) {
       // debugPrint('from block ${widget.data.uid}');
       // debugPrint('from block ${widget.data.statementUIDs}\n');

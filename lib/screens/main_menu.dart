@@ -287,11 +287,11 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> with WidgetsBin
   //   super.didChangeAppLifecycleState(state);
   // }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    routeObserver.subscribe(this, ModalRoute.of(context) as PageRoute);
-  }
+  // @override
+  // void didChangeDependencies() {
+  //   super.didChangeDependencies();
+  //   routeObserver.subscribe(this, ModalRoute.of(context) as PageRoute);
+  // }
 
   @override
   void didPopNext() {

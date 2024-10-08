@@ -1,7 +1,7 @@
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/game/block_data.dart';
-import 'package:block_logic/logic/services/game/game_manager.dart';
-import 'package:block_logic/logic/services/game/game_provider.dart';
+import 'package:block_logic/logic/game/logic/game_manager.dart';
+import 'package:block_logic/logic/game/logic/game_provider.dart';
 import 'package:block_logic/screens/game/add_new_block_box.dart';
 import 'package:block_logic/screens/game/block.dart';
 import 'package:block_logic/screens/game/wrapper_drag_target.dart';
@@ -30,7 +30,10 @@ class StatementBox extends ConsumerWidget {
             blocks.length,
             (i) => Padding(
               padding: const EdgeInsets.symmetric(horizontal: 3),
-              child: GameBlock(key: ValueKey(blocks[i].uid), data: blocks[i]),
+              child: GameBlock(
+                key: ValueKey(blocks[i].uid),
+                data: blocks[i],
+              ),
             ),
           ),
           DragTargetWrapper(
@@ -60,7 +63,7 @@ class StatementBox extends ConsumerWidget {
             onWillAcceptWithDetails: (dataToAccept) {
               // debugPrint('Self: ${data?.uid}');
               // debugPrint('To accept: ${dataToAccept.uid}');
-              if (data?.statementUIDs?.contains(dataToAccept.uid) ?? false || dataToAccept.uid == data!.uid || dataToAccept.uid == data.parentUID) {
+              if (data?.statementUIDs?.contains(dataToAccept.uid) ?? false || dataToAccept.uid == data?.uid || dataToAccept.uid == data?.parentUID) {
                 return false;
               }
               return true;
