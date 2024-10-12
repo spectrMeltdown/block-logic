@@ -66,9 +66,13 @@ class _ChangePhoneNumState extends ConsumerState<ChangePhoneNum> {
                       controller: phoneNumController,
                       keyboardType: TextInputType.phone,
                       maxLength: 10,
-                      prefixIcon: const Icon(
-                        Icons.phone,
-                        color: Colors.white,
+                      prefixIcon: const Padding(
+                        padding: EdgeInsets.only(top: 3),
+                        child: BLText(
+                          '+63',
+                          bold: true,
+                          color: Colors.white,
+                        ),
                       ),
                       validator: (value) => validator.validatePhoneNum(value, required: true),
                     ),

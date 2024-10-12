@@ -65,14 +65,17 @@ class GameManager extends StateNotifier<GameState> {
 
   void decrementCategory(CodeBlockType type) => state.countsPerTab[type]!.currentCount--;
 
-  void resetAllCategory() {
+  void resetAllTabCount() {
     final copy = Map.fromEntries(state.countsPerTab.entries);
     for (final entry in copy.entries) {
       state.countsPerTab[entry.key]!.currentCount = copy[entry.key]!.maxCount;
     }
   }
 
-  void updateSolution(List<dynamic> solution) => state.solution = solution;
+  void updateSolution(List<dynamic> solution) {
+    state.solution = List.from(solution);
+    debugPrint('Solution updated');
+  }
 
 // void removeFromSelector(Map<CodeBlockType, int> ) =>
 
@@ -161,13 +164,13 @@ class GameManager extends StateNotifier<GameState> {
         ));
         debugPrint('4');
         // leave room successful, detach disconnection watchers
-        FirebaseDatabase.instance.ref('rooms/${state._roomID}/players/${state._auth.getUID()}').onDisconnect().cancel();
-        FirebaseDatabase.instance.ref('leaderboards/${state._leaderboardID}/scores/${state._auth.getUID()}').onDisconnect().cancel();
+        await FirebaseDatabase.instance.ref('rooms/${state._roomID}/players/${state._auth.getUID()}').onDisconnect().cancel();
+        await FirebaseDatabase.instance.ref('leaderboards/${state._leaderboardID}/scores/${state._auth.getUID()}').onDisconnect().cancel();
       } else {
         debugPrint('4');
         // leave room successful, detach disconnection watchers
-        FirebaseDatabase.instance.ref('rooms/${state._roomID}/players/${state._auth.getUID()}').onDisconnect().cancel();
-        FirebaseDatabase.instance.ref('leaderboards/${state._leaderboardID}/scores/${state._auth.getUID()}').onDisconnect().cancel();
+        await FirebaseDatabase.instance.ref('rooms/${state._roomID}/players/${state._auth.getUID()}').onDisconnect().cancel();
+        await FirebaseDatabase.instance.ref('leaderboards/${state._leaderboardID}/scores/${state._auth.getUID()}').onDisconnect().cancel();
         return leave;
       }
       state.sharedPref.remove('currentLeaderboardID');
@@ -285,7 +288,7 @@ class GameManager extends StateNotifier<GameState> {
   void setShouldResetAllBlocks(bool newState) => state.shouldResetAllBlocks = newState;
 
   void moveToRoot(String uid) {
-    debugPrint('move to root');
+    // debugPrint('move to root');
     if (uid.isEmpty) throw ('UID was empty!');
     GameBlockData data = state.dataTree[uid]!.copyWith();
 
@@ -296,20 +299,19 @@ class GameManager extends StateNotifier<GameState> {
     }
 
     // if not statement
-    if (data.statementUIDs == null) {
+    if (data.type != CodeBlockType.statement) {
+      debugPrint('root move: not statement');
       // create new statement
       final statmentUID = getUID();
-      final dataUID = getUID();
       GameBlockData newStatement = GameBlockData.createStatement();
       newStatement = newStatement.copyWith(
         uid: statmentUID,
         parentUID: 'root',
-        statementUIDs: [dataUID],
+        statementUIDs: [data.uid!],
         state: CodeBlockState.inEditor,
       );
       // assign data to new statement
       final newData = data.copyWith(
-        uid: dataUID,
         parentUID: statmentUID,
       );
 
@@ -325,8 +327,8 @@ class GameManager extends StateNotifier<GameState> {
     }
     // if is statement
     else {
-      final statmentUID = getUID();
-      GameBlockData statement = data.copyWith(uid: statmentUID, parentUID: 'root');
+      debugPrint('root move: is statement');
+      GameBlockData statement = data.copyWith(parentUID: 'root');
       // delete old value
       deleteData(data.copyWith(), recurse: false);
       deleteSelectedData();
@@ -348,23 +350,26 @@ class GameManager extends StateNotifier<GameState> {
     // final originalParent = state.dataTree[data.parentUID]!.copyWith();
     final originalData = data.copyWith();
     GameBlockData? originalParent;
-    if (originalData.parentUID != 'root') {
-      originalParent = state.dataTree[originalData.parentUID]!.copyWith();
-    }
+    // if (originalData.parentUID != 'root') {
+    //   originalParent = state.dataTree[originalData.parentUID]!.copyWith();
+    // }
     data = data.copyWith(parentUID: parent.uid);
 
     // assign new child
     switch (type) {
       case ChildrenData.bodyUIDs:
-        if (originalParent != null && originalParent.type == CodeBlockType.statement) {
-          debugPrint('parent was statement, not root');
-          originalParent.copyWith(parentUID: parent.uid);
-          parent = parent.copyWith(bodyUIDs: [...parent.bodyUIDs ?? [], originalParent.uid!]);
-        } else if (data.type == CodeBlockType.statement) {
-          debugPrint('parent was statement, root!');
+        // if (originalParent != null && originalParent.type == CodeBlockType.statement) {
+        //   debugPrint('moveData: statement');
+        //   originalParent.copyWith(parentUID: parent.uid);
+        //   parent = parent.copyWith(bodyUIDs: [...parent.bodyUIDs ?? [], originalParent.uid!]);
+        // } else
+
+        if (data.type == CodeBlockType.statement) {
+          debugPrint('moveData: statement from root');
           data.copyWith(parentUID: parent.uid);
           parent = parent.copyWith(bodyUIDs: [...parent.bodyUIDs ?? [], data.uid!]);
         } else {
+          debugPrint('moveData: block from root');
           // create new statement for the data
           final statementUID = getUID();
           var statement = GameBlockData.createStatement();

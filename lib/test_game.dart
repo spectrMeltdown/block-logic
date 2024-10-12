@@ -70,6 +70,7 @@ class _TestGameState extends ConsumerState<TestGame> {
           Background(
             child: SafeArea(
               child: GameChallenge(
+                key: ValueKey(challenges[currentChallenge].id),
                 updateChallenge: updateChallenge,
                 currentChallenge: currentChallenge,
                 roomName: 'Testing',

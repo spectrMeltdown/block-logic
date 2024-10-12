@@ -49,6 +49,7 @@ class _WaitingRoomState extends ConsumerState<WaitingRoom> {
   bool called = false;
   bool hostInRoom = false;
   bool roomFull = false;
+  String? roomName;
 
   void toggleProcessing() {
     if (mounted) {
@@ -118,11 +119,16 @@ class _WaitingRoomState extends ConsumerState<WaitingRoom> {
                   child: SafeArea(
                 child: Column(
                   children: [
-                    if (roomFull == false) BLSmallTitle('Waiting for other players ...'),
+                    BLSmallTitle(
+                      roomName ?? '',
+                      size: 18,
+                      color: Colors.blue,
+                    ),
+                    if (roomFull == false) BLText('Waiting for other players ...'),
                     if (roomFull && hostInRoom)
                       BLText(
                         'Waiting for host to start game ...',
-                        size: 18,
+                        size: 14,
                       ),
                     if (!hostInRoom) BLText('Waiting for host ...'),
                     SizedBox(
@@ -138,6 +144,7 @@ class _WaitingRoomState extends ConsumerState<WaitingRoom> {
                                 if (room == null) {
                                   return const BLText('Failed getting room details.');
                                 }
+                                roomName ??= '${room.name}';
                                 final uid = FirebaseAuth.instance.currentUser!.uid;
                                 Future.delayed(Duration(milliseconds: 500), () {
                                   updateRoomState(room);

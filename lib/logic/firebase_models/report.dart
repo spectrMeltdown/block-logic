@@ -1,5 +1,6 @@
 import 'package:block_logic/logic/enums.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/foundation.dart';
 
 class Report {
   final String? id;
@@ -27,10 +28,10 @@ class Report {
 
     if (doc is Map<Object?, Object?>) {
       data = (doc).map((k, v) => MapEntry(k as String, v));
-    } else if (doc is DataSnapshot) {
+    } else if (doc is DataSnapshot && doc.value != null) {
       data = (doc.value as Map<Object?, Object?>).map((k, v) => MapEntry(k as String, v));
     } else {
-      throw ('Unknown type!!');
+      debugPrint('Unknown type!!');
     }
 
     ReportType? type;
@@ -68,7 +69,7 @@ class Report {
     // createdAt: data['createdAt'] == null ? null : (data['createdAt'] as ServerValue.timestamp).toDate(),
     // modifiedAt: (data['modifiedAt'] as ServerValue.timestamp).toDate(),
     return Report(
-      id: doc is DataSnapshot ? doc.key : key,
+      id: doc is DataSnapshot && doc.key != null ? doc.key : key,
       count: data['count'],
       type: type,
       date: data['date'] == null ? null : DateTime.fromMillisecondsSinceEpoch(data['date']),

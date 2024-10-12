@@ -97,13 +97,15 @@ class GameCodeBlockState extends ConsumerState<GameBlock> {
     // super.build(context);
     // debugPrint('Previous challenge uid was $previousChallengeUID');
     // debugPrint('Current challenge uid was ${widget.challengeUID}');
-    debugPrint('from block ${widget.data.uid}');
+    if (widget.data.state == CodeBlockState.inEditor) {
+      // debugPrint('Block: ${widget.data.uid}\n');
+    }
 
     if (widget.data.type == CodeBlockType.statement) {
       // debugPrint('from block ${widget.data.uid}');
       // debugPrint('from block ${widget.data.statementUIDs}\n');
     }
-    // trigger rebuilds when the challenge has changed
+    // trigger rebuilds when the challenge has changed (only in selector view)
     if (widget.topLevelBlock && previousChallengeUID != widget.challengeUID) {
       create();
       // debugPrint('rebuild block triggered');
@@ -120,7 +122,7 @@ class GameCodeBlockState extends ConsumerState<GameBlock> {
           block = defaultWithPadding;
         });
         // reset all tabs counts to 0
-        gameManager.resetAllCategory();
+        gameManager.resetAllTabCount();
         // switch reset all block to false (future.delayed to prevent race condition)
         Future.delayed(Duration.zero, () {
           gameManager.setShouldResetAllBlocks(false);

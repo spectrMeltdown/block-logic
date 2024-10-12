@@ -292,7 +292,7 @@ class AccountSettingsWidget extends ConsumerWidget {
                                   BLText(
                                     'Delete account',
                                     bold: true,
-                                    color: Colors.red,
+                                    color: Colors.deepOrange,
                                   )
                                 ],
                               )),

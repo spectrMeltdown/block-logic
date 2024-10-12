@@ -6,7 +6,7 @@ part of '../selected_feedback.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$selectedFeedbackHash() => r'62c4d74cbf92c7b44eea97c58218fed91bc18ba7';
+String _$selectedFeedbackHash() => r'540c488adca2c7a272f7fa85b7ba273b89c3a23d';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -34,7 +34,7 @@ class _SystemHash {
 const selectedFeedbackProvider = SelectedFeedbackFamily();
 
 /// See also [selectedFeedback].
-class SelectedFeedbackFamily extends Family<AsyncValue<FeedbackData?>> {
+class SelectedFeedbackFamily extends Family<AsyncValue<FeedbackData>> {
   /// See also [selectedFeedback].
   const SelectedFeedbackFamily();
 
@@ -72,8 +72,7 @@ class SelectedFeedbackFamily extends Family<AsyncValue<FeedbackData?>> {
 }
 
 /// See also [selectedFeedback].
-class SelectedFeedbackProvider
-    extends AutoDisposeStreamProvider<FeedbackData?> {
+class SelectedFeedbackProvider extends AutoDisposeStreamProvider<FeedbackData> {
   /// See also [selectedFeedback].
   SelectedFeedbackProvider(
     String id,
@@ -108,7 +107,7 @@ class SelectedFeedbackProvider
 
   @override
   Override overrideWith(
-    Stream<FeedbackData?> Function(SelectedFeedbackRef provider) create,
+    Stream<FeedbackData> Function(SelectedFeedbackRef provider) create,
   ) {
     return ProviderOverride(
       origin: this,
@@ -125,7 +124,7 @@ class SelectedFeedbackProvider
   }
 
   @override
-  AutoDisposeStreamProviderElement<FeedbackData?> createElement() {
+  AutoDisposeStreamProviderElement<FeedbackData> createElement() {
     return _SelectedFeedbackProviderElement(this);
   }
 
@@ -143,13 +142,13 @@ class SelectedFeedbackProvider
   }
 }
 
-mixin SelectedFeedbackRef on AutoDisposeStreamProviderRef<FeedbackData?> {
+mixin SelectedFeedbackRef on AutoDisposeStreamProviderRef<FeedbackData> {
   /// The parameter `id` of this provider.
   String get id;
 }
 
 class _SelectedFeedbackProviderElement
-    extends AutoDisposeStreamProviderElement<FeedbackData?>
+    extends AutoDisposeStreamProviderElement<FeedbackData>
     with SelectedFeedbackRef {
   _SelectedFeedbackProviderElement(super.provider);
 

@@ -219,9 +219,10 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
                                                     toast.showToast(context, 'A reset link was sent to your email.', type: NotifType.info);
                                                   }
                                                 },
-                                                child: const BLText(
+                                                child: BLText(
                                                   'Forgot password?',
                                                   size: 15,
+                                                  color: Colors.lightBlue.shade100,
                                                 )),
                                           Visibility(
                                             visible: !useEmail,
@@ -236,7 +237,7 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
                                               },
                                               child: BLText(
                                                 'Send OTP ${otpCooldownTimer.isActive ? '($secondsLeft)' : ''}',
-                                                color: otpCooldownTimer.isActive ? Colors.grey : null,
+                                                color: otpCooldownTimer.isActive ? Colors.grey : Colors.lightBlue.shade100,
                                               ),
                                             ),
                                           )
@@ -273,10 +274,11 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
                                           children: [
                                             BLTextButton(
                                                 onPressed: () => nav.pushReplace(context, const Signup()),
-                                                child: const BLText(
+                                                child: BLText(
                                                   'Create an account',
                                                   underlined: true,
                                                   size: 15,
+                                                  color: Colors.lightBlue.shade100,
                                                 ))
                                           ],
                                         ),
@@ -303,11 +305,11 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
     );
   }
 
-  // @override
-  // void didChangeDependencies() {
-  //   super.didChangeDependencies();
-  //   routeObserver.subscribe(this, ModalRoute.of(context) as PageRoute);
-  // }
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    routeObserver.subscribe(this, ModalRoute.of(context) as PageRoute);
+  }
 
   @override
   void didPopNext() {
@@ -328,6 +330,7 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
   @override
   void dispose() {
     otpCooldownTimer.cancel();
+    routeObserver.unsubscribe(this);
     super.dispose();
   }
 

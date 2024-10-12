@@ -15,6 +15,7 @@ class BLTextButton extends ConsumerWidget {
       audio = ref.read(bLAudioStateProvider.notifier);
     }
     return TextButton(
+        // style: TextButton.styleFrom(foregroundColor: Colors.lightBlue.shade200),
         onPressed: () {
           audio?.playBtn();
           onPressed.call();

@@ -1,5 +1,6 @@
 import 'package:block_logic/logic/enums.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/foundation.dart';
 
 class Score {
   final String? id;
@@ -22,10 +23,10 @@ class Score {
 
     if (doc is Map<Object?, Object?>) {
       data = (doc).map((k, v) => MapEntry(k as String, v));
-    } else if (doc is DataSnapshot) {
+    } else if (doc is DataSnapshot && doc.value != null) {
       data = (doc.value as Map<Object?, Object?>).map((k, v) => MapEntry(k as String, v));
     } else {
-      throw ('Unknown type!!');
+      debugPrint('Unknown type!!');
     }
 
     ScoreStatus? status;
@@ -45,7 +46,7 @@ class Score {
     }
 
     return Score(
-      id: doc is DataSnapshot ? doc.key : key,
+      id: doc is DataSnapshot && doc.key != null ? doc.key : key,
       accountID: data['accountID'],
       playerScore: data['playerScore'],
       timeElapsed: data['timeElapsed'],

@@ -76,12 +76,19 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                           const SizedBox(
                             height: 20,
                           ),
-                          BLTextButton(
-                              onPressed: () => nav.push(context, const AboutUs()),
-                              child: const BLText(
-                                'About Us',
-                                underlined: true,
-                              ))
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              BLTextButton(
+                                  onPressed: () => nav.push(context, const AboutUs()),
+                                  child: BLText(
+                                    'About Us',
+                                    underlined: true,
+                                    color: Colors.lightBlue.shade100,
+                                  ))
+                            ],
+                          )
                         ],
                       ),
                     ),

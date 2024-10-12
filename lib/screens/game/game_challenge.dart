@@ -1,5 +1,6 @@
 import 'package:block_logic/logic/firebase_models/challenge.dart';
 import 'package:block_logic/logic/game/logic/game_manager.dart';
+import 'package:block_logic/route_observer.dart';
 import 'package:block_logic/screens/game/blocks_selector.dart';
 import 'package:block_logic/screens/game/challange_box.dart';
 import 'package:block_logic/screens/game/editor.dart';
@@ -14,7 +15,7 @@ final processingProvider = StateProvider((ref) {
   return ref.watch(gameManagerProvider.select((state) => state.processingOverlay));
 });
 
-class GameChallenge extends ConsumerWidget {
+class GameChallenge extends ConsumerWidget with RouteAware {
   final String roomName;
   final void Function()? updateChallenge;
   final Challenge challenge;
@@ -36,10 +37,10 @@ class GameChallenge extends ConsumerWidget {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
     final gameManager = ref.read(gameManagerProvider.notifier);
-
     gameManager.updateSolution(challenge.solutionMatch!);
     // debugPrint('${widget.challengeCount}');
     // debugPrint('${widget.currentChallenge}');
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [

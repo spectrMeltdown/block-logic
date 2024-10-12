@@ -19,6 +19,7 @@ import 'package:block_logic/logic/services/navigation.dart';
 import 'package:block_logic/logic/services/reports_manager.dart';
 import 'package:block_logic/logic/services/shared_pref.dart';
 import 'package:block_logic/logic/services/toast.dart';
+import 'package:block_logic/logic/services/ui.dart';
 import 'package:block_logic/logic/services/validator_text.dart';
 import 'package:block_logic/route_observer.dart';
 import 'package:block_logic/screens/auth/login.dart';
@@ -305,7 +306,7 @@ class _SignupState extends ConsumerState<Signup> with RouteAware {
                                               },
                                               child: BLText(
                                                 'Send OTP ${timer.isActive ? '($seconds)' : ''}',
-                                                color: timer.isActive ? Colors.grey : null,
+                                                color: timer.isActive ? Colors.grey : Colors.lightBlue.shade100,
                                               ),
                                             ),
                                           ),
@@ -321,7 +322,10 @@ class _SignupState extends ConsumerState<Signup> with RouteAware {
                                           BLRichText([
                                             const TextSpan(text: 'I agree to the ', style: TextStyle(color: Colors.white)),
                                             TextSpan(
-                                              style: const TextStyle(decoration: TextDecoration.underline),
+                                              style: TextStyle(
+                                                decoration: TextDecoration.underline,
+                                                color: Colors.lightBlue.shade100,
+                                              ),
                                               text: 'terms & conditions',
                                               recognizer: TapGestureRecognizer()
                                                 ..onTap = () => nav.push(
@@ -426,10 +430,7 @@ class _SignupState extends ConsumerState<Signup> with RouteAware {
                                               processing = false;
                                             });
                                           },
-                                          child: const BLText(
-                                            'Create account',
-                                            color: Colors.white,
-                                          )),
+                                          child: BLText('Create account')),
                                       Row(
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
@@ -439,10 +440,11 @@ class _SignupState extends ConsumerState<Signup> with RouteAware {
                                                   const Login(
                                                     accountType: FirestoreCollections.users,
                                                   )),
-                                              child: const BLText(
+                                              child: BLText(
                                                 'Login to existing account',
                                                 underlined: true,
                                                 size: 15,
+                                                color: Colors.lightBlue.shade100,
                                               ))
                                         ],
                                       ),
@@ -469,11 +471,11 @@ class _SignupState extends ConsumerState<Signup> with RouteAware {
     );
   }
 
-  // @override
-  // void didChangeDependencies() {
-  //   super.didChangeDependencies();
-  //   routeObserver.subscribe(this, ModalRoute.of(context) as PageRoute);
-  // }
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    routeObserver.subscribe(this, ModalRoute.of(context) as PageRoute);
+  }
 
   @override
   void didPopNext() {
@@ -490,6 +492,7 @@ class _SignupState extends ConsumerState<Signup> with RouteAware {
   @override
   void dispose() {
     timer.cancel();
+    routeObserver.unsubscribe(this);
     super.dispose();
   }
 }

@@ -38,11 +38,11 @@ class _SelectedFeedbackState extends ConsumerState<ViewFeedback> {
               padding: const EdgeInsets.all(15),
               child: feedback.when(
                   data: (feedback) {
-                    if (feedback == null) {
-                      return const Column(
-                        children: [BLText('Couldn\'t get this feedback..'), AdminBackBtn()],
-                      );
-                    }
+                    // if (feedback == null) {
+                    //   return const Column(
+                    //     children: [BLText('Couldn\'t get this feedback..'), AdminBackBtn()],
+                    //   );
+                    // }
                     return Padding(
                       padding: const EdgeInsets.all(15),
                       child: Column(
@@ -56,9 +56,7 @@ class _SelectedFeedbackState extends ConsumerState<ViewFeedback> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               const BLText('Created at: '),
-                              BLText(feedback.createdAt == null
-                                  ? '--'
-                                  : DateFormat('dd/MM/yyyy').format(feedback.createdAt!)),
+                              BLText(feedback.createdAt == null ? '--' : DateFormat('dd/MM/yyyy').format(feedback.createdAt!)),
                             ],
                           ),
                           Row(

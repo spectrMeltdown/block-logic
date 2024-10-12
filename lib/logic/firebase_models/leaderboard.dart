@@ -1,5 +1,6 @@
 import 'package:block_logic/logic/enums.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/foundation.dart';
 
 class Leaderboard {
   final String? id; // the doc id. Should be auto generated
@@ -24,10 +25,10 @@ class Leaderboard {
 
     if (doc is Map<Object?, Object?>) {
       data = (doc).map((k, v) => MapEntry(k as String, v));
-    } else if (doc is DataSnapshot) {
+    } else if (doc is DataSnapshot && doc.value != null) {
       data = (doc.value as Map<Object?, Object?>).map((k, v) => MapEntry(k as String, v));
     } else {
-      throw ('Unknown type!!');
+      debugPrint('Unknown type!!');
     }
 
     LeaderboardStatus? status;
@@ -40,7 +41,7 @@ class Leaderboard {
     }
 
     return Leaderboard(
-      id: doc is DataSnapshot ? doc.key : key,
+      id: doc is DataSnapshot && doc.key != null ? doc.key : key,
       roomName: data['roomName'] ?? '',
       roomID: data['roomID'] ?? '',
       totalScore: data['totalScore'],

@@ -287,11 +287,11 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> with WidgetsBin
   //   super.didChangeAppLifecycleState(state);
   // }
 
-  // @override
-  // void didChangeDependencies() {
-  //   super.didChangeDependencies();
-  //   routeObserver.subscribe(this, ModalRoute.of(context) as PageRoute);
-  // }
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    routeObserver.subscribe(this, ModalRoute.of(context) as PageRoute);
+  }
 
   @override
   void didPopNext() {
@@ -312,6 +312,7 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> with WidgetsBin
     toast.dismissAllToast(context);
     _titleAnimationController.dispose();
     _premiumCrown.dispose();
+    routeObserver.unsubscribe(this);
     super.dispose();
   }
 

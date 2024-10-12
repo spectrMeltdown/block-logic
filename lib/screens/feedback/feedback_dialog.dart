@@ -103,7 +103,14 @@ class _FeedbackDialogState extends ConsumerState<FeedbackDialog> {
                           processing = true;
                         });
                         if (formKey.currentState!.validate()) {
-                          final result = await feedbackManager.send(FeedbackData(title: titleController.text.trim(), message: messageController.text.trim(), createdAt: DateTime.now(), userID: auth.getUID()));
+                          final result = await feedbackManager.send(
+                            FeedbackData(
+                              title: titleController.text.trim(),
+                              message: messageController.text.trim(),
+                              createdAt: DateTime.now(),
+                              userID: auth.getUID(),
+                            ),
+                          );
                           if (result == null) {
                             if (!context.mounted) return;
                             nav.pop(context);

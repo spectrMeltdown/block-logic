@@ -107,6 +107,7 @@ class _GameRoomState extends ConsumerState<GameRoom> {
                       // debugPrint('Challenge length: $challengeLength');
                       // debugPrint('current challenge: $currentChallenge');
                       return GameChallenge(
+                        key: ValueKey(challenges[currentChallenge].id),
                         currentChallenge: currentChallenge,
                         roomName: widget.room.name ?? '',
                         challenge: challenges[currentChallenge],

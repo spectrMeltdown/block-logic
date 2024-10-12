@@ -24,6 +24,7 @@ class CustomBox extends ConsumerWidget {
     switch (box) {
       case GameBox.parameters:
         final parameters = ref.watch(getChildrenDataProvider(data.parameterUIDs));
+        debugPrint('Parameters: $parameters');
         return Row(
           children: [
             ...List.generate(parameters.length, (i) {
@@ -67,6 +68,7 @@ class CustomBox extends ConsumerWidget {
         );
       case GameBox.arguments:
         final arguments = ref.watch(getChildrenDataProvider(data.argumentUIDs));
+        debugPrint('Arguments: $arguments');
         return Row(children: [
           ...List.generate(arguments.length, (i) {
             return Padding(
@@ -108,7 +110,7 @@ class CustomBox extends ConsumerWidget {
 
       case GameBox.conditions:
         final conditions = ref.watch(getChildrenDataProvider(data.conditionUIDs));
-
+        debugPrint('Conditions: $conditions');
         return Row(
           children: [
             ...List.generate(conditions.length, (i) {
@@ -151,7 +153,7 @@ class CustomBox extends ConsumerWidget {
         );
       case GameBox.array:
         final items = ref.watch(getChildrenDataProvider(data.arrayUIDs));
-
+        debugPrint('Items: $items');
         return Row(
           children: [
             ...List.generate(items.length, (i) {

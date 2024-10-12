@@ -1,5 +1,6 @@
 import 'package:block_logic/logic/firebase_models/account_model.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/foundation.dart';
 
 class UserAccount extends AccountModel {
   final String? sessionID;
@@ -21,14 +22,14 @@ class UserAccount extends AccountModel {
 
     if (doc is Map<Object?, Object?>) {
       data = (doc).map((k, v) => MapEntry(k as String, v));
-    } else if (doc is DataSnapshot) {
+    } else if (doc is DataSnapshot && doc.value != null) {
       data = (doc.value as Map<Object?, Object?>).map((k, v) => MapEntry(k as String, v));
     } else {
-      throw ('Unknown type!!');
+      debugPrint('Unknown type!!');
     }
 
     return UserAccount(
-      id: doc is DataSnapshot ? doc.key : key,
+      id: doc is DataSnapshot && doc.key != null ? doc.key : key,
       createdAt: data['createdAt'] == null ? null : DateTime.fromMillisecondsSinceEpoch(data['createdAt']),
       displayName: data['displayName'] ?? '',
       profilePicLink: data['profilePicLink'] ?? '',

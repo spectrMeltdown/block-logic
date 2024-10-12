@@ -1,5 +1,6 @@
 import 'package:block_logic/logic/enums.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/foundation.dart';
 
 class Room {
   final String? id;
@@ -30,10 +31,10 @@ class Room {
 
     if (doc is Map<Object?, Object?>) {
       data = (doc).map((k, v) => MapEntry(k as String, v));
-    } else if (doc is DataSnapshot) {
+    } else if (doc is DataSnapshot && doc.value != null) {
       data = (doc.value as Map<Object?, Object?>).map((k, v) => MapEntry(k as String, v));
     } else {
-      throw ('Unknown type!!');
+      debugPrint('Unknown type!!');
     }
 
     RoomStatus? status;
@@ -47,7 +48,7 @@ class Room {
       status = RoomStatus.locked;
     }
     return Room(
-      id: doc is DataSnapshot ? doc.key : key,
+      id: doc is DataSnapshot && doc.key != null ? doc.key : key,
       players: data['players'] == null ? <String, bool>{} : (data['players'] as Map<Object?, Object?>).map((k, v) => MapEntry(k as String, v as bool)).cast<String, bool>(),
       status: status,
       hostID: data['hostID'],

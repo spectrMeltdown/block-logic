@@ -166,19 +166,17 @@ class _GameSubmitButtonState extends ConsumerState<GameSubmitButton> {
           // if correct, complete blocks, and not practice mode
           if (correct && !incompleteBlocks && !widget.practiceMode) {
             // don't write score in debug mode
-            if (!kDebugMode) {
-              result = await score.increment(
-                leaderboardID: manager.getLeaderboardID(),
-                uid: FirebaseAuth.instance.currentUser!.uid,
-                value: 1,
-              );
-            }
+            result = await score.increment(
+              leaderboardID: manager.getLeaderboardID(),
+              uid: FirebaseAuth.instance.currentUser!.uid,
+              value: 1,
+            );
           }
           // updateChallenge is null in practice mode!
           if (widget.updateChallenge != null) {
             // move to next challenge
             gameState.dataTree = {}; // remove all used blocks
-            gameState.countsPerTab.clear(); // different from resetAllCategory!
+            gameState.countsPerTab.clear(); // different from resetAllTabCount!
             gameState.inSelectorUIDs.clear();
             gameState.solution = [];
             ref.invalidate(tabNumberProvider);

@@ -67,7 +67,16 @@ class _FinalizingResultsState extends ConsumerState<FinalizingResults> {
       ],
     );
     leaderboardID = manager.getLeaderboardID();
-    manager.leaveGame(true);
+    leave();
+  }
+
+  Future<void> leave() async {
+    final result = await manager.leaveGame(true);
+    if (result != null) {
+      debugPrint(result);
+    } else {
+      debugPrint('Leave Room success');
+    }
   }
 
   @override

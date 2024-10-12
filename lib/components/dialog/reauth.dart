@@ -142,7 +142,7 @@ class _ReauthDialogState extends ConsumerState<ReauthDialog> {
   Widget build(BuildContext context) {
     return AlertDialog(
       backgroundColor: Colors.grey.shade800,
-      title: const BLSmallTitle('Verification'),
+      title: const BLSmallTitle('Verify'),
       content: Form(
         key: formKey,
         child: Column(

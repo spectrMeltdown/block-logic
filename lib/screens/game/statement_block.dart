@@ -14,13 +14,13 @@ class StatementBox extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final gameManager = ref.read(gameManagerProvider.notifier);
     // final validator = BlockValidator()
+    final gameManager = ref.read(gameManagerProvider.notifier);
     final data = ref.watch(getSelfDataProvider(this.data.uid)); // needed because adding children won't update the UI without it
     final blocks = ref.watch(getChildrenDataProvider(data?.statementUIDs));
 
-    // debugPrint(blocks.toString());
-    // debugPrint('${data?.name} - ${data?.uid} ${data?.statementUIDs}');
+    // debugPrint('Statement: ${data?.uid}');
+    // debugPrint('Children: ${data?.statementUIDs}');
     return Padding(
       padding: const EdgeInsets.all(2),
       child: Row(
@@ -28,13 +28,16 @@ class StatementBox extends ConsumerWidget {
         children: [
           ...List.generate(
             blocks.length,
-            (i) => Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 3),
-              child: GameBlock(
-                key: ValueKey(blocks[i].uid),
-                data: blocks[i],
-              ),
-            ),
+            (i) {
+              // debugPrint('Statement child: ${blocks[i].uid}\n');
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 3),
+                child: GameBlock(
+                  key: ValueKey(blocks[i].uid),
+                  data: blocks[i],
+                ),
+              );
+            },
           ),
           DragTargetWrapper(
             builderChild: () {

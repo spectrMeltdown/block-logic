@@ -62,6 +62,7 @@ class EditorView extends ConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               ...List.generate(blockData.length, (i) {
+                // debugPrint('Editor View: ${blockData[i].uid}\n');
                 return GameBlock(
                   key: ValueKey(blockData[i].uid),
                   data: blockData[i],

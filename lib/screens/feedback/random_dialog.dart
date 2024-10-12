@@ -94,6 +94,8 @@ class _RandomDialogState extends ConsumerState<RandomDialog> with SingleTickerPr
                       context: context,
                       builder: (context) => const FeedbackDialog(),
                     );
+                    if (!context.mounted) return;
+                    nav.pop(context);
                   },
                   child: const BLText(
                     'Send Feedback',

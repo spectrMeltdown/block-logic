@@ -92,13 +92,6 @@ class _BlockSelectorStackState extends ConsumerState<BlockSelectorStack> {
   Widget build(BuildContext context) {
     // super.build(context);
     // create stack count when data changes (e.g. changing the challenge)
-    // if (lastHashCode != widget.data.hashCode) {
-    //   debugPrint('NEW STACK');
-    //   setState(() {
-    //     lastHashCode = widget.data.hashCode;
-    //   });
-    //   createStackCount();
-    // }
     final shouldReset = ref.watch(shouldResetAllBlocksProvider);
     // reset the entire stack
     if (shouldReset) {

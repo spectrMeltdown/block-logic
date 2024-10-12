@@ -103,6 +103,7 @@ class TutorialChallengeSelectorItem extends ConsumerWidget {
                   body: Background(
                       child: SafeArea(
                           child: GameChallenge(
+                    key: ValueKey(challenge.id),
                     currentChallenge: 0,
                     roomName: 'Practice Room',
                     challenge: challenge,

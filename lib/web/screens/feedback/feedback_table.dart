@@ -11,6 +11,7 @@ import 'package:block_logic/web/components/bl_table.dart';
 import 'package:block_logic/web/components/card_simple.dart';
 import 'package:block_logic/web/screens/feedback/feedback.dart';
 import 'package:block_logic/web/screens/feedback/view_feedback_dialog.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -27,6 +28,13 @@ class _FeedbackTableState extends ConsumerState<FeedbackTable> {
   bool processing = false;
   late List<FeedbackData> feedbacksList;
   late final DialogService dialog;
+
+  @override
+  void initState() {
+    dialog = ref.read(dialogServiceProvider.notifier);
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
@@ -59,11 +67,8 @@ class _FeedbackTableState extends ConsumerState<FeedbackTable> {
                     }),
                     rows: List.generate(feedbacksList.length, (i) {
                       return DataRow(
-                          onSelectChanged: (value) async {
-                            if (processing) return;
-                            processing = true;
-                            await dialog.show(context, ViewFeedback(feedbacksList[i].id!));
-                            processing = false;
+                          onSelectChanged: (value) {
+                            dialog.show(context, ViewFeedback(feedbacksList[i].id!));
                           },
                           cells: [
                             DataCell(BLText(feedbacksList[i].title ?? '--')),
@@ -81,11 +86,5 @@ class _FeedbackTableState extends ConsumerState<FeedbackTable> {
             },
             error: genericError,
             loading: genericLoading));
-  }
-
-  @override
-  void initState() {
-    dialog = ref.read(dialogServiceProvider.notifier);
-    super.initState();
   }
 }

@@ -9,6 +9,7 @@ import 'package:block_logic/screens/checkpoint.dart';
 import 'package:block_logic/test_game.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -38,7 +39,7 @@ Future<void> main() async {
     //   FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
     //   return true;
     // };
-  }
+  } else if (kIsWeb) {}
   final prefs = await SharedPreferences.getInstance();
   runApp(ProviderScope(
     overrides: [
@@ -59,11 +60,11 @@ class BlockLogic extends StatelessWidget {
       return MaterialApp(
         title: 'Block-Logic',
         debugShowCheckedModeBanner: false,
-        // navigatorObservers: [routeObserver],
+        navigatorObservers: [routeObserver],
         theme: appTheme.theme(),
         darkTheme: appTheme.theme(),
-        // home: const Checkpoint(),
-        home: const TestGame(),
+        home: const Checkpoint(),
+        // home: const TestGame(),
       );
     }
     return MaterialApp.router(
