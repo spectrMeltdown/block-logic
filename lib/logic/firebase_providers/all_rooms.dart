@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:block_logic/logic/firebase_models/room.dart';
 import 'package:firebase_database/firebase_database.dart';
 
@@ -9,12 +11,13 @@ part 'generated/all_rooms.g.dart';
 @riverpod
 Stream<List<Room>> rooms(RoomsRef ref, {String? searchQuery, String? uid}) async* {
   final db = FirebaseDatabase.instance;
-  final stream = db.ref('rooms').onValue;
-  await for (final query in stream) {
+  final controller = StreamController<List<Room>>();
+  db.ref('rooms').onValue.listen((event) {
+    final snapshot = event.snapshot;
     final List<Room> result = [];
-    if (query.snapshot.children.isNotEmpty) {
+    if (snapshot.children.isNotEmpty) {
       final List<Room> initData = [];
-      for (final doc in query.snapshot.children) {
+      for (final doc in snapshot.children) {
         initData.add(Room.fromRTDB(doc));
       }
 
@@ -60,7 +63,7 @@ Stream<List<Room>> rooms(RoomsRef ref, {String? searchQuery, String? uid}) async
           result.add(room);
         }
       } else {
-        for (final room in query.snapshot.children) {
+        for (final room in snapshot.children) {
           result.add(Room.fromRTDB(room));
         }
       }
@@ -80,6 +83,7 @@ Stream<List<Room>> rooms(RoomsRef ref, {String? searchQuery, String? uid}) async
       }
     }
 
-    yield result;
-  }
+    controller.add(result);
+  });
+  yield* controller.stream;
 }

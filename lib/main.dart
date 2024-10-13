@@ -25,8 +25,8 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   if (!kIsWeb) {
-    await FirebaseAppCheck.instance.activate();
     // await initializeService();
+    await FirebaseAppCheck.instance.activate();
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
     SystemChrome.setPreferredOrientations(
       <DeviceOrientation>[DeviceOrientation.portraitUp],
@@ -39,7 +39,7 @@ Future<void> main() async {
     //   FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
     //   return true;
     // };
-  } else if (kIsWeb) {}
+  }
   final prefs = await SharedPreferences.getInstance();
   runApp(ProviderScope(
     overrides: [

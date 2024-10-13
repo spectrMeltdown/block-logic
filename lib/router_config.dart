@@ -216,6 +216,12 @@ GoRouter router() {
         // if (adminFirestore.verificationID != null && adminFirestore.verificationID!.isEmpty) {
         //   return '/verify-phone-num';
         // }
+        // debugPrint(state.matchedLocation);
+
+        /// prevent going back to login page when already logged in
+        if (state.matchedLocation == '/login') {
+          return '/dashboard';
+        }
         return null;
       } else {
         return '/login';

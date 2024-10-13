@@ -27,7 +27,7 @@ class _SelectedFeedbackState extends ConsumerState<ViewFeedback> {
 
   @override
   Widget build(BuildContext context) {
-    final feedback = ref.watch(SelectedFeedbackProvider(widget.feedbackID));
+    final feedback = ref.watch(selectedFeedbackProvider(widget.feedbackID));
     return BLDialog(
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 800),
@@ -38,11 +38,11 @@ class _SelectedFeedbackState extends ConsumerState<ViewFeedback> {
               padding: const EdgeInsets.all(15),
               child: feedback.when(
                   data: (feedback) {
-                    // if (feedback == null) {
-                    //   return const Column(
-                    //     children: [BLText('Couldn\'t get this feedback..'), AdminBackBtn()],
-                    //   );
-                    // }
+                    if (feedback == null) {
+                      return const Column(
+                        children: [BLText('Couldn\'t get this feedback..'), AdminBackBtn()],
+                      );
+                    }
                     return Padding(
                       padding: const EdgeInsets.all(15),
                       child: Column(

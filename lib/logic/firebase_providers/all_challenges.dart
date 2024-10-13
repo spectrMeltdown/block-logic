@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:block_logic/logic/firebase_models/challenge.dart';
 import 'package:firebase_database/firebase_database.dart';
 
@@ -8,12 +10,13 @@ part 'generated/all_challenges.g.dart';
 @riverpod
 Stream<List<Challenge>> challenges(ChallengesRef ref, {String searchQuery = ''}) async* {
   final db = FirebaseDatabase.instance;
-  final stream = db.ref('challenges').onValue;
-  await for (final query in stream) {
+  final controller = StreamController<List<Challenge>>();
+  db.ref('challenges').onValue.listen((event) {
+    final snapshot = event.snapshot;
     final List<Challenge> result = [];
-    if (query.snapshot.children.isNotEmpty) {
+    if (snapshot.children.isNotEmpty) {
       final List<Challenge> initData = [];
-      for (final doc in query.snapshot.children) {
+      for (final doc in snapshot.children) {
         initData.add(Challenge.fromRTDB(doc));
       }
 
@@ -59,11 +62,12 @@ Stream<List<Challenge>> challenges(ChallengesRef ref, {String searchQuery = ''})
           result.add(challenge);
         }
       } else {
-        for (final room in query.snapshot.children) {
+        for (final room in snapshot.children) {
           result.add(Challenge.fromRTDB(room));
         }
       }
     }
-    yield result;
-  }
+    controller.add(result);
+  });
+  yield* controller.stream;
 }

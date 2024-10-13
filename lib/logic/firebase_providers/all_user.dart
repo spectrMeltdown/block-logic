@@ -8,14 +8,16 @@ part 'generated/all_user.g.dart';
 @riverpod
 Stream<List<UserAccount>> allUsers(AllUsersRef ref) async* {
   final db = FirebaseDatabase.instance;
-  final users = db.ref('users').onValue;
-  await for (final userList in users) {
-    final result = <UserAccount>[];
-    if (userList.snapshot.children.isNotEmpty) {
-      for (final user in userList.snapshot.children) {
-        result.add(UserAccount.fromRTDB(user));
+  final result = <UserAccount>[];
+  db.ref('users').onValue.listen((event) {
+    final snapshot = event.snapshot;
+    if (snapshot.exists) {
+      if (snapshot.children.isNotEmpty) {
+        for (final user in snapshot.children) {
+          result.add(UserAccount.fromRTDB(user));
+        }
       }
     }
-    yield result;
-  }
+  });
+  yield result;
 }

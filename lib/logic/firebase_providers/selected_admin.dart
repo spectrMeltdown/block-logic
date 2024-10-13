@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:block_logic/logic/firebase_models/admin_account.dart';
 import 'package:firebase_database/firebase_database.dart';
 
@@ -11,13 +13,13 @@ Stream<AdminAccount?> selectedAdmin(SelectedAdminRef ref, String id) async* {
     yield null;
   } else {
     final db = FirebaseDatabase.instance;
-    final stream = db.ref('admins/$id').onValue;
-    await for (final doc in stream) {
-      if (doc.snapshot.exists) {
-        yield AdminAccount.fromRTDB(doc.snapshot);
-      } else {
-        yield null;
+    final controller = StreamController<AdminAccount>();
+    db.ref('admins/$id').onValue.listen((event) {
+      final snapshot = event.snapshot;
+      if (snapshot.exists) {
+        controller.add(AdminAccount.fromRTDB(snapshot.value));
       }
-    }
+    });
+    yield* controller.stream;
   }
 }

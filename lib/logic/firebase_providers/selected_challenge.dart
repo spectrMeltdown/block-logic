@@ -11,12 +11,12 @@ Stream<Challenge?> selectedChallenge(
   String challengeID,
 ) async* {
   final db = FirebaseDatabase.instance;
-  final stream = db.ref('challenges/$challengeID').onValue;
-  await for (final doc in stream) {
-    if (!doc.snapshot.exists) {
-      yield null;
-    } else {
-      yield Challenge.fromRTDB(doc.snapshot);
+  Challenge? result;
+  db.ref('challenges/$challengeID').onValue.listen((event) {
+    final snapshot = event.snapshot;
+    if (snapshot.exists) {
+      result = Challenge.fromRTDB(snapshot);
     }
-  }
+  });
+  yield result;
 }

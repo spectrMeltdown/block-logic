@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:block_logic/logic/firebase_models/room.dart';
 import 'package:firebase_database/firebase_database.dart';
 
@@ -16,13 +18,15 @@ Stream<Room?> selectedRoom(
   if (futureOnly) {
     yield Room.fromRTDB(await ref.get());
   } else {
-    final stream = ref.onValue;
-    await for (final doc in stream) {
-      if (doc.snapshot.exists) {
-        yield Room.fromRTDB(doc.snapshot);
+    final controller = StreamController<Room?>();
+    ref.onValue.listen((event) {
+      final snapshot = event.snapshot;
+      if (snapshot.exists) {
+        controller.add(Room.fromRTDB(snapshot));
       } else {
-        yield null;
+        controller.add(null);
       }
-    }
+    });
+    yield* controller.stream;
   }
 }

@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_models/report.dart';
 import 'package:equatable/equatable.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -27,22 +30,25 @@ class ReportParams extends Equatable {
 }
 
 final reportsProvider = StreamProvider.family<Object, ReportParams>((ref, params) async* {
-  await for (final query in params.stream) {
+  final controller = StreamController<Object>();
+  params.stream.listen((event) {
+    final snapshot = event.snapshot;
     final List<Report> list = [];
 
-    if (query.snapshot.children.isNotEmpty) {
-      for (final report in query.snapshot.children) {
+    if (snapshot.children.isNotEmpty) {
+      for (final report in snapshot.children) {
         list.add(Report.fromRTDB(report));
       }
       if (params.dateRange == null) {
-        yield list;
+        controller.add(list);
       } else {
-        yield groupReportsByTimePeriod(list.where((report) => report.date!.isAfter(params.dateRange!.start) && report.date!.isBefore(params.dateRange!.end)).toList());
+        controller.add(groupReportsByTimePeriod(list.where((report) => report.date!.isAfter(params.dateRange!.start) && report.date!.isBefore(params.dateRange!.end)).toList()));
       }
     } else {
-      yield {};
+      controller.add({});
     }
-  }
+  });
+  yield* controller.stream;
 });
 
 Map<TimePeriod, Map<int, List<Report>>> groupReportsByTimePeriod(List<Report> reports) {

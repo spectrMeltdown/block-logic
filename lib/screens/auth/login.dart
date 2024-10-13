@@ -415,6 +415,7 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
 
           if (!mounted) return;
           nav.pushAndRemove(context, const Checkpoint());
+          toggleProcessing(false);
         }
       } else {
         if (!mounted) return;
@@ -423,9 +424,11 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
           error,
           type: NotifType.error,
         );
+        toggleProcessing(false);
       }
+    } else {
+      toggleProcessing(false);
     }
-    toggleProcessing(false);
   }
 
   void toggleProcessing(bool newState) {

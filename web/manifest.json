@@ -1,11 +1,11 @@
 {
-    "name": "block_logic",
-    "short_name": "block_logic",
+    "name": "Block-Logic Admin",
+    "short_name": "Block-Logic Admin",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "Admin panel for the game Block-Logic",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

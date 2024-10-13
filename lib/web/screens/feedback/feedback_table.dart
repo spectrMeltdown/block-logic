@@ -6,6 +6,7 @@ import 'package:block_logic/constants.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_models/feedback.dart';
 import 'package:block_logic/logic/firebase_providers/all_feedback.dart';
+import 'package:block_logic/logic/firebase_providers/selected_feedback.dart';
 import 'package:block_logic/logic/services/dialog.dart';
 import 'package:block_logic/web/components/bl_table.dart';
 import 'package:block_logic/web/components/card_simple.dart';
@@ -67,7 +68,7 @@ class _FeedbackTableState extends ConsumerState<FeedbackTable> {
                     }),
                     rows: List.generate(feedbacksList.length, (i) {
                       return DataRow(
-                          onSelectChanged: (value) {
+                          onSelectChanged: (value) async {
                             dialog.show(context, ViewFeedback(feedbacksList[i].id!));
                           },
                           cells: [

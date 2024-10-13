@@ -8,14 +8,16 @@ part 'generated/all_admin.g.dart';
 @riverpod
 Stream<List<AdminAccount>> allAdmins(AllAdminsRef ref) async* {
   final db = FirebaseDatabase.instance;
-  final admins = db.ref('admins').onValue;
   final result = <AdminAccount>[];
-  await for (final adminList in admins) {
-    if (adminList.snapshot.children.isNotEmpty) {
-      for (final admin in adminList.snapshot.children) {
-        result.add(AdminAccount.fromRTDB(admin));
+  db.ref('admins').onValue.listen((event) {
+    final snapshot = event.snapshot;
+    if (snapshot.exists) {
+      if (snapshot.children.isNotEmpty) {
+        for (final admin in snapshot.children) {
+          result.add(AdminAccount.fromRTDB(admin));
+        }
       }
     }
-    yield result;
-  }
+  });
+  yield result;
 }

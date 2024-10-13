@@ -35,6 +35,7 @@ class ChallengesState extends ConsumerState<Challenges> {
 
   @override
   void initState() {
+    super.initState();
     toast = ref.read(toastProvider.notifier);
     manager = ref.read(challengeManagerProvider.notifier);
     searchController.addListener(() {
@@ -42,7 +43,6 @@ class ChallengesState extends ConsumerState<Challenges> {
         searchQuery = searchController.text.trim();
       });
     });
-    super.initState();
   }
 
   @override
