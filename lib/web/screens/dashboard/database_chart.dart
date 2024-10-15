@@ -90,9 +90,10 @@ class DatabaseChart extends ConsumerWidget {
                   // Create PieChart sections from the percentages with random colors
                   List<PieChartSectionData> pieChartSections = percentages.entries.map((entry) {
                     return PieChartSectionData(
+                      titlePositionPercentageOffset: 1.2,
                       title: entry.key,
                       value: entry.value,
-                      radius: 180,
+                      radius: 160,
                       color: getNextColor(), // Assign a random color
                     );
                   }).toList();

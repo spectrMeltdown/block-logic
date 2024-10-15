@@ -4,50 +4,41 @@ import 'package:block_logic/web/components/sidebar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class SidebarToggle extends ConsumerWidget {
+class SidebarToggle extends StatelessWidget {
   final GlobalKey<ScaffoldState> scaffoldKey;
   const SidebarToggle({required this.scaffoldKey, super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left: 10, top: 25),
-      child: Material(
-        color: Colors.transparent,
-        child: Ink(
-          decoration: BoxDecoration(
-            borderRadius: const BorderRadius.all(Radius.circular(30)),
-            color: Colors.blue.shade700,
-            boxShadow: const [
-              BoxShadow(blurRadius: 20),
-            ],
+        padding: const EdgeInsets.only(left: 10, top: 25),
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            shape: CircleBorder(),
+            minimumSize: const Size(50, 50),
+            padding: EdgeInsets.zero,
+            // backgroundColor: Colors.blue,
+            // foregroundColor: Colors.white,
           ),
-          child: InkWell(
-            borderRadius: const BorderRadius.all(Radius.circular(30)),
-            onTap: () {
-              scaffoldKey.currentState?.openDrawer();
-            },
-            child: Container(
-              padding: const EdgeInsets.all(10),
-              child: const Icon(Icons.menu),
-            ),
+          onPressed: () => scaffoldKey.currentState?.openDrawer(),
+          child: Container(
+            padding: const EdgeInsets.all(10),
+            child: const Icon(Icons.menu),
           ),
-        ),
-      ),
-    );
+        ));
   }
 }
 
-class WebScaffold extends ConsumerStatefulWidget {
+class WebScaffold extends StatefulWidget {
   final Widget child;
   final String location;
   const WebScaffold({required this.child, required this.location, super.key});
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _WebScaffoldState();
+  State<WebScaffold> createState() => _WebScaffoldState();
 }
 
-class _WebScaffoldState extends ConsumerState<WebScaffold> {
+class _WebScaffoldState extends State<WebScaffold> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
   void closeDrawer() {

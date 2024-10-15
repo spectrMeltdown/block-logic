@@ -1,5 +1,7 @@
+import 'package:block_logic/components/async/loading.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/text/title_small.dart';
+import 'package:block_logic/components/util/provider_default.dart';
 import 'package:block_logic/web/components/bl_table.dart';
 import 'package:block_logic/web/components/card_simple.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -87,12 +89,11 @@ class StorageChart extends ConsumerWidget {
                       ],
                     );
                   },
-                  loading: () => CircularProgressIndicator(),
-                  error: (error, stack) => Text('Error: $error'),
+                  loading: blankLoading,
+                  error: blankError,
                 ),
               ],
             ),
-            SizedBox(height: 20), // Space between labels and chart
             SizedBox(
               height: 400,
               width: 500,
@@ -123,7 +124,7 @@ class StorageChart extends ConsumerWidget {
                     ),
                   );
                 },
-                loading: () => Center(child: CircularProgressIndicator()),
+                loading: () => Center(child: BLLoading(message: 'Loading data...')),
                 error: (error, stack) => Center(child: Text('Error: $error')),
               ),
             ),
