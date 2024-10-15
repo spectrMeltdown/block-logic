@@ -25,54 +25,70 @@ class DashboardCard extends StatelessWidget {
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
-    return BLCardSimple(
-        child: Padding(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [Flexible(child: BLText('Total $titleTotal')), Flexible(child: BLSmallTitle(NumberFormat('#,###').format(total)))],
-              ),
-              SizedBox(width: width * .03),
-              Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    borderRadius: const BorderRadius.all(Radius.circular(20)),
-                    color: iconBgColor,
-                  ),
-                  child: icon)
-            ],
-          ),
-          SizedBox(height: height * .02),
-          // Row(
-          //   mainAxisSize: MainAxisSize.min,
-          //   children: [
-          //     downOrup == 'up'
-          //         ? const Icon(
-          //             Icons.trending_up_rounded,
-          //             color: Colors.green,
-          //           )
-          //         : const Icon(
-          //             Icons.trending_down_rounded,
-          //             color: Colors.red,
-          //           ),
-          //     SizedBox(
-          //       width: width / 100,
-          //     ),
-          //     BLRichText([
-          //       TextSpan(text: '$percent% '),
-          //       TextSpan(text: '$downOrup from yesterday')
-          //     ])
-          //   ],
-          // )
-        ],
-      ),
-    ));
+    return ConstrainedBox(
+      constraints: BoxConstraints(minWidth: 300, minHeight: 120, maxWidth: 400),
+      child: BLCardSimple(
+          child: Padding(
+        padding: const EdgeInsets.only(
+          left: 20,
+          right: 20,
+          top: 20,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              // mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Flexible(child: BLText('Total $titleTotal')),
+                    Flexible(
+                      child: BLSmallTitle(
+                        NumberFormat('#,###').format(total),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(width: width * .03),
+                Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.all(Radius.circular(20)),
+                      color: iconBgColor,
+                    ),
+                    child: icon)
+              ],
+            ),
+            // SizedBox(height: height * .02),
+            // Row(
+            //   mainAxisSize: MainAxisSize.min,
+            //   children: [
+            //     downOrup == 'up'
+            //         ? const Icon(
+            //             Icons.trending_up_rounded,
+            //             color: Colors.green,
+            //           )
+            //         : const Icon(
+            //             Icons.trending_down_rounded,
+            //             color: Colors.red,
+            //           ),
+            //     SizedBox(
+            //       width: width / 100,
+            //     ),
+            //     BLRichText([
+            //       TextSpan(text: '$percent% '),
+            //       TextSpan(text: '$downOrup from yesterday')
+            //     ])
+            //   ],
+            // )
+          ],
+        ),
+      )),
+    );
   }
 }

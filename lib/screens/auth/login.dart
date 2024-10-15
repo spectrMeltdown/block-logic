@@ -43,7 +43,7 @@ class Login extends ConsumerStatefulWidget {
 class _LoginState extends ConsumerState<Login> with RouteAware {
   final emailController = kIsWeb && kDebugMode ? TextEditingController(text: 'diamadex@gmail.com') : TextEditingController();
   final phoneController = TextEditingController();
-  final passwordController = kIsWeb && kDebugMode ? TextEditingController(text: 'willow123') : TextEditingController();
+  final passwordController = kIsWeb && kDebugMode ? TextEditingController(text: 'willow1234') : TextEditingController();
   final otpController = TextEditingController();
   final _loginFormKey = GlobalKey<FormState>();
   late final Toast toast;

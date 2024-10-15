@@ -22,68 +22,92 @@ class ViewRoomDialog extends ConsumerStatefulWidget {
 class _SelectedRoomState extends ConsumerState<ViewRoomDialog> {
   bool processing = false;
   final List<String> roomProps = [
-    'Name',
-    'Host',
-    'Max Players',
-    'Challenges',
-    'Status',
+    'Name: ',
+    'Host: ',
+    'Max Players: ',
+    'Challenges: ',
+    'Status: ',
   ];
-  List<String> challengeIDs = [];
+
   @override
   Widget build(BuildContext context) {
     final nav = ref.read(customNavigationProvider.notifier);
     final room = ref.watch(SelectedRoomProvider(widget.id));
-    final challenges = ref.watch(SelectedChallengesProvider(challengeIDs));
     return BLDialog(
+        padding: EdgeInsets.all(30),
         child: Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        const BLSmallTitle('Room Details'),
-        room.when(
-            data: (room) {
-              if (room == null) {
-                return const BLText('Sorry, we couldn\'t find that..');
-              }
-              challengeIDs = room.challengeIDs ?? [];
-              return Padding(
-                padding: const EdgeInsets.all(15),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: List.generate(roomProps.length, (i) => BLText('${roomProps[i]} :')),
-                    ),
-                    const SizedBox(width: 15),
-                    Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const BLSmallTitle('Room Details'),
+            room.when(
+                data: (room) {
+                  if (room == null) {
+                    return const BLText('Sorry, we couldn\'t find that..');
+                  }
+                  final challenges = ref.watch(SelectedChallengesProvider(room.challengeIDs!));
+                  return Padding(
+                    padding: const EdgeInsets.all(15),
+                    child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        BLText(room.name ?? '--'),
-                        BLDisplayName(room.hostID ?? '', AccountType.user),
-                        BLText(room.maxPlayers != null ? room.maxPlayers.toString() : '--'),
-                        challenges.when(
-                            data: (challenges) {
-                              if (challenges.isEmpty) {
-                                return const BLText('Challenges were not found..');
-                              }
-                              return Wrap(
-                                children: List.generate(challenges.length, (i) => BLText(challenges[i].name ?? '--')),
-                              );
-                            },
-                            error: genericError,
-                            loading: genericLoading),
-                        BLText(room.status?.name ?? '--'),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            BLText(roomProps[0]),
+                            BLText(room.name ?? '--'),
+                          ],
+                        ),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            BLText(roomProps[1]),
+                            BLDisplayName(room.hostID ?? '', AccountType.user),
+                          ],
+                        ),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            BLText(roomProps[2]),
+                            BLText(room.maxPlayers != null ? room.maxPlayers.toString() : '--'),
+                          ],
+                        ),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            BLText(roomProps[3]),
+                            challenges.when(
+                                data: (challenges) {
+                                  if (challenges.isEmpty) {
+                                    return const BLText('Challenges were not found..');
+                                  }
+                                  return Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: List.generate(challenges.length, (i) => BLText('${challenges[i].name ?? '--'}${challenges.length > 1 ? ',' : ''}')),
+                                  );
+                                },
+                                error: (error, stackTrace) => BLText('Error loading..'),
+                                loading: () {
+                                  return BLText('Loading ..');
+                                }),
+                          ],
+                        ),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            BLText(roomProps[4]),
+                            BLText(room.status?.name ?? '--'),
+                          ],
+                        ),
                       ],
-                    )
-                  ],
-                ),
-              );
-            },
-            error: genericError,
-            loading: genericLoading),
-        BLAdminButton(type: AdminBtnType.red, child: const BLText('Back'), onPressed: () => nav.pop(context))
-      ],
-    ));
+                    ),
+                  );
+                },
+                error: genericError,
+                loading: genericLoading),
+            BLAdminButton(type: AdminBtnType.red, child: const BLText('Back'), onPressed: () => nav.pop(context))
+          ],
+        ));
   }
 }

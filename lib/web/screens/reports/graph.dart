@@ -1,300 +1,364 @@
-// import 'package:block_logic/components/text/text.dart';
-// import 'package:block_logic/constants.dart';
-// import 'package:block_logic/web/components/card_simple.dart';
-// import 'package:fl_chart/fl_chart.dart';
-// import 'package:flutter/material.dart';
-// import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:block_logic/components/text/text.dart';
+import 'package:block_logic/components/text/title_small.dart';
+import 'package:block_logic/logic/enums.dart';
+import 'package:block_logic/logic/firebase_models/report.dart';
+import 'package:block_logic/logic/firebase_providers/reports.dart';
+import 'package:block_logic/web/components/card_simple.dart';
+import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
-// class AppColors {
-//   static const Color primary = contentColorCyan;
-//   static const Color menuBackground = Color(0xFF090912);
-//   static const Color itemsBackground = Color(0xFF1B2339);
-//   static const Color pageBackground = Color(0xFF282E45);
-//   static const Color mainTextColor1 = Colors.white;
-//   static const Color mainTextColor2 = Colors.white70;
-//   static const Color mainTextColor3 = Colors.white38;
-//   static const Color mainGridLineColor = Colors.white10;
-//   static const Color borderColor = Colors.white54;
-//   static const Color gridLinesColor = Color(0x11FFFFFF);
+class Graph extends StatefulWidget {
+  final TimePeriod period;
+  final Map<ReportDate, List<Report>> reports;
 
-//   static const Color contentColorBlack = Colors.black;
-//   static const Color contentColorWhite = Colors.white;
-//   static const Color contentColorBlue = Color(0xFF2196F3);
-//   static const Color contentColorYellow = Color(0xFFFFC300);
-//   static const Color contentColorOrange = Color(0xFFFF683B);
-//   static const Color contentColorGreen = Color(0xFF3BFF49);
-//   static const Color contentColorPurple = Color(0xFF6E1BFF);
-//   static const Color contentColorPink = Color(0xFFFF3AF2);
-//   static const Color contentColorRed = Color(0xFFE80054);
-//   static const Color contentColorCyan = Color(0xFF50E4FF);
-// }
+  const Graph({required this.period, required this.reports, super.key});
 
-// class Graph extends ConsumerStatefulWidget {
-//   const Graph({super.key});
+  @override
+  State<Graph> createState() => _GraphState();
+}
 
-//   @override
-//   ConsumerState<ConsumerStatefulWidget> createState() => GraphState();
-// }
+class _GraphState extends State<Graph> {
+  late int selectedYear;
+  late int selectedMonth;
+  List<int> years = [];
+  List<int> months = List.generate(13, (i) => i)..remove(0);
+  List<FlSpot> spots = [];
 
-// class GraphState extends ConsumerState<Graph> {
-//   List<Color> gradientColors = [
-//     AppColors.contentColorCyan,
-//     AppColors.contentColorBlue,
-//   ];
+  @override
+  void initState() {
+    super.initState();
+    selectedMonth = months.first;
+  }
 
-//   bool showAvg = false;
+  List<FlSpot> createSpots() {
+    // debugPrint('Creating spots for selectedMonth $selectedMonth, selectedYear $selectedYear');
+    final List<FlSpot> result = [];
 
-//   LineChartData avgData() {
-//     return LineChartData(
-//       lineTouchData: const LineTouchData(enabled: false),
-//       gridData: FlGridData(
-//         show: true,
-//         drawHorizontalLine: true,
-//         verticalInterval: 1,
-//         horizontalInterval: 1,
-//         getDrawingVerticalLine: (value) {
-//           return const FlLine(
-//             color: Color(0xff37434d),
-//             strokeWidth: 1,
-//           );
-//         },
-//         getDrawingHorizontalLine: (value) {
-//           return const FlLine(
-//             color: Color(0xff37434d),
-//             strokeWidth: 1,
-//           );
-//         },
-//       ),
-//       titlesData: FlTitlesData(
-//         show: true,
-//         bottomTitles: AxisTitles(
-//           sideTitles: SideTitles(
-//             showTitles: true,
-//             reservedSize: 30,
-//             getTitlesWidget: bottomTitleWidgets,
-//             interval: 1,
-//           ),
-//         ),
-//         leftTitles: AxisTitles(
-//           sideTitles: SideTitles(
-//             showTitles: true,
-//             getTitlesWidget: leftTitleWidgets,
-//             reservedSize: 42,
-//             interval: 1,
-//           ),
-//         ),
-//         topTitles: const AxisTitles(
-//           sideTitles: SideTitles(showTitles: false),
-//         ),
-//         rightTitles: const AxisTitles(
-//           sideTitles: SideTitles(showTitles: false),
-//         ),
-//       ),
-//       borderData: FlBorderData(
-//         show: true,
-//         border: Border.all(color: const Color(0xff37434d)),
-//       ),
-//       minX: 0,
-//       maxX: 11,
-//       minY: 0,
-//       maxY: 6,
-//       lineBarsData: [
-//         LineChartBarData(
-//           spots: const [
-//             FlSpot(0, 3.44),
-//             FlSpot(2.6, 3.44),
-//             FlSpot(4.9, 3.44),
-//             FlSpot(6.8, 3.44),
-//             FlSpot(8, 3.44),
-//             FlSpot(9.5, 3.44),
-//             FlSpot(11, 3.44),
-//           ],
-//           isCurved: true,
-//           gradient: LinearGradient(
-//             colors: [
-//               ColorTween(begin: gradientColors[0], end: gradientColors[1]).lerp(0.2)!,
-//               ColorTween(begin: gradientColors[0], end: gradientColors[1]).lerp(0.2)!,
-//             ],
-//           ),
-//           barWidth: 5,
-//           isStrokeCapRound: true,
-//           dotData: const FlDotData(
-//             show: false,
-//           ),
-//           belowBarData: BarAreaData(
-//             show: true,
-//             gradient: LinearGradient(
-//               colors: [
-//                 ColorTween(begin: gradientColors[0], end: gradientColors[1]).lerp(0.2)!.withOpacity(0.1),
-//                 ColorTween(begin: gradientColors[0], end: gradientColors[1]).lerp(0.2)!.withOpacity(0.1),
-//               ],
-//             ),
-//           ),
-//         ),
-//       ],
-//     );
-//   }
+    for (final entry in widget.reports.entries) {
+      // skip if the value is empty
+      final count = entry.value.length;
+      if (count.isNaN || count.isInfinite || count <= 0) {
+        continue;
+      }
 
-//   Widget bottomTitleWidgets(double value, TitleMeta meta) {
-//     const style = TextStyle(
-//       fontWeight: FontWeight.bold,
-//       fontSize: 16,
-//     );
-//     Widget text;
-//     switch (value.toInt()) {
-//       case 2:
-//         text = const Text('MAR', style: style);
-//         break;
-//       case 5:
-//         text = const Text('JUN', style: style);
-//         break;
-//       case 8:
-//         text = const Text('SEP', style: style);
-//         break;
-//       default:
-//         text = const Text('', style: style);
-//         break;
-//     }
+      double time = 0;
+      final key = entry.key;
+      switch (widget.period) {
+        case TimePeriod.yearly:
+          time = key.year!.toDouble();
+        case TimePeriod.weekly:
+          if (selectedYear == key.year) {
+            time = key.week!.toDouble();
+          }
+        case TimePeriod.monthly:
+          if (selectedYear == key.year) {
+            time = key.month!.toDouble();
+          }
+        case TimePeriod.daily:
+          if (key.month == selectedMonth && key.year == selectedYear) {
+            time = key.day!.toDouble();
+          }
+      }
+      if (time != 0) {
+        result.add(FlSpot(time.toDouble(), count.toDouble()));
+      }
+    }
 
-//     return SideTitleWidget(
-//       axisSide: meta.axisSide,
-//       child: text,
-//     );
-//   }
+    if (result.isNotEmpty) {
+      switch (widget.period) {
+        case TimePeriod.yearly:
+          if (years.length == 1) {
+            // debugPrint('length was 1');
+            for (int i = selectedYear - 3; i < selectedYear + 4; i++) {
+              if (result.any((j) => j.x == i)) {
+                // debugPrint(i.toString());
+                continue;
+              } else {
+                // debugPrint('adding $i');
+                result.add(FlSpot(i.toDouble(), 0));
+              }
+            }
+          } else {
+            for (int i = selectedYear - 1; i < selectedYear + 2; i++) {
+              if (result.any((j) => j.x == i)) {
+                // debugPrint(i.toString());
+                continue;
+              } else {
+                // debugPrint('adding $i');
+                result.add(FlSpot(i.toDouble(), 0));
+              }
+            }
+          }
+          break;
+        case TimePeriod.monthly:
+          final months = 12;
+          for (int i = 1; i < months + 1; i++) {
+            if (result.any((j) => j.x == i)) {
+              continue;
+            } else {
+              result.add(FlSpot(i.toDouble(), 0));
+            }
+          }
+          break;
+        case TimePeriod.weekly:
+          final weeks = getMaxDate(selectedYear, selectedMonth);
+          for (int i = 1; i < weeks + 1; i++) {
+            if (result.any((j) => j.x == i)) {
+              continue;
+            } else {
+              result.add(FlSpot(i.toDouble(), 0));
+            }
+          }
+          break;
+        case TimePeriod.daily:
+          final days = getMaxDate(selectedYear, selectedMonth);
+          for (int i = 1; i < days + 1; i++) {
+            if (result.any((j) => j.x == i)) {
+              continue;
+            } else {
+              result.add(FlSpot(i.toDouble(), 0));
+            }
+          }
+          break;
+      }
+      // // add trailing and starting zeros if needed
+      // final first = result.first;
+      // final last = result.last;
+      // if (first.x > 1) {
+      //   result.insert(0, FlSpot(first.x - 1, 0));
+      // }
+      // if (last.x < getMaxDate(selectedYear, selectedMonth)) {
+      //   result.add(FlSpot(last.x + 1, 0));
+      // }
+    }
+    // debugPrint(years.toString());
+    result.sort((a, b) => a.x.compareTo(b.x));
+    // debugPrint(result.toString());
+    return result;
+  }
 
-//   @override
-//   Widget build(BuildContext context) {
-//     double width = MediaQuery.of(context).size.width;
-//     double height = MediaQuery.of(context).size.height;
-//     return ConstrainedBox(
-//       constraints: BoxConstraints(maxWidth: width <= desktopMin ? width * 0.8 : width * 0.4, maxHeight: height * 0.5),
-//       child: BLCardSimple(
-//         child: Column(
-//           children: [
-//             const BLText('Graph'),
-//             Expanded(
-//               child: Padding(
-//                 padding: const EdgeInsets.only(
-//                   right: 18,
-//                   left: 12,
-//                   top: 24,
-//                   bottom: 12,
-//                 ),
-//                 child: LineChart(
-//                   showAvg ? avgData() : mainData(),
-//                 ),
-//               ),
-//             )
-//           ],
-//         ),
-//       ),
-//     );
-//   }
+  @override
+  Widget build(BuildContext context) {
+    if (years.isEmpty) {
+      years = createYears();
+      setState(() {
+        selectedYear = years.first;
+      });
+    }
+    if (widget.reports.values.isNotEmpty) {
+      setState(() {
+        spots = createSpots();
+      });
+    }
+    return Padding(
+      padding: const EdgeInsets.only(top: 20),
+      child: BLCardSimple(
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Padding(
+            padding: const EdgeInsets.only(right: 30, top: 30),
+            child: Column(
+              children: [
+                if (widget.period != TimePeriod.yearly)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      BLText('Year :'),
+                      SizedBox(
+                        width: 20,
+                      ),
+                      BLCardSimple(
+                        color: Colors.blue.shade800,
+                        child: DropdownButton<int>(
+                          borderRadius: const BorderRadius.all(Radius.circular(20)),
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          underline: const SizedBox.shrink(),
+                          value: selectedYear,
+                          items: years.map((selectedYear) => DropdownMenuItem<int>(value: selectedYear, child: BLText(selectedYear.toString()))).toList(),
+                          onChanged: (value) {
+                            if (value != null) {
+                              setState(() {
+                                selectedYear = value;
+                              });
+                            }
+                          },
+                        ),
+                      ),
+                      if (widget.period == TimePeriod.daily)
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              width: 40,
+                            ),
+                            BLText('Month :'),
+                            SizedBox(
+                              width: 20,
+                            ),
+                            BLCardSimple(
+                              color: Colors.blue.shade800,
+                              child: DropdownButton<int>(
+                                borderRadius: const BorderRadius.all(Radius.circular(20)),
+                                padding: const EdgeInsets.symmetric(horizontal: 10),
+                                underline: const SizedBox.shrink(),
+                                value: selectedMonth,
+                                items: months.map((selectedMonth) => DropdownMenuItem<int>(value: selectedMonth, child: BLText(DateFormat('MMMM').format(DateTime(selectedMonth, selectedMonth))))).toList(),
+                                onChanged: (value) {
+                                  if (value != null) {
+                                    // debugPrint('Updated selectedMonth');
+                                    setState(() {
+                                      selectedMonth = value;
+                                    });
+                                  }
+                                },
+                              ),
+                            )
+                          ],
+                        ),
+                    ],
+                  ),
+                SizedBox(
+                  height: 20,
+                ),
+                Row(
+                  children: [
+                    Transform.rotate(
+                      angle: -3.14159 / 2,
+                      child: Padding(
+                        padding: const EdgeInsets.only(bottom: 10),
+                        child: BLText('Count'),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 400,
+                      width: 1100,
+                      child: LineChart(
+                        LineChartData(
+                          minY: 0,
+                          minX: years.length == 1 && widget.period == TimePeriod.yearly ? spots.first.x : getMinDate(widget.period).toDouble(),
+                          maxX: years.length == 1 && widget.period == TimePeriod.yearly ? spots.last.x : getMaxDate(selectedYear, selectedMonth).toDouble(),
+                          lineBarsData: [
+                            LineChartBarData(
+                              spots: spots,
+                              isCurved: true,
+                              preventCurveOverShooting: true,
+                              dotData: const FlDotData(show: true),
+                            ),
+                          ],
+                          gridData: FlGridData(
+                            show: true, // To display the grid
+                            horizontalInterval: 1, // Spacing for horizontal grid lines
+                            verticalInterval: 1, // Spacing for vertical grid lines
+                          ),
+                          titlesData: FlTitlesData(
+                            topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                            rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                            bottomTitles: AxisTitles(
+                              sideTitles: SideTitles(
+                                  showTitles: true,
+                                  interval: 1,
+                                  getTitlesWidget: (value, meta) {
+                                    if (widget.period == TimePeriod.monthly) {
+                                      return BLText(DateFormat('MMM').format(DateTime(selectedYear, value.toInt())));
+                                    }
+                                    return BLText(value.toInt().toString());
+                                  }),
+                            ),
+                            leftTitles: AxisTitles(
+                              sideTitles: SideTitles(
+                                  minIncluded: false,
+                                  showTitles: true,
+                                  interval: 1,
+                                  getTitlesWidget: (value, meta) {
+                                    return BLText(value.toInt().toString()); // Display report count as an integer
+                                  }),
+                            ),
+                          ),
+                          borderData: FlBorderData(show: false),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: BLText('${widget.period.formalName} (in numbers)'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 
-//   Widget leftTitleWidgets(double value, TitleMeta meta) {
-//     const style = TextStyle(
-//       fontWeight: FontWeight.bold,
-//       fontSize: 15,
-//     );
-//     String text;
-//     switch (value.toInt()) {
-//       case 1:
-//         text = '10K';
-//         break;
-//       case 3:
-//         text = '30k';
-//         break;
-//       case 5:
-//         text = '50k';
-//         break;
-//       default:
-//         return Container();
-//     }
+  int getMinDate(TimePeriod period) {
+    switch (period) {
+      case TimePeriod.yearly:
+        return years.first;
+      case TimePeriod.monthly:
+      case TimePeriod.weekly:
+      case TimePeriod.daily:
+        return 1;
+    }
+  }
 
-//     return Text(text, style: style, textAlign: TextAlign.left);
-//   }
+  int getMaxDate(int selectedYear, int selectedMonth) {
+    switch (widget.period) {
+      case TimePeriod.yearly:
+        return years.last;
+      case TimePeriod.monthly:
+        return 12;
+      case TimePeriod.weekly:
+        return numberOfWeeksInYear(selectedYear);
+      case TimePeriod.daily:
+        return maxDayOfMonth(selectedYear, selectedMonth);
+    }
+  }
 
-//   LineChartData mainData() {
-//     return LineChartData(
-//       gridData: FlGridData(
-//         show: true,
-//         drawVerticalLine: true,
-//         horizontalInterval: 1,
-//         verticalInterval: 1,
-//         getDrawingHorizontalLine: (value) {
-//           return const FlLine(
-//             color: AppColors.mainGridLineColor,
-//             strokeWidth: 1,
-//           );
-//         },
-//         getDrawingVerticalLine: (value) {
-//           return const FlLine(
-//             color: AppColors.mainGridLineColor,
-//             strokeWidth: 1,
-//           );
-//         },
-//       ),
-//       titlesData: FlTitlesData(
-//         show: true,
-//         rightTitles: const AxisTitles(
-//           sideTitles: SideTitles(showTitles: false),
-//         ),
-//         topTitles: const AxisTitles(
-//           sideTitles: SideTitles(showTitles: false),
-//         ),
-//         bottomTitles: AxisTitles(
-//           sideTitles: SideTitles(
-//             showTitles: true,
-//             reservedSize: 30,
-//             interval: 1,
-//             getTitlesWidget: bottomTitleWidgets,
-//           ),
-//         ),
-//         leftTitles: AxisTitles(
-//           sideTitles: SideTitles(
-//             showTitles: true,
-//             interval: 1,
-//             getTitlesWidget: leftTitleWidgets,
-//             reservedSize: 42,
-//           ),
-//         ),
-//       ),
-//       borderData: FlBorderData(
-//         show: true,
-//         border: Border.all(color: const Color(0xff37434d)),
-//       ),
-//       minX: 0,
-//       maxX: 11,
-//       minY: 0,
-//       maxY: 6,
-//       lineBarsData: [
-//         LineChartBarData(
-//           spots: const [
-//             FlSpot(0, 3),
-//             FlSpot(2.6, 2),
-//             FlSpot(4.9, 5),
-//             FlSpot(6.8, 3.1),
-//             FlSpot(8, 4),
-//             FlSpot(9.5, 3),
-//             FlSpot(11, 4),
-//           ],
-//           isCurved: true,
-//           gradient: LinearGradient(
-//             colors: gradientColors,
-//           ),
-//           barWidth: 5,
-//           isStrokeCapRound: true,
-//           dotData: const FlDotData(
-//             show: false,
-//           ),
-//           belowBarData: BarAreaData(
-//             show: true,
-//             gradient: LinearGradient(
-//               colors: gradientColors.map((color) => color.withOpacity(0.3)).toList(),
-//             ),
-//           ),
-//         ),
-//       ],
-//     );
-//   }
-// }
+  int maxDayOfMonth(int selectedYear, int selectedMonth) {
+    if (selectedMonth < 1 || selectedMonth > 12) {
+      throw ArgumentError('Month must be between 1 and 12');
+    }
+    DateTime firstDayNextMonth = DateTime(selectedYear, selectedMonth + 1, 1);
+    DateTime lastDayOfCurrentMonth = firstDayNextMonth.subtract(Duration(days: 1));
+    return lastDayOfCurrentMonth.day;
+  }
+
+  int numberOfWeeksInYear(int selectedYear) {
+    bool isLeapYear = (selectedYear % 4 == 0 && selectedYear % 100 != 0) || (selectedYear % 400 == 0);
+    int totalDays = isLeapYear ? 366 : 365;
+    return (totalDays / 7).ceil(); // round to whole num
+  }
+
+  List<int> createYears() {
+    List<int> years = [];
+    for (final key in widget.reports.keys) {
+      if (key.year != null && !years.contains(key.year!)) {
+        years.add(key.year!);
+      }
+    }
+    return years;
+  }
+}
+
+extension CapitalizedName on TimePeriod {
+  String get capitalizedName {
+    String name = this.name;
+    return name[0].toUpperCase() + name.substring(1);
+  }
+
+  String get formalName {
+    switch (this) {
+      case TimePeriod.yearly:
+        return 'Year';
+      case TimePeriod.monthly:
+        return 'Month';
+      case TimePeriod.weekly:
+        return 'Week';
+      case TimePeriod.daily:
+        return 'Day';
+    }
+  }
+}

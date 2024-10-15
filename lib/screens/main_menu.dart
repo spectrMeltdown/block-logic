@@ -226,7 +226,11 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> with WidgetsBin
                     children: [
                       GestureDetector(
                           onTap: () async {
-                            await showDialog(context: context, builder: (context) => const FeedbackDialog());
+                            await showDialog(
+                              context: context,
+                              barrierDismissible: false,
+                              builder: (context) => const FeedbackDialog(),
+                            );
                           },
                           child: Row(
                             children: [

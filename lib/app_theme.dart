@@ -29,6 +29,9 @@ class AppTheme {
   ThemeData theme() => ThemeData(
       fontFamily: 'Play',
       textTheme: textTheme(),
+      progressIndicatorTheme: ProgressIndicatorThemeData(
+        color: Colors.lightBlue.shade100, // Set your custom color here
+      ),
       colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo.shade400),
       scaffoldBackgroundColor: Colors.transparent,
       tabBarTheme: const TabBarTheme(dividerColor: Colors.transparent),

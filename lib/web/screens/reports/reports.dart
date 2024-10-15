@@ -14,11 +14,10 @@ import 'package:block_logic/logic/testing.dart';
 import 'package:block_logic/web/components/button.dart';
 import 'package:block_logic/web/components/card_simple.dart';
 import 'package:block_logic/web/components/header.dart';
+import 'package:block_logic/web/screens/reports/graph.dart';
+import 'package:block_logic/web/screens/reports/report_type_selector.dart';
 import 'package:firebase_database/firebase_database.dart';
-
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/foundation.dart';
-// import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -45,49 +44,24 @@ class _ReportsState extends ConsumerState<Reports> {
     'Challenges Played': ReportType.challengesPlayed,
     'Rooms Played': ReportType.roomsPlayed,
   };
-
   late final Map<ReportType, Stream> streams;
-
   ReportType selectedType = ReportType.basicUsers;
-  // DateTime? from;
-  // DateTime? to;
-  DateTimeRange? dateRange;
+  DateTimeRange? dateRange = kDebugMode ? DateTimeRange(start: DateTime(2024, 9, 25), end: DateTime.now()) : null;
   int total = 0;
   Map<TimePeriod, int> printData = {};
   bool reportsEmpty = false;
   bool processing = false;
   late final ReportsManager reportsManager;
-
+  late final Toast toast;
   final pw.Document pdf = pw.Document();
 
-  late final Toast toast;
-  // Future<void> selectStartDate(BuildContext context, DateTime? selectedDate) async {
-  //   final DateTime? picked = await showDatePicker(
-  //     context: context,
-  //     initialDate: selectedDate ?? DateTime.now(),
-  //     firstDate: DateTime(2024, 9, 20),
-  //     lastDate: to ?? DateTime.now(),
-  //   );
-  //   if (picked != null && picked != selectedDate) {
-  //     setState(() {
-  //       selectedDate = picked;
-  //     });
-  //   }
-  // }
-
-  // Future<void> selectEndDate(BuildContext context, DateTime? selectedDate) async {
-  //   final DateTime? picked = await showDatePicker(
-  //     context: context,
-  //     initialDate: selectedDate ?? DateTime.now(),
-  //     firstDate: from ?? DateTime(2024, 9, 20),
-  //     lastDate: DateTime.now(),
-  //   );
-  //   if (picked != null && picked != selectedDate) {
-  //     setState(() {
-  //       selectedDate = picked;
-  //     });
-  //   }
-  // }
+  @override
+  void initState() {
+    reportsManager = ref.read(reportsManagerProvider.notifier);
+    toast = ref.read(toastProvider.notifier);
+    streams = {for (final type in ReportType.values) type: db.ref('reports').orderByChild('type').equalTo(type.name).onValue};
+    super.initState();
+  }
 
   Future<Uint8List> generatePDFBytes() async {
     pdf.addPage(
@@ -166,7 +140,7 @@ class _ReportsState extends ConsumerState<Reports> {
         final newCategory = await ref.read(reportsProvider(ReportParams(
           dateRange: dateRange,
           stream: streams.entries.firstWhere((e) => e.key == entry.key).value,
-        )).future) as Map<TimePeriod, Map<int, List<Report>>>;
+        )).future) as Map<TimePeriod, Map<ReportDate, List<Report>>>;
 
         //construct count of the new category
         final Map<TimePeriod, int> newCategoryCount = {for (final category in newCategory.keys) category: 0};
@@ -210,7 +184,7 @@ class _ReportsState extends ConsumerState<Reports> {
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
               child: Column(
                 children: [
-                  if (kDebugMode)
+                  if (kDebugMode && !kIsWeb)
                     SpacedRow(
                       spacing: 10,
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -256,7 +230,7 @@ class _ReportsState extends ConsumerState<Reports> {
                       ],
                     ),
                   ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 600),
+                    constraints: BoxConstraints(maxWidth: width * 0.4),
                     child: BLCardSimple(
                       child: Padding(
                         padding: const EdgeInsets.all(20),
@@ -264,7 +238,6 @@ class _ReportsState extends ConsumerState<Reports> {
                           // crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Row(
-                              // mainAxisSize: MainAxisSize.min,
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 const BLSmallTitle('Reports'),
@@ -323,30 +296,52 @@ class _ReportsState extends ConsumerState<Reports> {
                                 const SizedBox(
                                   width: 20,
                                 ),
-                                Flexible(
-                                  child: GestureDetector(
-                                    onTap: () async {
-                                      final dateRange = await showDateRangePicker(
-                                        context: context,
-                                        firstDate: DateTime(2024, 9, 20),
-                                        lastDate: DateTime.now(),
-                                        initialDateRange: this.dateRange,
-                                      );
+                                GestureDetector(
+                                  onTap: () async {
+                                    final dateRange = await showDateRangePicker(
+                                      context: context,
+                                      firstDate: DateTime(2024, 9, 20),
+                                      lastDate: DateTime.now(),
+                                      initialDateRange: this.dateRange,
+                                      // initialEntryMode: DatePickerEntryMode.inputOnly,
+                                      builder: (context, child) {
+                                        return Theme(
+                                          data: ThemeData.dark().copyWith(
+                                            colorScheme: ColorScheme.dark(
+                                              primary: Colors.blue, // Header background color
+                                              onPrimary: Colors.blueGrey.shade900, // Header text color
+                                              surface: Colors.blueGrey.shade900, // Background color of the picker
+                                              onSurface: Colors.white, // Text color
+                                            ),
+                                            datePickerTheme: DatePickerThemeData(
+                                              inputDecorationTheme: InputDecorationTheme(),
+                                            ),
+                                            textButtonTheme: TextButtonThemeData(
+                                              style: TextButton.styleFrom(
+                                                foregroundColor: Colors.red, // Button text color
+                                              ),
+                                            ),
+                                          ),
+                                          child: child!,
+                                        );
+                                      },
+                                    );
+                                    if (dateRange != null) {
                                       setState(() {
                                         this.dateRange = dateRange;
                                       });
-                                    },
-                                    child: ConstrainedBox(
-                                      constraints: const BoxConstraints(maxWidth: 200, minWidth: 200, maxHeight: 80),
-                                      child: BLCardSimple(
-                                        color: Colors.green.shade800,
-                                        child: Center(
-                                          child: BLText(
-                                            dateRange == null ? 'Select\ndate range' : 'From: ${DateFormat('dd / MM / y').format(dateRange!.start)}\nTo: ${DateFormat('dd / MM / y').format(dateRange!.end)}',
-                                            size: 18,
-                                            color: Colors.white,
-                                            alignCenter: true,
-                                          ),
+                                    }
+                                  },
+                                  child: ConstrainedBox(
+                                    constraints: const BoxConstraints(maxWidth: 200, minWidth: 200, maxHeight: 80),
+                                    child: BLCardSimple(
+                                      color: Colors.green.shade800,
+                                      child: Center(
+                                        child: BLText(
+                                          dateRange == null ? 'Select\ndate range' : 'From: ${DateFormat('dd / MM / y').format(dateRange!.start)}\nTo: ${DateFormat('dd / MM / y').format(dateRange!.end)}',
+                                          size: 18,
+                                          color: Colors.white,
+                                          alignCenter: true,
                                         ),
                                       ),
                                     ),
@@ -354,90 +349,152 @@ class _ReportsState extends ConsumerState<Reports> {
                                 )
                               ],
                             ),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            reports.when(
-                                data: (reports) {
-                                  if ((reports is Map && reports.isEmpty) || (reports is List && reports.isEmpty)) {
-                                    setState(() {
-                                      reportsEmpty = true;
-                                    });
-                                    return const BLText(
-                                      'No reports of this type found.',
-                                      alignCenter: true,
-                                    );
-                                  }
-                                  int total = 0;
-                                  String type = '';
-                                  List<MapEntry<TimePeriod, Map<int, List<Report>>>> entries = [];
-                                  if (reports is Map) {
-                                    final mapData = reports as Map<TimePeriod, Map<int, List<Report>>>;
-                                    mapData.forEach((k, v) {
-                                      debugPrint('$k: $v');
-                                    });
-                                    entries = mapData.entries.toList();
-                                    type = reportOptions.entries.firstWhere((i) => i.value == selectedType).key;
-                                    // final keys = reports.keys.toList();
-                                    printData = {for (var entry in entries) entry.key: entry.value.length};
-                                    for (final entry in entries) {
-                                      total += entry.value.length;
-                                    }
-                                  } else {
-                                    final listData = reports as List<Report>;
-                                    type = reportOptions.entries.firstWhere((i) => i.value == selectedType).key;
-                                    total += listData.length;
-                                  }
-                                  setState(() {
-                                    this.total = total;
-                                    reportsEmpty = false;
-                                  });
-                                  return Column(
-                                    // mainAxisSize: MainAxisSize.min,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      const SizedBox(
-                                        height: 20,
-                                      ),
-                                      Row(
-                                        // mainAxisSize: MainAxisSize.min,
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: [
-                                          BLText(
-                                            'Total ${reportOptions.entries.firstWhere((i) => i.value == selectedType).key}: ',
-                                            size: 20,
-                                            bold: true,
-                                          ),
-                                          BLText(
-                                            total.toString(),
-                                            size: 20,
-                                            bold: true,
-                                          ),
-                                        ],
-                                      ),
-                                      // if (from != null || to != null)
-                                      if (dateRange != null) LineChartWidget(reports as Map<TimePeriod, Map<int, List<Report>>>),
-                                      if (dateRange != null)
-                                        ...List.generate(entries.length, (i) {
-                                          return Row(
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            // mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              BLText('Total $type ${entries[i].key.name}: '),
-                                              BLText(entries[i].value.length.toString()),
-                                            ],
-                                          );
-                                        })
-                                    ],
-                                  );
-                                },
-                                error: genericError,
-                                loading: genericLoading),
                           ],
                         ),
                       ),
                     ),
-                  )
+                  ),
+                  const SizedBox(height: 20),
+                  reports.when(
+                      data: (reports) {
+                        if ((reports is Map && reports.isEmpty) || (reports is List && reports.isEmpty)) {
+                          setState(() {
+                            reportsEmpty = true;
+                          });
+                          return const BLText(
+                            'No reports of this type found.',
+                            alignCenter: true,
+                          );
+                        }
+                        int count = 0;
+                        // returns map if dateRange selected
+                        if (reports is Map) {
+                          debugPrint('Reports is map');
+                          final mapData = reports as Map<TimePeriod, Map<ReportDate, List<Report>>>;
+                          final entries = mapData.entries.toList();
+                          printData = {for (var entry in entries) entry.key: entry.value.length};
+                          for (final value in mapData[TimePeriod.yearly]!.values) {
+                            count += value.length;
+                          }
+                        }
+                        // if no date range selected, list is given here
+                        else {
+                          final listData = reports as List<Report>;
+                          count = listData.length;
+                        }
+                        setState(() {
+                          total = count;
+                          reportsEmpty = false;
+                        });
+                        return Column(
+                          // mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            BLSmallTitle('Overall Total: $total'),
+                            Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 70),
+                              child: Divider(
+                                thickness: 2,
+                                color: Colors.grey,
+                              ),
+                            ),
+                            SizedBox(
+                              height: 30,
+                            ),
+                            // if (from != null || to != null)
+                            if (dateRange != null && reports is Map)
+                              Builder(builder: (context) {
+                                final groupReports = reports as Map<TimePeriod, Map<ReportDate, List<Report>>>;
+                                final yearCount = groupReports[TimePeriod.yearly]!.length;
+                                final monthCount = groupReports[TimePeriod.monthly]!.length;
+                                final weeklyCount = groupReports[TimePeriod.weekly]!.length;
+                                final dailyCount = groupReports[TimePeriod.daily]!.length;
+                                return Column(
+                                  children: [
+                                    BLText(
+                                      TimePeriod.yearly.capitalizedName,
+                                      size: 23,
+                                    ),
+                                    if (yearCount > 0)
+                                      SingleChildScrollView(
+                                        scrollDirection: Axis.horizontal,
+                                        child: IntrinsicWidth(
+                                          child: Graph(
+                                            // key: ValueKey(groupReports[TimePeriod.yearly]!),
+                                            period: TimePeriod.yearly,
+                                            reports: groupReports[TimePeriod.yearly]!,
+                                          ),
+                                        ),
+                                      ),
+                                    if (yearCount <= 0) BLText('No reports available.'),
+                                    SizedBox(width: 20),
+                                    BLText(
+                                      TimePeriod.monthly.capitalizedName,
+                                      size: 23,
+                                    ),
+                                    if (monthCount > 0)
+                                      SingleChildScrollView(
+                                        scrollDirection: Axis.horizontal,
+                                        child: Graph(
+                                          // key: ValueKey(groupReports[TimePeriod.monthly]!),
+                                          period: TimePeriod.monthly,
+                                          reports: groupReports[TimePeriod.monthly]!,
+                                        ),
+                                      ),
+                                    if (monthCount <= 0) BLText('No reports available.'),
+                                    SizedBox(width: 20),
+                                    BLText(
+                                      TimePeriod.weekly.capitalizedName,
+                                      size: 23,
+                                    ),
+                                    if (weeklyCount > 0)
+                                      SingleChildScrollView(
+                                        scrollDirection: Axis.horizontal,
+                                        child: IntrinsicWidth(
+                                          child: Graph(
+                                            // key: ValueKey(groupReports[TimePeriod.weekly]!),
+                                            period: TimePeriod.weekly,
+                                            reports: groupReports[TimePeriod.weekly]!,
+                                          ),
+                                        ),
+                                      ),
+                                    if (weeklyCount <= 0) BLText('No reports available.'),
+                                    SizedBox(width: 20),
+                                    BLText(
+                                      TimePeriod.daily.capitalizedName,
+                                      size: 23,
+                                    ),
+                                    if (dailyCount > 0)
+                                      SingleChildScrollView(
+                                        scrollDirection: Axis.horizontal,
+                                        child: IntrinsicWidth(
+                                          child: Graph(
+                                            // key: ValueKey(groupReports[TimePeriod.daily]!),
+                                            period: TimePeriod.daily,
+                                            reports: groupReports[TimePeriod.daily]!,
+                                          ),
+                                        ),
+                                      ),
+                                    if (dailyCount <= 0) BLText('No reports available.'),
+                                  ],
+                                );
+                              }),
+                            // if (dateRange != null)
+                            //   ...List.generate(entries.length, (i) {
+                            //     return Row(
+                            //       mainAxisAlignment: MainAxisAlignment.center,
+                            //       // mainAxisSize: MainAxisSize.min,
+                            //       children: [
+                            //         BLText('Total $type ${entries[i].key.name}: '),
+                            //         BLText(entries[i].value.length.toString()),
+                            //       ],
+                            //     );
+                            //   })
+                          ],
+                        );
+                      },
+                      error: genericError,
+                      loading: genericLoading),
                 ],
               ),
             )
@@ -451,252 +508,6 @@ class _ReportsState extends ConsumerState<Reports> {
             ),
           )
       ],
-    );
-  }
-
-  @override
-  void initState() {
-    reportsManager = ref.read(reportsManagerProvider.notifier);
-    toast = ref.read(toastProvider.notifier);
-    streams = {for (final type in ReportType.values) type: db.ref('reports').orderByChild('type').equalTo(type.name).onValue};
-    super.initState();
-  }
-
-  Widget leftTitleWidgets(
-    double value,
-    // TitleMeta meta,
-  ) {
-    const style = TextStyle(
-      fontWeight: FontWeight.bold,
-      fontSize: 15,
-    );
-    String text;
-    switch (value.toInt()) {
-      case 1:
-        text = '10K';
-        break;
-      case 3:
-        text = '30k';
-        break;
-      case 5:
-        text = '50k';
-        break;
-      default:
-        return Container();
-    }
-
-    return Text(text, style: style, textAlign: TextAlign.left);
-  }
-}
-
-class ReportTypeSelector extends ConsumerStatefulWidget {
-  final ReportType initial;
-  final Map<String, ReportType> reportOptions;
-  const ReportTypeSelector({required this.initial, required this.reportOptions, super.key});
-
-  @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _ReportTypeSelectorState();
-}
-
-class _ReportTypeSelectorState extends ConsumerState<ReportTypeSelector> {
-  late final Toast toast;
-  late final CustomNavigation nav;
-  late final Map<ReportType, bool> selectedReports;
-  bool hasSelection = true;
-
-  @override
-  void initState() {
-    nav = ref.read(customNavigationProvider.notifier);
-    toast = ref.read(toastProvider.notifier);
-    selectedReports = {for (final report in ReportType.values) report: false};
-    selectedReports[widget.initial] = true;
-    super.initState();
-  }
-
-  void updateReportType(ReportType type, bool add) {
-    if (add) {
-      selectedReports[type] = true;
-    } else {
-      selectedReports[type] = false;
-    }
-    for (final entry in selectedReports.entries) {
-      debugPrint(entry.toString());
-    }
-    debugPrint('');
-    if (selectedReports.values.any((value) => value == true)) {
-      hasSelection = true;
-    } else {
-      hasSelection = false;
-    }
-    setState(() {});
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return BLDialog(
-        child: ConstrainedBox(
-      constraints: const BoxConstraints(maxWidth: 600),
-      child: ListView(
-        shrinkWrap: true,
-        children: [
-          const BLSmallTitle('Select reports to print:'),
-          const SizedBox(height: 15),
-          ...List.generate(selectedReports.length, (i) {
-            final reportType = widget.reportOptions.values.toList()[i];
-            final name = widget.reportOptions.keys.toList()[i];
-            return ReportTypeSelectorItem(
-              type: reportType,
-              name: name,
-              initial: selectedReports[reportType]!,
-              updateReportType: updateReportType,
-            );
-          }),
-          const SizedBox(height: 15),
-          BLAdminButton(
-            type: hasSelection ? AdminBtnType.green : AdminBtnType.grey,
-            child: const BLText('Confirm & Download'),
-            onPressed: () {
-              if (!hasSelection) {
-                toast.showToast(context, 'Select a report type.', type: NotifType.error);
-              } else {
-                nav.pop(context, selectedReports);
-              }
-            },
-          ),
-          BLAdminButton(
-            type: AdminBtnType.red,
-            child: const BLText('Cancel'),
-            onPressed: () {
-              nav.pop(context);
-            },
-          )
-        ],
-      ),
-    ));
-  }
-}
-
-class ReportTypeSelectorItem extends ConsumerStatefulWidget {
-  final ReportType type;
-  final String name;
-  final bool initial;
-  final void Function(ReportType, bool) updateReportType;
-  const ReportTypeSelectorItem({
-    required this.type,
-    required this.updateReportType,
-    required this.name,
-    required this.initial,
-    super.key,
-  });
-
-  @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _ReportTypeSelectorItemState();
-}
-
-class _ReportTypeSelectorItemState extends ConsumerState<ReportTypeSelectorItem> {
-  late bool selected;
-
-  @override
-  void initState() {
-    selected = widget.initial;
-    super.initState();
-  }
-
-  void toggleSelected() {
-    setState(() {
-      selected = !selected;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: CheckboxListTile(
-        value: selected,
-        selected: selected,
-        onChanged: (value) {
-          if (value != null) {
-            if (value) {
-              widget.updateReportType(widget.type, false);
-            } else {
-              widget.updateReportType(widget.type, true);
-            }
-            toggleSelected();
-          }
-        },
-        title: BLText(widget.name),
-      ),
-    );
-  }
-}
-
-class LineChartWidget extends StatelessWidget {
-  final Map<TimePeriod, Map<int, List<Report>>> groupedReports;
-
-  const LineChartWidget(this.groupedReports, {super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    // Extract the yearly data
-    final yearlyReports = groupedReports[TimePeriod.yearly] ?? {};
-
-    // Prepare data for the LineChart
-    List<FlSpot> spots = yearlyReports.entries
-        .map((entry) {
-          final year = entry.key;
-          final reportCount = entry.value.length;
-
-          // Safeguard against invalid values (like NaN or Infinity)
-          if (reportCount.isNaN || reportCount.isInfinite || reportCount <= 0) {
-            return null; // Skip invalid data
-          }
-
-          return FlSpot(year.toDouble(), reportCount.toDouble());
-        })
-        .whereType<FlSpot>()
-        .toList(); // Filter out nulls
-
-    return SizedBox(
-      width: 500,
-      height: 500,
-      child: LineChart(
-        LineChartData(
-          lineBarsData: [
-            LineChartBarData(
-              spots: spots, // Data points for the line chart
-              isCurved: true, // Optional: make the line curved
-              dotData: const FlDotData(show: true), // Show dots on the data points
-            ),
-          ],
-          titlesData: FlTitlesData(
-            bottomTitles: AxisTitles(
-              sideTitles: SideTitles(
-                  showTitles: true,
-                  getTitlesWidget: (value, _) {
-                    // Safeguard against invalid values on x-axis (year)
-                    if (value.isNaN || value.isInfinite) {
-                      return const Text(''); // Avoid displaying invalid values
-                    }
-                    return Text(value.toInt().toString()); // Display year on the x-axis
-                  }),
-            ),
-            leftTitles: AxisTitles(
-              sideTitles: SideTitles(
-                  showTitles: true,
-                  getTitlesWidget: (value, _) {
-                    // Ensure Y-axis shows integers only
-                    if (value.isNaN || value.isInfinite) {
-                      return const Text(''); // Avoid displaying invalid values
-                    }
-                    return Text(value.toInt().toString()); // Display report count as an integer
-                  }),
-            ),
-          ),
-          borderData: FlBorderData(show: false),
-          minY: 0, // Prevent negative values
-        ),
-      ),
     );
   }
 }

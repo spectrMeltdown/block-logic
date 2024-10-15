@@ -8,6 +8,8 @@ import 'package:block_logic/web/components/bl_table.dart';
 import 'package:block_logic/web/components/card_simple.dart';
 import 'package:block_logic/web/components/header.dart';
 import 'package:block_logic/web/screens/dashboard/dashboard_card.dart';
+import 'package:block_logic/web/screens/dashboard/database_chart.dart';
+import 'package:block_logic/web/screens/dashboard/storage_chart.dart';
 import 'package:firebase_database/firebase_database.dart';
 
 import 'package:flutter/material.dart';
@@ -106,56 +108,9 @@ class _DashboardState extends ConsumerState<Dashboard> {
                 ],
               ),
             ),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: width / 10),
-              child: BLCardSimple(
-                child: Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    children: [
-                      const Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          BLSmallTitle('Notifications'),
-                          // DropdownButton<String>(
-                          //   padding: const EdgeInsets.symmetric(horizontal: 10),
-                          //   underline: const SizedBox.shrink(),
-                          //   value: selectedMonth,
-                          //   items: months.map((month) {
-                          //     return DropdownMenuItem<String>(
-                          //       value: month,
-                          //       child: Text(month),
-                          //     );
-                          //   }).toList(),
-                          //   onChanged: (newValue) {
-                          //     setState(() {
-                          //       selectedMonth = newValue;
-                          //     });
-                          //   },
-                          //   hint: const BLText('Select a month'),
-                          // ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: height / 20,
-                      ),
-                      BLTable(columns: const [
-                        DataColumn(label: Text('Event')),
-                        DataColumn(label: Text('Description')),
-                        DataColumn(label: Text('Date & Time')),
-                        DataColumn(label: Text('Actions')),
-                      ], rows: [
-                        DataRow(cells: [
-                          const DataCell(Text('Admin approval')),
-                          const DataCell(Text('john doe requested approval')),
-                          DataCell(Text(DateFormat('dd/MM/yyyy - hh:mm a').format(DateTime.now()))),
-                          const DataCell(Text('Data 2')),
-                        ]),
-                      ])
-                    ],
-                  ),
-                ),
-              ),
+            Wrap(
+              spacing: 15,
+              children: [IntrinsicWidth(child: DatabaseChart()), IntrinsicWidth(child: StorageChart())],
             ),
             SizedBox(
               height: height / 30,

@@ -79,7 +79,11 @@ class _AdminSettingsState extends ConsumerState<AdminSettings> {
                             onPressed: () {
                               updateProfilePic();
                             },
-                            child: const BLText('Change', underlined: true)),
+                            child: BLText(
+                              'Change',
+                              underlined: true,
+                              color: Colors.lightBlue,
+                            )),
                         const SizedBox(height: 50),
                         account.when(
                             data: (account) {
