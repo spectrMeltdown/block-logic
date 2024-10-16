@@ -6,9 +6,6 @@ import 'package:equatable/equatable.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-// import 'package:riverpod_annotation/riverpod_annotation.dart';
-
-// part 'generated/reports.g.dart';
 
 class ReportDate extends Equatable {
   final int? year;
@@ -18,116 +15,46 @@ class ReportDate extends Equatable {
 
   const ReportDate({this.year, this.month, this.week, this.day});
   @override
-  // List<Object?> get props => [to, from, type];
   List<Object?> get props => [year, month, week, day];
 }
 
 class ReportParams extends Equatable {
-  // final DateTime? to;
-  // final DateTime? from;
   final Query stream;
   final DateTimeRange? dateRange;
 
   const ReportParams({
-    // required this.to,
-    // required this.from,
     required this.dateRange,
     required this.stream,
   });
 
   @override
-  // List<Object?> get props => [to, from, type];
   List<Object?> get props => [dateRange, stream];
 }
 
-// class ReportProviderChange extends FamilyNotifier<StreamSubscription, StreamSubscription> {
-//   @override
-//   StreamSubscription build(StreamSubscription arg) => arg;
-// }
-
-// final reportState = NotifierProvider.family.autoDispose<ReportProviderChange, StreamSubscription, StreamSubscription>(() => ReportProviderChange());
-
-// class StreamAndCallBack {
-//   final Stream stream;
-//   final void Function(dynamic)? callback;
-
-//   StreamAndCallBack({required this.stream, required this.callback});
-// }
-
-// final reportState = Provider.family.autoDispose<StreamSubscription, StreamAndCallBack>((ref, sAndC) {
-//   return sAndC.stream.listen(sAndC.callback);
-// });
-
 final reportsProvider = StreamProvider.family.autoDispose<Object, ReportParams>((ref, params) async* {
-  // Print updated params when provider is first built or params change
   debugPrint('Updated params to ${params.dateRange.toString()}');
-
-  // Listen to the Firebase stream using onValue
   yield* params.stream.onValue.map((event) {
-    final snapshot = event.snapshot; // Get the snapshot from the event
+    final snapshot = event.snapshot;
     final List<Report> list = [];
-    debugPrint('Updated params inside the stream listen');
 
-    // Process the snapshot children if available
+    debugPrint('Updated params inside the stream listen');
     if (snapshot.children.isNotEmpty) {
       for (final report in snapshot.children) {
         list.add(Report.fromRTDB(report));
       }
 
-      // Determine which list to return based on dateRange
       if (params.dateRange == null) {
-        return list; // Return the complete list
+        return list;
       } else {
         return groupReportsByTimePeriod(
           list.where((report) => report.date!.isAfter(params.dateRange!.start) && report.date!.isBefore(params.dateRange!.end)).toList(),
         );
       }
     } else {
-      return {}; // Return an empty map if no children
+      return {};
     }
   });
 });
-
-// final reportsProvider = StreamProvider.family.autoDispose<Object, ReportParams>((ref, params) async* {
-//   final controller = StreamController<Object>();
-
-//   // Print updated params when provider is first built or params change
-//   debugPrint('Updated params to ${params.dateRange.toString()}');
-
-//   // Create a stream subscription
-//   StreamSubscription? subscription;
-
-//   // Listen to the stream and add to the controller
-//   subscription = params.stream.listen((event) {
-//     final snapshot = event.snapshot;
-//     final List<Report> list = [];
-//     debugPrint('Updated params inside the stream listen');
-
-//     if (snapshot.children.isNotEmpty) {
-//       for (final report in snapshot.children) {
-//         list.add(Report.fromRTDB(report));
-//       }
-//       if (params.dateRange == null) {
-//         controller.add(list);
-//       } else {
-//         controller.add(groupReportsByTimePeriod(
-//           list.where((report) => report.date!.isAfter(params.dateRange!.start) && report.date!.isBefore(params.dateRange!.end)).toList(),
-//         ));
-//       }
-//     } else {
-//       controller.add({});
-//     }
-//   });
-
-//   // Clean up the subscription when the provider is disposed
-//   ref.onDispose(() {
-//     subscription?.cancel();
-//     controller.close();
-//   });
-
-//   // Yield the controller's stream
-//   yield* controller.stream;
-// });
 
 Map<TimePeriod, Map<ReportDate, List<Report>>> groupReportsByTimePeriod(List<Report> reports) {
   if (reports.isEmpty) return {};
@@ -158,8 +85,6 @@ Map<TimePeriod, Map<ReportDate, List<Report>>> groupReportsByTimePeriod(List<Rep
     groupedReports[TimePeriod.monthly]?[monthKey]?.add(report);
 
     // Group by weekly
-    // final startOfWeek = createdAt.subtract(Duration(days: createdAt.weekday - 1)); // Start of the week (Monday)
-    // final weekKey = year * 100 + startOfWeek.weekOfYear(); // Custom function to calculate week number
     final weekKey = ReportDate(year: yearKey.year, week: createdAt.weekOfYear());
     // debugPrint(weekKey.toString());
     if (groupedReports[TimePeriod.weekly]?[weekKey] == null) {
@@ -168,7 +93,6 @@ Map<TimePeriod, Map<ReportDate, List<Report>>> groupReportsByTimePeriod(List<Rep
     groupedReports[TimePeriod.weekly]?[weekKey]?.add(report);
 
     // Group by daily
-    // final dayKey = year * 10000 + createdAt.month * 100 + createdAt.day; // Unique key for each day
     final dayKey = ReportDate(year: yearKey.year, month: monthKey.month, day: createdAt.day);
     // debugPrint(dayKey.toString());
     if (groupedReports[TimePeriod.daily]?[dayKey] == null) {

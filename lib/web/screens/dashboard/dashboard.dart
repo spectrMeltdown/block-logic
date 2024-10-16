@@ -53,6 +53,8 @@ class _DashboardState extends ConsumerState<Dashboard> {
               child: Wrap(
                 spacing: 15,
                 runSpacing: 15,
+                alignment: WrapAlignment.center,
+                runAlignment: WrapAlignment.center,
                 children: [
                   users.when(
                       data: (data) {
