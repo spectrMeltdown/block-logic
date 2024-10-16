@@ -16,7 +16,7 @@ class _HeaderState extends ConsumerState<Header> {
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
-    double height = MediaQuery.of(context).size.height;
+    // double height = MediaQuery.of(context).size.height;
     final assets = ref.read(assetsProvider);
     return Stack(
       children: [
@@ -34,7 +34,7 @@ class _HeaderState extends ConsumerState<Header> {
               Flexible(
                 child: ClipRRect(
                   child: SizedBox(
-                    height: height * .2,
+                    height: 100,
                     width: width * .9,
                     child: Image.asset(
                       assets.headerWeb,
@@ -46,7 +46,7 @@ class _HeaderState extends ConsumerState<Header> {
               Flexible(
                 child: ClipRRect(
                   child: SizedBox(
-                    height: height * .2,
+                    height: 100,
                     width: width * .6,
                     child: Image.asset(
                       assets.headerWeb,
@@ -63,9 +63,7 @@ class _HeaderState extends ConsumerState<Header> {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10),
             child: Column(
-              children: [
-                Padding(padding: const EdgeInsets.only(top: 30, left: 20), child: BLTitle(widget.title, allCaps: false))
-              ],
+              children: [Padding(padding: const EdgeInsets.only(top: 30, left: 20), child: BLTitle(widget.title, allCaps: false))],
             ),
           ),
         )

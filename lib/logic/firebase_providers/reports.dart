@@ -37,7 +37,7 @@ final reportsProvider = StreamProvider.family.autoDispose<Object, ReportParams>(
     final snapshot = event.snapshot;
     final List<Report> list = [];
 
-    debugPrint('Updated params inside the stream listen');
+    // debugPrint('Updated params inside the stream listen');
     if (snapshot.children.isNotEmpty) {
       for (final report in snapshot.children) {
         list.add(Report.fromRTDB(report));

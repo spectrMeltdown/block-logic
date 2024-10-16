@@ -34,8 +34,8 @@ class _DashboardState extends ConsumerState<Dashboard> {
     final users = ref.watch(reportsProvider(ReportParams(dateRange: null, stream: streams.entries.firstWhere((i) => i.key == ReportType.users).value)));
     final challengesPlayed = ref.watch(reportsProvider(ReportParams(dateRange: null, stream: streams.entries.firstWhere((i) => i.key == ReportType.challengesPlayed).value)));
     final rooms = ref.watch(reportsProvider(ReportParams(dateRange: null, stream: streams.entries.firstWhere((i) => i.key == ReportType.rooms).value)));
-    double width = MediaQuery.of(context).size.width;
-    double height = MediaQuery.of(context).size.height;
+    // double width = MediaQuery.of(context).size.width;
+    // double height = MediaQuery.of(context).size.height;
     return Scrollbar(
       controller: pageScrollController,
       child: SingleChildScrollView(
@@ -45,9 +45,7 @@ class _DashboardState extends ConsumerState<Dashboard> {
             const Header(
               title: 'Dashboard',
             ),
-            SizedBox(
-              height: height / 30,
-            ),
+            SizedBox(height: 30),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
               child: Wrap(
@@ -112,9 +110,7 @@ class _DashboardState extends ConsumerState<Dashboard> {
               runSpacing: 15,
               children: [IntrinsicWidth(child: DatabaseChart()), IntrinsicWidth(child: StorageChart())],
             ),
-            SizedBox(
-              height: height / 30,
-            ),
+            SizedBox(height: 30),
           ],
         ),
       ),

@@ -46,7 +46,7 @@ class _AccountsState extends ConsumerState<Accounts> {
   @override
   Widget build(BuildContext context) {
     // double width = MediaQuery.of(context).size.width;
-    double height = MediaQuery.of(context).size.height;
+    // double height = MediaQuery.of(context).size.height;
     return ListView(
       padding: EdgeInsets.zero,
       controller: pageScrollController,
@@ -94,7 +94,7 @@ class _AccountsState extends ConsumerState<Accounts> {
                       children: [
                         selectedAccType == accTypes[0] ? Users(userProps) : Admins(adminProps),
                         SizedBox(
-                          height: height * 0.1,
+                          height: 20,
                         ),
                         if (selectedAccType == accTypes[1])
                           BLAdminButton(

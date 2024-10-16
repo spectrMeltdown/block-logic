@@ -37,7 +37,7 @@ class _FeedbackTableState extends ConsumerState<FeedbackTable> {
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
-    double height = MediaQuery.of(context).size.height;
+    // double height = MediaQuery.of(context).size.height;
     final feedbacks = ref.watch(AllFeedbackProvider(widget.searchQuery));
     return ConstrainedBox(
       constraints: BoxConstraints(maxWidth: 800, minWidth: 500),
@@ -48,7 +48,7 @@ class _FeedbackTableState extends ConsumerState<FeedbackTable> {
             data: (feedbacks) {
               if (widget.searchQuery.isNotEmpty && feedbacks.isEmpty) {
                 return ConstrainedBox(
-                  constraints: BoxConstraints(maxHeight: height * 0.2, maxWidth: width >= mobileMax ? width * 0.4 : width * 0.3),
+                  constraints: BoxConstraints(maxWidth: width >= mobileMax ? width * 0.4 : width * 0.3),
                   child: const Center(
                     child: BLText('No results.'),
                   ),

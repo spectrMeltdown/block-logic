@@ -100,7 +100,7 @@ class _SelectedChallengeState extends ConsumerState<CreateEditChallenge> {
   Widget build(BuildContext context) {
     final selectedChallenge = ref.watch(SelectedChallengeProvider(widget.selectedChallengeID));
     double width = MediaQuery.of(context).size.width;
-    double height = MediaQuery.of(context).size.height;
+    // double height = MediaQuery.of(context).size.height;
     return ListView(
       padding: EdgeInsets.zero,
       children: [
@@ -187,7 +187,6 @@ class _SelectedChallengeState extends ConsumerState<CreateEditChallenge> {
                       ? (error, stackTrace) => ConstrainedBox(
                             constraints: BoxConstraints(
                               maxWidth: width <= desktopMin ? width * 0.8 : width * 0.4,
-                              maxHeight: height * 0.5,
                             ),
                             child: const Center(
                               child: BLText('Select a challenge'),
