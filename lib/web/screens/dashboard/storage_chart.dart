@@ -42,7 +42,7 @@ class StorageChart extends ConsumerWidget {
     final freeSpaceColor = Colors.green;
     return BLCardSimple(
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(25),
         child: Column(
           children: [
             // Labels for storage information

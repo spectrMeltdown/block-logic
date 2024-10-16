@@ -109,6 +109,7 @@ class _DashboardState extends ConsumerState<Dashboard> {
             ),
             Wrap(
               spacing: 15,
+              runSpacing: 15,
               children: [IntrinsicWidth(child: DatabaseChart()), IntrinsicWidth(child: StorageChart())],
             ),
             SizedBox(
