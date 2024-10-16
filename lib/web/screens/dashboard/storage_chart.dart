@@ -40,100 +40,103 @@ class StorageChart extends ConsumerWidget {
     final analyticsAsyncValue = ref.watch(storageAnalyticsProvider);
     final totalSizeColor = Colors.blue;
     final freeSpaceColor = Colors.green;
-    return BLCardSimple(
-      child: Padding(
-        padding: const EdgeInsets.all(25),
-        child: Column(
-          children: [
-            // Labels for storage information
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    BLSmallTitle('Cloud Storage'),
-                    // IconButton(
-                    //   onPressed: () {
-                    //     ref.invalidate(storageAnalyticsProvider);
-                    //   },
-                    //   icon: Icon(Icons.refresh),
-                    // ),
-                  ],
-                ),
-                analyticsAsyncValue.when(
+    return Padding(
+      padding: const EdgeInsets.all(5),
+      child: BLCardSimple(
+        child: Padding(
+          padding: const EdgeInsets.all(35),
+          child: Column(
+            children: [
+              // Labels for storage information
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      BLSmallTitle('Cloud Storage'),
+                      // IconButton(
+                      //   onPressed: () {
+                      //     ref.invalidate(storageAnalyticsProvider);
+                      //   },
+                      //   icon: Icon(Icons.refresh),
+                      // ),
+                    ],
+                  ),
+                  analyticsAsyncValue.when(
+                    data: (totalSizeUsed) {
+                      final totalSizeMB = totalSizeUsed / (1024 * 1024); // Convert to MB
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Container(
+                                color: totalSizeColor,
+                                height: 10,
+                                width: 10,
+                                margin: EdgeInsets.only(right: 5),
+                              ),
+                              BLText('Used: ${totalSizeMB.toStringAsFixed(2)} MB'),
+                            ],
+                          ),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Container(
+                                color: freeSpaceColor,
+                                height: 10,
+                                width: 10,
+                                margin: EdgeInsets.only(right: 5),
+                              ),
+                              BLText('Free: ${(5000 - totalSizeMB).toStringAsFixed(2)} MB'),
+                            ],
+                          )
+                        ],
+                      );
+                    },
+                    loading: blankLoading,
+                    error: blankError,
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: 400,
+                width: 500,
+                child: analyticsAsyncValue.when(
                   data: (totalSizeUsed) {
-                    final totalSizeMB = totalSizeUsed / (1024 * 1024); // Convert to MB
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Container(
-                              color: totalSizeColor,
-                              height: 10,
-                              width: 10,
-                              margin: EdgeInsets.only(right: 5),
-                            ),
-                            BLText('Used: ${totalSizeMB.toStringAsFixed(2)} MB'),
-                          ],
-                        ),
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Container(
-                              color: freeSpaceColor,
-                              height: 10,
-                              width: 10,
-                              margin: EdgeInsets.only(right: 5),
-                            ),
-                            BLText('Free: ${(5000 - totalSizeMB).toStringAsFixed(2)} MB'),
-                          ],
-                        )
-                      ],
+                    final totalSizeMB = totalSizeUsed / (1024 * 1024);
+                    final freeSpaceMB = 5000 - totalSizeMB;
+
+                    return PieChart(
+                      PieChartData(
+                        centerSpaceRadius: 0,
+                        sections: [
+                          PieChartSectionData(
+                            showTitle: false,
+                            value: totalSizeMB,
+                            color: totalSizeColor,
+                            radius: 180,
+                            badgePositionPercentageOffset: 1.5,
+                          ),
+                          PieChartSectionData(
+                            showTitle: false,
+                            value: freeSpaceMB,
+                            color: freeSpaceColor,
+                            radius: 180,
+                            badgePositionPercentageOffset: 1.5,
+                          ),
+                        ],
+                      ),
                     );
                   },
-                  loading: blankLoading,
-                  error: blankError,
+                  loading: () => Center(child: BLLoading(message: 'Loading data...')),
+                  error: (error, stack) => Center(child: Text('Error: $error')),
                 ),
-              ],
-            ),
-            SizedBox(
-              height: 400,
-              width: 500,
-              child: analyticsAsyncValue.when(
-                data: (totalSizeUsed) {
-                  final totalSizeMB = totalSizeUsed / (1024 * 1024);
-                  final freeSpaceMB = 5000 - totalSizeMB;
-
-                  return PieChart(
-                    PieChartData(
-                      centerSpaceRadius: 0,
-                      sections: [
-                        PieChartSectionData(
-                          showTitle: false,
-                          value: totalSizeMB,
-                          color: totalSizeColor,
-                          radius: 180,
-                          badgePositionPercentageOffset: 1.5,
-                        ),
-                        PieChartSectionData(
-                          showTitle: false,
-                          value: freeSpaceMB,
-                          color: freeSpaceColor,
-                          radius: 180,
-                          badgePositionPercentageOffset: 1.5,
-                        ),
-                      ],
-                    ),
-                  );
-                },
-                loading: () => Center(child: BLLoading(message: 'Loading data...')),
-                error: (error, stack) => Center(child: Text('Error: $error')),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

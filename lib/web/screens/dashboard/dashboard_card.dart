@@ -24,7 +24,7 @@ class DashboardCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
-    double height = MediaQuery.of(context).size.height;
+    // double height = MediaQuery.of(context).size.height;
     return ConstrainedBox(
       constraints: BoxConstraints(minWidth: 300, minHeight: 120, maxWidth: 400),
       child: BLCardSimple(
