@@ -1,7 +1,6 @@
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/game/block_data.dart';
-import 'package:block_logic/logic/testing.dart';
 import 'package:block_logic/screens/game/block_with_child.dart';
 import 'package:block_logic/screens/game/statement_block.dart';
 import 'package:block_logic/screens/game/wrapper_block_design.dart';

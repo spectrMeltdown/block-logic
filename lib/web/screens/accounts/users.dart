@@ -35,9 +35,7 @@ class _UsersState extends ConsumerState<Users> {
           users.removeWhere((user) => user.id == FirebaseAuth.instance.currentUser!.uid);
           if (users.isEmpty) {
             return FadeIn(
-              child: const Center(
-                child: BLText('There are no users at the moment...'),
-              ),
+              child: SizedBox(width: 400, height: 200, child: Center(child: BLText('There are no users at the moment...'))),
             );
           }
           return FadeIn(

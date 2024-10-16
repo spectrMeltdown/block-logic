@@ -13,22 +13,163 @@ import 'package:block_logic/web/screens/challenges/block_selector_add_btn.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+class TabCount {
+  int variables;
+  int functions;
+  int objects;
+  int operators;
+  int keywords;
+  int literals;
+  int conditionals;
+  int loops;
+
+  TabCount({
+    this.variables = 0,
+    this.functions = 0,
+    this.objects = 0,
+    this.operators = 0,
+    this.keywords = 0,
+    this.literals = 0,
+    this.conditionals = 0,
+    this.loops = 0,
+  });
+}
+
+class TabCountManager extends StateNotifier<TabCount> {
+  TabCountManager() : super(TabCount());
+  void assign(CodeBlockType type, int count) {
+    switch (type) {
+      case CodeBlockType.variables:
+        state.variables = count;
+        break;
+      case CodeBlockType.functions:
+        state.functions = count;
+        break;
+      case CodeBlockType.objects:
+        state.objects = count;
+        break;
+      case CodeBlockType.operators:
+        state.operators = count;
+        break;
+      case CodeBlockType.keywords:
+        state.keywords = count;
+        break;
+      case CodeBlockType.literals:
+        state.literals = count;
+        break;
+      case CodeBlockType.conditionals:
+        state.conditionals = count;
+        break;
+      case CodeBlockType.loops:
+        state.loops = count;
+        break;
+      case CodeBlockType.statement:
+        break;
+    }
+  }
+
+  void increment(CodeBlockType type) {
+    switch (type) {
+      case CodeBlockType.variables:
+        state.variables++;
+        break;
+      case CodeBlockType.functions:
+        state.functions++;
+        break;
+      case CodeBlockType.objects:
+        state.objects++;
+        break;
+      case CodeBlockType.operators:
+        state.operators++;
+        break;
+      case CodeBlockType.keywords:
+        state.keywords++;
+        break;
+      case CodeBlockType.literals:
+        state.literals++;
+        break;
+      case CodeBlockType.conditionals:
+        state.conditionals++;
+        break;
+      case CodeBlockType.loops:
+        state.loops++;
+        break;
+      case CodeBlockType.statement:
+        break;
+    }
+  }
+
+  void decrement(CodeBlockType type) {
+    switch (type) {
+      case CodeBlockType.variables:
+        state.variables--;
+        break;
+      case CodeBlockType.functions:
+        state.functions--;
+        break;
+      case CodeBlockType.objects:
+        state.objects--;
+        break;
+      case CodeBlockType.operators:
+        state.operators--;
+        break;
+      case CodeBlockType.keywords:
+        state.keywords--;
+        break;
+      case CodeBlockType.literals:
+        state.literals--;
+        break;
+      case CodeBlockType.conditionals:
+        state.conditionals--;
+        break;
+      case CodeBlockType.loops:
+        state.loops--;
+        break;
+      case CodeBlockType.statement:
+        break;
+    }
+  }
+}
+
+final tabCountProvider = StateNotifierProvider.autoDispose<TabCountManager, TabCount>((ref) {
+  return TabCountManager();
+});
+
 class BlockSelectorDialog extends ConsumerStatefulWidget {
-  final Map<CodeBlockType, List<GameBlockData>>? initialBlocks;
-  const BlockSelectorDialog({required this.initialBlocks, super.key});
+  final Map<CodeBlockType, List<GameBlockData>> initialBlocks;
+  const BlockSelectorDialog({this.initialBlocks = const {}, super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _BlockSelectorDialogState();
 }
 
 class _BlockSelectorDialogState extends ConsumerState<BlockSelectorDialog> with SingleTickerProviderStateMixin {
-  late final Map<CodeBlockType, List<GameBlockData>>? selectedBlocks;
+  late final Map<CodeBlockType, List<GameBlockData>> selectedBlocks;
   late final List<Tab> tabs;
   late TabController tabController;
   late final DialogService dialog;
   late final CustomNavigation nav;
+  late final TabCountManager counter;
   late final Toast toast;
   bool processing = false;
+  bool firstBuild = true;
+
+  @override
+  void initState() {
+    dialog = ref.read(dialogServiceProvider.notifier);
+    nav = ref.read(customNavigationProvider.notifier);
+    toast = ref.read(toastProvider.notifier);
+    counter = ref.read(tabCountProvider.notifier);
+    selectedBlocks = {for (final type in CodeBlockType.values.where((e) => e != CodeBlockType.statement)) type: []};
+    if (widget.initialBlocks.isNotEmpty) {
+      for (final entry in widget.initialBlocks.entries) {
+        selectedBlocks[entry.key] = entry.value;
+        counter.assign(entry.key, selectedBlocks[entry.key]!.length);
+      }
+    }
+    tabController = TabController(vsync: this, length: selectedBlocks.keys.length);
+    super.initState();
+  }
 
   void addCustom(CodeBlockType type) async {
     if (processing) return;
@@ -44,8 +185,51 @@ class _BlockSelectorDialogState extends ConsumerState<BlockSelectorDialog> with 
     processing = false;
   }
 
+  void buildTabs() {
+    tabs = List.generate(selectedBlocks.keys.length, (i) {
+      late int count;
+      final type = CodeBlockType.values[i];
+      switch (type) {
+        case CodeBlockType.variables:
+          count = ref.watch(tabCountProvider.select((s) => s.variables));
+          break;
+        case CodeBlockType.functions:
+          count = ref.watch(tabCountProvider.select((s) => s.functions));
+          break;
+        case CodeBlockType.objects:
+          count = ref.watch(tabCountProvider.select((s) => s.objects));
+          break;
+        case CodeBlockType.operators:
+          count = ref.watch(tabCountProvider.select((s) => s.operators));
+          break;
+        case CodeBlockType.keywords:
+          count = ref.watch(tabCountProvider.select((s) => s.keywords));
+          break;
+        case CodeBlockType.literals:
+          count = ref.watch(tabCountProvider.select((s) => s.literals));
+          break;
+        case CodeBlockType.conditionals:
+          count = ref.watch(tabCountProvider.select((s) => s.conditionals));
+          break;
+        case CodeBlockType.loops:
+          count = ref.watch(tabCountProvider.select((s) => s.loops));
+          break;
+        case CodeBlockType.statement:
+          break;
+      }
+      return Tab(
+        text: '${selectedBlocks.keys.elementAt(i).formalName()} ($count)',
+      );
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (firstBuild == true) {
+      buildTabs(); // cant put in initState, because it needs to access providerScope.
+      firstBuild = false;
+      setState(() {});
+    }
     return BLDialog(
         child: Column(
       children: [
@@ -67,8 +251,8 @@ class _BlockSelectorDialogState extends ConsumerState<BlockSelectorDialog> with 
           child: TabBarView(
               controller: tabController,
               children: List.generate(tabs.length, (i) {
-                final key = selectedBlocks!.entries.elementAt(i).key;
-                final category = selectedBlocks!.entries.elementAt(i).value;
+                final key = selectedBlocks.entries.elementAt(i).key;
+                final category = selectedBlocks.entries.elementAt(i).value;
                 return Padding(
                   padding: const EdgeInsets.all(15),
                   child: Column(
@@ -123,20 +307,5 @@ class _BlockSelectorDialogState extends ConsumerState<BlockSelectorDialog> with 
         )
       ],
     ));
-  }
-
-  @override
-  void initState() {
-    dialog = ref.read(dialogServiceProvider.notifier);
-    nav = ref.read(customNavigationProvider.notifier);
-    toast = ref.read(toastProvider.notifier);
-    selectedBlocks = widget.initialBlocks ?? {for (final type in CodeBlockType.values) type: []};
-    tabController = TabController(vsync: this, length: selectedBlocks!.keys.length);
-    tabs = List.generate(selectedBlocks!.keys.length, (i) {
-      return Tab(
-        text: selectedBlocks!.keys.elementAt(i).name,
-      );
-    });
-    super.initState();
   }
 }

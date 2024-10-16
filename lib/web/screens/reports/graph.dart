@@ -1,5 +1,4 @@
 import 'package:block_logic/components/text/text.dart';
-import 'package:block_logic/components/text/title_small.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_models/report.dart';
 import 'package:block_logic/logic/firebase_providers/reports.dart';

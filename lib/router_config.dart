@@ -10,8 +10,8 @@ import 'package:block_logic/screens/auth/verify_email.dart';
 import 'package:block_logic/web/screens/accounts/accounts.dart';
 import 'package:block_logic/web/screens/accounts/create_admin.dart';
 import 'package:block_logic/web/screens/challenges/challenges.dart';
-import 'package:block_logic/web/screens/challenges/create_challenge.dart';
-import 'package:block_logic/web/screens/challenges/edit_challenge.dart';
+
+import 'package:block_logic/web/screens/challenges/create_edit_challenge.dart';
 import 'package:block_logic/web/screens/dashboard/dashboard.dart';
 import 'package:block_logic/web/screens/feedback/feedback.dart';
 import 'package:block_logic/web/screens/feedback/view_feedback_dialog.dart';
@@ -117,7 +117,7 @@ GoRouter router() {
   ];
   return GoRouter(
     navigatorKey: parentKey,
-    debugLogDiagnostics: true,
+    // debugLogDiagnostics: true,
     initialLocation: '/dashboard',
     routes: [
       ...List.generate(routes.length, (i) {
@@ -168,12 +168,12 @@ GoRouter router() {
           GoRoute(path: shellRoutes['challenges']![0], pageBuilder: (context, state) => shellRoutes['challenges']![1], routes: [
             GoRoute(
               path: 'edit/:id',
-              pageBuilder: (context, state) => pageTransition(child: EditChallenge(state.pathParameters['id']!)),
+              pageBuilder: (context, state) => pageTransition(child: CreateEditChallenge(selectedChallengeID: state.pathParameters['id']!)),
               // onExit: onExitEdit,
             ),
             GoRoute(
               path: 'create',
-              pageBuilder: (context, state) => pageTransition(child: const CreateChallenge()),
+              pageBuilder: (context, state) => pageTransition(child: const CreateEditChallenge()),
               // onExit: onExitCreate,
             ),
           ]),

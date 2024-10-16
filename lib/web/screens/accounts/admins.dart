@@ -34,40 +34,41 @@ class _AdminsState extends ConsumerState<Admins> {
           /// admin cannot delete themself here. They must use Settings > Delete account instead.
           admins.removeWhere((admin) => admin.id == FirebaseAuth.instance.currentUser!.uid);
           if (admins.isEmpty) {
-            return const Center(
-              child: BLText('There are no other admins at the moment...'),
-            );
+            return FadeIn(child: SizedBox(width: 400, height: 200, child: Center(child: BLText('There are no other admins at the moment...'))));
           }
           return FadeIn(
-            child: BLTable(
-                columns: List.generate(widget.adminProps.length, (i) => DataColumn(label: BLText(widget.adminProps[i]))),
-                rows: List.generate(admins.length, (i) {
-                  return DataRow(cells: [
-                    DataCell(BLProfilePic(type: AccountType.admin, admins[i].id ?? '')),
-                    DataCell(BLDisplayName(admins[i].id ?? '', AccountType.admin)),
-                    DataCell(BLText(admins[i].createdAt != null ? DateFormat('dd / MM / yyyy').format(admins[i].createdAt!) : '--')),
-                    DataCell(Wrap(
-                      children: [
-                        BLAdminButton(
-                            type: AdminBtnType.red,
-                            child: const BLText('Delete'),
-                            onPressed: () async {
-                              if (processing) return;
-                              toggleProcessing();
-                              final result = await accountsManager.deleteAccount(admins[i].id!, AccountType.admin);
-                              if (result == null) {
-                                if (!context.mounted) return;
-                                toast.showToast(context, 'Delete success.', type: NotifType.success);
-                              } else {
-                                if (!context.mounted) return;
-                                toast.showToast(context, result, type: NotifType.error);
-                              }
-                              toggleProcessing();
-                            })
-                      ],
-                    )),
-                  ]);
-                })),
+            child: Padding(
+              padding: const EdgeInsets.all(15),
+              child: BLTable(
+                  columns: List.generate(widget.adminProps.length, (i) => DataColumn(label: BLText(widget.adminProps[i]))),
+                  rows: List.generate(admins.length, (i) {
+                    return DataRow(cells: [
+                      DataCell(BLProfilePic(type: AccountType.admin, admins[i].id ?? '')),
+                      DataCell(BLDisplayName(admins[i].id ?? '', AccountType.admin)),
+                      DataCell(BLText(admins[i].createdAt != null ? DateFormat('dd / MM / yyyy').format(admins[i].createdAt!) : '--')),
+                      DataCell(Wrap(
+                        children: [
+                          BLAdminButton(
+                              type: AdminBtnType.red,
+                              child: const BLText('Delete'),
+                              onPressed: () async {
+                                if (processing) return;
+                                toggleProcessing();
+                                final result = await accountsManager.deleteAccount(admins[i].id!, AccountType.admin);
+                                if (result == null) {
+                                  if (!context.mounted) return;
+                                  toast.showToast(context, 'Delete success.', type: NotifType.success);
+                                } else {
+                                  if (!context.mounted) return;
+                                  toast.showToast(context, result, type: NotifType.error);
+                                }
+                                toggleProcessing();
+                              })
+                        ],
+                      )),
+                    ]);
+                  })),
+            ),
           );
         },
         error: genericError,

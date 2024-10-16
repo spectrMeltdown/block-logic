@@ -3,10 +3,8 @@ import 'dart:async';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_models/report.dart';
 import 'package:equatable/equatable.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 // import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 // part 'generated/reports.g.dart';

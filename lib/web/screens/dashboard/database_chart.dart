@@ -1,39 +1,30 @@
-import 'dart:math';
-
 import 'package:block_logic/components/text/title_small.dart';
-import 'package:block_logic/web/components/bl_table.dart';
 import 'package:block_logic/web/components/card_simple.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-// Define a Riverpod provider to fetch the Firebase data and calculate folder sizes
 final firebaseDataProvider = FutureProvider<Map<String, double>>((ref) async {
-  final DatabaseReference databaseRef = FirebaseDatabase.instance.ref(); // Reference to the root
+  final DatabaseReference databaseRef = FirebaseDatabase.instance.ref();
   DatabaseEvent event = await databaseRef.once();
 
-  // Safely cast the data to Map<String, dynamic> if possible
   final data = event.snapshot.value;
   if (data is! Map) {
-    throw TypeError(); // If data is not a map, throw an error
+    throw TypeError();
   }
 
   Map<String, dynamic> parsedData = Map<String, dynamic>.from(data);
-
-  // Calculate size of each folder
   Map<String, int> folderSizes = {};
   parsedData.forEach((key, value) {
     if (value is Map) {
-      folderSizes[key] = value.length; // Assuming each folder is a map
+      folderSizes[key] = value.length;
     }
   });
 
-  // Calculate percentages
   int totalSize = folderSizes.values.fold(0, (a, b) => a + b);
   if (totalSize == 0) {
-    return {}; // Return an empty map if there's no data
+    return {};
   }
 
   Map<String, double> percentages = folderSizes.map((key, value) {
@@ -87,14 +78,13 @@ class DatabaseChart extends ConsumerWidget {
                     return const Center(child: Text('No data found.'));
                   }
 
-                  // Create PieChart sections from the percentages with random colors
                   List<PieChartSectionData> pieChartSections = percentages.entries.map((entry) {
                     return PieChartSectionData(
                       titlePositionPercentageOffset: 1.2,
                       title: entry.key,
                       value: entry.value,
                       radius: 160,
-                      color: getNextColor(), // Assign a random color
+                      color: getNextColor(),
                     );
                   }).toList();
 

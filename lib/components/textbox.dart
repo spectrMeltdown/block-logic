@@ -81,9 +81,9 @@ class _BLInputState extends State<BLTextBox> {
         onFieldSubmitted: widget.onFieldSubmitted,
         inputFormatters: widget.inputFormatters,
         decoration: InputDecoration(
-            helperStyle: const TextStyle(color: Colors.white, fontStyle: FontStyle.italic),
+            helperStyle: const TextStyle(color: Colors.white38, fontStyle: FontStyle.italic),
             hintText: widget.hintText,
-            hintStyle: const TextStyle(color: Colors.white, fontStyle: FontStyle.italic),
+            hintStyle: const TextStyle(color: Colors.white38, fontStyle: FontStyle.italic),
             labelStyle: const TextStyle(color: Colors.white38, fontStyle: FontStyle.italic),
             floatingLabelBehavior: FloatingLabelBehavior.never, // when the placeholder animates to the top portion
             helperText: helperText,
@@ -96,10 +96,8 @@ class _BLInputState extends State<BLTextBox> {
             errorStyle: const TextStyle(color: Colors.amber),
             focusedErrorBorder: const OutlineInputBorder(borderSide: BorderSide(color: Colors.deepOrange, width: 2)),
             errorBorder: const OutlineInputBorder(borderSide: BorderSide(color: Colors.amber, width: 2)),
-            border: widget.border ??
-                OutlineInputBorder(borderSide: BorderSide(color: BLUI().getAppColor('lightBlue'), width: 2)),
-            focusedBorder: widget.border ??
-                OutlineInputBorder(borderSide: BorderSide(color: BLUI().getAppColor('lightBlue'), width: 2)),
+            border: widget.border ?? OutlineInputBorder(borderSide: BorderSide(color: BLUI().getAppColor('lightBlue'), width: 2)),
+            focusedBorder: widget.border ?? OutlineInputBorder(borderSide: BorderSide(color: BLUI().getAppColor('lightBlue'), width: 2)),
             //Colors.lightBlue.shade200
             counter: const BlankWidget(), // blank counter to prevent it from displaying when provider maxLength
             prefixIcon: widget.prefixIcon != null

@@ -19,7 +19,6 @@ import 'package:block_logic/logic/services/navigation.dart';
 import 'package:block_logic/logic/services/reports_manager.dart';
 import 'package:block_logic/logic/services/shared_pref.dart';
 import 'package:block_logic/logic/services/toast.dart';
-import 'package:block_logic/logic/services/ui.dart';
 import 'package:block_logic/logic/services/validator_text.dart';
 import 'package:block_logic/route_observer.dart';
 import 'package:block_logic/screens/auth/login.dart';

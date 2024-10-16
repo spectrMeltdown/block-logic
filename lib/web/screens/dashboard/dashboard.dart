@@ -1,11 +1,8 @@
 import 'package:block_logic/components/text/text.dart';
-import 'package:block_logic/components/text/title_small.dart';
 import 'package:block_logic/components/util/provider_default.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_providers/reports.dart';
 import 'package:block_logic/logic/services/toast.dart';
-import 'package:block_logic/web/components/bl_table.dart';
-import 'package:block_logic/web/components/card_simple.dart';
 import 'package:block_logic/web/components/header.dart';
 import 'package:block_logic/web/screens/dashboard/dashboard_card.dart';
 import 'package:block_logic/web/screens/dashboard/database_chart.dart';

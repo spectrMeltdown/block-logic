@@ -20,15 +20,15 @@ import 'package:block_logic/web/screens/challenges/block_selector_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class EditChallenge extends ConsumerStatefulWidget {
+class CreateEditChallenge extends ConsumerStatefulWidget {
   final String selectedChallengeID;
-  const EditChallenge(this.selectedChallengeID, {super.key});
+  const CreateEditChallenge({this.selectedChallengeID = '', super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _SelectedChallengeState();
 }
 
-class _SelectedChallengeState extends ConsumerState<EditChallenge> {
+class _SelectedChallengeState extends ConsumerState<CreateEditChallenge> {
   final tagBtnKey = GlobalKey();
   final limitationBtnKey = GlobalKey();
   late final Toast toast;
@@ -104,47 +104,47 @@ class _SelectedChallengeState extends ConsumerState<EditChallenge> {
     return ListView(
       padding: EdgeInsets.zero,
       children: [
-        const Header(title: 'Edit challenge'),
-        selectedChallenge.when(
-            data: (challenge) {
-              if (challenge == null) {
-                return ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 600, maxHeight: 500),
-                  child: const Center(
-                    child: BLText('Couldn\'t load that challenge..'),
-                  ),
-                );
-              }
-              tags = challenge.tags ?? [];
-              limitations = challenge.limitations ?? [];
-              difficultySelection ??= challenge.difficulty;
-              blocks ??= challenge.blocks;
-              if (blocks != null) {
-                int count = 0;
-                for (final entry in blocks!.entries) {
-                  for (int i = 0; i < entry.value.length; i++) {
-                    count++;
-                  }
-                }
-                totalSelected = count;
-              }
-              return FadeIn(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 600),
-                  child: Padding(
-                    padding: const EdgeInsets.all(15),
-                    child: Center(
+        Header(title: '${widget.selectedChallengeID.isEmpty ? 'Create' : 'Edit'} challenge'),
+        SizedBox(height: 20),
+        FadeIn(
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 800, minWidth: 200),
+              child: selectedChallenge.when(
+                  data: (challenge) {
+                    if (challenge == null) {
+                      return const Center(
+                        child: BLText('Couldn\'t load that challenge..'),
+                      );
+                    }
+                    tags = challenge.tags ?? [];
+                    limitations = challenge.limitations ?? [];
+                    difficultySelection ??= challenge.difficulty;
+                    blocks ??= challenge.blocks;
+                    if (blocks != null) {
+                      int count = 0;
+                      for (final entry in blocks!.entries) {
+                        for (int i = 0; i < entry.value.length; i++) {
+                          count++;
+                        }
+                      }
+                      totalSelected = count;
+                    }
+                    return Padding(
+                      padding: const EdgeInsets.all(10),
                       child: BLCardSimple(
                         child: Padding(
-                          padding: const EdgeInsets.all(15),
+                          padding: const EdgeInsets.all(30),
                           child: Form(
                             key: formKey,
                             child: Column(
+                              mainAxisSize: MainAxisSize.min,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 const SizedBox(height: 10),
                                 ...List.generate(challengeProps.length, (i) {
                                   return Column(
+                                    mainAxisSize: MainAxisSize.min,
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     // spacing: 15,
                                     // runSpacing: 15,
@@ -153,7 +153,7 @@ class _SelectedChallengeState extends ConsumerState<EditChallenge> {
                                       BLText('${challengeProps[i]} : '),
                                       const SizedBox(height: 5),
                                       ConstrainedBox(
-                                        constraints: const BoxConstraints(maxWidth: 700),
+                                        constraints: BoxConstraints(maxWidth: 400),
                                         child: getInputWidget(challengeProps[i], challenge),
                                       ),
                                     ],
@@ -162,6 +162,7 @@ class _SelectedChallengeState extends ConsumerState<EditChallenge> {
                                 const SizedBox(height: 20),
                                 Row(
                                   mainAxisSize: MainAxisSize.min,
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     const AdminBackBtn(
                                       useContext: true,
@@ -172,7 +173,7 @@ class _SelectedChallengeState extends ConsumerState<EditChallenge> {
                                         onPressed: () {
                                           save();
                                         },
-                                        child: const BLText('Save changes', color: Colors.white))
+                                        child: BLText(widget.selectedChallengeID.isEmpty ? 'Create' : 'Save changes', color: Colors.white))
                                   ],
                                 )
                               ],
@@ -180,23 +181,23 @@ class _SelectedChallengeState extends ConsumerState<EditChallenge> {
                           ),
                         ),
                       ),
-                    ),
-                  ),
-                ),
-              );
-            },
-            error: widget.selectedChallengeID.isEmpty
-                ? (error, stackTrace) => ConstrainedBox(
-                      constraints: BoxConstraints(
-                        maxWidth: width <= desktopMin ? width * 0.8 : width * 0.4,
-                        maxHeight: height * 0.5,
-                      ),
-                      child: const Center(
-                        child: BLText('Select a challenge'),
-                      ),
-                    )
-                : genericError,
-            loading: genericLoading)
+                    );
+                  },
+                  error: widget.selectedChallengeID.isEmpty
+                      ? (error, stackTrace) => ConstrainedBox(
+                            constraints: BoxConstraints(
+                              maxWidth: width <= desktopMin ? width * 0.8 : width * 0.4,
+                              maxHeight: height * 0.5,
+                            ),
+                            child: const Center(
+                              child: BLText('Select a challenge'),
+                            ),
+                          )
+                      : genericError,
+                  loading: genericLoading),
+            ),
+          ),
+        )
       ],
     );
   }
@@ -206,6 +207,7 @@ class _SelectedChallengeState extends ConsumerState<EditChallenge> {
       case 'Name':
         return BLTextBox(
           controller: TextEditingController(text: challenge.name),
+          hintText: 'E.x Code is fun!',
           onSaved: (value) {
             name = value;
           },
@@ -214,6 +216,7 @@ class _SelectedChallengeState extends ConsumerState<EditChallenge> {
         return BLTextBox(
           controller: TextEditingController(text: challenge.shortDescription),
           keyboardType: TextInputType.multiline,
+          hintText: 'E.x. Create an program ...',
           onSaved: (value) {
             shortDescription = value;
           },
@@ -223,6 +226,7 @@ class _SelectedChallengeState extends ConsumerState<EditChallenge> {
         return BLTextBox(
           controller: TextEditingController(text: challenge.additionalInfo),
           keyboardType: TextInputType.multiline,
+          hintText: 'E.x. Use functions...',
           onSaved: (value) {
             additionalInfo = value;
           },
@@ -299,7 +303,7 @@ class _SelectedChallengeState extends ConsumerState<EditChallenge> {
               await dialog.show(
                   context,
                   BlockSelectorDialog(
-                    initialBlocks: blocks,
+                    initialBlocks: blocks ?? {},
                   ));
               processing = false;
             },
@@ -320,9 +324,15 @@ class _SelectedChallengeState extends ConsumerState<EditChallenge> {
     super.initState();
   }
 
+  void toggleProcessing() {
+    setState(() {
+      processing = !processing;
+    });
+  }
+
   Future<void> save() async {
     if (processing) return;
-    processing = true;
+    toggleProcessing();
     if (formKey.currentState!.validate()) {
       formKey.currentState!.save();
       final challenge = Challenge(
@@ -337,12 +347,12 @@ class _SelectedChallengeState extends ConsumerState<EditChallenge> {
       final result = await challengeManager.update(challenge);
       if (result == null) {
         if (!mounted) return;
-        toast.showToast(context, 'Edited successfully', type: NotifType.success);
+        toast.showToast(context, widget.selectedChallengeID.isEmpty ? 'Challenge created' : 'Edited successfully', type: NotifType.success);
       } else {
         if (!mounted) return;
         toast.showToast(context, result.toString(), type: NotifType.error);
       }
     }
-    processing = false;
+    toggleProcessing();
   }
 }

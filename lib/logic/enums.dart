@@ -27,6 +27,12 @@ enum CodeBlockType {
   statement,
 }
 
+extension Names on CodeBlockType {
+  String formalName() {
+    return '${name[0].toUpperCase()}${name.substring(1, name.length)}';
+  }
+}
+
 enum Difficulty {
   beginner,
   intermediate,

@@ -16,18 +16,21 @@ class _AdminSearchBarState extends ConsumerState<AdminSearchBar> {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: SearchBar(
-        controller: searchController,
-        hintText: 'Search ...',
-        backgroundColor: WidgetStatePropertyAll(Colors.blueGrey.brighten(0.3)),
-        leading: const Padding(
-          padding: EdgeInsets.only(left: 10),
-          child: Icon(
-            Icons.search_rounded,
-            color: Colors.white,
+      child: ConstrainedBox(
+        constraints: BoxConstraints(maxWidth: 500),
+        child: SearchBar(
+          controller: searchController,
+          hintText: 'Search ...',
+          backgroundColor: WidgetStatePropertyAll(Colors.blueGrey.brighten(0.3)),
+          leading: const Padding(
+            padding: EdgeInsets.only(left: 10),
+            child: Icon(
+              Icons.search_rounded,
+              color: Colors.white,
+            ),
           ),
+          trailing: [IconButton(onPressed: () {}, icon: const Icon(Icons.arrow_forward))],
         ),
-        trailing: [IconButton(onPressed: () {}, icon: const Icon(Icons.arrow_forward))],
       ),
     );
     // return Padding(

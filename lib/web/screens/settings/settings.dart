@@ -55,136 +55,126 @@ class _AdminSettingsState extends ConsumerState<AdminSettings> {
     final account = ref.watch(SelectedAdminProvider(auth.getUID()));
     // double width = MediaQuery.of(context).size.width;
     //double height = MediaQuery.of(context).size.height;
-    return Column(
+    return ListView(
+      padding: EdgeInsets.zero,
+      controller: pageScrollController,
       children: [
-        Expanded(
-          child: Scrollbar(
-            controller: pageScrollController,
-            child: SingleChildScrollView(
-              controller: pageScrollController,
-              child: Column(
-                children: [
-                  const Header(title: 'Settings'),
-                  Padding(
-                    padding: const EdgeInsets.all(15),
-                    child: Column(
+        const Header(title: 'Settings'),
+        Padding(
+          padding: EdgeInsets.only(top: 60),
+          child: Column(
+            children: [
+              BLProfilePic(
+                type: AccountType.admin,
+                auth.getUID(),
+                size: 150,
+              ),
+              const SizedBox(height: 10),
+              BLTextButton(
+                  onPressed: () {
+                    updateProfilePic();
+                  },
+                  child: BLText(
+                    'Change',
+                    underlined: true,
+                    color: Colors.lightBlue,
+                  )),
+              const SizedBox(height: 50),
+              account.when(
+                  data: (account) {
+                    if (account == null) {
+                      return const Center(
+                        child: BLText('Sorry, there was a problem getting your account details.'),
+                      );
+                    }
+                    return Column(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        BLProfilePic(
-                          type: AccountType.admin,
-                          auth.getUID(),
-                          size: 150,
-                        ),
-                        const SizedBox(height: 10),
+                        BLTextButton(
+                            onPressed: () async {
+                              if (processing) return;
+                              processing = true;
+                              await showDialog(
+                                context: context,
+                                barrierDismissible: false,
+                                builder: (context) => const ChangeDisplayName(),
+                              );
+                              processing = false;
+                            },
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(FontAwesomeIcons.user, color: Colors.white),
+                                const SizedBox(width: 15),
+                                Flexible(
+                                    child: BLDisplayName(
+                                  auth.getUID(),
+                                  kIsWeb ? AccountType.admin : AccountType.user,
+                                )),
+                                const SizedBox(width: 5),
+                                widget.editIcon
+                              ],
+                            )),
+                        const SizedBox(height: 15),
                         BLTextButton(
                             onPressed: () {
-                              updateProfilePic();
+                              changeEmail(context);
                             },
-                            child: BLText(
-                              'Change',
-                              underlined: true,
-                              color: Colors.lightBlue,
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [const Icon(FontAwesomeIcons.envelope, color: Colors.white), const SizedBox(width: 15), const Flexible(child: BLEmail()), const SizedBox(width: 5), widget.editIcon],
                             )),
-                        const SizedBox(height: 50),
-                        account.when(
-                            data: (account) {
-                              if (account == null) {
-                                return const Center(
-                                  child: BLText('Sorry, there was a problem getting your account details.'),
-                                );
-                              }
-                              return Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  BLTextButton(
-                                      onPressed: () async {
-                                        if (processing) return;
-                                        processing = true;
-                                        await showDialog(
-                                          context: context,
-                                          barrierDismissible: false,
-                                          builder: (context) => const ChangeDisplayName(),
-                                        );
-                                        processing = false;
-                                      },
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          const Icon(FontAwesomeIcons.user, color: Colors.white),
-                                          const SizedBox(width: 15),
-                                          Flexible(
-                                              child: BLDisplayName(
-                                            auth.getUID(),
-                                            kIsWeb ? AccountType.admin : AccountType.user,
-                                          )),
-                                          const SizedBox(width: 5),
-                                          widget.editIcon
-                                        ],
-                                      )),
-                                  const SizedBox(height: 15),
-                                  BLTextButton(
-                                      onPressed: () {
-                                        changeEmail(context);
-                                      },
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [const Icon(FontAwesomeIcons.envelope, color: Colors.white), const SizedBox(width: 15), const Flexible(child: BLEmail()), const SizedBox(width: 5), widget.editIcon],
-                                      )),
-                                  const SizedBox(height: 15),
-                                  BLTextButton(
-                                      onPressed: () {
-                                        changePass(context);
-                                      },
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [const Icon(FontAwesomeIcons.lock, color: Colors.white), const SizedBox(width: 15), const BLText('Change password'), const SizedBox(width: 5), widget.editIcon],
-                                      )),
-                                  const SizedBox(height: 25),
-                                  BLTextButton(
-                                      // type: BtnType.red,
-                                      onPressed: () async {
-                                        if (processing) return;
-                                        processing = true;
-                                        String? reauth = await showDialog(
-                                          context: context,
-                                          barrierDismissible: false,
-                                          builder: (BuildContext context) => const ReauthDialog(),
-                                        );
-                                        debugPrint('Reauth result = $reauth');
-                                        if (reauth == null) {
-                                          await auth.deleteAccount();
-                                          if (!context.mounted) return;
-                                          context.go('/login');
-                                        } else {
-                                          processing = false;
-                                        }
-                                      },
-                                      child: const Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Icon(
-                                            Icons.delete_forever,
-                                            color: Colors.red,
-                                          ),
-                                          SizedBox(width: 10),
-                                          BLText(
-                                            'Delete account',
-                                            color: Colors.red,
-                                          )
-                                        ],
-                                      )),
-                                ],
-                              );
+                        const SizedBox(height: 15),
+                        BLTextButton(
+                            onPressed: () {
+                              changePass(context);
                             },
-                            error: genericError,
-                            loading: genericLoading)
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [const Icon(FontAwesomeIcons.lock, color: Colors.white), const SizedBox(width: 15), const BLText('Change password'), const SizedBox(width: 5), widget.editIcon],
+                            )),
+                        const SizedBox(height: 25),
+                        BLTextButton(
+                            // type: BtnType.red,
+                            onPressed: () async {
+                              if (processing) return;
+                              processing = true;
+                              String? reauth = await showDialog(
+                                context: context,
+                                barrierDismissible: false,
+                                builder: (BuildContext context) => const ReauthDialog(),
+                              );
+                              debugPrint('Reauth result = $reauth');
+                              if (reauth == null) {
+                                await auth.deleteAccount();
+                                if (!context.mounted) return;
+                                context.go('/login');
+                              } else {
+                                processing = false;
+                              }
+                            },
+                            child: const Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.delete_forever,
+                                  color: Colors.red,
+                                ),
+                                SizedBox(width: 10),
+                                BLText(
+                                  'Delete account',
+                                  color: Colors.red,
+                                )
+                              ],
+                            )),
                       ],
-                    ),
-                  )
-                ],
-              ),
-            ),
+                    );
+                  },
+                  error: genericError,
+                  loading: genericLoading)
+            ],
           ),
-        ),
+        )
       ],
     );
   }

@@ -6,13 +6,11 @@ import 'package:block_logic/constants.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_models/feedback.dart';
 import 'package:block_logic/logic/firebase_providers/all_feedback.dart';
-import 'package:block_logic/logic/firebase_providers/selected_feedback.dart';
 import 'package:block_logic/logic/services/dialog.dart';
 import 'package:block_logic/web/components/bl_table.dart';
 import 'package:block_logic/web/components/card_simple.dart';
 import 'package:block_logic/web/screens/feedback/feedback.dart';
 import 'package:block_logic/web/screens/feedback/view_feedback_dialog.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -41,7 +39,11 @@ class _FeedbackTableState extends ConsumerState<FeedbackTable> {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     final feedbacks = ref.watch(AllFeedbackProvider(widget.searchQuery));
-    return BLCardSimple(
+    return ConstrainedBox(
+      constraints: BoxConstraints(maxWidth: 800, minWidth: 500),
+      child: BLCardSimple(
+          child: Padding(
+        padding: const EdgeInsets.all(20),
         child: feedbacks.when(
             data: (feedbacks) {
               if (widget.searchQuery.isNotEmpty && feedbacks.isEmpty) {
@@ -86,6 +88,8 @@ class _FeedbackTableState extends ConsumerState<FeedbackTable> {
               );
             },
             error: genericError,
-            loading: genericLoading));
+            loading: genericLoading),
+      )),
+    );
   }
 }

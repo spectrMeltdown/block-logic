@@ -2,7 +2,6 @@ import 'package:block_logic/components/background.dart';
 import 'package:block_logic/constants.dart';
 import 'package:block_logic/web/components/sidebar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class SidebarToggle extends StatelessWidget {
   final GlobalKey<ScaffoldState> scaffoldKey;

@@ -2,23 +2,20 @@ import 'package:block_logic/components/async/loading.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/text/title_small.dart';
 import 'package:block_logic/components/util/provider_default.dart';
-import 'package:block_logic/web/components/bl_table.dart';
 import 'package:block_logic/web/components/card_simple.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-// Define a Riverpod provider for Firebase Storage analytics (returns total size)
-final storageAnalyticsProvider = FutureProvider<int>((ref) async {
-  final storageRef = FirebaseStorage.instance.ref(); // Start from the root
+final storageAnalyticsProvider = FutureProvider.autoDispose<int>((ref) async {
+  debugPrint('updating storage analytics...');
+  final storageRef = FirebaseStorage.instance.ref();
   int totalSizeUsed = 0;
 
-  // Recursive function to list files in a folder
   Future<void> listFilesInFolder(Reference folderRef) async {
     final ListResult result = await folderRef.listAll();
 
-    // Process files at the current level
     for (var item in result.items) {
       final size = await item.getMetadata().then((metadata) => metadata.size);
       if (size != null) {
@@ -26,16 +23,13 @@ final storageAnalyticsProvider = FutureProvider<int>((ref) async {
       }
     }
 
-    // Recursively list files in subfolders
     for (var prefix in result.prefixes) {
       await listFilesInFolder(prefix);
     }
   }
 
-  // Start recursion from the root folder
   await listFilesInFolder(storageRef);
-
-  return totalSizeUsed; // Return total size used in bytes
+  return totalSizeUsed;
 });
 
 class StorageChart extends ConsumerWidget {
@@ -55,7 +49,18 @@ class StorageChart extends ConsumerWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                BLSmallTitle('Cloud Storage'),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    BLSmallTitle('Cloud Storage'),
+                    // IconButton(
+                    //   onPressed: () {
+                    //     ref.invalidate(storageAnalyticsProvider);
+                    //   },
+                    //   icon: Icon(Icons.refresh),
+                    // ),
+                  ],
+                ),
                 analyticsAsyncValue.when(
                   data: (totalSizeUsed) {
                     final totalSizeMB = totalSizeUsed / (1024 * 1024); // Convert to MB
@@ -99,8 +104,8 @@ class StorageChart extends ConsumerWidget {
               width: 500,
               child: analyticsAsyncValue.when(
                 data: (totalSizeUsed) {
-                  final totalSizeMB = totalSizeUsed / (1024 * 1024); // Convert to MB
-                  final freeSpaceMB = 5000 - totalSizeMB; // 5GB total (5000 MB)
+                  final totalSizeMB = totalSizeUsed / (1024 * 1024);
+                  final freeSpaceMB = 5000 - totalSizeMB;
 
                   return PieChart(
                     PieChartData(

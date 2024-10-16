@@ -34,103 +34,6 @@ class _AccountsState extends ConsumerState<Accounts> {
   ];
   late final List<String> adminProps;
   bool processing = false;
-  @override
-  Widget build(BuildContext context) {
-    // double width = MediaQuery.of(context).size.width;
-    double height = MediaQuery.of(context).size.height;
-    return Column(
-      children: [
-        Expanded(
-          child: Scrollbar(
-            controller: pageScrollController,
-            child: SingleChildScrollView(
-              controller: pageScrollController,
-              child: Column(
-                children: [
-                  const Header(title: 'Accounts'),
-                  Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            BLCardSimple(
-                              child: DropdownButton<String>(
-                                padding: const EdgeInsets.symmetric(horizontal: 10),
-                                underline: const SizedBox.shrink(),
-                                value: selectedAccType,
-                                items: accTypes.map((acc) {
-                                  return DropdownMenuItem<String>(
-                                    value: acc,
-                                    child: Text(acc),
-                                  );
-                                }).toList(),
-                                onChanged: (newValue) {
-                                  setState(() {
-                                    selectedAccType = newValue ?? '';
-                                  });
-                                },
-                                hint: const BLText('Select a option'),
-                              ),
-                            ),
-                            Flexible(
-                              child: AdminSearchBar((newQuery) {
-                                setState(() {
-                                  searchQuery = newQuery;
-                                });
-                              }),
-                            ),
-                          ],
-                        ),
-                        ConstrainedBox(
-                          constraints: const BoxConstraints(maxWidth: 1200),
-                          child: BLCardSimple(
-                            child: Padding(
-                              padding: const EdgeInsets.all(15),
-                              child: Column(
-                                children: [
-                                  selectedAccType == accTypes[0] ? Users(userProps) : Admins(adminProps),
-                                  SizedBox(
-                                    height: height * 0.1,
-                                  ),
-                                  if (selectedAccType == accTypes[1])
-                                    BLAdminButton(
-                                        type: AdminBtnType.teal,
-                                        onPressed: () async {
-                                          if (processing) return;
-                                          processing = true;
-                                          await dialog.show(context, const CreateAdmin());
-                                          processing = false;
-                                        },
-                                        child: const Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Icon(
-                                              Icons.add,
-                                              color: Colors.white,
-                                            ),
-                                            SizedBox(width: 5),
-                                            BLText('Add admin')
-                                            // BLText(selectedAccType == accTypes[0] ? 'Add user' : 'Add admin')
-                                          ],
-                                        ))
-                                ],
-                              ),
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                  )
-                ],
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
 
   @override
   void initState() {
@@ -138,5 +41,91 @@ class _AccountsState extends ConsumerState<Accounts> {
     adminProps = [...userProps];
     dialog = ref.read(dialogServiceProvider.notifier);
     super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // double width = MediaQuery.of(context).size.width;
+    double height = MediaQuery.of(context).size.height;
+    return ListView(
+      padding: EdgeInsets.zero,
+      controller: pageScrollController,
+      children: [
+        const Header(title: 'Accounts'),
+        ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 1000, minWidth: 200, minHeight: 200),
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    BLCardSimple(
+                      child: DropdownButton<String>(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        underline: const SizedBox.shrink(),
+                        value: selectedAccType,
+                        items: accTypes.map((acc) {
+                          return DropdownMenuItem<String>(
+                            value: acc,
+                            child: Text(acc),
+                          );
+                        }).toList(),
+                        onChanged: (newValue) {
+                          setState(() {
+                            selectedAccType = newValue ?? '';
+                          });
+                        },
+                        hint: const BLText('Select a option'),
+                      ),
+                    ),
+                    AdminSearchBar((newQuery) {
+                      setState(() {
+                        searchQuery = newQuery;
+                      });
+                    }),
+                  ],
+                ),
+                BLCardSimple(
+                  child: Padding(
+                    padding: const EdgeInsets.all(15),
+                    child: Column(
+                      children: [
+                        selectedAccType == accTypes[0] ? Users(userProps) : Admins(adminProps),
+                        SizedBox(
+                          height: height * 0.1,
+                        ),
+                        if (selectedAccType == accTypes[1])
+                          BLAdminButton(
+                              type: AdminBtnType.teal,
+                              onPressed: () async {
+                                if (processing) return;
+                                processing = true;
+                                await dialog.show(context, const CreateAdmin());
+                                processing = false;
+                              },
+                              child: const Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.add,
+                                    color: Colors.white,
+                                  ),
+                                  SizedBox(width: 5),
+                                  BLText('Add admin')
+                                  // BLText(selectedAccType == accTypes[0] ? 'Add user' : 'Add admin')
+                                ],
+                              ))
+                      ],
+                    ),
+                  ),
+                )
+              ],
+            ),
+          ),
+        )
+      ],
+    );
   }
 }

@@ -1,5 +1,4 @@
 import 'package:block_logic/components/async/loading.dart';
-import 'package:block_logic/components/dialog/dialog.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/text/title_small.dart';
 import 'package:block_logic/components/util/provider_default.dart';
@@ -7,7 +6,6 @@ import 'package:block_logic/components/util/spaced_row.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_models/report.dart';
 import 'package:block_logic/logic/firebase_providers/reports.dart';
-import 'package:block_logic/logic/services/navigation.dart';
 import 'package:block_logic/logic/services/reports_manager.dart';
 import 'package:block_logic/logic/services/toast.dart';
 import 'package:block_logic/logic/testing.dart';

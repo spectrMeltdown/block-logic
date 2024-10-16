@@ -1,6 +1,5 @@
 import 'package:block_logic/logic/firebase_models/challenge.dart';
 import 'package:block_logic/logic/game/logic/game_manager.dart';
-import 'package:block_logic/route_observer.dart';
 import 'package:block_logic/screens/game/blocks_selector.dart';
 import 'package:block_logic/screens/game/challange_box.dart';
 import 'package:block_logic/screens/game/editor.dart';
