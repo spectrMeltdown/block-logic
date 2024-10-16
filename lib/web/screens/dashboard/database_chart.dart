@@ -85,7 +85,7 @@ class DatabaseChart extends ConsumerWidget {
                       titlePositionPercentageOffset: 1.2,
                       title: entry.key,
                       value: entry.value,
-                      radius: (width < height ? width : height) * 0.27,
+                      radius: (width < height ? width : height) * 0.25,
                       titleStyle: TextStyle(
                         color: Colors.white,
                         fontSize: 16,
