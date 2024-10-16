@@ -8,15 +8,20 @@ part 'generated/selected_challenge.g.dart';
 @riverpod
 Stream<Challenge?> selectedChallenge(
   SelectedChallengeRef ref,
-  String challengeID,
-) async* {
+  String challengeID, {
+  bool? createMode,
+}) async* {
   final db = FirebaseDatabase.instance;
   Challenge? result;
-  db.ref('challenges/$challengeID').onValue.listen((event) {
-    final snapshot = event.snapshot;
-    if (snapshot.exists) {
-      result = Challenge.fromRTDB(snapshot);
-    }
-  });
-  yield result;
+  if (createMode != null && createMode == true) {
+    yield Challenge();
+  } else {
+    db.ref('challenges/$challengeID').onValue.listen((event) {
+      final snapshot = event.snapshot;
+      if (snapshot.exists) {
+        result = Challenge.fromRTDB(snapshot);
+      }
+    });
+    yield result;
+  }
 }

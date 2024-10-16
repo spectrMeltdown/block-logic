@@ -13,8 +13,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:flutter_web_plugins/url_strategy.dart';
 import 'firebase_options.dart';
 
 Future<void> main() async {
@@ -37,6 +38,8 @@ Future<void> main() async {
     //   FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
     //   return true;
     // };
+  } else {
+    usePathUrlStrategy();
   }
   final prefs = await SharedPreferences.getInstance();
   runApp(ProviderScope(
@@ -65,6 +68,7 @@ class BlockLogic extends StatelessWidget {
         // home: const TestGame(),
       );
     }
+
     return MaterialApp.router(
       // builder: (context, child) => ResponsiveBreakpoints.builder(
       //   child: child!,

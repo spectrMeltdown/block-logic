@@ -19,24 +19,26 @@ import 'package:block_logic/web/components/header.dart';
 import 'package:block_logic/web/screens/challenges/block_selector_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class CreateEditChallenge extends ConsumerStatefulWidget {
   final String selectedChallengeID;
-  const CreateEditChallenge({this.selectedChallengeID = '', super.key});
+  final bool createMode;
+  const CreateEditChallenge({required this.createMode, this.selectedChallengeID = '', super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _SelectedChallengeState();
 }
 
 class _SelectedChallengeState extends ConsumerState<CreateEditChallenge> {
+  TextEditingController? additionalInfo;
+  TextEditingController? shortDescription;
+  TextEditingController? name;
   final tagBtnKey = GlobalKey();
   final limitationBtnKey = GlobalKey();
   late final Toast toast;
   List<String> tags = [];
   List<String> limitations = [];
-  String? shortDescription;
-  String? additionalInfo;
-  String? name;
   int totalSelected = 0;
   late final DialogService dialog;
   Map<CodeBlockType, List<GameBlockData>>? blocks;
@@ -81,7 +83,11 @@ class _SelectedChallengeState extends ConsumerState<CreateEditChallenge> {
               BLTextBox(
                 controller: tagController,
               ),
-              BLAdminButton(type: AdminBtnType.green, child: const BLText('Save'), onPressed: () => Navigator.pop(context))
+              BLAdminButton(
+                type: AdminBtnType.green,
+                child: const BLText('Save'),
+                onPressed: () => Navigator.pop(context),
+              )
             ],
           ),
         ),
@@ -98,7 +104,8 @@ class _SelectedChallengeState extends ConsumerState<CreateEditChallenge> {
 
   @override
   Widget build(BuildContext context) {
-    final selectedChallenge = ref.watch(SelectedChallengeProvider(widget.selectedChallengeID));
+    if (!widget.createMode) debugPrint('in edit challenge: ${widget.selectedChallengeID}');
+    final selectedChallenge = ref.watch(SelectedChallengeProvider(widget.selectedChallengeID, createMode: widget.createMode));
     double width = MediaQuery.of(context).size.width;
     // double height = MediaQuery.of(context).size.height;
     return ListView(
@@ -109,7 +116,7 @@ class _SelectedChallengeState extends ConsumerState<CreateEditChallenge> {
         FadeIn(
           child: Center(
             child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 800, minWidth: 200),
+              constraints: const BoxConstraints(maxWidth: 1000, minWidth: 200),
               child: selectedChallenge.when(
                   data: (challenge) {
                     if (challenge == null) {
@@ -152,10 +159,7 @@ class _SelectedChallengeState extends ConsumerState<CreateEditChallenge> {
                                       const SizedBox(height: 10),
                                       BLText('${challengeProps[i]} : '),
                                       const SizedBox(height: 5),
-                                      ConstrainedBox(
-                                        constraints: BoxConstraints(maxWidth: 400),
-                                        child: getInputWidget(challengeProps[i], challenge),
-                                      ),
+                                      getInputWidget(challengeProps[i], challenge),
                                     ],
                                   );
                                 }),
@@ -169,11 +173,13 @@ class _SelectedChallengeState extends ConsumerState<CreateEditChallenge> {
                                     ),
                                     const SizedBox(width: 10),
                                     BLAdminButton(
-                                        type: AdminBtnType.green,
-                                        onPressed: () {
-                                          save();
-                                        },
-                                        child: BLText(widget.selectedChallengeID.isEmpty ? 'Create' : 'Save changes', color: Colors.white))
+                                      type: AdminBtnType.green,
+                                      onPressed: () => save(),
+                                      child: BLText(
+                                        widget.selectedChallengeID.isEmpty ? 'Create' : 'Save changes',
+                                        color: Colors.white,
+                                      ),
+                                    )
                                   ],
                                 )
                               ],
@@ -204,32 +210,29 @@ class _SelectedChallengeState extends ConsumerState<CreateEditChallenge> {
   Widget getInputWidget(String challengeProp, Challenge challenge) {
     switch (challengeProp) {
       case 'Name':
+        name ??= TextEditingController(text: challenge.name);
         return BLTextBox(
-          controller: TextEditingController(text: challenge.name),
+          controller: name,
           hintText: 'E.x Code is fun!',
-          onSaved: (value) {
-            name = value;
-          },
+          onFieldSubmitted: (p0) => save(),
         );
       case 'Short Description':
+        shortDescription ??= TextEditingController(text: challenge.shortDescription);
         return BLTextBox(
-          controller: TextEditingController(text: challenge.shortDescription),
+          controller: shortDescription,
           keyboardType: TextInputType.multiline,
           hintText: 'E.x. Create an program ...',
-          onSaved: (value) {
-            shortDescription = value;
-          },
           maxLines: null,
+          onFieldSubmitted: (p0) => save(),
         );
       case 'Additional Info':
+        additionalInfo ??= TextEditingController(text: challenge.additionalInfo);
         return BLTextBox(
-          controller: TextEditingController(text: challenge.additionalInfo),
+          controller: additionalInfo,
           keyboardType: TextInputType.multiline,
           hintText: 'E.x. Use functions...',
-          onSaved: (value) {
-            additionalInfo = value;
-          },
           maxLines: null,
+          onFieldSubmitted: (p0) => save(),
         );
       // case 'Limitations':
       //   return ChipStrip(
@@ -338,20 +341,21 @@ class _SelectedChallengeState extends ConsumerState<CreateEditChallenge> {
     if (processing) return;
     toggleProcessing();
     if (formKey.currentState!.validate()) {
-      formKey.currentState!.save();
+      assert(shortDescription?.text.trim() is String);
       final challenge = Challenge(
-        id: widget.selectedChallengeID,
-        name: name,
-        shortDescription: shortDescription,
-        additionalInfo: additionalInfo,
+        id: widget.createMode ? null : widget.selectedChallengeID,
+        name: name?.text.trim(),
+        shortDescription: shortDescription?.text.trim(),
+        additionalInfo: additionalInfo?.text.trim(),
         limitations: limitations,
         tags: tags,
         difficulty: difficultySelection,
       );
-      final result = await challengeManager.update(challenge);
+      final result = widget.createMode ? await challengeManager.create(challenge) : await challengeManager.update(challenge);
       if (result == null) {
         if (!mounted) return;
-        toast.showToast(context, widget.selectedChallengeID.isEmpty ? 'Challenge created' : 'Edited successfully', type: NotifType.success);
+        toast.showToast(context, widget.createMode ? 'Challenge created' : 'Edited successfully', type: NotifType.success);
+        context.go('/challenges');
       } else {
         if (!mounted) return;
         toast.showToast(context, result.toString(), type: NotifType.error);

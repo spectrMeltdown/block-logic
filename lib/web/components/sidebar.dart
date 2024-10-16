@@ -29,13 +29,28 @@ enum WebScaffoldPages {
 }
 
 class _SidebarState extends ConsumerState<Sidebar> {
+  final double sidebarCompactWidth = 200;
   late AuthService auth;
+  late List<String> locations;
+  late double width;
   int? selected;
   int? hovered;
-  late List<String> locations;
-  double sidebarCompactWidth = 200;
-  late double width;
-  bool processing = false;
+
+  @override
+  void initState() {
+    auth = ref.read(authServiceProvider.notifier);
+    locations = List.generate(WebScaffoldPages.values.length, (i) {
+      return '/${WebScaffoldPages.values[i].name}';
+    });
+    debugPrint('sidebar full path: ${widget.state.fullPath}');
+    for (final location in locations.indexed) {
+      if (widget.state.fullPath != null && widget.state.fullPath!.contains(location.$2)) {
+        // debugPrint(location.$2);
+        selected = location.$1;
+      }
+    }
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -128,21 +143,6 @@ class _SidebarState extends ConsumerState<Sidebar> {
         context.go('/feedback');
         break;
     }
-  }
-
-  @override
-  void initState() {
-    auth = ref.read(authServiceProvider.notifier);
-    locations = List.generate(WebScaffoldPages.values.length, (i) {
-      return '/${WebScaffoldPages.values[i].name}';
-    });
-    for (final location in locations.indexed) {
-      if (widget.state.fullPath == location.$2) {
-        selected = location.$1;
-      }
-    }
-    selected ??= 0;
-    super.initState();
   }
 
   List items([bool isCompact = false]) {

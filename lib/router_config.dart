@@ -168,12 +168,15 @@ GoRouter router() {
           GoRoute(path: shellRoutes['challenges']![0], pageBuilder: (context, state) => shellRoutes['challenges']![1], routes: [
             GoRoute(
               path: 'edit/:id',
-              pageBuilder: (context, state) => pageTransition(child: CreateEditChallenge(selectedChallengeID: state.pathParameters['id']!)),
+              pageBuilder: (context, state) => pageTransition(child: CreateEditChallenge(createMode: false, selectedChallengeID: state.pathParameters['id']!)),
               // onExit: onExitEdit,
             ),
             GoRoute(
               path: 'create',
-              pageBuilder: (context, state) => pageTransition(child: const CreateEditChallenge()),
+              pageBuilder: (context, state) => pageTransition(
+                  child: const CreateEditChallenge(
+                createMode: true,
+              )),
               // onExit: onExitCreate,
             ),
           ]),
@@ -200,7 +203,7 @@ GoRouter router() {
     ],
     observers: [routeObserver],
     redirect: (context, state) async {
-      debugPrint('redirect called');
+      // debugPrint('redirect called');
       // return '/accounts';
       final user = FirebaseAuth.instance.currentUser;
       if (user?.uid != null) {
@@ -223,11 +226,14 @@ GoRouter router() {
         if (state.matchedLocation == '/login') {
           return '/dashboard';
         }
-        if (state.fullPath != null && state.fullPath!.contains('challenge/create')) {
-          return 'challenges/create';
+        if (state.fullPath != null && state.fullPath!.contains('challenges/create')) {
+          // debugPrint('redirecting create challenge');
+          return '/challenges/create';
         }
-        if (state.fullPath != null && state.fullPath!.contains('challenge/edit')) {
-          return 'challenges/edit/${state.pathParameters['id']}';
+        if (state.fullPath != null && state.fullPath!.contains('challenges/edit')) {
+          // debugPrint('redirecting edit challenge: ${state.fullPath}');
+          // debugPrint('path parameters: ${state.pathParameters['id']}');
+          return '/challenges/edit/${state.pathParameters['id']}';
         }
         return null;
       } else {

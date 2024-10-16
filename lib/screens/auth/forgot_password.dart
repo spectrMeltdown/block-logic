@@ -3,6 +3,7 @@ import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/text/title_small.dart';
 import 'package:block_logic/components/textbox.dart';
 import 'package:block_logic/components/util/blank_widget.dart';
+import 'package:block_logic/constants.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/services/auth.dart';
 import 'package:block_logic/logic/services/navigation.dart';
@@ -34,12 +35,12 @@ class _ForgotPasswordDialogState extends ConsumerState<ForgotPasswordDialog> {
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
-    double height = MediaQuery.of(context).size.height;
+    // double height = MediaQuery.of(context).size.height;
     return BLDialog(
         child: Form(
       key: formKey,
       child: ConstrainedBox(
-        constraints: BoxConstraints(maxWidth: width * 0.3, maxHeight: height * 0.25),
+        constraints: BoxConstraints(maxWidth: width * 0.3),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -47,40 +48,49 @@ class _ForgotPasswordDialogState extends ConsumerState<ForgotPasswordDialog> {
             const SizedBox(height: 10),
             Visibility(
               visible: widget.useEmail,
-              child: BLTextBox(
-                controller: emailController,
-                labelText: 'Email',
-                onFieldSubmitted: (p0) => sendLink(),
-                prefixIcon: const Icon(
-                  FontAwesomeIcons.envelope,
-                  color: Colors.white,
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                    horizontal: kIsWeb
+                        ? width >= desktopMin
+                            ? 40
+                            : width >= tabletMin
+                                ? 20
+                                : 10
+                        : 0),
+                child: BLTextBox(
+                  controller: emailController,
+                  labelText: 'Email',
+                  onFieldSubmitted: (p0) => sendLink(),
+                  prefixIcon: const Icon(
+                    FontAwesomeIcons.envelope,
+                    color: Colors.white,
+                  ),
+                  keyboardType: TextInputType.emailAddress,
+                  validator: (email) {
+                    return validator.validateEmail(email?.trim());
+                  },
                 ),
-                keyboardType: TextInputType.emailAddress,
-                validator: (email) {
-                  return validator.validateEmail(email?.trim());
-                },
               ),
             ),
-            if (!kIsWeb)
-              Visibility(
-                visible: !widget.useEmail,
-                child: BLTextBox(
-                  prefixIcon: const Padding(
-                    padding: EdgeInsets.only(top: 3),
-                    child: BLText(
-                      '+63',
-                      bold: true,
-                      color: Colors.white,
-                    ),
+            Visibility(
+              visible: !kIsWeb && !widget.useEmail,
+              child: BLTextBox(
+                prefixIcon: const Padding(
+                  padding: EdgeInsets.only(top: 3),
+                  child: BLText(
+                    '+63',
+                    bold: true,
+                    color: Colors.white,
                   ),
-                  onFieldSubmitted: (p0) => sendLink(),
-                  controller: phoneController,
-                  maxLength: 10,
-                  labelText: 'Phone number',
-                  keyboardType: TextInputType.phone,
-                  validator: (phoneNum) => validator.validatePhoneNum(phoneNum),
                 ),
+                onFieldSubmitted: (p0) => sendLink(),
+                controller: phoneController,
+                maxLength: 10,
+                labelText: 'Phone number',
+                keyboardType: TextInputType.phone,
+                validator: (phoneNum) => validator.validatePhoneNum(phoneNum),
               ),
+            ),
             const SizedBox(height: 10),
             errorMsg,
             Row(

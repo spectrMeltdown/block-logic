@@ -6,7 +6,7 @@ part of '../selected_challenge.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$selectedChallengeHash() => r'a65fc09346023b7d17672da791f7291899d74006';
+String _$selectedChallengeHash() => r'a40d7fbc16d1b0eb041b4c830100cf7d545d607d';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -40,10 +40,12 @@ class SelectedChallengeFamily extends Family<AsyncValue<Challenge?>> {
 
   /// See also [selectedChallenge].
   SelectedChallengeProvider call(
-    String challengeID,
-  ) {
+    String challengeID, {
+    bool? createMode,
+  }) {
     return SelectedChallengeProvider(
       challengeID,
+      createMode: createMode,
     );
   }
 
@@ -53,6 +55,7 @@ class SelectedChallengeFamily extends Family<AsyncValue<Challenge?>> {
   ) {
     return call(
       provider.challengeID,
+      createMode: provider.createMode,
     );
   }
 
@@ -75,11 +78,13 @@ class SelectedChallengeFamily extends Family<AsyncValue<Challenge?>> {
 class SelectedChallengeProvider extends AutoDisposeStreamProvider<Challenge?> {
   /// See also [selectedChallenge].
   SelectedChallengeProvider(
-    String challengeID,
-  ) : this._internal(
+    String challengeID, {
+    bool? createMode,
+  }) : this._internal(
           (ref) => selectedChallenge(
             ref as SelectedChallengeRef,
             challengeID,
+            createMode: createMode,
           ),
           from: selectedChallengeProvider,
           name: r'selectedChallengeProvider',
@@ -91,6 +96,7 @@ class SelectedChallengeProvider extends AutoDisposeStreamProvider<Challenge?> {
           allTransitiveDependencies:
               SelectedChallengeFamily._allTransitiveDependencies,
           challengeID: challengeID,
+          createMode: createMode,
         );
 
   SelectedChallengeProvider._internal(
@@ -101,9 +107,11 @@ class SelectedChallengeProvider extends AutoDisposeStreamProvider<Challenge?> {
     required super.debugGetCreateSourceHash,
     required super.from,
     required this.challengeID,
+    required this.createMode,
   }) : super.internal();
 
   final String challengeID;
+  final bool? createMode;
 
   @override
   Override overrideWith(
@@ -119,6 +127,7 @@ class SelectedChallengeProvider extends AutoDisposeStreamProvider<Challenge?> {
         allTransitiveDependencies: null,
         debugGetCreateSourceHash: null,
         challengeID: challengeID,
+        createMode: createMode,
       ),
     );
   }
@@ -131,13 +140,15 @@ class SelectedChallengeProvider extends AutoDisposeStreamProvider<Challenge?> {
   @override
   bool operator ==(Object other) {
     return other is SelectedChallengeProvider &&
-        other.challengeID == challengeID;
+        other.challengeID == challengeID &&
+        other.createMode == createMode;
   }
 
   @override
   int get hashCode {
     var hash = _SystemHash.combine(0, runtimeType.hashCode);
     hash = _SystemHash.combine(hash, challengeID.hashCode);
+    hash = _SystemHash.combine(hash, createMode.hashCode);
 
     return _SystemHash.finish(hash);
   }
@@ -146,6 +157,9 @@ class SelectedChallengeProvider extends AutoDisposeStreamProvider<Challenge?> {
 mixin SelectedChallengeRef on AutoDisposeStreamProviderRef<Challenge?> {
   /// The parameter `challengeID` of this provider.
   String get challengeID;
+
+  /// The parameter `createMode` of this provider.
+  bool? get createMode;
 }
 
 class _SelectedChallengeProviderElement
@@ -155,6 +169,8 @@ class _SelectedChallengeProviderElement
 
   @override
   String get challengeID => (origin as SelectedChallengeProvider).challengeID;
+  @override
+  bool? get createMode => (origin as SelectedChallengeProvider).createMode;
 }
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

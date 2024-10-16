@@ -6,7 +6,7 @@ part of '../selected_admin.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$selectedAdminHash() => r'a75e16e6e49853e8f6666594640c6b89dc7e082d';
+String _$selectedAdminHash() => r'b94f493794d74e0a72ba135fa94136bc51aa3e1e';
 
 /// Copied from Dart SDK
 class _SystemHash {

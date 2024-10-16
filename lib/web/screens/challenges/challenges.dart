@@ -122,6 +122,10 @@ class ChallengesState extends ConsumerState<Challenges> {
                                           onSelectChanged: (value) {
                                             if (!deleteMode) {
                                               context.go('/challenges/edit/${challenges[i].id}');
+                                            } else {
+                                              setState(() {
+                                                selectedChallengeIDs![challenges[i].id!] = !selectedChallengeIDs![challenges[i].id!]!; // Update parent state
+                                              });
                                             }
                                           },
                                           cells: [
@@ -129,10 +133,10 @@ class ChallengesState extends ConsumerState<Challenges> {
                                               Visibility(
                                                 visible: deleteMode,
                                                 child: Checkbox(
-                                                  value: selectedChallengeIDs![challenges[i].id!], // Handle null safety
+                                                  value: selectedChallengeIDs?[challenges[i].id!], // Handle null safety
                                                   onChanged: (value) {
-                                                    debugPrint(challenges[i].id);
-                                                    debugPrint(selectedChallengeIDs![challenges[i].id!].toString());
+                                                    // debugPrint(challenges[i].id);
+                                                    // debugPrint(selectedChallengeIDs![challenges[i].id!].toString());
                                                     if (value != null) {
                                                       setState(() {
                                                         selectedChallengeIDs![challenges[i].id!] = value; // Update parent state
@@ -181,10 +185,11 @@ class ChallengesState extends ConsumerState<Challenges> {
                                       mainAxisSize: MainAxisSize.min,
                                       children: [BLText('Cancel')],
                                     ),
-                                    onPressed: () {
+                                    onPressed: () async {
                                       setState(() {
                                         deleteMode = false;
                                       });
+                                      selectedChallengeIDs!.updateAll((k, v) => v = false);
                                     })
                                 : BLAdminButton(
                                     type: processing ? AdminBtnType.grey : AdminBtnType.green,
