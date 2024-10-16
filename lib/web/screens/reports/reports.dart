@@ -304,7 +304,7 @@ class _ReportsState extends ConsumerState<Reports> {
                                 color: Colors.green.shade800,
                                 child: Center(
                                   child: BLText(
-                                    dateRange == null ? 'Select\ndate range' : 'From: ${DateFormat('dd / MM / y').format(dateRange!.start)} | To: ${DateFormat('dd / MM / y').format(dateRange!.end)}',
+                                    dateRange == null ? 'Select date range' : 'From: ${DateFormat('dd / MM / y').format(dateRange!.start)} | To: ${DateFormat('dd / MM / y').format(dateRange!.end)}',
                                     size: 18,
                                     color: Colors.white,
                                     alignCenter: true,
