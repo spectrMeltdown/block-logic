@@ -1,7 +1,9 @@
 import 'package:block_logic/components/dialog/dialog.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/logic/enums.dart';
+import 'package:block_logic/logic/firebase_models/challenge.dart';
 import 'package:block_logic/logic/game/block_data.dart';
+import 'package:block_logic/logic/services/challenge_manager.dart';
 import 'package:block_logic/logic/services/dialog.dart';
 import 'package:block_logic/logic/services/navigation.dart';
 import 'package:block_logic/logic/services/toast.dart';
@@ -150,8 +152,8 @@ class _BlockSelectorDialogState extends ConsumerState<BlockSelectorDialog> with 
   late final DialogService dialog;
   late final CustomNavigation nav;
   late final TabCountManager counter;
+  late final ChallengeManager chManager;
   late final Toast toast;
-  bool processing = false;
   bool firstBuild = true;
 
   @override
@@ -159,6 +161,7 @@ class _BlockSelectorDialogState extends ConsumerState<BlockSelectorDialog> with 
     dialog = ref.read(dialogServiceProvider.notifier);
     nav = ref.read(customNavigationProvider.notifier);
     toast = ref.read(toastProvider.notifier);
+    chManager = ref.read(challengeManagerProvider.notifier);
     counter = ref.read(tabCountProvider.notifier);
     selectedBlocks = {for (final type in CodeBlockType.values.where((e) => e != CodeBlockType.statement)) type: []};
     if (widget.initialBlocks.isNotEmpty) {
@@ -172,8 +175,6 @@ class _BlockSelectorDialogState extends ConsumerState<BlockSelectorDialog> with 
   }
 
   void addCustom(CodeBlockType type) async {
-    if (processing) return;
-    processing = false;
     final result = await dialog.show(context, barrierDismissable: false, CustomBlockDialog(type));
     if (result is GameBlockData) {
       if (!mounted) return;
@@ -182,7 +183,6 @@ class _BlockSelectorDialogState extends ConsumerState<BlockSelectorDialog> with 
       if (!mounted) return;
       toast.showToast(context, 'No block added.', type: NotifType.info);
     }
-    processing = false;
   }
 
   void buildTabs() {
@@ -295,14 +295,12 @@ class _BlockSelectorDialogState extends ConsumerState<BlockSelectorDialog> with 
               width: 15,
             ),
             BLAdminButton(
-                type: AdminBtnType.green,
-                child: const BLText('Save changes'),
-                onPressed: () async {
-                  if (processing) return;
-                  processing = true;
-
-                  processing = false;
-                })
+              type: AdminBtnType.green,
+              child: const BLText('Save changes'),
+              onPressed: () {
+                nav.pop(context, selectedBlocks);
+              },
+            )
           ],
         )
       ],

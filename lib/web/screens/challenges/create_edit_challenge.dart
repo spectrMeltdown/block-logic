@@ -300,11 +300,16 @@ class _SelectedChallengeState extends ConsumerState<CreateEditChallenge> {
             onPressed: () async {
               if (processing) return;
               processing = true;
-              await dialog.show(
+              final newBlocks = await dialog.show(
                   context,
                   BlockSelectorDialog(
                     initialBlocks: blocks ?? {},
                   ));
+              if (newBlocks is Map<CodeBlockType, List<GameBlockData>>) {
+                challengeManager.update(Challenge(id: challenge.id, blocks: newBlocks));
+              } else {
+                debugPrint('blocks not updated!');
+              }
               processing = false;
             },
             child: BLText(

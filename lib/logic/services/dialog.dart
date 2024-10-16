@@ -13,6 +13,7 @@ class DialogService extends _$DialogService {
     BuildContext context,
     Widget dialog, {
     bool barrierDismissable = false,
+    Object? returnType,
   }) async {
     if (kIsWeb) {
       return showDialog(context: context, builder: (context) => dialog);

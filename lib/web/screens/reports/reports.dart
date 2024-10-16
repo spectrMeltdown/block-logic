@@ -15,6 +15,7 @@ import 'package:block_logic/web/components/header.dart';
 import 'package:block_logic/web/screens/reports/graph.dart';
 import 'package:block_logic/web/screens/reports/report_type_selector.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -42,7 +43,7 @@ class _ReportsState extends ConsumerState<Reports> {
     'Challenges Played': ReportType.challengesPlayed,
     'Rooms Played': ReportType.roomsPlayed,
   };
-  late final Map<ReportType, Stream> streams;
+  late final Map<ReportType, Query> streams;
   ReportType selectedType = ReportType.basicUsers;
   DateTimeRange? dateRange = kDebugMode ? DateTimeRange(start: DateTime(2024, 9, 25), end: DateTime.now()) : null;
   int total = 0;
@@ -57,7 +58,7 @@ class _ReportsState extends ConsumerState<Reports> {
   void initState() {
     reportsManager = ref.read(reportsManagerProvider.notifier);
     toast = ref.read(toastProvider.notifier);
-    streams = {for (final type in ReportType.values) type: db.ref('reports').orderByChild('type').equalTo(type.name).onValue};
+    streams = {for (final type in ReportType.values) type: db.ref('reports').orderByChild('type').equalTo(type.name)};
     super.initState();
   }
 
@@ -165,11 +166,11 @@ class _ReportsState extends ConsumerState<Reports> {
     double width = MediaQuery.of(context).size.width;
     // double height = MediaQuery.of(context).size.height;
     // final reports = ref.watch(reportsProvider(ReportParams(type: selectedType, from: from, to: to)));
+    debugPrint('stream is now ${streams.entries.firstWhere((e) => e.key == selectedType).key}');
     final reports = ref.watch(reportsProvider(ReportParams(
       stream: streams.entries.firstWhere((e) => e.key == selectedType).value,
       dateRange: dateRange,
     )));
-
     // final reports = ref.watch(reportsProvider(ReportParams(type: selectedType, from: from, to: to)));
     return Stack(
       fit: StackFit.expand,

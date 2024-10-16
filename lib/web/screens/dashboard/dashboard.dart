@@ -27,7 +27,7 @@ class _DashboardState extends ConsumerState<Dashboard> {
   final notifScrollController = ScrollController();
   final pageScrollController = ScrollController();
   late final Toast toast;
-  late final Map<ReportType, Stream> streams;
+  late final Map<ReportType, Query> streams;
 
   @override
   Widget build(BuildContext context) {
@@ -138,7 +138,7 @@ class _DashboardState extends ConsumerState<Dashboard> {
   void initState() {
     generateMonths();
     final db = FirebaseDatabase.instance;
-    streams = {for (final type in ReportType.values) type: db.ref('reports').orderByChild('type').equalTo(type.name).onValue};
+    streams = {for (final type in ReportType.values) type: db.ref('reports').orderByChild('type').equalTo(type.name)};
     toast = ref.read(toastProvider.notifier);
     super.initState();
   }
