@@ -228,128 +228,112 @@ class _ReportsState extends ConsumerState<Reports> {
                             }),
                       ],
                     ),
-                  ConstrainedBox(
-                    constraints: BoxConstraints(maxWidth: width * 0.4),
-                    child: BLCardSimple(
-                      child: Padding(
-                        padding: const EdgeInsets.all(20),
-                        child: Column(
-                          // crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                const BLSmallTitle('Reports'),
-                                const SizedBox(
-                                  width: 20,
-                                ),
-                                BLAdminButton(
-                                    type: AdminBtnType.teal,
-                                    onPressed: generatePdf,
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        const Icon(
-                                          FontAwesomeIcons.file,
-                                          color: Colors.white,
-                                          size: 15,
-                                        ),
-                                        SizedBox(
-                                          width: width / 180,
-                                        ),
-                                        const BLText(
-                                          'Generate PDF',
-                                          color: Colors.white,
-                                        ),
-                                      ],
-                                    ))
-                              ],
+                  BLCardSimple(
+                    child: Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Wrap(
+                        spacing: 20,
+                        runSpacing: 20,
+                        // mainAxisSize: MainAxisSize.min,
+                        alignment: WrapAlignment.center,
+                        runAlignment: WrapAlignment.center,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: [
+                          BLCardSimple(
+                            color: Colors.blue.shade800,
+                            child: DropdownButton<ReportType>(
+                              borderRadius: const BorderRadius.all(Radius.circular(20)),
+                              padding: const EdgeInsets.symmetric(horizontal: 10),
+                              underline: const SizedBox.shrink(),
+                              value: selectedType,
+                              items: reportOptions.entries.map((entry) {
+                                return DropdownMenuItem<ReportType>(
+                                  value: entry.value,
+                                  child: Text(entry.key),
+                                );
+                              }).toList(),
+                              onChanged: (newValue) {
+                                if (newValue != null) {
+                                  setState(() {
+                                    selectedType = newValue;
+                                  });
+                                }
+                              },
+                              hint: const BLText('Select a category'),
                             ),
-                            Row(
-                              // mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                BLCardSimple(
-                                  color: Colors.blue.shade800,
-                                  child: DropdownButton<ReportType>(
-                                    borderRadius: const BorderRadius.all(Radius.circular(20)),
-                                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                                    underline: const SizedBox.shrink(),
-                                    value: selectedType,
-                                    items: reportOptions.entries.map((entry) {
-                                      return DropdownMenuItem<ReportType>(
-                                        value: entry.value,
-                                        child: Text(entry.key),
-                                      );
-                                    }).toList(),
-                                    onChanged: (newValue) {
-                                      if (newValue != null) {
-                                        setState(() {
-                                          selectedType = newValue;
-                                        });
-                                      }
-                                    },
-                                    hint: const BLText('Select a category'),
-                                  ),
-                                ),
-                                const SizedBox(
-                                  width: 20,
-                                ),
-                                GestureDetector(
-                                  onTap: () async {
-                                    final dateRange = await showDateRangePicker(
-                                      context: context,
-                                      firstDate: DateTime(2024, 9, 20),
-                                      lastDate: DateTime.now(),
-                                      initialDateRange: this.dateRange,
-                                      // initialEntryMode: DatePickerEntryMode.inputOnly,
-                                      builder: (context, child) {
-                                        return Theme(
-                                          data: ThemeData.dark().copyWith(
-                                            colorScheme: ColorScheme.dark(
-                                              primary: Colors.blue, // Header background color
-                                              onPrimary: Colors.blueGrey.shade900, // Header text color
-                                              surface: Colors.blueGrey.shade900, // Background color of the picker
-                                              onSurface: Colors.white, // Text color
-                                            ),
-                                            datePickerTheme: DatePickerThemeData(
-                                              inputDecorationTheme: InputDecorationTheme(),
-                                            ),
-                                            textButtonTheme: TextButtonThemeData(
-                                              style: TextButton.styleFrom(
-                                                foregroundColor: Colors.red, // Button text color
-                                              ),
-                                            ),
-                                          ),
-                                          child: child!,
-                                        );
-                                      },
-                                    );
-                                    if (dateRange != null) {
-                                      setState(() {
-                                        this.dateRange = dateRange;
-                                      });
-                                    }
-                                  },
-                                  child: ConstrainedBox(
-                                    constraints: const BoxConstraints(maxWidth: 200, minWidth: 200, maxHeight: 80),
-                                    child: BLCardSimple(
-                                      color: Colors.green.shade800,
-                                      child: Center(
-                                        child: BLText(
-                                          dateRange == null ? 'Select\ndate range' : 'From: ${DateFormat('dd / MM / y').format(dateRange!.start)}\nTo: ${DateFormat('dd / MM / y').format(dateRange!.end)}',
-                                          size: 18,
-                                          color: Colors.white,
-                                          alignCenter: true,
+                          ),
+                          GestureDetector(
+                            onTap: () async {
+                              final dateRange = await showDateRangePicker(
+                                context: context,
+                                firstDate: DateTime(2024, 9, 20),
+                                lastDate: DateTime.now(),
+                                initialDateRange: this.dateRange,
+                                // initialEntryMode: DatePickerEntryMode.inputOnly,
+                                builder: (context, child) {
+                                  return Theme(
+                                    data: ThemeData.dark().copyWith(
+                                      colorScheme: ColorScheme.dark(
+                                        primary: Colors.blue, // Header background color
+                                        onPrimary: Colors.blueGrey.shade900, // Header text color
+                                        surface: Colors.blueGrey.shade900, // Background color of the picker
+                                        onSurface: Colors.white, // Text color
+                                      ),
+                                      datePickerTheme: DatePickerThemeData(
+                                        inputDecorationTheme: InputDecorationTheme(),
+                                      ),
+                                      textButtonTheme: TextButtonThemeData(
+                                        style: TextButton.styleFrom(
+                                          foregroundColor: Colors.red, // Button text color
                                         ),
                                       ),
                                     ),
+                                    child: child!,
+                                  );
+                                },
+                              );
+                              if (dateRange != null) {
+                                setState(() {
+                                  this.dateRange = dateRange;
+                                });
+                              }
+                            },
+                            child: ConstrainedBox(
+                              constraints: const BoxConstraints(maxWidth: 400, minWidth: 200, maxHeight: 60),
+                              child: BLCardSimple(
+                                color: Colors.green.shade800,
+                                child: Center(
+                                  child: BLText(
+                                    dateRange == null ? 'Select\ndate range' : 'From: ${DateFormat('dd / MM / y').format(dateRange!.start)} | To: ${DateFormat('dd / MM / y').format(dateRange!.end)}',
+                                    size: 18,
+                                    color: Colors.white,
+                                    alignCenter: true,
                                   ),
-                                )
-                              ],
+                                ),
+                              ),
                             ),
-                          ],
-                        ),
+                          ),
+                          BLAdminButton(
+                              type: AdminBtnType.teal,
+                              onPressed: generatePdf,
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(
+                                    FontAwesomeIcons.file,
+                                    color: Colors.white,
+                                    size: 15,
+                                  ),
+                                  SizedBox(
+                                    width: width / 180,
+                                  ),
+                                  const BLText(
+                                    'Generate PDF',
+                                    color: Colors.white,
+                                  ),
+                                ],
+                              ))
+                        ],
                       ),
                     ),
                   ),
@@ -372,6 +356,8 @@ class _ReportsState extends ConsumerState<Reports> {
                           final mapData = reports as Map<TimePeriod, Map<ReportDate, List<Report>>>;
                           final entries = mapData.entries.toList();
                           printData = {for (var entry in entries) entry.key: entry.value.length};
+
+                          // total overall
                           for (final value in mapData[TimePeriod.yearly]!.values) {
                             count += value.length;
                           }

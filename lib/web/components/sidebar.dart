@@ -10,9 +10,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 class Sidebar extends ConsumerStatefulWidget {
-  final String location;
+  final GoRouterState state;
   final void Function() closeDrawer;
-  const Sidebar({required this.location, required this.closeDrawer, super.key});
+  const Sidebar({required this.state, required this.closeDrawer, super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _SidebarState();
@@ -137,7 +137,7 @@ class _SidebarState extends ConsumerState<Sidebar> {
       return '/${WebScaffoldPages.values[i].name}';
     });
     for (final location in locations.indexed) {
-      if (widget.location == location.$2) {
+      if (widget.state.fullPath == location.$2) {
         selected = location.$1;
       }
     }

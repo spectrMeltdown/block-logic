@@ -2,6 +2,7 @@ import 'package:block_logic/components/background.dart';
 import 'package:block_logic/constants.dart';
 import 'package:block_logic/web/components/sidebar.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class SidebarToggle extends StatelessWidget {
   final GlobalKey<ScaffoldState> scaffoldKey;
@@ -30,8 +31,8 @@ class SidebarToggle extends StatelessWidget {
 
 class WebScaffold extends StatefulWidget {
   final Widget child;
-  final String location;
-  const WebScaffold({required this.child, required this.location, super.key});
+  final GoRouterState state;
+  const WebScaffold({required this.child, required this.state, super.key});
 
   @override
   State<WebScaffold> createState() => _WebScaffoldState();
@@ -48,7 +49,7 @@ class _WebScaffoldState extends State<WebScaffold> {
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     final sidebar = Sidebar(
-      location: widget.location,
+      state: widget.state,
       closeDrawer: closeDrawer,
     );
     //debugPrint(FirebaseAuth.instance.currentUser?.uid);

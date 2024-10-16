@@ -1,3 +1,4 @@
+import 'package:animate_do/animate_do.dart';
 import 'package:block_logic/components/text/title.dart';
 import 'package:block_logic/constants.dart';
 import 'package:block_logic/logic/services/assets.dart';
@@ -38,7 +39,7 @@ class _HeaderState extends ConsumerState<Header> {
                     width: width * .9,
                     child: Image.asset(
                       assets.headerWeb,
-                      fit: BoxFit.fitHeight,
+                      fit: BoxFit.fill,
                     ),
                   ),
                 ),
@@ -50,7 +51,7 @@ class _HeaderState extends ConsumerState<Header> {
                     width: width * .6,
                     child: Image.asset(
                       assets.headerWeb,
-                      fit: BoxFit.fitHeight,
+                      fit: BoxFit.fill,
                     ),
                   ),
                 ),
@@ -63,7 +64,18 @@ class _HeaderState extends ConsumerState<Header> {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10),
             child: Column(
-              children: [Padding(padding: const EdgeInsets.only(top: 30, left: 20), child: BLTitle(widget.title, allCaps: false))],
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 30, left: 20),
+                  child: FadeInRight(
+                    duration: Duration(milliseconds: 500),
+                    child: BLTitle(
+                      widget.title,
+                      allCaps: false,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         )

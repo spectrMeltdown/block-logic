@@ -134,7 +134,7 @@ GoRouter router() {
             key: state.pageKey,
             child: FadeIn(
               child: WebScaffold(
-                location: state.fullPath!,
+                state: state,
                 child: child,
               ),
             ),
@@ -200,6 +200,7 @@ GoRouter router() {
     ],
     observers: [routeObserver],
     redirect: (context, state) async {
+      debugPrint('redirect called');
       // return '/accounts';
       final user = FirebaseAuth.instance.currentUser;
       if (user?.uid != null) {
@@ -221,6 +222,12 @@ GoRouter router() {
         /// prevent going back to login page when already logged in
         if (state.matchedLocation == '/login') {
           return '/dashboard';
+        }
+        if (state.fullPath != null && state.fullPath!.contains('challenge/create')) {
+          return 'challenges/create';
+        }
+        if (state.fullPath != null && state.fullPath!.contains('challenge/edit')) {
+          return 'challenges/edit/${state.pathParameters['id']}';
         }
         return null;
       } else {
