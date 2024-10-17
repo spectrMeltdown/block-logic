@@ -13,7 +13,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class CustomBlockDialog extends ConsumerStatefulWidget {
   final CodeBlockType type;
-  const CustomBlockDialog(this.type, {super.key});
+  final List<GameBlockData> customBlocks;
+  const CustomBlockDialog(this.type, {required this.customBlocks, super.key});
 
   @override
   ConsumerState<CustomBlockDialog> createState() => _CustomBlockDialogState();
@@ -49,10 +50,13 @@ class _CustomBlockDialogState extends ConsumerState<CustomBlockDialog> {
     });
   }
 
-  void saveBlock() {
+  Future<void> saveBlock() async {
     if (processing) return;
     toggleProcessing();
-    if (widget.type == CodeBlockType.variables || widget.type == CodeBlockType.literals) {
+    setState(() {
+      msg = SizedBox.shrink();
+    });
+    if (widget.type == CodeBlockType.literals) {
       if (selectedDataType == null) {
         updateMsg('Select a data type.');
         toggleProcessing();
@@ -62,13 +66,15 @@ class _CustomBlockDialogState extends ConsumerState<CustomBlockDialog> {
     if (formKey.currentState!.validate()) {
       final input = codeController.text.trim();
       PyLiteral? literal;
+
+      /// assign literal if meet requirements
       if (selectedDataType != null) {
         switch (selectedDataType) {
           case PyDataType.string_:
             literal = PyLiteral.string(input);
             break;
           case PyDataType.boolean_:
-            if (input == 'True' || input == 'true') {
+            if (bool.tryParse(input) != null) {
               literal = PyLiteral.boolean(input as bool);
             }
             break;
@@ -80,7 +86,7 @@ class _CustomBlockDialogState extends ConsumerState<CustomBlockDialog> {
             }
             break;
           case PyDataType.none_:
-            if (input == 'none' || input == 'None') {
+            if (input.contains('none')) {
               literal = PyLiteral.none();
             }
             break;
@@ -93,20 +99,39 @@ class _CustomBlockDialogState extends ConsumerState<CustomBlockDialog> {
           default:
         }
       }
-      late final GameBlockData data;
+
+      // data to return
+      late GameBlockData data;
+
+      // assign data if meet requirements
       switch (widget.type) {
         case CodeBlockType.objects:
-          data = GameBlockData.createObject(name: input);
+          // if exists customBlocks does not contain the input
+          if (widget.customBlocks.isNotEmpty || !widget.customBlocks.any((e) => e.name.trim().toUpperCase() == input.trim().toUpperCase())) {
+            data = GameBlockData.createObject(name: input);
+          } else {
+            updateMsg('An object with this name already exists.');
+            toggleProcessing();
+            return;
+          }
+
           break;
         case CodeBlockType.functions:
-          data = GameBlockData.createFunction(name: input);
+          if (widget.customBlocks.isNotEmpty || !widget.customBlocks.any((e) => e.name.trim().toUpperCase() == input.trim().toUpperCase())) {
+            data = GameBlockData.createFunction(name: input);
+          } else {
+            updateMsg('A function with this name already exists.');
+            toggleProcessing();
+            return;
+          }
+
           break;
         case CodeBlockType.variables:
           data = GameBlockData.createVariable(name: input, value: PyLiteral.none());
           break;
         case CodeBlockType.literals:
           if (literal == null) {
-            updateMsg('Unrecognized input (properly format pls)');
+            updateMsg('Unrecognized input! (must have proper format)');
             toggleProcessing();
             return;
           }
@@ -115,6 +140,7 @@ class _CustomBlockDialogState extends ConsumerState<CustomBlockDialog> {
         default:
           throw ('Invalid Type!');
       }
+      data = data.copyWith(inSelectorCount: 1);
       nav.pop(context, data);
     }
     toggleProcessing();
@@ -125,22 +151,21 @@ class _CustomBlockDialogState extends ConsumerState<CustomBlockDialog> {
     return BLDialog(
         child: ConstrainedBox(
       constraints: const BoxConstraints(maxWidth: 600, maxHeight: 400),
-      child: Center(
-        child: Form(
-          key: formKey,
-          child: Column(
-            children: [
-              const BLText('Describe the new object:'),
-              const SizedBox(
-                height: 15,
-              ),
-              Flexible(
-                  child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 300),
+      child: Form(
+        key: formKey,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const BLText('Define the new block:'),
+            const SizedBox(height: 15),
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 300),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: BLTextBox(
                   controller: codeController,
                   onFieldSubmitted: (p0) => saveBlock(),
-                  labelText: 'Code here ...',
+                  labelText: 'Code ...',
                   validator: (code) {
                     if (code == null || code.isEmpty) {
                       return 'Cannot be empty';
@@ -148,52 +173,47 @@ class _CustomBlockDialogState extends ConsumerState<CustomBlockDialog> {
                     return null;
                   },
                 ),
-              )),
-              if (widget.type == CodeBlockType.variables || widget.type == CodeBlockType.literals)
-                const SizedBox(
-                  height: 15,
-                ),
-              if (widget.type == CodeBlockType.variables || widget.type == CodeBlockType.literals)
-                DropdownButton<PyDataType>(
-                  hint: const BLText('(Select data type)'),
-                  value: selectedDataType,
-                  items: List.generate(PyDataType.values.length, (i) {
-                    return DropdownMenuItem(
-                      value: PyDataType.values[i],
-                      child: BLText(PyDataType.values[i].name.replaceFirst('_', '')),
-                    );
-                  }),
-                  onChanged: (value) {
-                    if (value != null) {
-                      setState(() {
-                        selectedDataType = value;
-                      });
-                    }
-                  },
-                ),
-              const SizedBox(
-                height: 15,
               ),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  BLAdminButton(
-                    type: processing ? AdminBtnType.grey : AdminBtnType.green,
-                    child: const BLText('Save'),
-                    onPressed: () => saveBlock,
-                  ),
-                  const SizedBox(
-                    width: 15,
-                  ),
-                  BLAdminButton(
-                    type: AdminBtnType.red,
-                    child: const BLText('Cancel'),
-                    onPressed: () => nav.pop(context),
-                  ),
-                ],
-              )
-            ],
-          ),
+            ),
+            if (widget.type == CodeBlockType.literals) const SizedBox(height: 15),
+            if (widget.type == CodeBlockType.literals)
+              DropdownButton<PyDataType>(
+                hint: const BLText('(Select data type)'),
+                value: selectedDataType,
+                items: List.generate(PyDataType.values.length, (i) {
+                  return DropdownMenuItem(
+                    value: PyDataType.values[i],
+                    child: BLText(PyDataType.values[i].name.replaceFirst('_', '')),
+                  );
+                }),
+                onChanged: (value) {
+                  if (value != null) {
+                    setState(() {
+                      selectedDataType = value;
+                    });
+                  }
+                },
+              ),
+            const SizedBox(height: 20),
+            msg,
+            const SizedBox(height: 10),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                BLAdminButton(
+                  type: processing ? AdminBtnType.grey : AdminBtnType.green,
+                  child: const BLText('Save'),
+                  onPressed: () => saveBlock(),
+                ),
+                const SizedBox(width: 15),
+                BLAdminButton(
+                  type: AdminBtnType.red,
+                  child: const BLText('Cancel'),
+                  onPressed: () => nav.pop(context),
+                ),
+              ],
+            )
+          ],
         ),
       ),
     ));

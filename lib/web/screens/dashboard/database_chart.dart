@@ -1,3 +1,4 @@
+import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/text/title_small.dart';
 import 'package:block_logic/constants.dart';
 import 'package:block_logic/web/components/card_simple.dart';
@@ -41,7 +42,6 @@ class DatabaseChart extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     double width = MediaQuery.of(context).size.width;
-    // double height = MediaQuery.of(context).size.height;
     final analyticsAsyncValue = ref.watch(firebaseDataProvider);
     final List<Color> brightColors = [
       Colors.red,
@@ -57,83 +57,103 @@ class DatabaseChart extends ConsumerWidget {
     Color getNextColor() {
       Color color = brightColors[colorIndex];
       colorIndex = (colorIndex + 1) % brightColors.length;
-
       return color;
     }
 
-    return Padding(
-      padding: const EdgeInsets.all(5),
-      child: BLCardSimple(
-        child: Padding(
-          padding: const EdgeInsets.all(35),
-          child: Column(
-            children: [
-              const Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  BLSmallTitle('Database'),
+    String formatSize(int bytes) {
+      if (bytes < 1000) {
+        return '$bytes B'; // Less than 1 KB
+      }
+      double kb = bytes / 1000;
+      if (kb < 1000) {
+        return '${kb.toStringAsFixed(2)} KB'; // Less than 1 MB
+      }
+      double mb = kb / 1000;
+      if (mb < 1000) {
+        return '${mb.toStringAsFixed(2)} MB'; // Less than 1 GB
+      }
+      double gb = mb / 1000;
+      return '${gb.toStringAsFixed(2)} GB'; // 1 GB or more
+    }
+
+    const int totalDatabaseSize = 1000 * 1000 * 1000;
+
+    return analyticsAsyncValue.when(
+        data: (percentages) {
+          if (percentages.isEmpty) {
+            return const Center(child: Text('No data found.'));
+          }
+          // Calculate the total used size in bytes
+          int totalUsedSize = percentages.entries.fold(0, (sum, entry) => sum + entry.value.toInt());
+          int freeSize = totalDatabaseSize - totalUsedSize; // Free size left in bytes
+
+          // Convert percentage values (which represent folder sizes in bytes) into PieChartSectionData
+          List<PieChartSectionData> pieChartSections = percentages.entries.map((entry) {
+            return PieChartSectionData(
+              titlePositionPercentageOffset: width > desktopMin
+                  ? 1.22
+                  : width > tabletMin
+                      ? 1.30
+                      : width > mobileMin
+                          ? 1.35
+                          : 1.15,
+              // Display folder name and formatted size (KB/MB)
+              title: '${entry.key}\n(${formatSize(entry.value.toInt())})',
+              value: entry.value,
+              radius: getRadius(width),
+              titleStyle: TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                shadows: [
+                  Shadow(
+                    color: Colors.black.withOpacity(0.3),
+                    blurRadius: 4,
+                  ),
                 ],
               ),
-              SizedBox(
-                height: 400,
-                width: 500,
-                child: analyticsAsyncValue.when(
-                  data: (percentages) {
-                    if (percentages.isEmpty) {
-                      return const Center(child: Text('No data found.'));
-                    }
+              color: getNextColor(),
+            );
+          }).toList();
 
-                    List<PieChartSectionData> pieChartSections = percentages.entries.map((entry) {
-                      return PieChartSectionData(
-                        titlePositionPercentageOffset: width > desktopMin
-                            ? 1.22
-                            : width > tabletMin
-                                ? 1.30
-                                : width > mobileMin
-                                    ? 1.35
-                                    : 1.15,
-                        title: entry.key,
-                        value: entry.value,
-                        radius: getRadius(width),
-                        titleStyle: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          shadows: [
-                            Shadow(
-                              color: Colors.black.withOpacity(0.3),
-                              blurRadius: 4,
-                            ),
-                          ],
-                        ),
-                        color: getNextColor(),
-                      );
-                    }).toList();
-
-                    return Column(
+          return Padding(
+            padding: const EdgeInsets.all(5),
+            child: BLCardSimple(
+              child: Padding(
+                padding: const EdgeInsets.all(35),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        SizedBox(
-                          height: 400,
-                          width: 400,
-                          child: PieChart(
-                            PieChartData(
-                              sections: pieChartSections,
-                              centerSpaceRadius: 0,
-                            ),
-                          ),
-                        ),
+                        BLSmallTitle('Database'),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            BLText('Used Size: ${formatSize(totalUsedSize)}'),
+                            BLText('Free Size: ${formatSize(freeSize)}'),
+                          ],
+                        )
                       ],
-                    );
-                  },
-                  loading: () => const Center(child: CircularProgressIndicator()),
-                  error: (error, stack) => Center(child: Text('Error: $error')),
+                    ),
+                    SizedBox(
+                      height: 400,
+                      width: 500,
+                      child: PieChart(
+                        PieChartData(
+                          sections: pieChartSections,
+                          centerSpaceRadius: 0,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              )
-            ],
-          ),
-        ),
-      ),
-    );
+              ),
+            ),
+          );
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stack) => Center(child: Text('Error: $error')));
   }
 
   double getRadius(double width) {

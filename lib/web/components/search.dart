@@ -17,7 +17,7 @@ class _AdminSearchBarState extends ConsumerState<AdminSearchBar> {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: ConstrainedBox(
-        constraints: BoxConstraints(maxWidth: 500),
+        constraints: BoxConstraints(maxWidth: 500, minWidth: 300),
         child: SearchBar(
           controller: searchController,
           hintText: 'Search ...',

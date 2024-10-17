@@ -12,7 +12,8 @@ import 'package:go_router/go_router.dart';
 class Sidebar extends ConsumerStatefulWidget {
   final GoRouterState state;
   final void Function() closeDrawer;
-  const Sidebar({required this.state, required this.closeDrawer, super.key});
+  final double parentWidth;
+  const Sidebar({required this.state, required this.closeDrawer, required this.parentWidth, super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _SidebarState();
@@ -55,6 +56,11 @@ class _SidebarState extends ConsumerState<Sidebar> {
   @override
   Widget build(BuildContext context) {
     width = MediaQuery.of(context).size.width;
+    if (widget.parentWidth > tabletMin) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        widget.closeDrawer();
+      });
+    }
     return Container(
       color: Colors.blueGrey.shade800,
       constraints: BoxConstraints(maxWidth: sidebarCompactWidth),

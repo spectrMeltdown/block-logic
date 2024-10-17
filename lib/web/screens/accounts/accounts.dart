@@ -80,11 +80,13 @@ class _AccountsState extends ConsumerState<Accounts> {
                         hint: const BLText('Select a option'),
                       ),
                     ),
-                    AdminSearchBar((newQuery) {
-                      setState(() {
-                        searchQuery = newQuery;
-                      });
-                    }),
+                    Flexible(
+                      child: AdminSearchBar((newQuery) {
+                        setState(() {
+                          searchQuery = newQuery;
+                        });
+                      }),
+                    ),
                   ],
                 ),
                 BLCardSimple(

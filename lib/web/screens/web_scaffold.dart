@@ -51,6 +51,7 @@ class _WebScaffoldState extends State<WebScaffold> {
     final sidebar = Sidebar(
       state: widget.state,
       closeDrawer: closeDrawer,
+      parentWidth: width,
     );
     //debugPrint(FirebaseAuth.instance.currentUser?.uid);
     return Scaffold(

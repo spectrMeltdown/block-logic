@@ -3,6 +3,10 @@ import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_models/challenge.dart';
 import 'package:block_logic/logic/game/block_data.dart';
+import 'package:block_logic/logic/game/py_conditional.dart';
+import 'package:block_logic/logic/game/py_keyword.dart';
+import 'package:block_logic/logic/game/py_loops.dart';
+import 'package:block_logic/logic/game/py_operators.dart';
 import 'package:block_logic/logic/services/challenge_manager.dart';
 import 'package:block_logic/logic/services/dialog.dart';
 import 'package:block_logic/logic/services/navigation.dart';
@@ -146,7 +150,8 @@ class BlockSelectorDialog extends ConsumerStatefulWidget {
 }
 
 class _BlockSelectorDialogState extends ConsumerState<BlockSelectorDialog> with SingleTickerProviderStateMixin {
-  late final Map<CodeBlockType, List<GameBlockData>> selectedBlocks;
+  final Map<CodeBlockType, List<GameBlockData>> selectedBlocks = {};
+  late final Map<CodeBlockType, List<GameBlockData>> togglableBlocks;
   late final List<Tab> tabs;
   late TabController tabController;
   late final DialogService dialog;
@@ -163,30 +168,124 @@ class _BlockSelectorDialogState extends ConsumerState<BlockSelectorDialog> with 
     toast = ref.read(toastProvider.notifier);
     chManager = ref.read(challengeManagerProvider.notifier);
     counter = ref.read(tabCountProvider.notifier);
-    selectedBlocks = {for (final type in CodeBlockType.values.where((e) => e != CodeBlockType.statement)) type: []};
+    togglableBlocks = {for (final type in CodeBlockType.values.where((e) => e != CodeBlockType.statement)) type: []};
+    inittogglableBlocks(); // assign the default loops, conditionals, etc blocks to togglableBlocks
     if (widget.initialBlocks.isNotEmpty) {
       for (final entry in widget.initialBlocks.entries) {
         selectedBlocks[entry.key] = entry.value;
         counter.assign(entry.key, selectedBlocks[entry.key]!.length);
       }
+      copySelectedToDefault(); // assign variables, functions, etc blocks to togglableBlocks
     }
-    tabController = TabController(vsync: this, length: selectedBlocks.keys.length);
+    tabController = TabController(vsync: this, length: togglableBlocks.keys.length);
     super.initState();
   }
 
   void addCustom(CodeBlockType type) async {
-    final result = await dialog.show(context, barrierDismissable: false, CustomBlockDialog(type));
-    if (result is GameBlockData) {
+    final List<GameBlockData> customBlocks = [];
+    // grab the customBlocks that already exists
+    switch (type) {
+      case CodeBlockType.variables:
+      case CodeBlockType.functions:
+      case CodeBlockType.objects:
+      case CodeBlockType.literals:
+        if (togglableBlocks[type] != null) {
+          customBlocks.addAll(togglableBlocks[type]!);
+        }
+      default:
+    }
+    final data = await dialog.show(context, barrierDismissable: false, CustomBlockDialog(type, customBlocks: customBlocks));
+    if (data is GameBlockData) {
       if (!mounted) return;
-      nav.pop(context, result);
+      togglableBlocks[type]!.add(data);
+      if (selectedBlocks[type] != null) {
+        selectedBlocks[type]!.add(data);
+      }
     } else {
       if (!mounted) return;
-      toast.showToast(context, 'No block added.', type: NotifType.info);
+      // toast.showToast(context, 'No block added.', type: NotifType.info);
+    }
+  }
+
+  void copySelectedToDefault() {
+    for (final codeType in CodeBlockType.values) {
+      switch (codeType) {
+        case CodeBlockType.variables:
+        case CodeBlockType.functions:
+        case CodeBlockType.objects:
+        case CodeBlockType.literals:
+          if (widget.initialBlocks[codeType] != null) {
+            for (final data in widget.initialBlocks[codeType]!) {
+              togglableBlocks[codeType]!.add(data);
+            }
+          }
+          break;
+        default:
+      }
+    }
+  }
+
+  void inittogglableBlocks() {
+    for (final codeType in CodeBlockType.values) {
+      switch (codeType) {
+        case CodeBlockType.operators:
+          for (final type in PyOperatorTypes.values) {
+            switch (type) {
+              case PyOperatorTypes.comparison:
+                for (final operator in PyOperatorsComparison.values) {
+                  togglableBlocks[codeType]!.add(GameBlockData.createOperator(operatorType: type, operator: operator));
+                }
+                break;
+              case PyOperatorTypes.assignment:
+                for (final operator in PyOperatorsAssignment.values) {
+                  togglableBlocks[codeType]!.add(GameBlockData.createOperator(operatorType: type, operator: operator));
+                }
+                break;
+              case PyOperatorTypes.arithmetic:
+                for (final operator in PyOperatorsArithmetic.values) {
+                  togglableBlocks[codeType]!.add(GameBlockData.createOperator(operatorType: type, operator: operator));
+                }
+                break;
+              case PyOperatorTypes.identity:
+                for (final operator in PyOperatorsIdentity.values) {
+                  togglableBlocks[codeType]!.add(GameBlockData.createOperator(operatorType: type, operator: operator));
+                }
+                break;
+              case PyOperatorTypes.membership:
+                for (final operator in PyOperatorsMembership.values) {
+                  togglableBlocks[codeType]!.add(GameBlockData.createOperator(operatorType: type, operator: operator));
+                }
+                break;
+              case PyOperatorTypes.logical:
+                for (final operator in PyOperatorsLogical.values) {
+                  togglableBlocks[codeType]!.add(GameBlockData.createOperator(operatorType: type, operator: operator));
+                }
+                break;
+            }
+          }
+          break;
+        case CodeBlockType.keywords:
+          for (final keyword in PyKeyword.values) {
+            togglableBlocks[codeType]!.add(GameBlockData.createKeyword(keyword: keyword));
+          }
+          break;
+        case CodeBlockType.conditionals:
+          for (final conditional in PyConditional.values) {
+            togglableBlocks[codeType]!.add(GameBlockData.createConditional(conditional: conditional));
+          }
+          break;
+        case CodeBlockType.loops:
+          for (final loop in PyLoop.values) {
+            togglableBlocks[codeType]!.add(GameBlockData.createLoop(loop: loop));
+          }
+          break;
+        default:
+      }
     }
   }
 
   void buildTabs() {
-    tabs = List.generate(selectedBlocks.keys.length, (i) {
+    tabs = List.generate(togglableBlocks.keys.length, (i) {
       late int count;
       final type = CodeBlockType.values[i];
       switch (type) {
@@ -218,9 +317,29 @@ class _BlockSelectorDialogState extends ConsumerState<BlockSelectorDialog> with 
           break;
       }
       return Tab(
-        text: '${selectedBlocks.keys.elementAt(i).formalName()} ($count)',
+        text: '${togglableBlocks.keys.elementAt(i).formalName()} ($count)',
       );
     });
+  }
+
+  void updateCount({required GameBlockData data, bool add = true}) {
+    final type = data.type;
+    if (add) {
+      final newData = data.copyWith(inSelectorCount: data.inSelectorCount != null ? data.inSelectorCount! + 1 : 1);
+      if (selectedBlocks[type] != null) {
+        selectedBlocks[type]!.add(newData);
+      } else {
+        selectedBlocks.addAll({
+          type: [newData]
+        });
+      }
+    } else {
+      // decrement
+      final newData = data.copyWith(inSelectorCount: data.inSelectorCount != null ? data.inSelectorCount! - 1 : 0);
+      final index = selectedBlocks[type]!.indexWhere((e) => e.name == data.name);
+      selectedBlocks[type]![index] = newData;
+    }
+    setState(() {});
   }
 
   @override
@@ -231,79 +350,150 @@ class _BlockSelectorDialogState extends ConsumerState<BlockSelectorDialog> with 
       setState(() {});
     }
     return BLDialog(
-        child: Column(
-      children: [
-        const BLText(
-          'Select the blocks that will be used in this challenge.',
-          color: Colors.white,
-          size: 20,
-        ),
-        const SizedBox(height: 15),
-        TabBar(
-          tabAlignment: TabAlignment.center,
-          labelColor: Colors.white,
-          unselectedLabelColor: Colors.grey,
-          isScrollable: true,
-          controller: tabController,
-          tabs: tabs,
-        ),
-        Flexible(
-          child: TabBarView(
-              controller: tabController,
-              children: List.generate(tabs.length, (i) {
-                final key = selectedBlocks.entries.elementAt(i).key;
-                final category = selectedBlocks.entries.elementAt(i).value;
-                return Padding(
-                  padding: const EdgeInsets.all(15),
-                  child: Column(
-                    children: [
-                      Expanded(
-                        child: Wrap(
-                            children: List.generate(category.length, (j) {
-                          return GestureDetector(
-                            onTap: () {},
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                              child: BlockDesignWrapper(
-                                updateSelection: () {},
-                                data: category[j],
-                                text: category[j].name,
-                                child: const SizedBox(
-                                  height: 50,
-                                  width: 70,
-                                ),
-                              ),
-                            ),
-                          );
-                          // return SizedBox(
-                          //   width: 200,
-                          //   child: BLText(blockCategory[j].name),
-                          // );
-                        })),
-                      ),
-                      BlockSelectorAddBtn(type: key, addCustom: addCustom)
-                    ],
-                  ),
-                );
-              })),
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            const AdminBackBtn(),
-            const SizedBox(
-              width: 15,
+        child: Padding(
+      padding: const EdgeInsets.all(10),
+      child: Column(
+        children: [
+          SizedBox(
+            width: 500,
+            child: const BLText(
+              'Select the blocks that will be used in this challenge:',
+              softWrap: true,
+              alignCenter: true,
+              color: Colors.white,
+              size: 20,
             ),
-            BLAdminButton(
-              type: AdminBtnType.green,
-              child: const BLText('Save changes'),
-              onPressed: () {
-                nav.pop(context, selectedBlocks);
-              },
-            )
-          ],
-        )
-      ],
+          ),
+          const SizedBox(height: 15),
+          TabBar(
+            tabAlignment: TabAlignment.center,
+            labelColor: Colors.white,
+            unselectedLabelColor: Colors.grey,
+            isScrollable: true,
+            controller: tabController,
+            tabs: tabs,
+          ),
+          Expanded(
+            child: TabBarView(
+                controller: tabController,
+                children: List.generate(tabs.length, (i) {
+                  final key = togglableBlocks.entries.elementAt(i).key;
+                  final category = togglableBlocks.entries.elementAt(i).value;
+                  return Padding(
+                    padding: const EdgeInsets.all(15),
+                    child: Column(
+                      children: [
+                        Expanded(
+                            child: ListView(
+                          children: [
+                            Wrap(
+                                spacing: 20,
+                                runSpacing: 30,
+                                children: List.generate(category.length, (j) {
+                                  final data = category[j];
+                                  return BlockItem(data: data, updateCount: updateCount);
+                                })),
+                          ],
+                        )),
+                        SizedBox(height: 20),
+                        BlockSelectorAddBtn(type: key, addCustom: addCustom)
+                      ],
+                    ),
+                  );
+                })),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              const AdminBackBtn(),
+              const SizedBox(width: 15),
+              BLAdminButton(
+                type: AdminBtnType.green,
+                child: const BLText('Save changes'),
+                onPressed: () {
+                  nav.pop(context, selectedBlocks);
+                },
+              ),
+              const SizedBox(width: 15),
+            ],
+          )
+        ],
+      ),
     ));
+  }
+}
+
+class BlockItem extends ConsumerStatefulWidget {
+  final GameBlockData data;
+  final void Function({required GameBlockData data, bool add}) updateCount;
+  const BlockItem({required this.data, required this.updateCount, super.key});
+
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() => _BlockItemState();
+}
+
+class _BlockItemState extends ConsumerState<BlockItem> with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    return Padding(
+      padding: const EdgeInsets.all(5),
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Column(
+            children: [
+              BlockDesignWrapper(
+                updateSelection: () {},
+                data: widget.data,
+                alignment: Alignment.center,
+                width: 75,
+                height: 50,
+                opacity: widget.data.inSelectorCount == null || widget.data.inSelectorCount! < 1 ? 0.3 : 1,
+              ),
+              SizedBox(height: 5),
+              ClipRRect(
+                borderRadius: BorderRadius.all(Radius.circular(20)),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    GestureDetector(
+                        onTap: () => widget.updateCount(data: widget.data, add: true),
+                        child: Container(
+                          padding: const EdgeInsets.all(5),
+                          color: Colors.green,
+                          child: Icon(Icons.add_circle_rounded),
+                        )),
+                    GestureDetector(
+                        onTap: () {
+                          // remove count here
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(5),
+                          color: Colors.red,
+                          child: Icon(Icons.remove_circle),
+                        )),
+                  ],
+                ),
+              )
+            ],
+          ),
+          Positioned(
+            top: -3,
+            right: -3,
+            child: Badge(
+              backgroundColor: Colors.white,
+              label: BLText(
+                '${widget.data.inSelectorCount ?? 0}',
+                color: Colors.black,
+              ),
+            ),
+          )
+        ],
+      ),
+    );
   }
 }

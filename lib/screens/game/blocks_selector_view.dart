@@ -63,7 +63,7 @@ class _BlockSelectorViewState extends ConsumerState<BlockSelectorView> with Auto
             padding: const EdgeInsets.symmetric(horizontal: 5),
             child: Row(
               children: List.generate(blockData.length, (i) {
-                if (blockData[i].inSelectorCount != null) {
+                if (blockData[i].inSelectorCount != null && blockData[i].inSelectorCount! > 1) {
                   // debugPrint('Count from selector view: ${widget.blockData[i].inSelectorCount}');
                   return BlockSelectorStack(blockData[i]);
                 }
