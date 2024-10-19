@@ -149,7 +149,7 @@ class _WaitingRoomState extends ConsumerState<WaitingRoom> {
                                 Future.delayed(Duration(milliseconds: 500), () {
                                   updateRoomState(room);
                                 });
-                                // debugPrint(hostInRoom.toString());
+                                // dPrint(hostInRoom.toString());
                                 // if any player has false value (left the room by purposely disconnecting), remove that player
                                 if (room.players != null && room.players!.entries.any((e) => e.value == false)) {
                                   Future.microtask(() async {
@@ -366,7 +366,7 @@ Future<void> removePlayersWithFalseValue(String roomID) async {
     var players = (obj as Map<Object?, Object?>?)?.map((k, v) => MapEntry<String, Object?>(k as String, v as bool)).cast<String, Object?>();
     if (players != null && players.entries.any((e) => e.value == false)) {
       List<String> keysToRemove = [];
-      // debugPrint(players.toString());
+      // dPrint(players.toString());
       for (final player in players.entries) {
         if (player.value == false) {
           keysToRemove.add(player.key);
@@ -375,14 +375,14 @@ Future<void> removePlayersWithFalseValue(String roomID) async {
       for (final key in keysToRemove) {
         players.removeWhere((k, v) => k == key);
       }
-      // debugPrint(players.toString());
+      // dPrint(players.toString());
       return Transaction.success(players);
     }
     return Transaction.abort();
   });
   if (result.committed) {
-    // debugPrint('Commited');
+    // dPrint('Commited');
   } else {
-    // debugPrint('Aborted');
+    // dPrint('Aborted');
   }
 }

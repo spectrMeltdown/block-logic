@@ -4,6 +4,7 @@ import 'package:block_logic/components/button/button.dart';
 import 'package:block_logic/components/error.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/util/provider_default.dart';
+import 'package:block_logic/logic/dev.dart';
 import 'package:block_logic/logic/firebase_providers/selected_leaderboard.dart';
 import 'package:block_logic/logic/services/assets.dart';
 import 'package:block_logic/logic/game/logic/game_manager.dart';
@@ -73,9 +74,9 @@ class _FinalizingResultsState extends ConsumerState<FinalizingResults> {
   Future<void> leave() async {
     final result = await manager.leaveGame(true);
     if (result != null) {
-      debugPrint(result);
+      dPrint(result);
     } else {
-      debugPrint('Leave Room success');
+      dPrint('Leave Room success');
     }
   }
 

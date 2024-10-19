@@ -1,7 +1,6 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/util/animation_player.dart';
-import 'package:block_logic/components/util/blank_widget.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/services/assets.dart';
 import 'package:flutter/foundation.dart';
@@ -11,18 +10,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class BLLoading extends ConsumerStatefulWidget {
   final Color? color;
 
-  /// Whether to be full screen or not
-  final LoadingType type;
-
   /// Size overrides height & width
   final double? size;
   final String? message;
   final double? height;
   final double? width;
+  final LoadingType type;
   const BLLoading({
     super.key,
     this.message,
-    this.type = LoadingType.normal,
+    this.type = LoadingType.fill,
     this.height = 200,
     this.width = 200,
     this.color,
@@ -36,13 +33,26 @@ class BLLoading extends ConsumerStatefulWidget {
 class _BLLoadingState extends ConsumerState<BLLoading> with TickerProviderStateMixin {
   AnimationController? _controller;
   late final Assets assets;
+
+  @override
+  void dispose() {
+    _controller?.dispose();
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    if (!kIsWeb) _controller = AnimationController(vsync: this);
+    assets = ref.read(assetsProvider);
+  }
+
   @override
   Widget build(BuildContext context) {
     switch (widget.type) {
-      case LoadingType.full:
+      case LoadingType.fill:
         return FadeIn(
-          child: Padding(
-            padding: const EdgeInsets.all(15),
+          child: Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -56,10 +66,9 @@ class _BLLoadingState extends ConsumerState<BLLoading> with TickerProviderStateM
             ),
           ),
         );
-      case LoadingType.normal:
+      case LoadingType.tight:
         return FadeIn(
-          child: Center(
-              child: Column(
+          child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               if (widget.message != null) BLText(widget.message!),
@@ -69,23 +78,8 @@ class _BLLoadingState extends ConsumerState<BLLoading> with TickerProviderStateM
                 size: 100,
               )
             ],
-          )),
+          ),
         );
-      default:
-        return const BlankWidget();
     }
-  }
-
-  @override
-  void dispose() {
-    _controller?.dispose();
-    super.dispose();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    if (!kIsWeb) _controller = AnimationController(vsync: this);
-    assets = ref.read(assetsProvider);
   }
 }

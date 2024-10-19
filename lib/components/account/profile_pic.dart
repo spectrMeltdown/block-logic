@@ -108,7 +108,7 @@ class _BLProfilePicState extends ConsumerState<BLProfilePic> {
   Widget profilePic(AsyncValue<AccountModel?> account) {
     return account.when(
         data: (account) {
-          // debugPrint('Profile pic link: ${account?.profilePicLink}');
+          // dPrint('Profile pic link: ${account?.profilePicLink}');
           if (account?.profilePicLink == null || account!.profilePicLink!.isEmpty || account.profilePicLink!.contains('default')) {
             return const FittedBox(
               fit: BoxFit.contain,

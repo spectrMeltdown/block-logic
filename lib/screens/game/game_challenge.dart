@@ -37,8 +37,8 @@ class GameChallenge extends ConsumerWidget with RouteAware {
     final width = MediaQuery.of(context).size.width;
     final gameManager = ref.read(gameManagerProvider.notifier);
     gameManager.updateSolution(challenge.solutionMatch!);
-    // debugPrint('${widget.challengeCount}');
-    // debugPrint('${widget.currentChallenge}');
+    // dPrint('${widget.challengeCount}');
+    // dPrint('${widget.currentChallenge}');
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,

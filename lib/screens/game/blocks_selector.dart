@@ -1,4 +1,5 @@
 import 'package:block_logic/components/panel/bordered.dart';
+import 'package:block_logic/logic/dev.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/game/block_data.dart';
 import 'package:block_logic/logic/game/logic/tab_num_provider.dart';
@@ -41,8 +42,8 @@ class _GameBlocksState extends ConsumerState<GameBlocks> with TickerProviderStat
   }
 
   void buildSelector() {
-    debugPrint('block selector called');
-    // debugPrint(blocks.values.length.toString());
+    dPrint('block selector called');
+    // dPrint(blocks.values.length.toString());
     final gameState = ref.read(gameManagerProvider);
 
     // update the blocks inselector uids

@@ -9,7 +9,7 @@ import 'package:block_logic/logic/services/leaderboard_manager.dart';
 import 'package:block_logic/logic/services/room_manager.dart';
 import 'package:block_logic/logic/services/score_manager.dart';
 import 'package:block_logic/logic/services/shared_pref.dart';
-import 'package:block_logic/logic/testing.dart';
+import 'package:block_logic/logic/dev.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -53,8 +53,8 @@ class GameManager extends StateNotifier<GameState> {
   void toggleReturnBlock(bool newState) => state.returnBlock = newState;
 
   void incrementCategory(CodeBlockType type) {
-    // // debugPrint(state.categoryCount.toString());
-    // // debugPrint(type.toString());
+    // // dPrint(state.categoryCount.toString());
+    // // dPrint(type.toString());
     if (state.countsPerTab[type] == null) {
       throw ('Category was null!!');
       // state.countsPerTab.addAll({type: CountPerTab(maxCount: maxCount, currentCount: currentCount)});
@@ -74,7 +74,7 @@ class GameManager extends StateNotifier<GameState> {
 
   void updateSolution(List<dynamic> solution) {
     state.solution = List.from(solution);
-    debugPrint('Solution updated');
+    dPrint('Solution updated');
   }
 
 // void removeFromSelector(Map<CodeBlockType, int> ) =>
@@ -132,19 +132,19 @@ class GameManager extends StateNotifier<GameState> {
         timeElapsed: state._timeElapsed,
         status: isComplete ? ScoreStatus.complete : ScoreStatus.incomplete,
       );
-      debugPrint('0');
+      dPrint('0');
       // upload final score in db
       final scoreUpdate = await state.scoreManager.update(state._leaderboardID!, finalScore);
       if (scoreUpdate != null) {
         return scoreUpdate;
       }
-      debugPrint('1');
+      dPrint('1');
       // get current list of players after leaving
       final leave = await state.roomManager.leaveRoom(state._roomID!);
       if (leave != null) {
         return leave;
       }
-      debugPrint('2');
+      dPrint('2');
       // if this player is the last to leave the room
       final lastPlayer = bool.tryParse(leave ?? '');
       if (lastPlayer != null && lastPlayer) {
@@ -155,19 +155,19 @@ class GameManager extends StateNotifier<GameState> {
             status: LeaderboardStatus.complete,
           ),
         );
-        debugPrint('3');
+        dPrint('3');
         // reset the room status to available
         await state.roomManager.update(Room(
           id: state._roomID,
           status: RoomStatus.available,
           currentLeaderboardID: '',
         ));
-        debugPrint('4');
+        dPrint('4');
         // leave room successful, detach disconnection watchers
         await FirebaseDatabase.instance.ref('rooms/${state._roomID}/players/${state._auth.getUID()}').onDisconnect().cancel();
         await FirebaseDatabase.instance.ref('leaderboards/${state._leaderboardID}/scores/${state._auth.getUID()}').onDisconnect().cancel();
       } else {
-        debugPrint('4');
+        dPrint('4');
         // leave room successful, detach disconnection watchers
         await FirebaseDatabase.instance.ref('rooms/${state._roomID}/players/${state._auth.getUID()}').onDisconnect().cancel();
         await FirebaseDatabase.instance.ref('leaderboards/${state._leaderboardID}/scores/${state._auth.getUID()}').onDisconnect().cancel();
@@ -212,8 +212,8 @@ class GameManager extends StateNotifier<GameState> {
       data.uid!: data,
     });
 
-    debugPrint('Added data: ${data.uid}');
-    debugPrint('Added statement: ${statement.uid}');
+    dPrint('Added data: ${data.uid}');
+    dPrint('Added statement: ${statement.uid}');
   }
 
   void addData(GameBlockData data, GameBlockData parent, ChildrenData type) {
@@ -278,7 +278,7 @@ class GameManager extends StateNotifier<GameState> {
     state.dataTree.addAll({
       data.uid!: data,
     });
-    debugPrint('Addded data: ${data.uid}');
+    dPrint('Addded data: ${data.uid}');
   }
 
   void resetTree() {
@@ -288,7 +288,7 @@ class GameManager extends StateNotifier<GameState> {
   void setShouldResetAllBlocks(bool newState) => state.shouldResetAllBlocks = newState;
 
   void moveToRoot(String uid) {
-    // debugPrint('move to root');
+    // dPrint('move to root');
     if (uid.isEmpty) throw ('UID was empty!');
     GameBlockData data = state.dataTree[uid]!.copyWith();
 
@@ -300,7 +300,7 @@ class GameManager extends StateNotifier<GameState> {
 
     // if not statement
     if (data.type != CodeBlockType.statement) {
-      debugPrint('root move: not statement');
+      dPrint('root move: not statement');
       // create new statement
       final statmentUID = getUID();
       GameBlockData newStatement = GameBlockData.createStatement();
@@ -327,7 +327,7 @@ class GameManager extends StateNotifier<GameState> {
     }
     // if is statement
     else {
-      debugPrint('root move: is statement');
+      dPrint('root move: is statement');
       GameBlockData statement = data.copyWith(parentUID: 'root');
       // delete old value
       deleteData(data.copyWith(), recurse: false);
@@ -349,7 +349,7 @@ class GameManager extends StateNotifier<GameState> {
     // assign new parent
     // final originalParent = state.dataTree[data.parentUID]!.copyWith();
     final originalData = data.copyWith();
-    GameBlockData? originalParent;
+    // GameBlockData? originalParent;
     // if (originalData.parentUID != 'root') {
     //   originalParent = state.dataTree[originalData.parentUID]!.copyWith();
     // }
@@ -359,17 +359,17 @@ class GameManager extends StateNotifier<GameState> {
     switch (type) {
       case ChildrenData.bodyUIDs:
         // if (originalParent != null && originalParent.type == CodeBlockType.statement) {
-        //   debugPrint('moveData: statement');
+        //   dPrint('moveData: statement');
         //   originalParent.copyWith(parentUID: parent.uid);
         //   parent = parent.copyWith(bodyUIDs: [...parent.bodyUIDs ?? [], originalParent.uid!]);
         // } else
 
         if (data.type == CodeBlockType.statement) {
-          debugPrint('moveData: statement from root');
+          dPrint('moveData: statement from root');
           data.copyWith(parentUID: parent.uid);
           parent = parent.copyWith(bodyUIDs: [...parent.bodyUIDs ?? [], data.uid!]);
         } else {
-          debugPrint('moveData: block from root');
+          dPrint('moveData: block from root');
           // create new statement for the data
           final statementUID = getUID();
           var statement = GameBlockData.createStatement();
@@ -508,10 +508,10 @@ class GameManager extends StateNotifier<GameState> {
     // next, update parent list
     if (parent != null) {
       if (parent.type == CodeBlockType.statement && ((parent.statementUIDs!.length == 1 && parent.statementUIDs!.contains(uid)) || parent.statementUIDs!.isEmpty)) {
-        debugPrint('Deleting parent (statement)');
+        dPrint('Deleting parent (statement)');
         state.uidsToDelete.add(parent.uid!);
       } else {
-        debugPrint('Modifying parent');
+        dPrint('Modifying parent');
         state.uidParentsToModify.addAll({data.uid!: parent});
       }
     }
@@ -642,19 +642,19 @@ class GameManager extends StateNotifier<GameState> {
   }
 
   void deleteSelectedData() {
-    debugPrint('Data to delete: ${state.uidsToDelete}');
+    dPrint('Data to delete: ${state.uidsToDelete}');
     // update parents first, uidsToDelete may increase
     for (final data in state.uidParentsToModify.entries) {
       updateParentChildren(data.value.copyWith(), data.key);
-      debugPrint('Parents to modify: \nChild: ${data.key} \n Parent:${data.value.uid}');
+      dPrint('Parents to modify: \nChild: ${data.key} \n Parent:${data.value.uid}');
     }
-    debugPrint('Data to delete (with addons): ${state.uidsToDelete}');
+    dPrint('Data to delete (with addons): ${state.uidsToDelete}');
     // remove from tree
     for (final uid in state.uidsToDelete) {
       state.dataTree.remove(uid);
       // final result = state.dataTree.remove(uid);
       // if (result == null) {
-      //   debugPrint('Didnt find the uid');
+      //   dPrint('Didnt find the uid');
       // }
     }
     state.uidsToDelete.clear();
@@ -669,9 +669,9 @@ class GameManager extends StateNotifier<GameState> {
       }
     }
     state.inSelectorUIDsToDelete.clear();
-    // debugPrint('Inselector after delete:');
+    // dPrint('Inselector after delete:');
     // for (final entry in state.inSelectorUIDs.entries) {
-    // debugPrint('Type: ${entry.key}, len:${entry.value.length}');
+    // dPrint('Type: ${entry.key}, len:${entry.value.length}');
     // }
   }
 

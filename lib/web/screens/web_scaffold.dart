@@ -53,7 +53,7 @@ class _WebScaffoldState extends State<WebScaffold> {
       closeDrawer: closeDrawer,
       parentWidth: width,
     );
-    //debugPrint(FirebaseAuth.instance.currentUser?.uid);
+    //dPrint(FirebaseAuth.instance.currentUser?.uid);
     return Scaffold(
       key: scaffoldKey,
       drawer: Drawer(child: sidebar),

@@ -1,6 +1,7 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/util/provider_default.dart';
+import 'package:block_logic/logic/dev.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_providers/all_challenges.dart';
 import 'package:block_logic/logic/services/challenge_manager.dart';
@@ -133,14 +134,14 @@ class ChallengesState extends ConsumerState<Challenges> {
                                               Visibility(
                                                 visible: deleteMode,
                                                 child: Checkbox(
-                                                  value: selectedChallengeIDs?[challenges[i].id!], // Handle null safety
+                                                  value: selectedChallengeIDs?[challenges[i].id!] ?? false, // Handle null safety
                                                   onChanged: (value) {
-                                                    // debugPrint(challenges[i].id);
-                                                    // debugPrint(selectedChallengeIDs![challenges[i].id!].toString());
+                                                    // dPrint(challenges[i].id);
+                                                    // dPrint(selectedChallengeIDs![challenges[i].id!].toString());
                                                     if (value != null) {
                                                       setState(() {
                                                         selectedChallengeIDs![challenges[i].id!] = value; // Update parent state
-                                                        debugPrint(selectedChallengeIDs![challenges[i].id!].toString());
+                                                        dPrint(selectedChallengeIDs![challenges[i].id!].toString());
                                                       });
                                                     }
                                                   },
@@ -164,7 +165,7 @@ class ChallengesState extends ConsumerState<Challenges> {
                                               ),
                                             ),
                                             DataCell(
-                                              BLText(challenges[i].difficulty?.name ?? '--'),
+                                              BLText(challenges[i].difficulty?.capName() ?? '--'),
                                             ),
                                           ],
                                         );
@@ -238,6 +239,9 @@ class ChallengesState extends ConsumerState<Challenges> {
                                     });
                                   } else {
                                     if (selectedChallengeIDs!.isNotEmpty && selectedChallengeIDs!.values.any((i) => i)) {
+                                      setState(() {
+                                        deleteMode = false;
+                                      });
                                       for (final id in selectedChallengeIDs!.entries.where((i) => i.value == true).map((e) => e.key).toList()) {
                                         final error = await manager.delete(id);
                                         if (error != null) {
@@ -289,6 +293,6 @@ class ChallengesState extends ConsumerState<Challenges> {
         selectedChallengeIDs![id] = add;
       });
     }
-    debugPrint(selectedChallengeIDs.toString());
+    dPrint(selectedChallengeIDs.toString());
   }
 }

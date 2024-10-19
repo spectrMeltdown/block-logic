@@ -6,22 +6,21 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'generated/selected_challenge.g.dart';
 
 @riverpod
-Stream<Challenge?> selectedChallenge(
+Future<Challenge?> selectedChallenge(
   SelectedChallengeRef ref,
   String challengeID, {
   bool? createMode,
-}) async* {
+}) async {
   final db = FirebaseDatabase.instance;
   Challenge? result;
   if (createMode != null && createMode == true) {
-    yield Challenge();
+    return Challenge();
   } else {
-    db.ref('challenges/$challengeID').onValue.listen((event) {
-      final snapshot = event.snapshot;
-      if (snapshot.exists) {
-        result = Challenge.fromRTDB(snapshot);
+    await db.ref('challenges/$challengeID').get().then((snap) {
+      if (snap.exists) {
+        result = Challenge.fromRTDB(snap);
       }
     });
-    yield result;
+    return result;
   }
 }

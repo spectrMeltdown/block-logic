@@ -1,6 +1,6 @@
+import 'package:block_logic/logic/dev.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:flutter/foundation.dart';
 
 class Leaderboard {
   final String? id; // the doc id. Should be auto generated
@@ -28,7 +28,7 @@ class Leaderboard {
     } else if (doc is DataSnapshot && doc.value != null) {
       data = (doc.value as Map<Object?, Object?>).map((k, v) => MapEntry(k as String, v));
     } else {
-      debugPrint('Unknown type!!');
+      dPrint('Unknown type!!');
     }
 
     LeaderboardStatus? status;

@@ -153,7 +153,7 @@ Future<void> resetRoom(String roomID) async {
     // also set relevant leaderboard to incomplete
     await FirebaseDatabase.instance.ref('leaderboards/$leaderboardID').runTransaction((obj) {
       var lb = obj == null ? null : Leaderboard.fromRTDB(obj);
-      // debugPrint(room?.toJSON().toString());
+      // dPrint(room?.toJSON().toString());
       if (lb != null) {
         lb = lb.copyWith(status: LeaderboardStatus.incomplete);
         return Transaction.success(lb.toJSON());

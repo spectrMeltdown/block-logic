@@ -41,55 +41,56 @@ class _FeedbackTableState extends ConsumerState<FeedbackTable> {
     final feedbacks = ref.watch(AllFeedbackProvider(widget.searchQuery));
     return ConstrainedBox(
       constraints: BoxConstraints(maxWidth: 800, minWidth: 500),
-      child: BLCardSimple(
-          child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: feedbacks.when(
-            data: (feedbacks) {
-              if (widget.searchQuery.isNotEmpty && feedbacks.isEmpty) {
-                return ConstrainedBox(
-                  constraints: BoxConstraints(maxWidth: width >= mobileMax ? width * 0.4 : width * 0.3),
-                  child: const Center(
-                    child: BLText('No results.'),
-                  ),
-                );
-              }
-              if (feedbacks.isEmpty) {
-                return ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 700, minHeight: 250),
-                  child: const Center(
-                    child: BLText('There are no messages at the moment ...'),
-                  ),
-                );
-              }
-              feedbacksList = feedbacks;
-              return FadeIn(
-                child: BLTable(
-                    columns: List.generate(FeedbackProps.values.length, (i) {
-                      return DataColumn(label: BLText(FeedbackProps.values[i].name));
-                    }),
-                    rows: List.generate(feedbacksList.length, (i) {
-                      return DataRow(
-                          onSelectChanged: (value) async {
-                            dialog.show(context, ViewFeedback(feedbacksList[i].id!));
-                          },
-                          cells: [
-                            DataCell(BLText(feedbacksList[i].title ?? '--')),
-                            DataCell(ConstrainedBox(
-                              constraints: BoxConstraints(maxWidth: width >= mobileMax ? width * 0.4 : width * 0.3),
-                              child: BLText(
-                                feedbacksList[i].message ?? '--',
-                              ),
-                            )),
-                            DataCell(BLDisplayName(feedbacksList[i].userID ?? '', AccountType.user)),
-                            DataCell(BLText(feedbacksList[i].createdAt != null ? DateFormat('dd / MM / yyyy').format(feedbacksList[i].createdAt!) : '--')),
-                          ]);
-                    })),
+      child: feedbacks.when(
+          data: (feedbacks) {
+            if (widget.searchQuery.isNotEmpty && feedbacks.isEmpty) {
+              return ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: width >= mobileMax ? width * 0.4 : width * 0.3),
+                child: const Center(
+                  child: BLText('No results.'),
+                ),
               );
-            },
-            error: genericError,
-            loading: genericLoading),
-      )),
+            }
+            if (feedbacks.isEmpty) {
+              return ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 700, minHeight: 250),
+                child: const Center(
+                  child: BLText('There are no messages at the moment ...'),
+                ),
+              );
+            }
+            feedbacksList = feedbacks;
+            return FadeIn(
+              child: BLCardSimple(
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: BLTable(
+                      columns: List.generate(FeedbackProps.values.length, (i) {
+                        return DataColumn(label: BLText(FeedbackProps.values[i].name));
+                      }),
+                      rows: List.generate(feedbacksList.length, (i) {
+                        return DataRow(
+                            onSelectChanged: (value) async {
+                              dialog.show(context, ViewFeedback(feedbacksList[i].id!));
+                            },
+                            cells: [
+                              DataCell(BLText(feedbacksList[i].title ?? '--')),
+                              DataCell(ConstrainedBox(
+                                constraints: BoxConstraints(maxWidth: width >= mobileMax ? width * 0.4 : width * 0.3),
+                                child: BLText(
+                                  feedbacksList[i].message ?? '--',
+                                ),
+                              )),
+                              DataCell(BLDisplayName(feedbacksList[i].userID ?? '', AccountType.user)),
+                              DataCell(BLText(feedbacksList[i].createdAt != null ? DateFormat('dd / MM / yyyy').format(feedbacksList[i].createdAt!) : '--')),
+                            ]);
+                      })),
+                ),
+              ),
+            );
+          },
+          error: genericError,
+          loading: genericLoading),
     );
   }
 }

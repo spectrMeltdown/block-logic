@@ -9,6 +9,7 @@ import 'package:block_logic/logic/services/accounts_manager.dart';
 import 'package:block_logic/logic/services/toast.dart';
 import 'package:block_logic/web/components/bl_table.dart';
 import 'package:block_logic/web/components/button.dart';
+import 'package:block_logic/web/components/card_simple.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -16,7 +17,8 @@ import 'package:intl/intl.dart';
 
 class Users extends ConsumerStatefulWidget {
   final List<String> userProps;
-  const Users(this.userProps, {super.key});
+  final String searchQuery;
+  const Users(this.userProps, this.searchQuery, {super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _UsersState();
@@ -28,7 +30,7 @@ class _UsersState extends ConsumerState<Users> {
   late final Toast toast;
   @override
   Widget build(BuildContext context) {
-    final users = ref.watch(allUsersProvider);
+    final users = ref.watch(AllUsersProvider(searchQuery: widget.searchQuery));
     return users.when(
         data: (users) {
           /// admin cannot delete their user account from here. They must use Settings > Delete account instead.
@@ -39,44 +41,49 @@ class _UsersState extends ConsumerState<Users> {
             );
           }
           return FadeIn(
-            child: BLTable(
-                bottomPadding: 0,
-                dataRowMaxHeight: 80,
-                columns: List.generate(widget.userProps.length, (i) => DataColumn(label: BLText(widget.userProps[i]))),
-                rows: List.generate(users.length, (i) {
-                  return DataRow(cells: [
-                    DataCell(Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: BLProfilePic(type: AccountType.user, users[i].id ?? ''),
-                    )),
-                    DataCell(BLDisplayName(users[i].id ?? '', AccountType.user)),
-                    DataCell(BLText(users[i].createdAt != null ? DateFormat('dd / MM / yyyy').format(users[i].createdAt!) : '--')),
-                    DataCell(Wrap(
-                      children: [
-                        BLAdminButton(
-                            type: processing ? AdminBtnType.grey : AdminBtnType.red,
-                            child: const BLText('Delete'),
-                            onPressed: () async {
-                              if (processing) return;
-                              setState(() {
-                                processing = true;
-                              });
-                              final result = await accountsManager.deleteAccount(users[i].id!, AccountType.user);
-                              if (result == null) {
-                                if (!context.mounted) return;
-                                toast.showToast(context, 'Delete success.', type: NotifType.success);
-                              } else {
-                                if (!context.mounted) return;
-                                toast.showToast(context, result, type: NotifType.error);
-                              }
-                              setState(() {
-                                processing = false;
-                              });
-                            })
-                      ],
-                    )),
-                  ]);
-                })),
+            child: BLCardSimple(
+              child: Padding(
+                padding: const EdgeInsets.all(15),
+                child: BLTable(
+                    bottomPadding: 0,
+                    dataRowMaxHeight: 80,
+                    columns: List.generate(widget.userProps.length, (i) => DataColumn(label: BLText(widget.userProps[i]))),
+                    rows: List.generate(users.length, (i) {
+                      return DataRow(cells: [
+                        DataCell(Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: BLProfilePic(type: AccountType.user, users[i].id ?? ''),
+                        )),
+                        DataCell(BLDisplayName(users[i].id ?? '', AccountType.user)),
+                        DataCell(BLText(users[i].createdAt != null ? DateFormat('dd / MM / yyyy').format(users[i].createdAt!) : '--')),
+                        DataCell(Wrap(
+                          children: [
+                            BLAdminButton(
+                                type: processing ? AdminBtnType.grey : AdminBtnType.red,
+                                child: const BLText('Delete'),
+                                onPressed: () async {
+                                  if (processing) return;
+                                  setState(() {
+                                    processing = true;
+                                  });
+                                  final result = await accountsManager.deleteAccount(users[i].id!, AccountType.user);
+                                  if (result == null) {
+                                    if (!context.mounted) return;
+                                    toast.showToast(context, 'Delete success.', type: NotifType.success);
+                                  } else {
+                                    if (!context.mounted) return;
+                                    toast.showToast(context, result, type: NotifType.error);
+                                  }
+                                  setState(() {
+                                    processing = false;
+                                  });
+                                })
+                          ],
+                        )),
+                      ]);
+                    })),
+              ),
+            ),
           );
         },
         error: genericError,

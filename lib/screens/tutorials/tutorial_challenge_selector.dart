@@ -7,7 +7,7 @@ import 'package:block_logic/logic/firebase_models/challenge.dart';
 import 'package:block_logic/logic/game/logic/all_blocks.dart';
 import 'package:block_logic/logic/services/navigation.dart';
 import 'package:block_logic/logic/services/ui.dart';
-import 'package:block_logic/logic/testing.dart';
+import 'package:block_logic/logic/dev.dart';
 import 'package:block_logic/screens/game/game_challenge.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';

@@ -61,16 +61,20 @@ class _RoomsManagerState extends ConsumerState<RoomsManager> {
                   searchQuery = newQuery;
                 });
               }),
-              BLCardSimple(
-                child: Padding(
-                  padding: const EdgeInsets.all(15),
-                  child: rooms.when(
-                      data: (rooms) {
-                        if (rooms.isEmpty) {
-                          return const Center(child: BLText('There are no rooms at the moment.'));
-                        }
-                        roomsList = rooms;
-                        return BLTable(
+              rooms.when(
+                  data: (rooms) {
+                    if (rooms.isEmpty) {
+                      return const SizedBox(
+                        width: 500,
+                        height: 300,
+                        child: Center(child: BLText('There are no rooms at the moment.')),
+                      );
+                    }
+                    roomsList = rooms;
+                    return BLCardSimple(
+                      child: Padding(
+                        padding: const EdgeInsets.all(15),
+                        child: BLTable(
                             columns: List.generate(roomHeaders.length, (i) => DataColumn(label: BLText(roomHeaders[i]))),
                             rows: List.generate(
                                 roomsList.length,
@@ -148,12 +152,12 @@ class _RoomsManagerState extends ConsumerState<RoomsManager> {
                                                   })
                                             ],
                                           )),
-                                        ])));
-                      },
-                      error: genericError,
-                      loading: genericLoading),
-                ),
-              )
+                                        ]))),
+                      ),
+                    );
+                  },
+                  error: genericError,
+                  loading: genericLoading)
             ],
           ),
         )

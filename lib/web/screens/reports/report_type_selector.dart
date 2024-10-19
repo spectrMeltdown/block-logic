@@ -1,17 +1,18 @@
 import 'package:block_logic/components/dialog/dialog.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/text/title_small.dart';
+import 'package:block_logic/logic/dev.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/services/navigation.dart';
 import 'package:block_logic/logic/services/toast.dart';
+import 'package:block_logic/web/components/back_btn.dart';
 import 'package:block_logic/web/components/button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ReportTypeSelector extends ConsumerStatefulWidget {
   final ReportType initial;
-  final Map<String, ReportType> reportOptions;
-  const ReportTypeSelector({required this.initial, required this.reportOptions, super.key});
+  const ReportTypeSelector({required this.initial, super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _ReportTypeSelectorState();
@@ -39,9 +40,8 @@ class _ReportTypeSelectorState extends ConsumerState<ReportTypeSelector> {
       selectedReports[type] = false;
     }
     for (final entry in selectedReports.entries) {
-      debugPrint(entry.toString());
+      dPrint(entry.toString());
     }
-    debugPrint('');
     if (selectedReports.values.any((value) => value == true)) {
       hasSelection = true;
     } else {
@@ -61,33 +61,31 @@ class _ReportTypeSelectorState extends ConsumerState<ReportTypeSelector> {
           const BLSmallTitle('Select reports to print:'),
           const SizedBox(height: 15),
           ...List.generate(selectedReports.length, (i) {
-            final reportType = widget.reportOptions.values.toList()[i];
-            final name = widget.reportOptions.keys.toList()[i];
+            final reportType = ReportType.values.toList()[i];
             return ReportTypeSelectorItem(
               type: reportType,
-              name: name,
               initial: selectedReports[reportType]!,
               updateReportType: updateReportType,
             );
           }),
           const SizedBox(height: 15),
-          BLAdminButton(
-            type: hasSelection ? AdminBtnType.green : AdminBtnType.grey,
-            child: const BLText('Confirm & Download'),
-            onPressed: () {
-              if (!hasSelection) {
-                toast.showToast(context, 'Select a report type.', type: NotifType.error);
-              } else {
-                nav.pop(context, selectedReports);
-              }
-            },
-          ),
-          BLAdminButton(
-            type: AdminBtnType.red,
-            child: const BLText('Cancel'),
-            onPressed: () {
-              nav.pop(context);
-            },
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              AdminBackBtn(text: 'Cancel'),
+              SizedBox(width: 20),
+              BLAdminButton(
+                type: hasSelection ? AdminBtnType.green : AdminBtnType.grey,
+                child: const BLText('Confirm & Download'),
+                onPressed: () {
+                  if (!hasSelection) {
+                    toast.showToast(context, 'Select a report type.', type: NotifType.error);
+                  } else {
+                    nav.pop(context, selectedReports);
+                  }
+                },
+              ),
+            ],
           )
         ],
       ),
@@ -97,13 +95,11 @@ class _ReportTypeSelectorState extends ConsumerState<ReportTypeSelector> {
 
 class ReportTypeSelectorItem extends ConsumerStatefulWidget {
   final ReportType type;
-  final String name;
   final bool initial;
   final void Function(ReportType, bool) updateReportType;
   const ReportTypeSelectorItem({
     required this.type,
     required this.updateReportType,
-    required this.name,
     required this.initial,
     super.key,
   });
@@ -144,7 +140,7 @@ class _ReportTypeSelectorItemState extends ConsumerState<ReportTypeSelectorItem>
             toggleSelected();
           }
         },
-        title: BLText(widget.name),
+        title: BLText(widget.type.capName()),
       ),
     );
   }

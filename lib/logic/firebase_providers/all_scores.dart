@@ -1,8 +1,8 @@
+import 'package:block_logic/logic/dev.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_models/score.dart';
 import 'package:firebase_database/firebase_database.dart';
 
-import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'generated/all_scores.g.dart';
@@ -58,10 +58,10 @@ Stream<Map<ScoreStatus, List<Score>>?> allScores(AllScoresRef ref, String leader
       }
 
       for (final scores in result.entries) {
-        // debugPrint(score.key.toString());
+        // dPrint(score.key.toString());
         for (final score in scores.value) {
-          debugPrint(score.playerScore.toString());
-          debugPrint(score.status.toString());
+          dPrint(score.playerScore.toString());
+          dPrint(score.status.toString());
         }
       }
       yield result;

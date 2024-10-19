@@ -6,6 +6,7 @@ import 'package:block_logic/components/dialog/reauth.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/util/blank_widget.dart';
 import 'package:block_logic/components/util/provider_default.dart';
+import 'package:block_logic/logic/dev.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_providers/selected_admin.dart';
 import 'package:block_logic/logic/services/account.dart';
@@ -144,7 +145,7 @@ class _AdminSettingsState extends ConsumerState<AdminSettings> {
                                 barrierDismissible: false,
                                 builder: (BuildContext context) => const ReauthDialog(),
                               );
-                              debugPrint('Reauth result = $reauth');
+                              dPrint('Reauth result = $reauth');
                               if (reauth == null) {
                                 await auth.deleteAccount();
                                 if (!context.mounted) return;

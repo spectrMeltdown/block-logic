@@ -6,7 +6,7 @@ part of '../selected_challenge.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$selectedChallengeHash() => r'a40d7fbc16d1b0eb041b4c830100cf7d545d607d';
+String _$selectedChallengeHash() => r'49332483062e073fd431de27c86434a2b498eced';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -75,7 +75,7 @@ class SelectedChallengeFamily extends Family<AsyncValue<Challenge?>> {
 }
 
 /// See also [selectedChallenge].
-class SelectedChallengeProvider extends AutoDisposeStreamProvider<Challenge?> {
+class SelectedChallengeProvider extends AutoDisposeFutureProvider<Challenge?> {
   /// See also [selectedChallenge].
   SelectedChallengeProvider(
     String challengeID, {
@@ -115,7 +115,7 @@ class SelectedChallengeProvider extends AutoDisposeStreamProvider<Challenge?> {
 
   @override
   Override overrideWith(
-    Stream<Challenge?> Function(SelectedChallengeRef provider) create,
+    FutureOr<Challenge?> Function(SelectedChallengeRef provider) create,
   ) {
     return ProviderOverride(
       origin: this,
@@ -133,7 +133,7 @@ class SelectedChallengeProvider extends AutoDisposeStreamProvider<Challenge?> {
   }
 
   @override
-  AutoDisposeStreamProviderElement<Challenge?> createElement() {
+  AutoDisposeFutureProviderElement<Challenge?> createElement() {
     return _SelectedChallengeProviderElement(this);
   }
 
@@ -154,7 +154,7 @@ class SelectedChallengeProvider extends AutoDisposeStreamProvider<Challenge?> {
   }
 }
 
-mixin SelectedChallengeRef on AutoDisposeStreamProviderRef<Challenge?> {
+mixin SelectedChallengeRef on AutoDisposeFutureProviderRef<Challenge?> {
   /// The parameter `challengeID` of this provider.
   String get challengeID;
 
@@ -163,7 +163,7 @@ mixin SelectedChallengeRef on AutoDisposeStreamProviderRef<Challenge?> {
 }
 
 class _SelectedChallengeProviderElement
-    extends AutoDisposeStreamProviderElement<Challenge?>
+    extends AutoDisposeFutureProviderElement<Challenge?>
     with SelectedChallengeRef {
   _SelectedChallengeProviderElement(super.provider);
 

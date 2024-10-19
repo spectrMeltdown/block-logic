@@ -28,8 +28,12 @@ enum CodeBlockType {
 }
 
 extension Names on CodeBlockType {
-  String formalName() {
+  String capName() {
     return '${name[0].toUpperCase()}${name.substring(1, name.length)}';
+  }
+
+  String singularName() {
+    return name.substring(0, name.length - 1);
   }
 }
 
@@ -39,6 +43,10 @@ enum Difficulty {
   advanced,
 }
 
+extension DifficultyNames on Difficulty {
+  String capName() => '${name[0].toUpperCase()}${name.substring(1, name.length)}';
+}
+
 enum FirestoreCollections { admins, users, rooms, reports, leaderboards, scores, settings, notifications, challenges, feedback }
 
 /// Similar to [ScoreStatus]
@@ -46,7 +54,7 @@ enum FirestoreCollections { admins, users, rooms, reports, leaderboards, scores,
 /// - pending if game is currently ongoing
 enum LeaderboardStatus { pending, incomplete, complete }
 
-enum LoadingType { full, normal }
+enum LoadingType { fill, tight }
 
 enum NotifType { info, warning, error, success }
 
@@ -65,6 +73,17 @@ enum ReportType {
   basicUsers,
   users, // all users
   leaderboards, // leaderboards, based on dateCreated
+}
+
+extension ReportTypeName on ReportType {
+  String capName() {
+    final capRegExp = RegExp(r'[A-Z]');
+    final hasCap = capRegExp.hasMatch(name);
+    if (hasCap) {
+      return '${name[0].toUpperCase()}${name.substring(1, name.indexOf(capRegExp))} ${name.substring(name.indexOf(capRegExp), name.length)}';
+    }
+    return '${name[0].toUpperCase()}${name.substring(1, name.length)}';
+  }
 }
 
 /// - ongoing, self explanatory

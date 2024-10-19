@@ -38,6 +38,7 @@ class ChallengeManager extends _$ChallengeManager {
   Future<String?> update(Challenge challenge) async {
     if (challenge.id!.isEmpty) return 'Error getting ID';
     try {
+      // TODO: UPDATE TO USE TRANSACTION
       await _db!.ref('challenges').child(challenge.id!).update(challenge.toJSON());
       return null;
     } catch (e) {

@@ -104,8 +104,8 @@ class _GameRoomState extends ConsumerState<GameRoom> {
                         );
                       }
                       challengeLength ??= challenges.length; // to switch to finalizing result if last challenge
-                      // debugPrint('Challenge length: $challengeLength');
-                      // debugPrint('current challenge: $currentChallenge');
+                      // dPrint('Challenge length: $challengeLength');
+                      // dPrint('current challenge: $currentChallenge');
                       return GameChallenge(
                         key: ValueKey(challenges[currentChallenge].id),
                         currentChallenge: currentChallenge,

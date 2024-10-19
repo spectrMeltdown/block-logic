@@ -8,14 +8,14 @@ import 'package:block_logic/logic/firebase_models/report.dart';
 import 'package:block_logic/logic/firebase_providers/reports.dart';
 import 'package:block_logic/logic/services/reports_manager.dart';
 import 'package:block_logic/logic/services/toast.dart';
-import 'package:block_logic/logic/testing.dart';
+import 'package:block_logic/logic/dev.dart';
 import 'package:block_logic/web/components/button.dart';
 import 'package:block_logic/web/components/card_simple.dart';
 import 'package:block_logic/web/components/header.dart';
+import 'package:block_logic/web/screens/reports/delete_dialog.dart';
 import 'package:block_logic/web/screens/reports/graph.dart';
 import 'package:block_logic/web/screens/reports/report_type_selector.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -23,6 +23,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
+import 'package:tuple/tuple.dart';
 
 class Reports extends ConsumerStatefulWidget {
   const Reports({super.key});
@@ -34,15 +35,6 @@ class Reports extends ConsumerStatefulWidget {
 class _ReportsState extends ConsumerState<Reports> {
   final pageScrollController = ScrollController();
   final db = FirebaseDatabase.instance;
-  Map<String, ReportType> reportOptions = {
-    'Basic Users': ReportType.basicUsers,
-    'Premium Users': ReportType.premiumUsers,
-    // 'Challenges' : ReportType.challe,
-    'Rooms': ReportType.rooms,
-    'Leaderboards': ReportType.leaderboards,
-    'Challenges Played': ReportType.challengesPlayed,
-    'Rooms Played': ReportType.roomsPlayed,
-  };
   late final Map<ReportType, Query> streams;
   ReportType selectedType = ReportType.basicUsers;
   DateTimeRange? dateRange = kDebugMode ? DateTimeRange(start: DateTime(2024, 9, 25), end: DateTime.now()) : null;
@@ -66,7 +58,7 @@ class _ReportsState extends ConsumerState<Reports> {
     pdf.addPage(
       pw.Page(
         build: (pw.Context context) {
-          final name = reportOptions.entries.firstWhere((e) => e.value == selectedType).key;
+          final name = ReportType.values.firstWhere((e) => e == selectedType).capName();
           return pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
@@ -106,19 +98,15 @@ class _ReportsState extends ConsumerState<Reports> {
     });
   }
 
-  void generatePdf() async {
-    if (processing) return;
-    toggleProcessing();
+  Future<void> generatePdf() async {
     if (reportsEmpty) {
       toast.showToast(context, 'No reports found in this category!', type: NotifType.error);
-      toggleProcessing();
       return;
     }
     final reportsToPrint = await showDialog<Map<ReportType, bool>>(
       context: context,
       builder: (context) => ReportTypeSelector(
         initial: selectedType,
-        reportOptions: reportOptions,
       ),
     );
     // initalize the print data
@@ -126,8 +114,6 @@ class _ReportsState extends ConsumerState<Reports> {
 
     if (reportsToPrint == null) {
       if (!mounted) return;
-      toast.showToast(context, 'Selection was empty', type: NotifType.error);
-      toggleProcessing();
       return;
     }
 
@@ -157,8 +143,7 @@ class _ReportsState extends ConsumerState<Reports> {
     }
 
     Uint8List pdfBytes = await generatePDFBytes();
-    await Printing.sharePdf(bytes: pdfBytes, filename: '${selectedType.name}.pdf');
-    toggleProcessing();
+    await Printing.sharePdf(bytes: pdfBytes, filename: '${selectedType.name}-${DateTime.now()}.pdf');
   }
 
   @override
@@ -166,7 +151,7 @@ class _ReportsState extends ConsumerState<Reports> {
     double width = MediaQuery.of(context).size.width;
     // double height = MediaQuery.of(context).size.height;
     // final reports = ref.watch(reportsProvider(ReportParams(type: selectedType, from: from, to: to)));
-    debugPrint('stream is now ${streams.entries.firstWhere((e) => e.key == selectedType).key}');
+    // dPrint('stream is now ${streams.entries.firstWhere((e) => e.key == selectedType).key}');
     final reports = ref.watch(reportsProvider(ReportParams(
       stream: streams.entries.firstWhere((e) => e.key == selectedType).value,
       dateRange: dateRange,
@@ -183,7 +168,7 @@ class _ReportsState extends ConsumerState<Reports> {
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
               child: Column(
                 children: [
-                  if (kDebugMode && !kIsWeb)
+                  if (kDebugMode && kIsWeb)
                     SpacedRow(
                       spacing: 10,
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -239,100 +224,165 @@ class _ReportsState extends ConsumerState<Reports> {
                         runAlignment: WrapAlignment.center,
                         crossAxisAlignment: WrapCrossAlignment.center,
                         children: [
-                          BLCardSimple(
-                            color: Colors.blue.shade800,
-                            child: DropdownButton<ReportType>(
-                              borderRadius: const BorderRadius.all(Radius.circular(20)),
-                              padding: const EdgeInsets.symmetric(horizontal: 10),
-                              underline: const SizedBox.shrink(),
-                              value: selectedType,
-                              items: reportOptions.entries.map((entry) {
-                                return DropdownMenuItem<ReportType>(
-                                  value: entry.value,
-                                  child: Text(entry.key),
-                                );
-                              }).toList(),
-                              onChanged: (newValue) {
-                                if (newValue != null) {
-                                  setState(() {
-                                    selectedType = newValue;
-                                  });
-                                }
-                              },
-                              hint: const BLText('Select a category'),
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () async {
-                              final dateRange = await showDateRangePicker(
-                                context: context,
-                                firstDate: DateTime(2024, 9, 20),
-                                lastDate: DateTime.now(),
-                                initialDateRange: this.dateRange,
-                                // initialEntryMode: DatePickerEntryMode.inputOnly,
-                                builder: (context, child) {
-                                  return Theme(
-                                    data: ThemeData.dark().copyWith(
-                                      colorScheme: ColorScheme.dark(
-                                        primary: Colors.blue, // Header background color
-                                        onPrimary: Colors.blueGrey.shade900, // Header text color
-                                        surface: Colors.blueGrey.shade900, // Background color of the picker
-                                        onSurface: Colors.white, // Text color
-                                      ),
-                                      datePickerTheme: DatePickerThemeData(
-                                        inputDecorationTheme: InputDecorationTheme(),
-                                      ),
-                                      textButtonTheme: TextButtonThemeData(
-                                        style: TextButton.styleFrom(
-                                          foregroundColor: Colors.red, // Button text color
-                                        ),
-                                      ),
-                                    ),
-                                    child: child!,
-                                  );
-                                },
-                              );
-                              if (dateRange != null) {
-                                setState(() {
-                                  this.dateRange = dateRange;
-                                });
-                              }
-                            },
-                            child: ConstrainedBox(
-                              constraints: const BoxConstraints(maxWidth: 400, minWidth: 200, maxHeight: 60),
-                              child: BLCardSimple(
-                                color: Colors.green.shade800,
-                                child: Center(
-                                  child: BLText(
-                                    dateRange == null ? 'Select date range' : 'From: ${DateFormat('dd / MM / y').format(dateRange!.start)} | To: ${DateFormat('dd / MM / y').format(dateRange!.end)}',
-                                    size: 18,
-                                    color: Colors.white,
-                                    alignCenter: true,
-                                  ),
-                                ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(left: 5),
+                                child: BLText('Type: '),
                               ),
+                              BLCardSimple(
+                                color: Colors.blue.shade800,
+                                child: DropdownButton<ReportType>(
+                                  borderRadius: const BorderRadius.all(Radius.circular(20)),
+                                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                                  underline: const SizedBox.shrink(),
+                                  value: selectedType,
+                                  items: ReportType.values.map((type) {
+                                    return DropdownMenuItem<ReportType>(
+                                      value: type,
+                                      child: Text(type.capName()),
+                                    );
+                                  }).toList(),
+                                  onChanged: (newValue) {
+                                    if (newValue != null) {
+                                      setState(() {
+                                        selectedType = newValue;
+                                      });
+                                    }
+                                  },
+                                  hint: const BLText('Select a category'),
+                                ),
+                              )
+                            ],
+                          ),
+                          ConstrainedBox(
+                            constraints: const BoxConstraints(maxWidth: 400, minWidth: 200, maxHeight: 80),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 5, bottom: 5),
+                                  child: BLText('Date Range: '),
+                                ),
+                                BLAdminButton(
+                                  type: AdminBtnType.blue,
+                                  onPressed: () async {
+                                    final dateRange = await showDateRangePicker(
+                                      context: context,
+                                      firstDate: DateTime(2024, 9, 20),
+                                      lastDate: DateTime.now(),
+                                      initialDateRange: this.dateRange,
+                                      // initialEntryMode: DatePickerEntryMode.inputOnly,
+                                      builder: (context, child) {
+                                        return Theme(
+                                          data: ThemeData.dark().copyWith(
+                                            colorScheme: ColorScheme.dark(
+                                              primary: Colors.blue, // Header background color
+                                              onPrimary: Colors.blueGrey.shade900, // Header text color
+                                              surface: Colors.blueGrey.shade900, // Background color of the picker
+                                              onSurface: Colors.white, // Text color
+                                            ),
+                                            datePickerTheme: DatePickerThemeData(
+                                              inputDecorationTheme: InputDecorationTheme(),
+                                            ),
+                                            textButtonTheme: TextButtonThemeData(
+                                              style: TextButton.styleFrom(
+                                                foregroundColor: Colors.red, // Button text color
+                                              ),
+                                            ),
+                                          ),
+                                          child: child!,
+                                        );
+                                      },
+                                    );
+                                    if (dateRange != null) {
+                                      setState(() {
+                                        this.dateRange = dateRange;
+                                      });
+                                    }
+                                  },
+                                  child: Center(
+                                      child: dateRange == null
+                                          ? BLText('Select date range')
+                                          : Row(
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              children: [
+                                                BLText(
+                                                  DateFormat('dd MMM y').format(dateRange!.start),
+                                                  bold: true,
+                                                  size: 18,
+                                                ),
+                                                BLText(
+                                                  ' - ',
+                                                  size: 30,
+                                                ),
+                                                BLText(
+                                                  DateFormat('dd MMM y').format(dateRange!.end),
+                                                  bold: true,
+                                                  size: 18,
+                                                ),
+                                              ],
+                                            )),
+                                ),
+                              ],
                             ),
                           ),
-                          BLAdminButton(
-                              type: AdminBtnType.teal,
-                              onPressed: generatePdf,
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  const Icon(
-                                    FontAwesomeIcons.file,
-                                    color: Colors.white,
-                                    size: 15,
-                                  ),
-                                  SizedBox(
-                                    width: width / 180,
-                                  ),
-                                  const BLText(
-                                    'Generate PDF',
-                                    color: Colors.white,
-                                  ),
-                                ],
-                              ))
+                          Column(
+                            children: [
+                              BLAdminButton(
+                                  type: AdminBtnType.red,
+                                  onPressed: () async {
+                                    if (processing) return;
+                                    toggleProcessing();
+                                    await deleteReports();
+                                    toggleProcessing();
+                                  },
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      const Icon(
+                                        FontAwesomeIcons.solidTrashCan,
+                                        color: Colors.white,
+                                        size: 15,
+                                      ),
+                                      SizedBox(
+                                        width: width / 180,
+                                      ),
+                                      const BLText(
+                                        'Delete reports',
+                                        color: Colors.white,
+                                      ),
+                                    ],
+                                  )),
+                              SizedBox(height: 15),
+                              BLAdminButton(
+                                  type: AdminBtnType.teal,
+                                  onPressed: () async {
+                                    if (processing) return;
+                                    toggleProcessing();
+                                    await generatePdf();
+                                    toggleProcessing();
+                                  },
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      const Icon(
+                                        FontAwesomeIcons.file,
+                                        color: Colors.white,
+                                        size: 15,
+                                      ),
+                                      SizedBox(
+                                        width: width / 180,
+                                      ),
+                                      const BLText(
+                                        'Generate PDF',
+                                        color: Colors.white,
+                                      ),
+                                    ],
+                                  ))
+                            ],
+                          )
                         ],
                       ),
                     ),
@@ -352,7 +402,7 @@ class _ReportsState extends ConsumerState<Reports> {
                         int count = 0;
                         // returns map if dateRange selected
                         if (reports is Map) {
-                          debugPrint('Reports is map');
+                          dPrint('Reports is map');
                           final mapData = reports as Map<TimePeriod, Map<ReportDate, List<Report>>>;
                           final entries = mapData.entries.toList();
                           printData = {for (var entry in entries) entry.key: entry.value.length};
@@ -405,7 +455,7 @@ class _ReportsState extends ConsumerState<Reports> {
                                         scrollDirection: Axis.horizontal,
                                         child: IntrinsicWidth(
                                           child: Graph(
-                                            // key: ValueKey(groupReports[TimePeriod.yearly]!),
+                                            type: selectedType,
                                             period: TimePeriod.yearly,
                                             reports: groupReports[TimePeriod.yearly]!,
                                           ),
@@ -421,7 +471,7 @@ class _ReportsState extends ConsumerState<Reports> {
                                       SingleChildScrollView(
                                         scrollDirection: Axis.horizontal,
                                         child: Graph(
-                                          // key: ValueKey(groupReports[TimePeriod.monthly]!),
+                                          type: selectedType,
                                           period: TimePeriod.monthly,
                                           reports: groupReports[TimePeriod.monthly]!,
                                         ),
@@ -437,7 +487,7 @@ class _ReportsState extends ConsumerState<Reports> {
                                         scrollDirection: Axis.horizontal,
                                         child: IntrinsicWidth(
                                           child: Graph(
-                                            // key: ValueKey(groupReports[TimePeriod.weekly]!),
+                                            type: selectedType,
                                             period: TimePeriod.weekly,
                                             reports: groupReports[TimePeriod.weekly]!,
                                           ),
@@ -454,7 +504,7 @@ class _ReportsState extends ConsumerState<Reports> {
                                         scrollDirection: Axis.horizontal,
                                         child: IntrinsicWidth(
                                           child: Graph(
-                                            // key: ValueKey(groupReports[TimePeriod.daily]!),
+                                            type: selectedType,
                                             period: TimePeriod.daily,
                                             reports: groupReports[TimePeriod.daily]!,
                                           ),
@@ -494,5 +544,16 @@ class _ReportsState extends ConsumerState<Reports> {
           )
       ],
     );
+  }
+
+  Future<void> deleteReports() async {
+    final result = await showDialog(
+        context: context,
+        builder: (context) => DeleteSelectorDialog(
+              initialType: selectedType,
+            ));
+    if (result is Tuple2<List<ReportType>, DateTimeRange>) {
+      reportsManager.delete(result.item1, result.item2);
+    }
   }
 }

@@ -27,6 +27,8 @@ class _CustomBlockDialogState extends ConsumerState<CustomBlockDialog> {
   Widget msg = const BlankWidget();
   PyDataType? selectedDataType;
   bool processing = false;
+  final List<String> pythonKeywords = ['False', 'await', 'else', 'import', 'pass', 'None', 'break', 'except', 'in', 'raise', 'True', 'class', 'finally', 'is', 'return', 'and', 'continue', 'for', 'lambda', 'try', 'as', 'def', 'from', 'nonlocal', 'while', 'assert', 'del', 'global', 'not', 'with', 'async', 'elif', 'if', 'or', 'yield'];
+  final RegExp pythonVariableRegExp = RegExp(r'^[a-zA-Z_][a-zA-Z0-9_]*$');
 
   @override
   void initState() {
@@ -48,6 +50,34 @@ class _CustomBlockDialogState extends ConsumerState<CustomBlockDialog> {
         alignCenter: true,
       );
     });
+  }
+
+  // Validator for Python variable name
+  String? nameValidator(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Cannot be empty';
+    }
+    // length set to 32, because more than that seems un-practical
+    if (value.length >= 32) {
+      return 'That name is too long!';
+    }
+
+    // skip the below if literal, they dont apply
+    if (widget.type == CodeBlockType.literals) {
+      return null;
+    }
+
+    // Check if the input matches Python's variable name rules
+    if (!pythonVariableRegExp.hasMatch(value)) {
+      return 'Invalid variable name';
+    }
+
+    // Check if the input is a reserved Python keyword
+    if (pythonKeywords.contains(value)) {
+      return 'Cannot use reserved keyword\nas variable name';
+    }
+
+    return null; // Valid variable name
   }
 
   Future<void> saveBlock() async {
@@ -101,33 +131,37 @@ class _CustomBlockDialogState extends ConsumerState<CustomBlockDialog> {
       }
 
       // data to return
-      late GameBlockData data;
+      GameBlockData? data;
 
       // assign data if meet requirements
       switch (widget.type) {
         case CodeBlockType.objects:
           // if exists customBlocks does not contain the input
-          if (widget.customBlocks.isNotEmpty || !widget.customBlocks.any((e) => e.name.trim().toUpperCase() == input.trim().toUpperCase())) {
+          if (widget.customBlocks.isEmpty || !widget.customBlocks.any((e) => e.name.trim() == input.trim())) {
             data = GameBlockData.createObject(name: input);
           } else {
             updateMsg('An object with this name already exists.');
             toggleProcessing();
             return;
           }
-
           break;
         case CodeBlockType.functions:
-          if (widget.customBlocks.isNotEmpty || !widget.customBlocks.any((e) => e.name.trim().toUpperCase() == input.trim().toUpperCase())) {
+          if (widget.customBlocks.isEmpty || !(widget.customBlocks.any((e) => e.name.trim() == input.trim()))) {
             data = GameBlockData.createFunction(name: input);
           } else {
             updateMsg('A function with this name already exists.');
             toggleProcessing();
             return;
           }
-
           break;
         case CodeBlockType.variables:
-          data = GameBlockData.createVariable(name: input, value: PyLiteral.none());
+          if (widget.customBlocks.isEmpty | !(widget.customBlocks.any((e) => e.name.trim() == input.trim()))) {
+            data = GameBlockData.createVariable(name: input, value: PyLiteral.none());
+          } else {
+            updateMsg('A variable with this name already exists.');
+            toggleProcessing();
+            return;
+          }
           break;
         case CodeBlockType.literals:
           if (literal == null) {
@@ -140,7 +174,6 @@ class _CustomBlockDialogState extends ConsumerState<CustomBlockDialog> {
         default:
           throw ('Invalid Type!');
       }
-      data = data.copyWith(inSelectorCount: 1);
       nav.pop(context, data);
     }
     toggleProcessing();
@@ -156,7 +189,7 @@ class _CustomBlockDialogState extends ConsumerState<CustomBlockDialog> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const BLText('Define the new block:'),
+            BLText('Define the new ${widget.type.singularName()}:'),
             const SizedBox(height: 15),
             ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 300),
@@ -165,13 +198,8 @@ class _CustomBlockDialogState extends ConsumerState<CustomBlockDialog> {
                 child: BLTextBox(
                   controller: codeController,
                   onFieldSubmitted: (p0) => saveBlock(),
-                  labelText: 'Code ...',
-                  validator: (code) {
-                    if (code == null || code.isEmpty) {
-                      return 'Cannot be empty';
-                    }
-                    return null;
-                  },
+                  labelText: 'Name of block ...',
+                  validator: nameValidator,
                 ),
               ),
             ),
@@ -201,15 +229,15 @@ class _CustomBlockDialogState extends ConsumerState<CustomBlockDialog> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 BLAdminButton(
-                  type: processing ? AdminBtnType.grey : AdminBtnType.green,
-                  child: const BLText('Save'),
-                  onPressed: () => saveBlock(),
-                ),
-                const SizedBox(width: 15),
-                BLAdminButton(
                   type: AdminBtnType.red,
                   child: const BLText('Cancel'),
                   onPressed: () => nav.pop(context),
+                ),
+                const SizedBox(width: 15),
+                BLAdminButton(
+                  type: processing ? AdminBtnType.grey : AdminBtnType.green,
+                  child: const BLText('Save'),
+                  onPressed: () => saveBlock(),
                 ),
               ],
             )

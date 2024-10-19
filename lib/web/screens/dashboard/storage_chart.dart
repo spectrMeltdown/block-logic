@@ -2,6 +2,7 @@ import 'package:block_logic/components/async/loading.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/text/title_small.dart';
 import 'package:block_logic/components/util/provider_default.dart';
+import 'package:block_logic/logic/dev.dart';
 import 'package:block_logic/web/components/card_simple.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -9,7 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final storageAnalyticsProvider = FutureProvider.autoDispose<int>((ref) async {
-  debugPrint('updating storage analytics...');
+  dPrint('updating storage analytics...');
   final storageRef = FirebaseStorage.instance.ref();
   int totalSizeUsed = 0;
 
@@ -118,14 +119,12 @@ class StorageChart extends ConsumerWidget {
                             value: totalSizeMB,
                             color: totalSizeColor,
                             radius: 180,
-                            badgePositionPercentageOffset: 1.5,
                           ),
                           PieChartSectionData(
                             showTitle: false,
                             value: freeSpaceMB,
                             color: freeSpaceColor,
                             radius: 180,
-                            badgePositionPercentageOffset: 1.5,
                           ),
                         ],
                       ),

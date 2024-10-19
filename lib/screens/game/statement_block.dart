@@ -19,8 +19,8 @@ class StatementBox extends ConsumerWidget {
     final data = ref.watch(getSelfDataProvider(this.data.uid)); // needed because adding children won't update the UI without it
     final blocks = ref.watch(getChildrenDataProvider(data?.statementUIDs));
 
-    // debugPrint('Statement: ${data?.uid}');
-    // debugPrint('Children: ${data?.statementUIDs}');
+    // dPrint('Statement: ${data?.uid}');
+    // dPrint('Children: ${data?.statementUIDs}');
     return Padding(
       padding: const EdgeInsets.all(2),
       child: Row(
@@ -29,7 +29,7 @@ class StatementBox extends ConsumerWidget {
           ...List.generate(
             blocks.length,
             (i) {
-              // debugPrint('Statement child: ${blocks[i].uid}\n');
+              // dPrint('Statement child: ${blocks[i].uid}\n');
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 3),
                 child: GameBlock(
@@ -45,7 +45,7 @@ class StatementBox extends ConsumerWidget {
               // return AddNewBlockBox();
             },
             onAcceptWithDetails: (dataToAccept, manager) {
-              // debugPrint(initData.toString());
+              // dPrint(initData.toString());
               if (dataToAccept.state == CodeBlockState.inEditor) {
                 gameManager.moveData(
                   data: dataToAccept,
@@ -53,19 +53,19 @@ class StatementBox extends ConsumerWidget {
                   type: ChildrenData.statementUIDs,
                 );
               } else {
-                // debugPrint('parent id: ${data!.uid}');
-                // debugPrint('initData name: ${initData.name}');
+                // dPrint('parent id: ${data!.uid}');
+                // dPrint('initData name: ${initData.name}');
                 gameManager.addData(dataToAccept, data!, ChildrenData.statementUIDs);
               }
               ref.invalidate(getRootDataProvider);
               ref.invalidate(getSelfDataProvider);
               ref.invalidate(getChildrenDataProvider);
 
-              // debugPrint(gameManager.getRootData().toString());
+              // dPrint(gameManager.getRootData().toString());
             },
             onWillAcceptWithDetails: (dataToAccept) {
-              // debugPrint('Self: ${data?.uid}');
-              // debugPrint('To accept: ${dataToAccept.uid}');
+              // dPrint('Self: ${data?.uid}');
+              // dPrint('To accept: ${dataToAccept.uid}');
               if (data?.statementUIDs?.contains(dataToAccept.uid) ?? false || dataToAccept.uid == data?.uid || dataToAccept.uid == data?.parentUID) {
                 return false;
               }

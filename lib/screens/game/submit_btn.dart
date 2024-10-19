@@ -96,8 +96,8 @@ class _GameSubmitButtonState extends ConsumerState<GameSubmitButton> {
             }
           }
 
-          // debugPrint('Used blocks: $usedBlockCount');
-          // debugPrint('total blocks: $challengeBlockCount');
+          // dPrint('Used blocks: $usedBlockCount');
+          // dPrint('total blocks: $challengeBlockCount');
 
           // if used blocks are not equal to or higher than total, then it is incomplete
           incompleteBlocks = !(usedBlockCount >= challengeBlockCount);
@@ -147,8 +147,8 @@ class _GameSubmitButtonState extends ConsumerState<GameSubmitButton> {
           final userOutput = !kDebugMode ? await checker.check() : '';
           // loop through correct answers
           for (final match in solutionMatch) {
-            // debugPrint('match is: $match');
-            // debugPrint(userOutput.toString());
+            // dPrint('match is: $match');
+            // dPrint(userOutput.toString());
             if (match.toString().trim().contains(userOutput.toString().trim())) {
               correct = true;
             } else {

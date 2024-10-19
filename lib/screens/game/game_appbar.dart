@@ -53,7 +53,7 @@ class GameAppbar extends ConsumerWidget {
               ref.invalidate(runTimerProvider);
             }
 
-            // debugPrint('pause timer: ${gameManager.getTimer()}');
+            // dPrint('pause timer: ${gameManager.getTimer()}');
             final leave = await dialog.show(context, const PauseDialog());
             if (leave is bool && leave) {
               if (practiceMode) {
@@ -84,7 +84,7 @@ class GameAppbar extends ConsumerWidget {
               ref.invalidate(runTimerProvider);
             }
 
-            // debugPrint('pause timer: ${gameManager.getTimer()}');
+            // dPrint('pause timer: ${gameManager.getTimer()}');
           },
           child: const BLBorderedPanel(
             child: Icon(

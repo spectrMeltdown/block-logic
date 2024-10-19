@@ -1,3 +1,4 @@
+import 'package:block_logic/logic/dev.dart';
 import 'package:flutter/material.dart';
 
 enum AdminBtnType {
@@ -6,9 +7,10 @@ enum AdminBtnType {
   teal,
   orange,
   grey,
+  blue,
 }
 
-class BLAdminButton extends StatefulWidget {
+class BLAdminButton extends StatelessWidget {
   final AdminBtnType type;
   final Widget child;
   final VoidCallback onPressed;
@@ -26,37 +28,32 @@ class BLAdminButton extends StatefulWidget {
   });
 
   @override
-  State<BLAdminButton> createState() => _BLAdminButtonState();
-}
-
-class _BLAdminButtonState extends State<BLAdminButton> {
-  @override
   Widget build(BuildContext context) {
     return ElevatedButton(
         style: ButtonStyle(
           backgroundColor: WidgetStateProperty.resolveWith<Color?>(
             (Set<WidgetState> states) {
               if (states.contains(WidgetState.hovered)) {
-                return getBgColor(widget.type); // Change color when hovered
+                return getBgColor(type); // Change color when hovered
               }
-              return getBgColor(widget.type).withOpacity(0.9); // Default background color
+              return getBgColor(type).withOpacity(0.9); // Default background color
             },
           ),
           padding: WidgetStateProperty.all<EdgeInsets>(
             EdgeInsets.symmetric(
-              horizontal: widget.paddingX ?? 15,
-              vertical: widget.paddingY ?? 13,
+              horizontal: paddingX ?? 15,
+              vertical: paddingY ?? 13,
             ),
           ),
         ),
         onPressed: () {
-          if (widget.disabled == false) {
-            widget.onPressed.call();
+          if (disabled == false) {
+            onPressed.call();
           } else {
-            debugPrint('Button is disabled');
+            dPrint('Button is disabled');
           }
         },
-        child: widget.child);
+        child: child);
   }
 
   Color getBgColor(AdminBtnType type) {
@@ -71,6 +68,8 @@ class _BLAdminButtonState extends State<BLAdminButton> {
         return Colors.grey;
       case AdminBtnType.teal:
         return Colors.teal;
+      case AdminBtnType.blue:
+        return Colors.blue;
     }
   }
 }

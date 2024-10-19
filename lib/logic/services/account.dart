@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:block_logic/logic/dev.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_models/admin_account.dart';
 import 'package:block_logic/logic/firebase_models/leaderboard.dart';
@@ -144,7 +145,7 @@ class AccountService extends _$AccountService {
     String? phoneNum,
     required AccountType type,
   }) async {
-    if (createdID != null) debugPrint('Created id: $createdID');
+    if (createdID != null) dPrint('Created id: $createdID');
     try {
       // String? result;
       if (type == AccountType.user) {
@@ -219,13 +220,13 @@ class AccountService extends _$AccountService {
     required void Function({required String verificationID, required String resendToken}) updateCallBack,
   }) async {
     String? error;
-    debugPrint(phoneNumber);
+    dPrint(phoneNumber);
     state.toast.showToast(context, 'Sending OTP', type: NotifType.info);
     try {
       await FirebaseAuth.instance.verifyPhoneNumber(
         phoneNumber: phoneNumber.trim(),
         verificationCompleted: (PhoneAuthCredential credential) async {
-          debugPrint('VERIFICATION COMPLETED');
+          dPrint('VERIFICATION COMPLETED');
           // await state.sharedPref.remove('resendToken');
           // await state.sharedPref.remove('verificationID');
           // if (type == AccountType.user) {
@@ -237,18 +238,18 @@ class AccountService extends _$AccountService {
           await state._auth!.linkWithCredential(credential);
         },
         verificationFailed: (FirebaseAuthException e) {
-          debugPrint('OTP FAILED: $e');
+          dPrint('OTP FAILED: $e');
           error = state._errorHandler.call(e, this);
           state.toast.showToast(context, error ?? '', type: NotifType.error);
         },
         codeSent: (String verificationId, int? resendToken) async {
-          debugPrint('CODE SENT');
+          dPrint('CODE SENT');
           state.toast.showToast(context, 'OTP sent!', type: NotifType.success);
           updateCallBack(resendToken: resendToken.toString(), verificationID: verificationId);
           // final verify = await state.sharedPref.setString('verificationID', verificationId);
           // final resend = await state.sharedPref.setString('resendToken', resendToken.toString());
-          // debugPrint('Verify saved: $verify');
-          // debugPrint('Resent saved: $resend');
+          // dPrint('Verify saved: $verify');
+          // dPrint('Resent saved: $resend');
           // if (type == AccountType.user) {
 
           //   // await update(user: UserAccount(id: state._auth!.uid, verificationID: verificationId, resendToken: resendToken));

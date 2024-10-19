@@ -1,7 +1,7 @@
+import 'package:block_logic/logic/dev.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/game/block_data.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:flutter/foundation.dart';
 
 class Challenge {
   final String? id;
@@ -33,7 +33,7 @@ class Challenge {
     } else if (doc is DataSnapshot && doc.value != null) {
       data = (doc.value as Map<Object?, Object?>).map((k, v) => MapEntry(k as String, v));
     } else {
-      debugPrint('Unknown type!!');
+      dPrint('Unknown type!!');
     }
 
     return Challenge(

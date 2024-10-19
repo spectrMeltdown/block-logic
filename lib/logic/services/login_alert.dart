@@ -142,7 +142,7 @@ class LoginAlert extends _$LoginAlert {
   //     Permission.location,
   //     Permission.storage,
   //   ].request();
-  //   debugPrint(statuses.toString());
+  //   dPrint(statuses.toString());
   // }
 }
 

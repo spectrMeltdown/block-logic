@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:block_logic/logic/dev.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_models/report.dart';
 import 'package:equatable/equatable.dart';
@@ -32,28 +33,32 @@ class ReportParams extends Equatable {
 }
 
 final reportsProvider = StreamProvider.family.autoDispose<Object, ReportParams>((ref, params) async* {
-  debugPrint('Updated params to ${params.dateRange.toString()}');
-  yield* params.stream.onValue.map((event) {
+  // dPrint('Updated params to ${params.dateRange.toString()}');
+  final controller = StreamController<Object>();
+  params.stream.onValue.listen((event) {
     final snapshot = event.snapshot;
     final List<Report> list = [];
 
-    // debugPrint('Updated params inside the stream listen');
+    // dPrint('Updated params inside the stream listen');
     if (snapshot.children.isNotEmpty) {
       for (final report in snapshot.children) {
         list.add(Report.fromRTDB(report));
       }
 
       if (params.dateRange == null) {
-        return list;
+        controller.add(list);
       } else {
-        return groupReportsByTimePeriod(
+        controller.add(groupReportsByTimePeriod(
           list.where((report) => report.date!.isAfter(params.dateRange!.start) && report.date!.isBefore(params.dateRange!.end)).toList(),
-        );
+        ));
       }
     } else {
-      return {};
+      controller.add({});
     }
+  }).onError((e) {
+    dPrint(e.toString());
   });
+  yield* controller.stream;
 });
 
 Map<TimePeriod, Map<ReportDate, List<Report>>> groupReportsByTimePeriod(List<Report> reports) {
@@ -78,7 +83,7 @@ Map<TimePeriod, Map<ReportDate, List<Report>>> groupReportsByTimePeriod(List<Rep
     // Group by monthly
     // final monthKey = year * 100 + createdAt.month;
     final monthKey = ReportDate(year: yearKey.year, month: createdAt.month);
-    // debugPrint(monthKey.toString());
+    // dPrint(monthKey.toString());
     if (groupedReports[TimePeriod.monthly]?[monthKey] == null) {
       groupedReports[TimePeriod.monthly]?[monthKey] = [];
     }
@@ -86,7 +91,7 @@ Map<TimePeriod, Map<ReportDate, List<Report>>> groupReportsByTimePeriod(List<Rep
 
     // Group by weekly
     final weekKey = ReportDate(year: yearKey.year, week: createdAt.weekOfYear());
-    // debugPrint(weekKey.toString());
+    // dPrint(weekKey.toString());
     if (groupedReports[TimePeriod.weekly]?[weekKey] == null) {
       groupedReports[TimePeriod.weekly]?[weekKey] = [];
     }
@@ -94,13 +99,13 @@ Map<TimePeriod, Map<ReportDate, List<Report>>> groupReportsByTimePeriod(List<Rep
 
     // Group by daily
     final dayKey = ReportDate(year: yearKey.year, month: monthKey.month, day: createdAt.day);
-    // debugPrint(dayKey.toString());
+    // dPrint(dayKey.toString());
     if (groupedReports[TimePeriod.daily]?[dayKey] == null) {
       groupedReports[TimePeriod.daily]?[dayKey] = [];
     }
     groupedReports[TimePeriod.daily]?[dayKey]?.add(report);
   }
-  // debugPrint(groupedReports.toString());
+  // dPrint(groupedReports.toString());
   return groupedReports;
 }
 
@@ -113,30 +118,31 @@ extension DateTimeExtension on DateTime {
   }
 }
 
-  // Method to get a formatted string as "yearNum + monthNum + weekNum"
-  // String yearMonthWeekString() {
-  //   final yearString = year.toString();
-  //   final monthString = DateFormat('MM').format(this);
-  //   final weekString = weekOfYear().toString().padLeft(2, '0');
-  //   return '$yearString$monthString$weekString${.1}';
-  // }
-// // Helper function to calculate the week number in the year
-// int _getWeekOfYear(DateTime date) {
-//   // Get the first day of the year
-//   DateTime firstDayOfYear = DateTime(date.year, 1, 1);
-
-//   // Get the weekday of the first day of the year (ISO where Monday = 1, Sunday = 7)
-//   int firstWeekDay = firstDayOfYear.weekday;
-
-//   // Calculate the difference in days between the date and the first day of the year
-//   int dayOfYear = date.difference(firstDayOfYear).inDays + 1;
-
-//   // Adjust day of year for ISO week system (first week starts with Monday)
-//   int adjustedDayOfYear = dayOfYear + (firstWeekDay - 1);
-
-//   // Calculate the week number (ceiling to round up)
-//   return (adjustedDayOfYear / 7).ceil();
+// Method to get a formatted string as "yearNum + monthNum + weekNum"
+// String yearMonthWeekString() {
+//   final yearString = year.toString();
+//   final monthString = DateFormat('MM').format(this);
+//   final weekString = weekOfYear().toString().padLeft(2, '0');
+//   return '$yearString$monthString$weekString${.1}';
 // }
+
+// Helper function to calculate the week number in the year
+int getWeekOfYear(DateTime date) {
+  // Get the first day of the year
+  DateTime firstDayOfYear = DateTime(date.year, 1, 1);
+
+  // Get the weekday of the first day of the year (ISO where Monday = 1, Sunday = 7)
+  int firstWeekDay = firstDayOfYear.weekday;
+
+  // Calculate the difference in days between the date and the first day of the year
+  int dayOfYear = date.difference(firstDayOfYear).inDays + 1;
+
+  // Adjust day of year for ISO week system (first week starts with Monday)
+  int adjustedDayOfYear = dayOfYear + (firstWeekDay - 1);
+
+  // Calculate the week number (ceiling to round up)
+  return (adjustedDayOfYear / 7).ceil();
+}
 
 // @riverpod
 // Stream<Map<TimePeriod, List<Report>>> reports(

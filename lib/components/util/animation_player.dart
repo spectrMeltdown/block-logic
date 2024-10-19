@@ -38,7 +38,7 @@ class _BLAnimationPlayerState extends State<BLAnimationPlayer> with TickerProvid
       onLoaded: (comp) {
         // if (kDebugMode) {
         //   for (int i = 0; i <= comp.layers.length; i++) {
-        //     debugPrint('Found $i layers');
+        //     dPrint('Found $i layers');
         //   }
         // }
         widget.controllerActions?.call(comp);

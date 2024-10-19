@@ -7,8 +7,8 @@ final getSelfDataProvider = Provider.family.autoDispose<GameBlockData?, String?>
   final state = ref.read(gameManagerProvider);
   final data = state.dataTree[uid];
   if (data == null) {
-    // debugPrint(data?.parentUID);
-    // debugPrint('UID does not exist!');
+    // dPrint(data?.parentUID);
+    // dPrint('UID does not exist!');
   }
   return data;
 });
@@ -22,8 +22,8 @@ final getChildrenDataProvider = Provider.family.autoDispose<List<GameBlockData>,
   final List<GameBlockData> result = [];
   for (final uid in uids) {
     if (state.dataTree[uid] == null) {
-      // debugPrint(uid);
-      // debugPrint('UID does not exist!');
+      // dPrint(uid);
+      // dPrint('UID does not exist!');
       continue;
     }
     result.add(state.dataTree[uid]!);
@@ -39,8 +39,8 @@ final getRootDataProvider = Provider.autoDispose<List<GameBlockData>>((ref) {
     if (data.parentUID == 'root') {
       result.add(data);
     } else {
-      // debugPrint(data.parentUID);
-      // debugPrint('UID does not exist!');
+      // dPrint(data.parentUID);
+      // dPrint('UID does not exist!');
     }
   }
   return result;

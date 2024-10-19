@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_build_context_in_providers
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/logic/enums.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -39,13 +40,18 @@ class Toast extends _$Toast {
     Alignment alignment = Alignment.topCenter,
     EdgeInsets margin = const EdgeInsets.only(top: 5, left: 10, right: 10),
   }) {
-    debugPrint(title);
+    // dPrint(title);
     final toast = FToast().init(context);
     toast.removeCustomToast();
     toast.showToast(
         toastDuration: const Duration(seconds: 5),
         gravity: ToastGravity.TOP,
         ignorePointer: true,
+        positionedToastBuilder: !kIsWeb
+            ? null
+            : (context, child) {
+                return Positioned(top: 20, right: 10, child: child);
+              },
         child: Container(
           alignment: alignment,
           margin: margin,

@@ -15,8 +15,8 @@ class BlockRender extends StatelessWidget {
   });
   @override
   Widget build(BuildContext context) {
-    // debugPrint('Block-Render: ${data.uid}');
-    // debugPrint('State: ${data.state.name}\n');
+    // dPrint('Block-Render: ${data.uid}');
+    // dPrint('State: ${data.state.name}\n');
     switch (data.state) {
       case CodeBlockState.inSelector:
         return BlockDesignWrapper(

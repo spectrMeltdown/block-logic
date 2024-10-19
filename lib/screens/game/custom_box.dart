@@ -1,3 +1,4 @@
+import 'package:block_logic/logic/dev.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/game/block_data.dart';
 import 'package:block_logic/logic/game/logic/game_manager.dart';
@@ -24,7 +25,7 @@ class CustomBox extends ConsumerWidget {
     switch (box) {
       case GameBox.parameters:
         final parameters = ref.watch(getChildrenDataProvider(data.parameterUIDs));
-        debugPrint('Parameters: $parameters');
+        dPrint('Parameters: $parameters');
         return Row(
           children: [
             ...List.generate(parameters.length, (i) {
@@ -41,7 +42,7 @@ class CustomBox extends ConsumerWidget {
                 );
               },
               onAcceptWithDetails: (dataToAccept, manager) {
-                // debugPrint('Data to accept: ${dataToAccept.name}');
+                // dPrint('Data to accept: ${dataToAccept.name}');
                 if (dataToAccept.state == CodeBlockState.inEditor) {
                   gameManager.moveData(
                     data: dataToAccept,
@@ -68,7 +69,7 @@ class CustomBox extends ConsumerWidget {
         );
       case GameBox.arguments:
         final arguments = ref.watch(getChildrenDataProvider(data.argumentUIDs));
-        debugPrint('Arguments: $arguments');
+        dPrint('Arguments: $arguments');
         return Row(children: [
           ...List.generate(arguments.length, (i) {
             return Padding(
@@ -110,7 +111,7 @@ class CustomBox extends ConsumerWidget {
 
       case GameBox.conditions:
         final conditions = ref.watch(getChildrenDataProvider(data.conditionUIDs));
-        debugPrint('Conditions: $conditions');
+        dPrint('Conditions: $conditions');
         return Row(
           children: [
             ...List.generate(conditions.length, (i) {
@@ -153,7 +154,7 @@ class CustomBox extends ConsumerWidget {
         );
       case GameBox.array:
         final items = ref.watch(getChildrenDataProvider(data.arrayUIDs));
-        debugPrint('Items: $items');
+        dPrint('Items: $items');
         return Row(
           children: [
             ...List.generate(items.length, (i) {

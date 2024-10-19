@@ -9,7 +9,7 @@ class AppMonitor {
       final bool isRunning = await platform.invokeMethod('isAppRunning');
       return isRunning;
     } catch (e) {
-      // debugPrint('Error checking app status: $e');
+      // dPrint('Error checking app status: $e');
       return false;
     }
   }

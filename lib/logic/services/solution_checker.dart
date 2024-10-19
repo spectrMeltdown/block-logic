@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:block_logic/logic/dev.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/game/block_data.dart';
 import 'package:block_logic/logic/services/error_handler.dart';
@@ -32,7 +33,7 @@ class SolutionChecker extends StateNotifier<SolutionCheckerState> {
   Future<String?> executePythonCode(String code) async {
     const String apiUrl = 'https://6ijw09yzs1.execute-api.ap-southeast-2.amazonaws.com/v1/run-code';
 
-    debugPrint(code);
+    dPrint(code);
 
     final Map<String, dynamic> body = {
       'code': code,
@@ -46,19 +47,19 @@ class SolutionChecker extends StateNotifier<SolutionCheckerState> {
       );
 
       if (response.statusCode == 200) {
-        debugPrint('Response data: ${response.body}');
+        dPrint('Response data: ${response.body}');
         final body = jsonDecode(response.body) as Map<String, dynamic>;
         final output = body['result'].toString();
         // final output = 'Code execution success:\n\n${body['result']}';
         return output;
       } else if (response.statusCode == 500) {
-        debugPrint('Response data: ${response.body}');
+        dPrint('Response data: ${response.body}');
         final body = jsonDecode(response.body) as Map<String, dynamic>;
         final output = 'Code execution failed:\n\n${body['details']}';
         return output;
       } else {
-        debugPrint('Request failed with status: ${response.statusCode}');
-        debugPrint('Request failed with status: ${response.body}');
+        dPrint('Request failed with status: ${response.statusCode}');
+        dPrint('Request failed with status: ${response.body}');
       }
       return null;
     } catch (e) {
@@ -95,7 +96,7 @@ class SolutionChecker extends StateNotifier<SolutionCheckerState> {
 // // }
 
 //       if (response.statusCode == 200) {
-//         debugPrint('Response data: ${response.body}');
+//         dPrint('Response data: ${response.body}');
 //         final result = jsonDecode(response.body) as Map<String, dynamic>;
 //         final output = result['output'].toString();
 //         return output.replaceFirst(RegExp(r'jdoodle.py'), 'main.py');
@@ -104,12 +105,12 @@ class SolutionChecker extends StateNotifier<SolutionCheckerState> {
 
 //         // }
 //       } else {
-//         debugPrint('Request failed with status: ${response.statusCode}');
-//         debugPrint('Request failed with status: ${response.body}');
+//         dPrint('Request failed with status: ${response.statusCode}');
+//         dPrint('Request failed with status: ${response.body}');
 //       }
 //       return null;
 //     } catch (e) {
-//       debugPrint('error here');
+//       dPrint('error here');
 //       return state.errorHandler.call(e, this);
 //     }
 //     // return null;
@@ -144,7 +145,7 @@ class SolutionChecker extends StateNotifier<SolutionCheckerState> {
 // // }
 
 //       if (response.statusCode == 200) {
-//         debugPrint('Response data: ${response.body}');
+//         dPrint('Response data: ${response.body}');
 //         final result = jsonDecode(response.body) as Map<String, dynamic>;
 //         final output = result['output'].toString();
 //         return output.replaceFirst(RegExp(r'jdoodle.py'), 'main.py');
@@ -153,12 +154,12 @@ class SolutionChecker extends StateNotifier<SolutionCheckerState> {
 
 //         // }
 //       } else {
-//         debugPrint('Request failed with status: ${response.statusCode}');
-//         debugPrint('Request failed with status: ${response.body}');
+//         dPrint('Request failed with status: ${response.statusCode}');
+//         dPrint('Request failed with status: ${response.body}');
 //       }
 //       return null;
 //     } catch (e) {
-//       debugPrint('error here');
+//       dPrint('error here');
 //       return state.errorHandler.call(e, this);
 //     }
 //     // return null;
@@ -171,7 +172,7 @@ class SolutionChecker extends StateNotifier<SolutionCheckerState> {
       return null;
     }
     String compiledCode = compileCode(dataTree);
-    debugPrint(compiledCode);
+    dPrint(compiledCode);
     return await executePythonCode(compiledCode);
   }
 
@@ -354,14 +355,14 @@ class SolutionChecker extends StateNotifier<SolutionCheckerState> {
 // // }
 
 //       if (response.statusCode == 200) {
-//         debugPrint('Response data: ${response.body}');
+//         dPrint('Response data: ${response.body}');
 //         final result = jsonDecode(response.body) as Map<String, dynamic>;
 //         if (result['isExecutionSuccess']) {
 //           return result['output'];
 //         }
 //         return result['error'];
 //       } else {
-//         debugPrint('Request failed with status: ${response.statusCode}');
+//         dPrint('Request failed with status: ${response.statusCode}');
 //       }
 //     } catch (e) {
 //       return state.errorHandler.call(e, this);

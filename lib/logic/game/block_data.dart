@@ -7,9 +7,6 @@ import 'package:block_logic/logic/game/py_loops.dart';
 import 'package:block_logic/logic/game/py_operators.dart';
 import 'package:flutter/material.dart';
 
-// part 'generated/block_data.g.dart';
-
-// @CopyWith()
 @immutable // must be immutable, for moveInTree function
 class GameBlockData {
   final String? uid;
@@ -27,7 +24,7 @@ class GameBlockData {
   final List<String>? arrayUIDs;
   final String? inSelectorUID;
   final int? inSelectorCount;
-  final int? inSelectorIndex;
+  // final int? inSelectorIndex;
   final PyLiteral? value;
   final PyKeyword? keyword;
   final bool? optional;
@@ -39,7 +36,7 @@ class GameBlockData {
     this.parentUID,
     this.arrayUIDs,
     this.inSelectorCount,
-    this.inSelectorIndex,
+    // this.inSelectorIndex,
     required this.type,
     required this.name,
     //required this.id,
@@ -58,9 +55,9 @@ class GameBlockData {
   factory GameBlockData.createConditional({
     required PyConditional conditional,
     // required int inSelectorIndex,
+    // required String id,
     int? count,
     bool? optional,
-    // required String id,
   }) {
     const type = CodeBlockType.conditionals;
     return GameBlockData(
@@ -69,7 +66,7 @@ class GameBlockData {
       name: conditional.name.replaceFirst(RegExp(r'_'), ''),
       conditionUIDs: conditional == PyConditional.else_ ? null : [],
       bodyUIDs: const [],
-      inSelectorCount: count,
+      inSelectorCount: count ?? 1,
       optional: optional,
     );
   }
@@ -95,7 +92,7 @@ class GameBlockData {
       type: type,
       // inSelectorIndex: inSelectorIndex,
       name: keyword.name.replaceFirst(RegExp(r'_'), ''),
-      inSelectorCount: count,
+      inSelectorCount: count ?? 1,
       optional: optional,
     );
   }
@@ -113,7 +110,7 @@ class GameBlockData {
       name: name,
       // inSelectorIndex: inSelectorIndex,
       argumentUIDs: const [],
-      inSelectorCount: count,
+      inSelectorCount: count ?? 1,
       optional: optional,
     );
   }
@@ -148,7 +145,7 @@ class GameBlockData {
       name: literal.value,
       arrayUIDs: literal.dataType == PyDataType.array ? [] : null,
       // inSelectorIndex: inSelectorIndex,
-      inSelectorCount: count,
+      inSelectorCount: count ?? 1,
       optional: optional,
     );
   }
@@ -166,7 +163,7 @@ class GameBlockData {
       name: loop.name.replaceFirst(RegExp(r'_'), ''),
       conditionUIDs: const [],
       bodyUIDs: const [],
-      inSelectorCount: count,
+      inSelectorCount: count ?? 1,
       optional: optional,
       // inSelectorIndex: inSelectorIndex,
     );
@@ -185,7 +182,7 @@ class GameBlockData {
       name: '$name ',
       argumentUIDs: const [],
       // inSelectorIndex: inSelectorIndex,
-      inSelectorCount: count,
+      inSelectorCount: count ?? 1,
       optional: optional,
     );
   }
@@ -229,7 +226,7 @@ class GameBlockData {
           return GameBlockData(
             type: type,
             name: PyOperator.arithmetic(dataValue).operator,
-            inSelectorCount: count,
+            inSelectorCount: count ?? 1,
             optional: optional,
             // inSelectorIndex: inSelectorIndex,
           );
@@ -240,7 +237,7 @@ class GameBlockData {
           return GameBlockData(
             type: type,
             name: PyOperator.comparison(dataValue).operator,
-            inSelectorCount: count,
+            inSelectorCount: count ?? 1,
             optional: optional,
             // inSelectorIndex: inSelectorIndex,
           );
@@ -251,7 +248,7 @@ class GameBlockData {
           return GameBlockData(
             type: type,
             name: PyOperator.assignment(dataValue).operator,
-            inSelectorCount: count,
+            inSelectorCount: count ?? 1,
             optional: optional,
             // inSelectorIndex: inSelectorIndex,
           );
@@ -262,7 +259,7 @@ class GameBlockData {
           return GameBlockData(
             type: type,
             name: PyOperator.identity(dataValue).operator,
-            inSelectorCount: count,
+            inSelectorCount: count ?? 1,
             optional: optional,
             // inSelectorIndex: inSelectorIndex,
           );
@@ -273,8 +270,7 @@ class GameBlockData {
           return GameBlockData(
             type: type,
             name: PyOperator.logical(dataValue).operator,
-            inSelectorCount: count,
-
+            inSelectorCount: count ?? 1,
             optional: optional,
             // inSelectorIndex: inSelectorIndex,
           );
@@ -285,7 +281,7 @@ class GameBlockData {
           return GameBlockData(
             type: type,
             name: PyOperator.membership(dataValue).operator,
-            inSelectorCount: count,
+            inSelectorCount: count ?? 1,
             optional: optional,
             // inSelectorIndex: inSelectorIndex,
           );
@@ -296,10 +292,10 @@ class GameBlockData {
 
   factory GameBlockData.createVariable({
     // required String id,
+    // required int inSelectorIndex,
     required String name,
     required PyLiteral value,
     bool? optional,
-    // required int inSelectorIndex,
     int? count,
   }) {
     const type = CodeBlockType.variables;
@@ -308,7 +304,7 @@ class GameBlockData {
       name: name,
       value: value,
       // inSelectorIndex: inSelectorIndex,
-      inSelectorCount: count,
+      inSelectorCount: count ?? 1,
       optional: optional,
     );
   }
@@ -346,7 +342,7 @@ class GameBlockData {
       bodyUIDs: bodyUIDs ?? this.bodyUIDs,
       statementUIDs: statementUIDs ?? this.statementUIDs,
       inSelectorCount: inSelectorCount ?? this.inSelectorCount,
-      inSelectorIndex: inSelectorIndex ?? this.inSelectorIndex,
+      // inSelectorIndex: inSelectorIndex ?? this.inSelectorIndex,
       value: value ?? this.value,
       inSelectorUID: inSelectorUID ?? this.inSelectorUID,
       keyword: keyword ?? this.keyword,
@@ -371,7 +367,7 @@ class GameBlockData {
       arrayUIDs: (json['arrayUIDs'] as List<dynamic>?)?.map((e) => e as String).toList(),
       inSelectorUID: json['inSelectorUID'] as String?,
       inSelectorCount: json['inSelectorCount'] as int?,
-      inSelectorIndex: json['inSelectorIndex'] as int?,
+      // inSelectorIndex: json['inSelectorIndex'] as int?,
       optional: json['optional'] as bool?,
       value: json['value'] != null ? PyLiteral.fromJSON(json['value'] as Map<Object?, Object?>) : null,
       keyword: json['keyword'] != null ? PyKeyword.values.firstWhere((e) => e.name == json['keyword']) : null,
@@ -413,9 +409,9 @@ class GameBlockData {
     if (inSelectorCount != null) {
       toJSONMap.addAll({'inSelectorCount': inSelectorCount});
     }
-    if (inSelectorIndex != null) {
-      toJSONMap.addAll({'inSelectorIndex': inSelectorIndex});
-    }
+    // if (inSelectorIndex != null) {
+    //   toJSONMap.addAll({'inSelectorIndex': inSelectorIndex});
+    // }
     if (value != null) {
       toJSONMap.addAll({'value': value?.toJSON()});
     }

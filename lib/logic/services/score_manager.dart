@@ -1,9 +1,9 @@
+import 'package:block_logic/logic/dev.dart';
 import 'package:block_logic/logic/firebase_models/score.dart';
 import 'package:block_logic/logic/services/error_handler.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'generated/score_manager.g.dart';
@@ -43,7 +43,7 @@ class ScoreManager extends _$ScoreManager {
   }) async {
     if (leaderboardID.isEmpty || uid.isEmpty) throw ('Either leaderboardID or UID was blank.');
     try {
-      debugPrint('Incrementing on $leaderboardID $uid $value');
+      dPrint('Incrementing on $leaderboardID $uid $value');
       await state._db.child('$leaderboardID/scores/$uid').update({
         'playerScore': value,
       });

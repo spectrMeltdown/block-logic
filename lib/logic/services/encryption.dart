@@ -23,7 +23,7 @@ class Encryption extends _$Encryption {
   }
 
   encrypt_lib.Encrypter _getEncrypter(String key) {
-    // debugPrint(key.length.toString());
+    // dPrint(key.length.toString());
     //assert(key.length == 32);
 
     /// use firebase_auth id, appended and prepended with '==' symbols to reach a length of 32

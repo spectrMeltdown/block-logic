@@ -3,7 +3,7 @@ import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/game/block_data.dart';
 import 'package:block_logic/logic/services/ui.dart';
-import 'package:block_logic/logic/testing.dart';
+import 'package:block_logic/logic/dev.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -15,16 +15,20 @@ class BlockDesignWrapper extends ConsumerWidget {
   // final String? text;
   final void Function()? updateSelection;
   final double opacity;
-  final double? width;
-  final double? height;
+  final double minWidth;
+  final double minHeight;
+  final double maxWidth;
+  final double maxHeight;
   final Alignment? alignment;
 
   const BlockDesignWrapper({
     required this.data,
     this.alignment,
     this.child,
-    this.width,
-    this.height,
+    this.minWidth = 0,
+    this.minHeight = 0,
+    this.maxWidth = double.infinity,
+    this.maxHeight = double.infinity,
     this.opacity = 1,
     this.color,
     this.updateSelection,
@@ -39,8 +43,7 @@ class BlockDesignWrapper extends ConsumerWidget {
       child: Material(
         color: Colors.transparent,
         child: Container(
-            width: width,
-            height: height,
+            constraints: BoxConstraints(minHeight: minHeight, minWidth: minWidth, maxHeight: maxHeight, maxWidth: maxWidth),
             alignment: alignment,
             padding: EdgeInsets.symmetric(horizontal: data.name.length <= 3 ? 15 : 10, vertical: 8),
             decoration: BoxDecoration(
@@ -53,7 +56,9 @@ class BlockDesignWrapper extends ConsumerWidget {
             child: updateSelection != null || kIsWeb
                 ? BLText(
                     data.name,
+                    size: kIsWeb ? 18 : null,
                     color: data.type != CodeBlockType.keywords ? Colors.white.withOpacity(opacity) : Colors.black,
+                    softWrap: true,
                   )
                 : child),
       ),

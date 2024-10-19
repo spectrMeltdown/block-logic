@@ -1,9 +1,9 @@
 import 'package:block_logic/components/text/text.dart';
+import 'package:block_logic/logic/dev.dart';
 import 'package:block_logic/logic/services/ui.dart';
 import 'package:flutter/material.dart';
 
-Future<void> blShowNotifyDialog(context,
-    {required String title, String? label}) async {
+Future<void> blShowNotifyDialog(context, {required String title, String? label}) async {
   try {
     return showDialog(
       context: context,
@@ -13,17 +13,12 @@ Future<void> blShowNotifyDialog(context,
       ),
     );
   } catch (e) {
-    debugPrint('blShowNotifyDialog');
+    dPrint('blShowNotifyDialog');
   }
 }
 
 class BLDialog extends StatelessWidget {
-  const BLDialog(
-      {super.key,
-      required this.child,
-      this.padding,
-      this.color,
-      this.insetPadding});
+  const BLDialog({super.key, required this.child, this.padding, this.color, this.insetPadding});
   final Widget child;
   final EdgeInsets? padding;
   final EdgeInsets? insetPadding;
@@ -32,8 +27,7 @@ class BLDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return Dialog(
       backgroundColor: Colors.transparent,
-      insetPadding: insetPadding ??
-          const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+      insetPadding: insetPadding ?? const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
       child: Container(
           decoration: BoxDecoration(
             borderRadius: const BorderRadius.all(Radius.circular(30)),
@@ -43,18 +37,9 @@ class BLDialog extends StatelessWidget {
           margin: const EdgeInsets.symmetric(horizontal: 10),
           child: Container(
               padding: const EdgeInsets.all(5),
-              decoration: BoxDecoration(
-                  borderRadius: const BorderRadius.all(Radius.circular(20)),
-                  boxShadow: [
-                    const BoxShadow(color: Colors.black12),
-                    BoxShadow(
-                        color: color ?? Colors.blueGrey.shade800,
-                        spreadRadius: -5,
-                        blurRadius: 20)
-                  ]),
+              decoration: BoxDecoration(borderRadius: const BorderRadius.all(Radius.circular(20)), boxShadow: [const BoxShadow(color: Colors.black12), BoxShadow(color: color ?? Colors.blueGrey.shade800, spreadRadius: -5, blurRadius: 20)]),
               child: Padding(
-                padding: padding ??
-                    const EdgeInsets.symmetric(horizontal: 15, vertical: 30),
+                padding: padding ?? const EdgeInsets.symmetric(horizontal: 15, vertical: 30),
                 child: child,
               ))),
     );

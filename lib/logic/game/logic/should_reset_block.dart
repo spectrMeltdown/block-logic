@@ -1,6 +1,6 @@
+import 'package:block_logic/logic/dev.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/game/logic/game_manager.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tuple/tuple.dart';
 // import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -15,15 +15,15 @@ import 'package:tuple/tuple.dart';
 
 final shouldResetBlockProvider = Provider.family<bool, Tuple2<CodeBlockType, String>?>((ref, req) {
   if (req == null) {
-    debugPrint('Tuple was null!!');
+    dPrint('Tuple was null!!');
     return false;
   }
-  // debugPrint('shouldResetBlockProvider called!');
-  // debugPrint('${req.item1}{${req.item2}');
+  // dPrint('shouldResetBlockProvider called!');
+  // dPrint('${req.item1}{${req.item2}');
   final result = ref.watch(
     gameManagerProvider.select(
       (state) {
-        // debugPrint('${state.inSelectorUIDs[req.item1]} ITEMS');
+        // dPrint('${state.inSelectorUIDs[req.item1]} ITEMS');
         if (state.inSelectorUIDs[req.item1] != null) {
           return !state.inSelectorUIDs[req.item1]!.contains(req.item2);
         }

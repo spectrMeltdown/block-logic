@@ -7,14 +7,15 @@ import 'package:go_router/go_router.dart';
 
 class AdminBackBtn extends ConsumerWidget {
   final bool useContext;
-  const AdminBackBtn({this.useContext = false, super.key});
+  final String text;
+  const AdminBackBtn({this.text = 'Back', this.useContext = false, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final nav = ref.read(customNavigationProvider.notifier);
     return BLAdminButton(
         type: AdminBtnType.red,
-        child: const BLText('Back'),
+        child: BLText(text),
         onPressed: () {
           if (useContext) {
             context.pop();

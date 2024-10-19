@@ -44,7 +44,7 @@ class GameCodeBlockState extends ConsumerState<GameBlock> {
   @override
   void initState() {
     super.initState();
-    // debugPrint('Init block: ${widget.data.name}');
+    // dPrint('Init block: ${widget.data.name}');
     gameManager = ref.read(gameManagerProvider.notifier);
     blui = ref.read(bLUIProvider.notifier);
     create();
@@ -65,11 +65,11 @@ class GameCodeBlockState extends ConsumerState<GameBlock> {
 
   void onDragCompleted() {
     if (widget.data.state == CodeBlockState.inSelector) {
-      // debugPrint('decrement count');
+      // dPrint('decrement count');
       if (widget.updateStackCount != null) {
         widget.updateStackCount!(add: false);
       }
-      // debugPrint('Decrement ${widget.data.type}');
+      // dPrint('Decrement ${widget.data.type}');
       gameManager.decrementCategory(widget.data.type);
       ref.invalidate(tabNumberProvider);
       setState(() {
@@ -95,29 +95,29 @@ class GameCodeBlockState extends ConsumerState<GameBlock> {
   @override
   Widget build(BuildContext context) {
     // super.build(context);
-    // debugPrint('Previous challenge uid was $previousChallengeUID');
-    // debugPrint('Current challenge uid was ${widget.challengeUID}');
+    // dPrint('Previous challenge uid was $previousChallengeUID');
+    // dPrint('Current challenge uid was ${widget.challengeUID}');
     if (widget.data.state == CodeBlockState.inEditor) {
-      // debugPrint('Block: ${widget.data.uid}\n');
+      // dPrint('Block: ${widget.data.uid}\n');
     }
 
     if (widget.data.type == CodeBlockType.statement) {
-      // debugPrint('from block ${widget.data.uid}');
-      // debugPrint('from block ${widget.data.statementUIDs}\n');
+      // dPrint('from block ${widget.data.uid}');
+      // dPrint('from block ${widget.data.statementUIDs}\n');
     }
     // trigger rebuilds when the challenge has changed (only in selector view)
     if (widget.topLevelBlock && previousChallengeUID != widget.challengeUID) {
       create();
-      // debugPrint('rebuild block triggered');
+      // dPrint('rebuild block triggered');
       setState(() {});
     }
-    // debugPrint('BLOCK REBUILT');
-    // debugPrint(widget.data.toJSON().toString());
+    // dPrint('BLOCK REBUILT');
+    // dPrint(widget.data.toJSON().toString());
     final shouldResetFromAll = ref.watch(shouldResetAllBlocksProvider);
 
     if (widget.data.state == CodeBlockState.inSelector) {
       if (shouldResetFromAll) {
-        // debugPrint('shouldResetFromAll');
+        // dPrint('shouldResetFromAll');
         setState(() {
           block = defaultWithPadding;
         });
@@ -133,9 +133,9 @@ class GameCodeBlockState extends ConsumerState<GameBlock> {
       final shouldResetBlock = ref.watch(shouldResetBlockProvider(Tuple2(widget.data.type, widget.data.inSelectorUID!)));
       // redisplay block if requested
       if (shouldResetBlock) {
-        // debugPrint('shouldResetSelf');
+        // dPrint('shouldResetSelf');
         // if (widget.updateStackCount != null) {
-        //   debugPrint('increment count');
+        //   dPrint('increment count');
         //   widget.updateStackCount!(add: true);
         // }
         gameManager.addInSelectorUIDs(widget.data.type, widget.data.inSelectorUID!);

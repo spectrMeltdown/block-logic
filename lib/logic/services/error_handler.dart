@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_build_context_in_providers
 import 'package:block_logic/components/dialog/dialog.dart';
+import 'package:block_logic/logic/dev.dart';
 import 'package:block_logic/logic/services/toast.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -17,17 +18,17 @@ class ErrorHandler extends _$ErrorHandler {
   }
 
   String? call(Object e, Object source, {BuildContext? context, bool handleOverlay = true}) {
-    debugPrint('BLERROR: $e');
-    debugPrint('OBJECT: $source');
+    dPrint('BLERROR: $e');
+    dPrint('OBJECT: $source');
     if (e is! FirebaseException) {
-      debugPrint('Was not a FirebaseException!');
+      dPrint('Was not a FirebaseException!');
       if (context?.mounted != null && !context!.mounted) return null;
-      debugPrint('Exception from: ${context?.widget.runtimeType}');
+      dPrint('Exception from: ${context?.widget.runtimeType}');
       return null;
     }
     if (context == null) handleOverlay = false;
     //state.toast.dismissAllToast(context);
-    debugPrint('FirebaseException Code: ${e.code}');
+    dPrint('FirebaseException Code: ${e.code}');
     String? error;
     switch (e.code) {
       case 'captcha-check-failed':

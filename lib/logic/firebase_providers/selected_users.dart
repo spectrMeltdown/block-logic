@@ -1,6 +1,6 @@
+import 'package:block_logic/logic/dev.dart';
 import 'package:block_logic/logic/firebase_models/user_account.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:flutter/material.dart';
 
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -11,7 +11,7 @@ Future<List<UserAccount>> selectedUsers(
   SelectedUsersRef ref,
   List<String> ids,
 ) async {
-  debugPrint('IDs were: $ids');
+  dPrint('IDs were: $ids');
   if (ids.isNotEmpty) {
     final db = FirebaseDatabase.instance;
     final List<UserAccount> accounts = [];

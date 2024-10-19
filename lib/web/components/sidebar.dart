@@ -2,6 +2,7 @@ import 'package:block_logic/components/account/display_name.dart';
 import 'package:block_logic/components/account/profile_pic.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/constants.dart';
+import 'package:block_logic/logic/dev.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/services/auth.dart';
 import 'package:block_logic/web/components/logout_btn.dart';
@@ -34,6 +35,7 @@ class _SidebarState extends ConsumerState<Sidebar> {
   late AuthService auth;
   late List<String> locations;
   late double width;
+  final scrollController = ScrollController();
   int? selected;
   int? hovered;
 
@@ -43,10 +45,10 @@ class _SidebarState extends ConsumerState<Sidebar> {
     locations = List.generate(WebScaffoldPages.values.length, (i) {
       return '/${WebScaffoldPages.values[i].name}';
     });
-    debugPrint('sidebar full path: ${widget.state.fullPath}');
+    dPrint('sidebar full path: ${widget.state.fullPath}');
     for (final location in locations.indexed) {
       if (widget.state.fullPath != null && widget.state.fullPath!.contains(location.$2)) {
-        // debugPrint(location.$2);
+        // dPrint(location.$2);
         selected = location.$1;
       }
     }
@@ -56,52 +58,59 @@ class _SidebarState extends ConsumerState<Sidebar> {
   @override
   Widget build(BuildContext context) {
     width = MediaQuery.of(context).size.width;
+    double height = MediaQuery.of(context).size.height;
     if (widget.parentWidth > tabletMin) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         widget.closeDrawer();
       });
     }
-    return Container(
-      color: Colors.blueGrey.shade800,
-      constraints: BoxConstraints(maxWidth: sidebarCompactWidth),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: 30, top: 20),
-              child: Row(
-                children: [
-                  const SizedBox(width: 10),
-                  BLProfilePic(type: AccountType.admin, auth.getUID()),
-                  const SizedBox(width: 10),
-                  Flexible(
-                      child: BLDisplayName(
-                    auth.getUID(),
-                    AccountType.admin,
-                  )),
-                  const SizedBox(width: 10),
-                ],
+    return Scrollbar(
+      controller: scrollController,
+      child: SingleChildScrollView(
+        controller: scrollController,
+        child: Container(
+          color: Colors.blueGrey.shade800,
+          constraints: BoxConstraints(maxWidth: sidebarCompactWidth, maxHeight: height),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 30, top: 20),
+                  child: Row(
+                    children: [
+                      const SizedBox(width: 10),
+                      BLProfilePic(type: AccountType.admin, auth.getUID()),
+                      const SizedBox(width: 10),
+                      Flexible(
+                          child: BLDisplayName(
+                        auth.getUID(),
+                        AccountType.admin,
+                      )),
+                      const SizedBox(width: 10),
+                    ],
+                  ),
+                ),
               ),
-            ),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                child: Divider(),
+              ),
+              ...items(),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                child: Divider(),
+              ),
+              const Center(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20),
+                  child: LogoutBtn(),
+                ),
+              )
+            ],
           ),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-            child: Divider(),
-          ),
-          ...items(),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-            child: Divider(),
-          ),
-          const Center(
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              child: LogoutBtn(),
-            ),
-          )
-        ],
+        ),
       ),
     );
   }

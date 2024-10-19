@@ -1,3 +1,4 @@
+import 'package:block_logic/logic/dev.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_models/user_account.dart';
 import 'package:block_logic/logic/firebase_providers/auth.dart';
@@ -7,8 +8,6 @@ import 'package:block_logic/logic/services/shared_pref.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -173,7 +172,7 @@ class AuthService extends _$AuthService {
       final idTokenResult = await FirebaseAuth.instance.currentUser?.getIdTokenResult(true);
 
       final Object? isAdmin = idTokenResult?.claims?['admin'];
-      debugPrint('Role of account being deleted, is admin? : $isAdmin');
+      dPrint('Role of account being deleted, is admin? : $isAdmin');
 
       if (isAdmin is bool && isAdmin == true) {
         await state._account.deleteFirestoreData(uid, AccountType.admin);
@@ -291,7 +290,7 @@ class AuthService extends _$AuthService {
         'sessionID': sessionID,
       });
     } catch (e) {
-      debugPrint(state._errorHandler.call(e, this));
+      dPrint(state._errorHandler.call(e, this));
     }
   }
 
@@ -329,7 +328,7 @@ class AuthService extends _$AuthService {
   //           state._auth.currentUser!.linkWithCredential(credential);
   //         },
   //         verificationFailed: (FirebaseAuthException e) {
-  //           debugPrint('Verification failed: ${e.message}');
+  //           dPrint('Verification failed: ${e.message}');
   //         },
   //         codeSent: (String verificationId, int? resendToken) {
   //           /// update with new verification ID

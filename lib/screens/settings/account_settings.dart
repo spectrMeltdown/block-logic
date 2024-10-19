@@ -269,7 +269,7 @@ class AccountSettingsWidget extends ConsumerWidget {
                                   barrierDismissible: false,
                                   builder: (BuildContext context) => const ReauthDialog(),
                                 );
-                                // debugPrint('Reauth result = $reauth');
+                                // dPrint('Reauth result = $reauth');
                                 if (reauth == null) {
                                   if (!kIsWeb) {
                                     await reportManager.remove(userUID: user.uid);

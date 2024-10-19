@@ -63,7 +63,7 @@ class SystemSettings extends ConsumerWidget {
         BLSwitch(
           state: gameAudio.backgroundMusic,
           onPressed: (newValue) {
-            // debugPrint('bg music switch');
+            // dPrint('bg music switch');
             gameAudioNotifier.toggleBG();
             //bLAudioManager.playBG(false);
           },

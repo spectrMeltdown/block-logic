@@ -1,3 +1,4 @@
+import 'package:block_logic/logic/dev.dart';
 import 'package:block_logic/logic/game/block_data.dart';
 import 'package:block_logic/logic/game/logic/game_manager.dart';
 import 'package:block_logic/screens/game/block.dart';
@@ -38,7 +39,7 @@ class _BlockSelectorViewState extends ConsumerState<BlockSelectorView> with Auto
   void didUpdateWidget(covariant BlockSelectorView oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.challengeUID != oldWidget.challengeUID) {
-      debugPrint('rebuild selector');
+      dPrint('rebuild selector');
       setState(() {
         blockData = widget.blockData;
       });
@@ -64,7 +65,7 @@ class _BlockSelectorViewState extends ConsumerState<BlockSelectorView> with Auto
             child: Row(
               children: List.generate(blockData.length, (i) {
                 if (blockData[i].inSelectorCount != null && blockData[i].inSelectorCount! > 1) {
-                  // debugPrint('Count from selector view: ${widget.blockData[i].inSelectorCount}');
+                  // dPrint('Count from selector view: ${widget.blockData[i].inSelectorCount}');
                   return BlockSelectorStack(blockData[i]);
                 }
                 return GameBlock(

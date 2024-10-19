@@ -203,7 +203,7 @@ GoRouter router() {
     ],
     observers: [routeObserver],
     redirect: (context, state) async {
-      // debugPrint('redirect called');
+      // dPrint('redirect called');
       // return '/accounts';
       final user = FirebaseAuth.instance.currentUser;
       if (user?.uid != null) {
@@ -220,19 +220,19 @@ GoRouter router() {
         // if (adminFirestore.verificationID != null && adminFirestore.verificationID!.isEmpty) {
         //   return '/verify-phone-num';
         // }
-        // debugPrint(state.matchedLocation);
+        // dPrint(state.matchedLocation);
 
         /// prevent going back to login page when already logged in
         if (state.matchedLocation == '/login') {
           return '/dashboard';
         }
         if (state.fullPath != null && state.fullPath!.contains('challenges/create')) {
-          // debugPrint('redirecting create challenge');
+          // dPrint('redirecting create challenge');
           return '/challenges/create';
         }
         if (state.fullPath != null && state.fullPath!.contains('challenges/edit')) {
-          // debugPrint('redirecting edit challenge: ${state.fullPath}');
-          // debugPrint('path parameters: ${state.pathParameters['id']}');
+          // dPrint('redirecting edit challenge: ${state.fullPath}');
+          // dPrint('path parameters: ${state.pathParameters['id']}');
           return '/challenges/edit/${state.pathParameters['id']}';
         }
         return null;

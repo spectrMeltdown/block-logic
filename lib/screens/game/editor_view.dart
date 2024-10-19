@@ -15,9 +15,9 @@ class EditorView extends ConsumerWidget {
   Widget build(BuildContext context, ref) {
     // final validator = BlockValidator();
     final blockData = ref.watch(getRootDataProvider);
-    // debugPrint(blockData.toString());
+    // dPrint(blockData.toString());
     Widget buildDragTarget(List<GameBlockData> blockData) {
-      // debugPrint(gameState.dataTree.toString());
+      // dPrint(gameState.dataTree.toString());
       return DragTargetWrapper(
         builderChild: () {
           if (blockData.isNotEmpty) {
@@ -42,7 +42,7 @@ class EditorView extends ConsumerWidget {
           ref.invalidate(getSelfDataProvider);
           ref.invalidate(getChildrenDataProvider);
           // for (final entry in ref.read(gameManagerProvider).dataTree.entries) {
-          //   debugPrint(entry.toString());
+          //   dPrint(entry.toString());
           // }
 
           // setState(() {});
@@ -62,7 +62,7 @@ class EditorView extends ConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               ...List.generate(blockData.length, (i) {
-                // debugPrint('Editor View: ${blockData[i].uid}\n');
+                // dPrint('Editor View: ${blockData[i].uid}\n');
                 return GameBlock(
                   key: ValueKey(blockData[i].uid),
                   data: blockData[i],

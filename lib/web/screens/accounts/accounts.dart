@@ -40,6 +40,7 @@ class _AccountsState extends ConsumerState<Accounts> {
     selectedAccType = accTypes.first;
     adminProps = [...userProps];
     dialog = ref.read(dialogServiceProvider.notifier);
+
     super.initState();
   }
 
@@ -89,39 +90,32 @@ class _AccountsState extends ConsumerState<Accounts> {
                     ),
                   ],
                 ),
-                BLCardSimple(
-                  child: Padding(
-                    padding: const EdgeInsets.all(15),
-                    child: Column(
-                      children: [
-                        selectedAccType == accTypes[0] ? Users(userProps) : Admins(adminProps),
-                        SizedBox(
-                          height: 20,
-                        ),
-                        if (selectedAccType == accTypes[1])
-                          BLAdminButton(
-                              type: AdminBtnType.teal,
-                              onPressed: () async {
-                                if (processing) return;
-                                processing = true;
-                                await dialog.show(context, const CreateAdmin());
-                                processing = false;
-                              },
-                              child: const Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(
-                                    Icons.add,
-                                    color: Colors.white,
-                                  ),
-                                  SizedBox(width: 5),
-                                  BLText('Add admin')
-                                  // BLText(selectedAccType == accTypes[0] ? 'Add user' : 'Add admin')
-                                ],
-                              ))
-                      ],
-                    ),
-                  ),
+                Column(
+                  children: [
+                    selectedAccType == accTypes[0] ? Users(userProps, searchQuery) : Admins(adminProps, searchQuery),
+                    if (selectedAccType == accTypes[1]) SizedBox(height: 20),
+                    if (selectedAccType == accTypes[1])
+                      BLAdminButton(
+                          type: AdminBtnType.teal,
+                          onPressed: () async {
+                            if (processing) return;
+                            processing = true;
+                            await dialog.show(context, const CreateAdmin());
+                            processing = false;
+                          },
+                          child: const Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.add,
+                                color: Colors.white,
+                              ),
+                              SizedBox(width: 5),
+                              BLText('Add admin')
+                              // BLText(selectedAccType == accTypes[0] ? 'Add user' : 'Add admin')
+                            ],
+                          ))
+                  ],
                 )
               ],
             ),

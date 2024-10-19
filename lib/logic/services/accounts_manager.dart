@@ -1,10 +1,10 @@
 import 'dart:convert';
 
+import 'package:block_logic/logic/dev.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/services/account.dart';
 import 'package:block_logic/logic/services/error_handler.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -49,7 +49,7 @@ class AccountsManager extends _$AccountsManager {
         body: jsonEncode({'email': email, 'name': name, 'password': password}),
       );
       responseBody = response.body;
-      debugPrint(response.statusCode.toString());
+      dPrint(response.statusCode.toString());
       final decodedResponse = jsonDecode(response.body);
       if (response.statusCode == 200 || response.statusCode == 201) {
         final result = await state._accountService.initFirestoreData(
@@ -62,12 +62,12 @@ class AccountsManager extends _$AccountsManager {
         }
         return null;
       } else {
-        debugPrint(response.body);
+        dPrint(response.body);
         return decodedResponse['error'];
       }
     } catch (e) {
-      debugPrint(responseBody);
-      debugPrint(state._errorHandler.call(e, this));
+      dPrint(responseBody);
+      dPrint(state._errorHandler.call(e, this));
       return 'Error: $responseBody';
     }
   }
@@ -76,7 +76,7 @@ class AccountsManager extends _$AccountsManager {
     if (uid.isEmpty) {
       throw (ArgumentError('Uid cannot be empty!!'));
     }
-    debugPrint('uid to delete: $uid');
+    dPrint('uid to delete: $uid');
     try {
       String? authToken = await getAuthToken();
       if (authToken == null) {
@@ -93,14 +93,14 @@ class AccountsManager extends _$AccountsManager {
       );
 
       if (response.statusCode == 200) {
-        debugPrint('User deleted successfully');
+        dPrint('User deleted successfully');
         final result = await state._accountService.deleteFirestoreData(uid, type);
         if (result != null) {
           return result;
         }
         return null;
       } else {
-        debugPrint('Failed to delete user: ${response.body}');
+        dPrint('Failed to delete user: ${response.body}');
         return response.body;
       }
     } catch (e) {

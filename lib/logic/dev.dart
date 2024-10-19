@@ -8,13 +8,20 @@ import 'package:block_logic/logic/firebase_models/report.dart';
 import 'package:block_logic/logic/game/logic/all_blocks.dart';
 import 'package:block_logic/logic/services/error_handler.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/foundation.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 void clearConsole() {
-  debugPrint('\x1B[2J\x1B[0;0H'); // Clears terminal on some systems that support ANSI escape
+  dPrint('\x1B[2J\x1B[0;0H'); // Clears terminal on some systems that support ANSI escape
+}
+
+void dPrint(String? obj) {
+  if (kDebugMode) {
+    dPrint(obj);
+  }
 }
 
 final testingProvider = StateNotifierProvider<Testing, TestingState>((ref) {
@@ -66,7 +73,7 @@ class Testing extends StateNotifier<TestingState> {
 DateTime getRandomDateTime(DateTimeRange range) {
   DateTime start = range.start;
   DateTime end = range.end;
-  // debugPrint('Passed getRandomDateTime');
+  // dPrint('Passed getRandomDateTime');
   if (start.isAfter(end)) {
     throw ArgumentError('Start date must be before end date.');
   }
@@ -84,12 +91,12 @@ DateTime getRandomDateTime(DateTimeRange range) {
   int day = start.day != end.day ? getRandomInt(start.day, lastDayOfMonth.day) : start.day;
 
   result = DateTime(year, month, day);
-  debugPrint(DateFormat('dd, MMM, y').format(result));
+  dPrint(DateFormat('dd, MMM, y').format(result));
   return result;
 }
 
 int getRandomInt(int min, int max) {
-  // debugPrint('Passed getRandomInt');
+  // dPrint('Passed getRandomInt');
   // Generate a random number between min (inclusive) and max (inclusive)
   return min + Random().nextInt(max - min + 1);
 }

@@ -4,6 +4,7 @@ import 'package:block_logic/components/textbox.dart';
 import 'package:block_logic/components/util/blank_widget.dart';
 import 'package:block_logic/components/util/provider_default.dart';
 import 'package:block_logic/constants.dart';
+import 'package:block_logic/logic/dev.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_models/challenge.dart';
 import 'package:block_logic/logic/firebase_providers/selected_challenge.dart';
@@ -103,15 +104,21 @@ class _SelectedChallengeState extends ConsumerState<CreateEditChallenge> {
   }
 
   @override
+  void dispose() {
+    dPrint('disposed!!');
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    if (!widget.createMode) debugPrint('in edit challenge: ${widget.selectedChallengeID}');
+    if (!widget.createMode) dPrint('in edit challenge: ${widget.selectedChallengeID}');
     final selectedChallenge = ref.watch(SelectedChallengeProvider(widget.selectedChallengeID, createMode: widget.createMode));
     double width = MediaQuery.of(context).size.width;
     // double height = MediaQuery.of(context).size.height;
     return ListView(
       padding: EdgeInsets.zero,
       children: [
-        Header(title: '${widget.selectedChallengeID.isEmpty ? 'Create' : 'Edit'} challenge'),
+        Header(title: '${widget.createMode ? 'Create' : 'Edit'} challenge'),
         SizedBox(height: 20),
         FadeIn(
           child: Center(
@@ -124,18 +131,14 @@ class _SelectedChallengeState extends ConsumerState<CreateEditChallenge> {
                         child: BLText('Couldn\'t load that challenge..'),
                       );
                     }
-                    tags = challenge.tags ?? [];
-                    limitations = challenge.limitations ?? [];
-                    difficultySelection ??= challenge.difficulty;
-                    blocks ??= challenge.blocks;
-                    if (blocks != null) {
-                      int count = 0;
-                      for (final entry in blocks!.entries) {
-                        for (int i = 0; i < entry.value.length; i++) {
-                          count++;
-                        }
+                    if (!widget.createMode) {
+                      tags = challenge.tags ?? [];
+                      limitations = challenge.limitations ?? [];
+                      difficultySelection ??= challenge.difficulty;
+                      blocks ??= challenge.blocks;
+                      if (blocks != null) {
+                        totalSelected = getCount(blocks!);
                       }
-                      totalSelected = count;
                     }
                     return Padding(
                       padding: const EdgeInsets.all(10),
@@ -170,6 +173,7 @@ class _SelectedChallengeState extends ConsumerState<CreateEditChallenge> {
                                   children: [
                                     const AdminBackBtn(
                                       useContext: true,
+                                      text: 'Cancel',
                                     ),
                                     const SizedBox(width: 10),
                                     BLAdminButton(
@@ -215,6 +219,12 @@ class _SelectedChallengeState extends ConsumerState<CreateEditChallenge> {
           controller: name,
           hintText: 'E.x Code is fun!',
           onFieldSubmitted: (p0) => save(),
+          validator: (text) {
+            if (text == null || text.isEmpty) {
+              return 'Cannot be empty';
+            }
+            return null;
+          },
         );
       case 'Short Description':
         shortDescription ??= TextEditingController(text: challenge.shortDescription);
@@ -224,6 +234,12 @@ class _SelectedChallengeState extends ConsumerState<CreateEditChallenge> {
           hintText: 'E.x. Create an program ...',
           maxLines: null,
           onFieldSubmitted: (p0) => save(),
+          validator: (text) {
+            if (text == null || text.isEmpty) {
+              return 'Cannot be empty';
+            }
+            return null;
+          },
         );
       case 'Additional Info':
         additionalInfo ??= TextEditingController(text: challenge.additionalInfo);
@@ -291,7 +307,7 @@ class _SelectedChallengeState extends ConsumerState<CreateEditChallenge> {
                   ))
             ],
             onSelectionChanged: (selection) {
-              debugPrint(selection.toString());
+              dPrint(selection.toString());
               setState(() {
                 difficultySelection = selection.first;
               });
@@ -308,9 +324,13 @@ class _SelectedChallengeState extends ConsumerState<CreateEditChallenge> {
                     initialBlocks: blocks ?? {},
                   ));
               if (newBlocks is Map<CodeBlockType, List<GameBlockData>>) {
-                challengeManager.update(Challenge(id: challenge.id, blocks: newBlocks));
+                dPrint(newBlocks.toString());
+                blocks = newBlocks;
+                totalSelected = getCount(blocks!);
+                setState(() {});
+                // ref.invalidate(selectedChallengeProvider);
               } else {
-                debugPrint('blocks not updated!');
+                dPrint('blocks not updated!');
               }
               processing = false;
             },
@@ -341,7 +361,18 @@ class _SelectedChallengeState extends ConsumerState<CreateEditChallenge> {
     if (processing) return;
     toggleProcessing();
     if (formKey.currentState!.validate()) {
-      assert(shortDescription?.text.trim() is String);
+      // assert(shortDescription?.text.trim() is String);
+      if (difficultySelection == null) {
+        toast.showToast(context, 'Select a difficulty.', type: NotifType.error);
+        toggleProcessing();
+        return;
+      }
+      dPrint('blocks are: ${blocks?.values}');
+      if (blocks == null || blocks!.values.isEmpty || blocks!.values.length <= 2) {
+        toast.showToast(context, 'A minimum of 2 blocks must be selected.', type: NotifType.error);
+        toggleProcessing();
+        return;
+      }
       final challenge = Challenge(
         id: widget.createMode ? null : widget.selectedChallengeID,
         name: name?.text.trim(),
@@ -362,5 +393,15 @@ class _SelectedChallengeState extends ConsumerState<CreateEditChallenge> {
       }
     }
     toggleProcessing();
+  }
+
+  int getCount(Map<CodeBlockType, List<GameBlockData>> blocks) {
+    int count = 0;
+    for (final entry in blocks.entries) {
+      for (int i = 0; i < entry.value.length; i++) {
+        count++;
+      }
+    }
+    return count;
   }
 }

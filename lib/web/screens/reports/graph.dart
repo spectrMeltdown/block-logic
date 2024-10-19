@@ -9,9 +9,10 @@ import 'package:intl/intl.dart';
 
 class Graph extends StatefulWidget {
   final TimePeriod period;
+  final ReportType type;
   final Map<ReportDate, List<Report>> reports;
 
-  const Graph({required this.period, required this.reports, super.key});
+  const Graph({required this.period, required this.reports, super.key, required this.type});
 
   @override
   State<Graph> createState() => _GraphState();
@@ -21,17 +22,18 @@ class _GraphState extends State<Graph> {
   late int selectedYear;
   late int selectedMonth;
   List<int> years = [];
-  List<int> months = List.generate(13, (i) => i)..remove(0);
+  late List<int> months;
   List<FlSpot> spots = [];
 
   @override
   void initState() {
     super.initState();
+    months = List.generate(13, (i) => i)..remove(0);
     selectedMonth = months.first;
   }
 
   List<FlSpot> createSpots() {
-    // debugPrint('Creating spots for selectedMonth $selectedMonth, selectedYear $selectedYear');
+    // dPrint('Creating spots for selectedMonth $selectedMonth, selectedYear $selectedYear');
     final List<FlSpot> result = [];
 
     for (final entry in widget.reports.entries) {
@@ -42,21 +44,21 @@ class _GraphState extends State<Graph> {
       }
 
       double time = 0;
-      final key = entry.key;
+      final reportDate = entry.key;
       switch (widget.period) {
         case TimePeriod.yearly:
-          time = key.year!.toDouble();
+          time = reportDate.year!.toDouble();
         case TimePeriod.weekly:
-          if (selectedYear == key.year) {
-            time = key.week!.toDouble();
+          if (selectedYear == reportDate.year) {
+            time = reportDate.week!.toDouble();
           }
         case TimePeriod.monthly:
-          if (selectedYear == key.year) {
-            time = key.month!.toDouble();
+          if (selectedYear == reportDate.year) {
+            time = reportDate.month!.toDouble();
           }
         case TimePeriod.daily:
-          if (key.month == selectedMonth && key.year == selectedYear) {
-            time = key.day!.toDouble();
+          if (reportDate.month == selectedMonth && reportDate.year == selectedYear) {
+            time = reportDate.day!.toDouble();
           }
       }
       if (time != 0) {
@@ -64,60 +66,166 @@ class _GraphState extends State<Graph> {
       }
     }
 
+    // populate points between existing points, based on ReportType
     if (result.isNotEmpty) {
       switch (widget.period) {
         case TimePeriod.yearly:
+          // if only one year, add some previous years for decoration
           if (years.length == 1) {
-            // debugPrint('length was 1');
-            for (int i = selectedYear - 3; i < selectedYear + 4; i++) {
-              if (result.any((j) => j.x == i)) {
-                // debugPrint(i.toString());
-                continue;
-              } else {
-                // debugPrint('adding $i');
-                result.add(FlSpot(i.toDouble(), 0));
-              }
+            switch (widget.type) {
+              case ReportType.rooms:
+              case ReportType.premiumUsers:
+              case ReportType.users:
+              case ReportType.basicUsers:
+              case ReportType.leaderboards:
+              // maintain the levels between values
+              // double lastValue = 0; // TODO: initial should be from previous timeperiod
+              // for (int i = selectedYear - 3; i < selectedYear; i++) {
+              //   // skip existing values
+              //   if (result.any((j) {
+              //     final equal = j.x == i;
+              //     if (equal) {
+              //       lastValue = j.y;
+              //     }
+              //     return equal;
+              //   })) {
+              //     continue;
+              //   }
+              //   // fill with value
+              //   else {
+              //     result.add(FlSpot(i.toDouble(), lastValue));
+              //   }
+              // }
+              // break;
+              case ReportType.roomsPlayed:
+              case ReportType.challengesPlayed:
+                // fill with zeros where there are no values
+                for (int i = selectedYear - 3; i < selectedYear; i++) {
+                  if (result.any((j) => j.x == i)) {
+                    continue;
+                  } else {
+                    result.add(FlSpot(i.toDouble(), 0));
+                  }
+                }
+                break;
             }
-          } else {
-            for (int i = selectedYear - 1; i < selectedYear + 2; i++) {
+          }
+          // loop through years
+          else {
+            for (int i = selectedYear - 1; i < years.length; i++) {
               if (result.any((j) => j.x == i)) {
-                // debugPrint(i.toString());
+                // dPrint(i.toString());
                 continue;
               } else {
-                // debugPrint('adding $i');
+                // dPrint('adding $i');
                 result.add(FlSpot(i.toDouble(), 0));
               }
             }
           }
           break;
         case TimePeriod.monthly:
-          final months = 12;
-          for (int i = 1; i < months + 1; i++) {
-            if (result.any((j) => j.x == i)) {
-              continue;
-            } else {
-              result.add(FlSpot(i.toDouble(), 0));
-            }
+          final months = getMaxDate(selectedYear, selectedMonth);
+          switch (widget.type) {
+            case ReportType.rooms:
+            case ReportType.premiumUsers:
+            case ReportType.users:
+            case ReportType.basicUsers:
+            case ReportType.leaderboards:
+            // double lastValue = 0; // TODO: initial should be from previous timeperiod
+            // for (int i = 1; i < months + 1; i++) {
+            //   if (result.any((j) {
+            //     final equal = j.x == i;
+            //     if (equal) {
+            //       lastValue = j.y;
+            //     }
+            //     return equal;
+            //   })) {
+            //     continue;
+            //   } else {
+            //     result.add(FlSpot(i.toDouble(), lastValue));
+            //   }
+            // }
+            // break;
+            case ReportType.roomsPlayed:
+            case ReportType.challengesPlayed:
+              for (int i = 1; i < months + 1; i++) {
+                if (result.any((j) => j.x == i)) {
+                  continue;
+                } else {
+                  result.add(FlSpot(i.toDouble(), 0));
+                }
+              }
+              break;
           }
           break;
         case TimePeriod.weekly:
           final weeks = getMaxDate(selectedYear, selectedMonth);
-          for (int i = 1; i < weeks + 1; i++) {
-            if (result.any((j) => j.x == i)) {
-              continue;
-            } else {
-              result.add(FlSpot(i.toDouble(), 0));
-            }
+          switch (widget.type) {
+            case ReportType.rooms:
+            case ReportType.premiumUsers:
+            case ReportType.users:
+            case ReportType.basicUsers:
+            case ReportType.leaderboards:
+            // double lastValue = 0; // TODO: initial should be from previous timeperiod
+            // for (int i = 1; i < weeks + 1; i++) {
+            //   if (result.any((j) {
+            //     final equal = j.x == i;
+            //     if (equal) {
+            //       lastValue = j.y;
+            //     }
+            //     return equal;
+            //   })) {
+            //     continue;
+            //   } else {
+            //     result.add(FlSpot(i.toDouble(), lastValue));
+            //   }
+            // }
+            // break;
+            case ReportType.roomsPlayed:
+            case ReportType.challengesPlayed:
+              for (int i = 1; i < weeks + 1; i++) {
+                if (result.any((j) => j.x == i)) {
+                  continue;
+                } else {
+                  result.add(FlSpot(i.toDouble(), 0));
+                }
+              }
+              break;
           }
           break;
         case TimePeriod.daily:
           final days = getMaxDate(selectedYear, selectedMonth);
-          for (int i = 1; i < days + 1; i++) {
-            if (result.any((j) => j.x == i)) {
-              continue;
-            } else {
-              result.add(FlSpot(i.toDouble(), 0));
-            }
+          switch (widget.type) {
+            case ReportType.rooms:
+            case ReportType.premiumUsers:
+            case ReportType.users:
+            case ReportType.basicUsers:
+            case ReportType.leaderboards:
+            // double lastValue = 0; // TODO: initial should be from previous timeperiod
+            // for (int i = 1; i < days + 1; i++) {
+            //   if (result.any((j) {
+            //     final equal = j.x == i;
+            //     if (equal) {
+            //       lastValue = j.y.toDouble();
+            //     }
+            //     return equal;
+            //   })) {
+            //     continue;
+            //   } else {
+            //     result.add(FlSpot(i.toDouble(), lastValue));
+            //   }
+            // }
+            // break;
+            case ReportType.roomsPlayed:
+            case ReportType.challengesPlayed:
+              for (int i = 1; i < days + 1; i++) {
+                if (result.any((j) => j.x == i)) {
+                  continue;
+                } else {
+                  result.add(FlSpot(i.toDouble(), 0));
+                }
+              }
+              break;
           }
           break;
       }
@@ -131,9 +239,16 @@ class _GraphState extends State<Graph> {
       //   result.add(FlSpot(last.x + 1, 0));
       // }
     }
-    // debugPrint(years.toString());
+    // dPrint(years.toString());
     result.sort((a, b) => a.x.compareTo(b.x));
-    // debugPrint(result.toString());
+    // dPrint(result.toString());
+    if (selectedYear == DateTime.now().year) {
+      if (months.length == 12) {
+        months.removeRange(DateTime.now().month, 12);
+        selectedMonth = months.first;
+      }
+    }
+    // adjust the months if year == currentYear
     return result;
   }
 
@@ -202,10 +317,10 @@ class _GraphState extends State<Graph> {
                                 padding: const EdgeInsets.symmetric(horizontal: 10),
                                 underline: const SizedBox.shrink(),
                                 value: selectedMonth,
-                                items: months.map((selectedMonth) => DropdownMenuItem<int>(value: selectedMonth, child: BLText(DateFormat('MMMM').format(DateTime(selectedMonth, selectedMonth))))).toList(),
+                                items: months.map((selectedMonth) => DropdownMenuItem<int>(value: selectedMonth, child: BLText(DateFormat('MMMM').format(DateTime(selectedYear, selectedMonth))))).toList(),
                                 onChanged: (value) {
                                   if (value != null) {
-                                    // debugPrint('Updated selectedMonth');
+                                    // dPrint('Updated selectedMonth');
                                     setState(() {
                                       selectedMonth = value;
                                     });
@@ -222,20 +337,30 @@ class _GraphState extends State<Graph> {
                 ),
                 Row(
                   children: [
-                    Transform.rotate(
-                      angle: -3.14159 / 2,
-                      child: Padding(
-                        padding: const EdgeInsets.only(bottom: 10),
-                        child: BLText('Count'),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 5),
+                      child: SizedBox(
+                        width: 50,
+                        child: BLText(
+                          widget.type.capName(),
+                          softWrap: true,
+                        ),
                       ),
                     ),
+                    // Transform.rotate(
+                    //   angle: -3.14159 / 2,
+                    //   child: Padding(
+                    //     padding: const EdgeInsets.only(bottom: 10),
+                    //     child: BLText(widget.type.capName()),
+                    //   ),
+                    // ),
                     SizedBox(
                       height: 400,
                       width: 1100,
                       child: LineChart(
                         LineChartData(
                           minY: 0,
-                          minX: years.length == 1 && widget.period == TimePeriod.yearly ? spots.first.x : getMinDate(widget.period).toDouble(),
+                          minX: years.length == 1 && widget.period == TimePeriod.yearly ? spots.first.x : 1,
                           maxX: years.length == 1 && widget.period == TimePeriod.yearly ? spots.last.x : getMaxDate(selectedYear, selectedMonth).toDouble(),
                           lineBarsData: [
                             LineChartBarData(
@@ -268,13 +393,14 @@ class _GraphState extends State<Graph> {
                               sideTitles: SideTitles(
                                   minIncluded: false,
                                   showTitles: true,
+                                  // interval: spots.any((e) => e.y > 16) ? 2 : 1, // TODO: change interval if total is too big to fit
                                   interval: 1,
                                   getTitlesWidget: (value, meta) {
                                     return BLText(value.toInt().toString()); // Display report count as an integer
                                   }),
                             ),
                           ),
-                          borderData: FlBorderData(show: false),
+                          borderData: FlBorderData(show: true, border: Border.all(color: Colors.grey.shade700)),
                         ),
                       ),
                     ),
@@ -282,7 +408,7 @@ class _GraphState extends State<Graph> {
                 ),
                 Padding(
                   padding: const EdgeInsets.only(top: 10),
-                  child: BLText('${widget.period.formalName} (in numbers)'),
+                  child: BLText(widget.period.formalName),
                 ),
               ],
             ),
@@ -308,10 +434,20 @@ class _GraphState extends State<Graph> {
       case TimePeriod.yearly:
         return years.last;
       case TimePeriod.monthly:
+        if (selectedYear == DateTime.now().year) {
+          return DateTime.now().month;
+        }
         return 12;
       case TimePeriod.weekly:
+        if (selectedYear == DateTime.now().year) {
+          return getWeekOfYear(DateTime.now()) + 1;
+        }
         return numberOfWeeksInYear(selectedYear);
       case TimePeriod.daily:
+        final now = DateTime.now();
+        if (selectedYear == now.year && selectedMonth == now.month) {
+          return DateTime.now().day;
+        }
         return maxDayOfMonth(selectedYear, selectedMonth);
     }
   }
@@ -360,4 +496,12 @@ extension CapitalizedName on TimePeriod {
         return 'Day';
     }
   }
+
+  // int getCurrentWeekOfYear() {
+  //   DateTime now = DateTime.now();
+  //   DateTime startOfYear = DateTime(now.year, 1, 1);
+  //   int daysPassed = now.difference(startOfYear).inDays + 1; // +1 to include the current day
+
+  //   return (daysPassed / 7).ceil();
+  // }
 }

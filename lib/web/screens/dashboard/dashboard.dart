@@ -1,4 +1,3 @@
-import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/util/provider_default.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_providers/reports.dart';
@@ -56,52 +55,43 @@ class _DashboardState extends ConsumerState<Dashboard> {
                 children: [
                   users.when(
                       data: (data) {
-                        if (data is List) {
-                          return DashboardCard(
-                            percent: 10.2,
-                            downOrup: 'up',
-                            titleTotal: 'users',
-                            total: data.length,
-                            icon: const Icon(Icons.person),
-                            iconBgColor: Colors.deepPurple,
-                          );
-                        }
-                        return const BLText('Error loading data');
+                        return DashboardCard(
+                          percent: 10.2,
+                          downOrup: 'up',
+                          titleTotal: 'users',
+                          total: data is List ? data.length : 0,
+                          icon: const Icon(Icons.person),
+                          iconBgColor: Colors.deepPurple,
+                        );
                       },
                       error: genericError,
-                      loading: genericLoading),
+                      loading: () => ConstrainedBox(constraints: BoxConstraints(minWidth: 300, minHeight: 120, maxWidth: 400), child: genericLoading(type: LoadingType.tight))),
                   challengesPlayed.when(
                       data: (data) {
-                        if (data is List) {
-                          return DashboardCard(
-                            percent: 10.2,
-                            downOrup: 'up',
-                            titleTotal: 'challenges played',
-                            total: data.length,
-                            icon: const Icon(FontAwesomeIcons.gamepad),
-                            iconBgColor: Colors.orange,
-                          );
-                        }
-                        return const BLText('Error loading data');
+                        return DashboardCard(
+                          percent: 10.2,
+                          downOrup: 'up',
+                          titleTotal: 'challenges played',
+                          total: data is List ? data.length : 0,
+                          icon: const Icon(FontAwesomeIcons.gamepad),
+                          iconBgColor: Colors.orange,
+                        );
                       },
                       error: genericError,
-                      loading: genericLoading),
+                      loading: () => ConstrainedBox(constraints: BoxConstraints(minWidth: 300, minHeight: 120, maxWidth: 400), child: genericLoading(type: LoadingType.tight))),
                   rooms.when(
                       data: (data) {
-                        if (data is List) {
-                          return DashboardCard(
-                            percent: 10.2,
-                            downOrup: 'up',
-                            titleTotal: 'rooms',
-                            total: data.length,
-                            icon: const Icon(FontAwesomeIcons.box),
-                            iconBgColor: Colors.green,
-                          );
-                        }
-                        return const BLText('Error loading data');
+                        return DashboardCard(
+                          percent: 10.2,
+                          downOrup: 'up',
+                          titleTotal: 'rooms',
+                          total: data is List ? data.length : 0,
+                          icon: const Icon(FontAwesomeIcons.box),
+                          iconBgColor: Colors.green,
+                        );
                       },
                       error: genericError,
-                      loading: genericLoading),
+                      loading: () => ConstrainedBox(constraints: BoxConstraints(minWidth: 300, minHeight: 120, maxWidth: 400), child: genericLoading(type: LoadingType.tight))),
                 ],
               ),
             ),
@@ -129,7 +119,7 @@ class _DashboardState extends ConsumerState<Dashboard> {
     // Add current month
     // months.add(DateFormat('MMMM')
     //     .format(DateTime(currentDate.year, currentMonthIndex)));
-    // debugPrint(months.toString());
+    // dPrint(months.toString());
     selectedMonth = months.last;
   }
 

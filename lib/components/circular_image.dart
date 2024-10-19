@@ -84,7 +84,7 @@ class BLCircular extends StatelessWidget {
       //   if (error.toString().contains('file:///default')) {
       //     return Icon(Icons.person_rounded, size: iconSize);
       //   }
-      //   debugPrint(error.toString());
+      //   dPrint(error.toString());
       //   return Icon(Icons.error, color: Colors.white, size: iconSize);
       // },
     );

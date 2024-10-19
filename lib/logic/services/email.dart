@@ -1,7 +1,7 @@
 import 'dart:convert';
 
+import 'package:block_logic/logic/dev.dart';
 import 'package:block_logic/logic/services/error_handler.dart';
-import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -19,7 +19,7 @@ class EmailService extends _$EmailService {
     try {
       final url = Uri.parse('https://api.emailjs.com/api/v1.0/email/send');
       final response = await http.post(url, headers: {'Content-Type': 'application/json'}, body: json.encode({'template_id': 'template_ozw8xsg', 'service_id': 'service_qsw1zlg', 'user_id': 'apazwD7SrRfQqT892', 'accessToken': 'bEzatc-C6xiSF6f-z_g1d', 'template_params': template}));
-      debugPrint('Login alert: ${response.body}');
+      dPrint('Login alert: ${response.body}');
       return response.statusCode.toString();
     } catch (e) {
       return state._errorHandler.call(e, this);

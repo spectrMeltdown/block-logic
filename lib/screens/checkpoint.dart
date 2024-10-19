@@ -64,9 +64,9 @@ class Checkpoint extends ConsumerWidget {
           final dupLoginCheck = ref.watch(loginCheckProvider);
           return dupLoginCheck.when(
             data: (sessionID) {
-              // debugPrint(sessionID);
+              // dPrint(sessionID);
               if (sessionID != null && sessionID.isNotEmpty) {
-                // debugPrint(sessionID);
+                // dPrint(sessionID);
                 if (sessionID != sharedPref.getString('sessionID')) {
                   return const DuplicateLogin();
                 }
@@ -85,7 +85,7 @@ class Checkpoint extends ConsumerWidget {
                 data: (userAccount) {
                   /// if not initialized
                   if (userAccount == null) {
-                    // debugPrint('account not initialized');
+                    // dPrint('account not initialized');
 
                     /// initialize user details in firestore
                     accountService.initFirestoreData(type: AccountType.user);
@@ -97,7 +97,7 @@ class Checkpoint extends ConsumerWidget {
                   return errorWidget;
                 },
                 loading: () {
-                  // debugPrint('Loading in checkpoint');
+                  // dPrint('Loading in checkpoint');
                   genericLoading();
                   return loadingWidget;
                 },
@@ -108,7 +108,7 @@ class Checkpoint extends ConsumerWidget {
               return errorWidget;
             },
             loading: () {
-              // debugPrint('Loading in checkpoint');
+              // dPrint('Loading in checkpoint');
               genericLoading();
               return loadingWidget;
             },
@@ -121,7 +121,7 @@ class Checkpoint extends ConsumerWidget {
         return errorWidget;
       },
       loading: () {
-        // debugPrint('Loading in checkpoint');
+        // dPrint('Loading in checkpoint');
         genericLoading();
         return loadingWidget;
       },

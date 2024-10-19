@@ -401,8 +401,10 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
           auth.saveSessionID(sessionID);
           auth.uploadSessionID(sessionID);
         }
-        final loginAlert = ref.read(loginAlertProvider.notifier);
-        await loginAlert.send();
+        if (!kDebugMode) {
+          final loginAlert = ref.read(loginAlertProvider.notifier);
+          await loginAlert.send();
+        }
         // if (result != null) {
         //   if (!context.mounted) return;
         //   if(!context.mounted) return; toast.showToast(context,result, type: NotifType.error);

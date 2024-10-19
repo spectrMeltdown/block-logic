@@ -1,8 +1,8 @@
+import 'package:block_logic/logic/dev.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_models/leaderboard.dart';
 import 'package:block_logic/logic/services/error_handler.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:flutter/material.dart';
 
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -47,19 +47,19 @@ class LeaderboardManager extends _$LeaderboardManager {
   Future<String?> update(Leaderboard leaderboard) async {
     if (leaderboard.id == null || leaderboard.id!.isEmpty) return 'ID not provided';
     try {
-      // debugPrint(leaderboard.id);
+      // dPrint(leaderboard.id);
       await state._db.child(leaderboard.id!).runTransaction((obj) {
         final lb = Leaderboard.fromRTDB(obj, leaderboard.id);
         if (lb.id!.isNotEmpty && (lb.status != null || lb.status != LeaderboardStatus.complete)) {
-          debugPrint('transaction success');
+          dPrint('transaction success');
           return Transaction.success(lb.copyWith(status: LeaderboardStatus.complete, players: null).toJSON());
         }
-        debugPrint('transaction abort');
+        dPrint('transaction abort');
         return Transaction.abort();
       });
       // if (result.committed) {
       // } else {
-      //   debugPrint('NOT COMMIITED');
+      //   dPrint('NOT COMMIITED');
       // }
       return null;
     } catch (e) {
