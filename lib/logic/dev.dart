@@ -15,13 +15,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 void clearConsole() {
-  dPrint('\x1B[2J\x1B[0;0H'); // Clears terminal on some systems that support ANSI escape
+  debugPrint('\x1B[2J\x1B[0;0H'); // Clears terminal on some systems that support ANSI escape
 }
 
 void dPrint(String? obj) {
-  if (kDebugMode) {
-    dPrint(obj);
-  }
+  if (kDebugMode) debugPrint(obj);
 }
 
 final testingProvider = StateNotifierProvider<Testing, TestingState>((ref) {
