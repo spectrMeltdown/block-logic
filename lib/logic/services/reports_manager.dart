@@ -45,14 +45,20 @@ class ReportsManager extends _$ReportsManager {
       }
 
       // loop through given report types & dates
-      for (final report in reports) {
+      for (final type in reports) {
         final start = range.start;
         final end = range.end;
         // filter reports that match date & type
-        final reportsToDelete = existingReports.where((e) => e.type == report && (e.date!.isAfter(start) && e.date!.isBefore(end)));
+        final reportsToDelete = existingReports.where((e) {
+          // dPrint('Report date: ${e.date}');
+          // dPrint('Date start: $start');
+          // dPrint('Date end: $end');
+          return e.type == type && (e.date!.isAfter(start) && e.date!.isBefore(end));
+        });
 
         // delete filtered reports
         for (final report in reportsToDelete) {
+          dPrint('Deleting ${report.type}');
           if (report.id != null) {
             state._db.child(report.id!).remove();
           } else {

@@ -1,6 +1,7 @@
 import 'package:block_logic/components/async/loading.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/text/title_small.dart';
+import 'package:block_logic/components/util/blank_widget.dart';
 import 'package:block_logic/components/util/provider_default.dart';
 import 'package:block_logic/components/util/spaced_row.dart';
 import 'package:block_logic/logic/enums.dart';
@@ -36,7 +37,7 @@ class _ReportsState extends ConsumerState<Reports> {
   final pageScrollController = ScrollController();
   final db = FirebaseDatabase.instance;
   late final Map<ReportType, Query> streams;
-  ReportType selectedType = ReportType.basicUsers;
+  ReportType? selectedType;
   DateTimeRange? dateRange = kDebugMode ? DateTimeRange(start: DateTime(2024, 9, 25), end: DateTime.now()) : null;
   int total = 0;
   Map<TimePeriod, int> printData = {};
@@ -106,7 +107,7 @@ class _ReportsState extends ConsumerState<Reports> {
     final reportsToPrint = await showDialog<Map<ReportType, bool>>(
       context: context,
       builder: (context) => ReportTypeSelector(
-        initial: selectedType,
+        initial: selectedType!,
       ),
     );
     // initalize the print data
@@ -143,7 +144,7 @@ class _ReportsState extends ConsumerState<Reports> {
     }
 
     Uint8List pdfBytes = await generatePDFBytes();
-    await Printing.sharePdf(bytes: pdfBytes, filename: '${selectedType.name}-${DateTime.now()}.pdf');
+    await Printing.sharePdf(bytes: pdfBytes, filename: '${selectedType!.name}-${DateTime.now()}.pdf');
   }
 
   @override
@@ -153,7 +154,7 @@ class _ReportsState extends ConsumerState<Reports> {
     // final reports = ref.watch(reportsProvider(ReportParams(type: selectedType, from: from, to: to)));
     // dPrint('stream is now ${streams.entries.firstWhere((e) => e.key == selectedType).key}');
     final reports = ref.watch(reportsProvider(ReportParams(
-      stream: streams.entries.firstWhere((e) => e.key == selectedType).value,
+      stream: selectedType == null ? null : streams.entries.firstWhere((e) => e.key == selectedType).value,
       dateRange: dateRange,
     )));
     // final reports = ref.watch(reportsProvider(ReportParams(type: selectedType, from: from, to: to)));
@@ -197,12 +198,7 @@ class _ReportsState extends ConsumerState<Reports> {
                             child: const BLText('Delete test Reports'),
                             onPressed: () async {
                               final testing = ref.read(testingProvider.notifier);
-                              final result = await testing.populateReports(
-                                  dateRange: DateTimeRange(
-                                    start: DateTime(2024, 8, 1, 12, 0),
-                                    end: DateTime.now(),
-                                  ),
-                                  number: 50);
+                              final result = await testing.deleteReports();
                               if (result != null) {
                                 if (!context.mounted) return;
                                 toast.showToast(context, result, type: NotifType.error);
@@ -390,6 +386,12 @@ class _ReportsState extends ConsumerState<Reports> {
                   const SizedBox(height: 20),
                   reports.when(
                       data: (reports) {
+                        if (reports == null) {
+                          setState(() {
+                            reportsEmpty = true;
+                          });
+                          return BlankWidget();
+                        }
                         if ((reports is Map && reports.isEmpty) || (reports is List && reports.isEmpty)) {
                           setState(() {
                             reportsEmpty = true;
@@ -455,7 +457,7 @@ class _ReportsState extends ConsumerState<Reports> {
                                         scrollDirection: Axis.horizontal,
                                         child: IntrinsicWidth(
                                           child: Graph(
-                                            type: selectedType,
+                                            type: selectedType!,
                                             period: TimePeriod.yearly,
                                             reports: groupReports[TimePeriod.yearly]!,
                                           ),
@@ -471,7 +473,7 @@ class _ReportsState extends ConsumerState<Reports> {
                                       SingleChildScrollView(
                                         scrollDirection: Axis.horizontal,
                                         child: Graph(
-                                          type: selectedType,
+                                          type: selectedType!,
                                           period: TimePeriod.monthly,
                                           reports: groupReports[TimePeriod.monthly]!,
                                         ),
@@ -487,7 +489,7 @@ class _ReportsState extends ConsumerState<Reports> {
                                         scrollDirection: Axis.horizontal,
                                         child: IntrinsicWidth(
                                           child: Graph(
-                                            type: selectedType,
+                                            type: selectedType!,
                                             period: TimePeriod.weekly,
                                             reports: groupReports[TimePeriod.weekly]!,
                                           ),
@@ -504,7 +506,7 @@ class _ReportsState extends ConsumerState<Reports> {
                                         scrollDirection: Axis.horizontal,
                                         child: IntrinsicWidth(
                                           child: Graph(
-                                            type: selectedType,
+                                            type: selectedType!,
                                             period: TimePeriod.daily,
                                             reports: groupReports[TimePeriod.daily]!,
                                           ),
@@ -547,13 +549,21 @@ class _ReportsState extends ConsumerState<Reports> {
   }
 
   Future<void> deleteReports() async {
+    if (selectedType == null) {
+      toast.showToast(context, 'Select a report type.', type: NotifType.error);
+      return;
+    }
     final result = await showDialog(
         context: context,
         builder: (context) => DeleteSelectorDialog(
-              initialType: selectedType,
+              initialType: selectedType!,
             ));
     if (result is Tuple2<List<ReportType>, DateTimeRange>) {
-      reportsManager.delete(result.item1, result.item2);
+      final deleteResult = await reportsManager.delete(result.item1, result.item2);
+      if (deleteResult != null) {
+        if (!mounted) return;
+        toast.showToast(context, deleteResult, type: NotifType.error);
+      }
     }
   }
 }

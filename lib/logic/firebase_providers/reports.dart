@@ -20,7 +20,7 @@ class ReportDate extends Equatable {
 }
 
 class ReportParams extends Equatable {
-  final Query stream;
+  final Query? stream;
   final DateTimeRange? dateRange;
 
   const ReportParams({
@@ -32,32 +32,36 @@ class ReportParams extends Equatable {
   List<Object?> get props => [dateRange, stream];
 }
 
-final reportsProvider = StreamProvider.family.autoDispose<Object, ReportParams>((ref, params) async* {
+final reportsProvider = StreamProvider.family.autoDispose<Object?, ReportParams>((ref, params) async* {
   // dPrint('Updated params to ${params.dateRange.toString()}');
-  final controller = StreamController<Object>();
-  params.stream.onValue.listen((event) {
-    final snapshot = event.snapshot;
-    final List<Report> list = [];
+  final controller = StreamController<Object?>();
+  if (params.stream != null) {
+    params.stream!.onValue.listen((event) {
+      final snapshot = event.snapshot;
+      final List<Report> list = [];
 
-    // dPrint('Updated params inside the stream listen');
-    if (snapshot.children.isNotEmpty) {
-      for (final report in snapshot.children) {
-        list.add(Report.fromRTDB(report));
-      }
+      // dPrint('Updated params inside the stream listen');
+      if (snapshot.children.isNotEmpty) {
+        for (final report in snapshot.children) {
+          list.add(Report.fromRTDB(report));
+        }
 
-      if (params.dateRange == null) {
-        controller.add(list);
+        if (params.dateRange == null) {
+          controller.add(list);
+        } else {
+          controller.add(groupReportsByTimePeriod(
+            list.where((report) => report.date!.isAfter(params.dateRange!.start) && report.date!.isBefore(params.dateRange!.end)).toList(),
+          ));
+        }
       } else {
-        controller.add(groupReportsByTimePeriod(
-          list.where((report) => report.date!.isAfter(params.dateRange!.start) && report.date!.isBefore(params.dateRange!.end)).toList(),
-        ));
+        controller.add({});
       }
-    } else {
-      controller.add({});
-    }
-  }).onError((e) {
-    dPrint(e.toString());
-  });
+    }).onError((e) {
+      dPrint(e.toString());
+    });
+  } else {
+    controller.add(null);
+  }
   yield* controller.stream;
 });
 

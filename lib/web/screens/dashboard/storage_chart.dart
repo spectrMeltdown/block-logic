@@ -56,49 +56,49 @@ class StorageChart extends ConsumerWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       BLSmallTitle('Cloud Storage'),
-                      // IconButton(
-                      //   onPressed: () {
-                      //     ref.invalidate(storageAnalyticsProvider);
-                      //   },
-                      //   icon: Icon(Icons.refresh),
-                      // ),
                     ],
                   ),
-                  analyticsAsyncValue.when(
-                    data: (totalSizeUsed) {
-                      final totalSizeMB = totalSizeUsed / (1024 * 1024); // Convert to MB
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
+                  Row(
+                    children: [
+                      IconButton(onPressed: () => ref.invalidate(storageAnalyticsProvider), icon: Icon(Icons.refresh)),
+                      SizedBox(width: 5),
+                      analyticsAsyncValue.when(
+                        data: (totalSizeUsed) {
+                          final totalSizeMB = totalSizeUsed / (1024 * 1024); // Convert to MB
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
-                              Container(
-                                color: totalSizeColor,
-                                height: 10,
-                                width: 10,
-                                margin: EdgeInsets.only(right: 5),
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Container(
+                                    color: totalSizeColor,
+                                    height: 10,
+                                    width: 10,
+                                    margin: EdgeInsets.only(right: 5),
+                                  ),
+                                  BLText('Used: ${totalSizeMB.toStringAsFixed(2)} MB'),
+                                ],
                               ),
-                              BLText('Used: ${totalSizeMB.toStringAsFixed(2)} MB'),
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Container(
+                                    color: freeSpaceColor,
+                                    height: 10,
+                                    width: 10,
+                                    margin: EdgeInsets.only(right: 5),
+                                  ),
+                                  BLText('Free: ${(5000 - totalSizeMB).toStringAsFixed(2)} MB'),
+                                ],
+                              )
                             ],
-                          ),
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Container(
-                                color: freeSpaceColor,
-                                height: 10,
-                                width: 10,
-                                margin: EdgeInsets.only(right: 5),
-                              ),
-                              BLText('Free: ${(5000 - totalSizeMB).toStringAsFixed(2)} MB'),
-                            ],
-                          )
-                        ],
-                      );
-                    },
-                    loading: blankLoading,
-                    error: blankError,
+                          );
+                        },
+                        loading: blankLoading,
+                        error: blankError,
+                      ),
+                    ],
                   ),
                 ],
               ),

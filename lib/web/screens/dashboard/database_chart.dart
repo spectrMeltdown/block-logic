@@ -7,7 +7,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final firebaseDataProvider = FutureProvider<Map<String, double>>((ref) async {
+final firebaseDataProvider = FutureProvider.autoDispose<Map<String, double>>((ref) async {
   final DatabaseReference databaseRef = FirebaseDatabase.instance.ref();
   DatabaseEvent event = await databaseRef.once();
 
@@ -127,11 +127,17 @@ class DatabaseChart extends ConsumerWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         BLSmallTitle('Database'),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
+                        Row(
                           children: [
-                            BLText('Used Size: ${formatSize(totalUsedSize)}'),
-                            BLText('Free Size: ${formatSize(freeSize)}'),
+                            IconButton(onPressed: () => ref.invalidate(firebaseDataProvider), icon: Icon(Icons.refresh)),
+                            SizedBox(width: 5),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                BLText('Used Size: ${formatSize(totalUsedSize)}'),
+                                BLText('Free Size: ${formatSize(freeSize)}'),
+                              ],
+                            ),
                           ],
                         )
                       ],

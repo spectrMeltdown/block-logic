@@ -2,6 +2,7 @@ import 'package:block_logic/components/dialog/confirm.dart';
 import 'package:block_logic/components/dialog/dialog.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/text/title_small.dart';
+import 'package:block_logic/logic/dev.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/services/navigation.dart';
 import 'package:block_logic/logic/services/toast.dart';
@@ -30,11 +31,11 @@ class _DeleteDialogState extends ConsumerState<DeleteSelectorDialog> {
 
   @override
   void initState() {
+    super.initState();
     nav = ref.read(customNavigationProvider.notifier);
     toast = ref.read(toastProvider.notifier);
     selectedReports = {for (final report in ReportType.values) report: false};
     selectedReports[widget.initialType] = true;
-    super.initState();
   }
 
   void updateReportType(ReportType type, bool add) {
@@ -51,6 +52,7 @@ class _DeleteDialogState extends ConsumerState<DeleteSelectorDialog> {
     } else {
       hasSelection = false;
     }
+    // dPrint('Updated report type: ${selectedReports[type].toString()}');
     setState(() {});
   }
 
@@ -128,10 +130,12 @@ class _DeleteDialogState extends ConsumerState<DeleteSelectorDialog> {
           ),
           const SizedBox(height: 15),
           ...List.generate(selectedReports.length, (i) {
-            final reportType = ReportType.values.toList()[i];
+            final reportType = selectedReports.keys.toList()[i];
+            dPrint('report type: $reportType');
             return DeleteSelectorItem(
+              // key: ValueKey(DateTime.now().microsecondsSinceEpoch),
               type: reportType,
-              initial: selectedReports[reportType]!,
+              selected: selectedReports[reportType]!,
               updateReportType: updateReportType,
             );
           }),
@@ -164,6 +168,7 @@ class _DeleteDialogState extends ConsumerState<DeleteSelectorDialog> {
                     if (confirmation is bool && confirmation) {
                       if (!context.mounted) return;
                       final Tuple2<List<ReportType>, DateTimeRange> selected = Tuple2(selectedReports.entries.where((e) => e.value).map((e) => e.key).toList(), dateRange!);
+                      dPrint('selected for delete is: $selected');
                       nav.pop(context, selected);
                     }
                   }
@@ -177,34 +182,28 @@ class _DeleteDialogState extends ConsumerState<DeleteSelectorDialog> {
   }
 }
 
-class DeleteSelectorItem extends ConsumerStatefulWidget {
+class DeleteSelectorItem extends StatefulWidget {
   final ReportType type;
-  final bool initial;
+  final bool selected;
   final void Function(ReportType, bool) updateReportType;
   const DeleteSelectorItem({
     required this.type,
     required this.updateReportType,
-    required this.initial,
+    required this.selected,
     super.key,
   });
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _ReportTypeSelectorItemState();
+  State<DeleteSelectorItem> createState() => _DeleteSelectorItemState();
 }
 
-class _ReportTypeSelectorItemState extends ConsumerState<DeleteSelectorItem> {
+class _DeleteSelectorItemState extends State<DeleteSelectorItem> {
   late bool selected;
 
   @override
   void initState() {
-    selected = widget.initial;
     super.initState();
-  }
-
-  void toggleSelected() {
-    setState(() {
-      selected = !selected;
-    });
+    selected = widget.selected;
   }
 
   @override
@@ -213,16 +212,12 @@ class _ReportTypeSelectorItemState extends ConsumerState<DeleteSelectorItem> {
       padding: const EdgeInsets.all(8.0),
       child: CheckboxListTile(
         value: selected,
-        selected: selected,
         onChanged: (value) {
-          if (value != null) {
-            if (value) {
-              widget.updateReportType(widget.type, false);
-            } else {
-              widget.updateReportType(widget.type, true);
-            }
-            toggleSelected();
-          }
+          dPrint('Value in checkbox: $value');
+          widget.updateReportType(widget.type, value!);
+          setState(() {
+            selected = value;
+          });
         },
         title: BLText(widget.type.capName()),
       ),
