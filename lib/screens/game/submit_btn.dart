@@ -16,7 +16,6 @@ import 'package:block_logic/logic/services/toast.dart';
 import 'package:block_logic/screens/game/game_challenge.dart';
 import 'package:block_logic/screens/tutorials/practice_dialog.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -43,8 +42,6 @@ class _GameSubmitButtonState extends ConsumerState<GameSubmitButton> {
   late final Toast toast;
   late final List<dynamic> solutionMatch;
   late final GameState gameState;
-  bool dontShowAgain = false;
-  bool autoProceed = false;
 
   @override
   void initState() {
@@ -120,7 +117,7 @@ class _GameSubmitButtonState extends ConsumerState<GameSubmitButton> {
                 }
                 return;
               }
-            } else if (incompleteBlocks && !autoProceed) {
+            } else if (incompleteBlocks && !gameState.autoProceed) {
               if (!context.mounted) return;
               List<bool> result = await showDialog(context: context, builder: (context) => const IncompleteBlocks());
               // cancel action
@@ -134,17 +131,15 @@ class _GameSubmitButtonState extends ConsumerState<GameSubmitButton> {
               }
               // if dont show again
               if (result[1]) {
-                setState(() {
-                  dontShowAgain = true;
-                  autoProceed = true;
-                });
+                gameState.dontShowAgain = true;
+                gameState.autoProceed = true;
               }
             }
           }
           bool correct = false;
 
           String? result;
-          final userOutput = !kDebugMode ? await checker.check() : '';
+          final userOutput = await checker.check();
           // loop through correct answers
           for (final match in solutionMatch) {
             // dPrint('match is: $match');

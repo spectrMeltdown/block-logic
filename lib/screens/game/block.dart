@@ -1,3 +1,4 @@
+import 'package:block_logic/components/util/animation_player.dart';
 import 'package:block_logic/components/util/blank_widget.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/game/block_data.dart';
@@ -6,6 +7,7 @@ import 'package:block_logic/logic/game/logic/game_manager.dart';
 import 'package:block_logic/logic/game/logic/return_block.dart';
 import 'package:block_logic/logic/game/logic/should_reset_all_blocks.dart';
 import 'package:block_logic/logic/game/logic/should_reset_block.dart';
+import 'package:block_logic/logic/services/assets.dart';
 import 'package:block_logic/logic/services/ui.dart';
 import 'package:block_logic/screens/game/block_render.dart';
 import 'package:flutter/material.dart';
@@ -34,12 +36,20 @@ class GameBlock extends ConsumerStatefulWidget {
   ConsumerState<ConsumerStatefulWidget> createState() => GameCodeBlockState();
 }
 
-class GameCodeBlockState extends ConsumerState<GameBlock> {
+class GameCodeBlockState extends ConsumerState<GameBlock> with SingleTickerProviderStateMixin {
   late final GameManager gameManager;
   late final BLUI blui;
+  late final AnimationController pulseAnimation;
   late Widget block;
   late Widget defaultWithPadding;
+  late final Assets assets;
   String? previousChallengeUID;
+
+  @override
+  void dispose() {
+    pulseAnimation.dispose();
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -47,6 +57,8 @@ class GameCodeBlockState extends ConsumerState<GameBlock> {
     // dPrint('Init block: ${widget.data.name}');
     gameManager = ref.read(gameManagerProvider.notifier);
     blui = ref.read(bLUIProvider.notifier);
+    assets = ref.read(assetsProvider);
+    pulseAnimation = AnimationController(vsync: this);
     create();
   }
 
@@ -180,7 +192,21 @@ class GameCodeBlockState extends ConsumerState<GameBlock> {
           duration: Duration.zero,
           child: block,
         ),
-        feedback: Transform.scale(scale: 0.8, child: block), // the widget that follws the touch position
+        feedback: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            BLAnimationPlayer(
+              assets.pulse,
+              size: 50,
+              controller: pulseAnimation,
+              controllerActions: (pulse) {
+                pulseAnimation.duration = pulse.duration;
+                pulseAnimation.repeat(min: 0, max: 1);
+              },
+            ),
+            Positioned(top: 0, right: 0, child: Transform.scale(scale: 0.8, child: block))
+          ],
+        ), // the widget that follws the touch position
         child: block);
   }
 }

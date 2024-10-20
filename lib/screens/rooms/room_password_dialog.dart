@@ -55,6 +55,7 @@ class RoomPasswordDialogState extends ConsumerState<RoomPasswordDialog> {
           BLTextBox(
             controller: passController,
             isObscure: true,
+            maxLength: 50,
             prefixIcon: const Icon(
               FontAwesomeIcons.lock,
               color: Colors.white,

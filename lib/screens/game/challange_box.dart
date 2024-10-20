@@ -45,25 +45,25 @@ class ChallengeBox extends ConsumerWidget {
                   size: 14,
                   softWrap: true,
                 ),
-                BLText(
-                  'Limitations:',
-                  bold: true,
-                  color: BLUI().getAppColor('orange'),
-                ),
-                challenge.limitations == null || challenge.limitations!.isEmpty
-                    ? const BLText('No limitations set', size: 14)
-                    : ListView.builder(
-                        physics: const NeverScrollableScrollPhysics(),
-                        padding: EdgeInsets.zero,
-                        shrinkWrap: true,
-                        itemCount: challenge.limitations!.length,
-                        itemBuilder: (context, i) {
-                          return BLText(
-                            '• ${challenge.limitations![i]}',
-                            size: 14,
-                            softWrap: true,
-                          );
-                        })
+                // BLText(
+                //   'Limitations:',
+                //   bold: true,
+                //   color: BLUI().getAppColor('orange'),
+                // ),
+                // challenge.limitations == null || challenge.limitations!.isEmpty
+                //     ? const BLText('No limitations set', size: 14)
+                //     : ListView.builder(
+                //         physics: const NeverScrollableScrollPhysics(),
+                //         padding: EdgeInsets.zero,
+                //         shrinkWrap: true,
+                //         itemCount: challenge.limitations!.length,
+                //         itemBuilder: (context, i) {
+                //           return BLText(
+                //             '• ${challenge.limitations![i]}',
+                //             size: 14,
+                //             softWrap: true,
+                //           );
+                //         })
               ],
             ),
           ),

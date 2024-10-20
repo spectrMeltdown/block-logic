@@ -61,6 +61,7 @@ class _ForgotPasswordDialogState extends ConsumerState<ForgotPasswordDialog> {
                   controller: emailController,
                   labelText: 'Email',
                   onFieldSubmitted: (p0) => sendLink(),
+                  maxLength: 50,
                   prefixIcon: const Icon(
                     FontAwesomeIcons.envelope,
                     color: Colors.white,

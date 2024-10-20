@@ -10,7 +10,7 @@ enum BLColors {
   lightgreen,
 }
 
-enum BtnType { normal, green, red, orange, grey }
+enum BtnType { normal, green, red, orange, grey, amber }
 
 enum CodeBlockState { inSelector, inEditor }
 

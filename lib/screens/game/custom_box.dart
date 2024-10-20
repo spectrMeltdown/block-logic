@@ -29,6 +29,17 @@ class CustomBox extends ConsumerWidget {
         return Row(
           children: [
             ...List.generate(parameters.length, (i) {
+              if (i != parameters.length - 1) {
+                return Padding(
+                  padding: const EdgeInsets.all(3),
+                  child: Row(
+                    children: [
+                      GameBlock(key: ValueKey(parameters[i].uid), data: parameters[i]),
+                      // BLText(','), // TODO: update later
+                    ],
+                  ),
+                );
+              }
               return Padding(
                 padding: const EdgeInsets.all(3),
                 child: GameBlock(key: ValueKey(parameters[i].uid), data: parameters[i]),
@@ -72,6 +83,18 @@ class CustomBox extends ConsumerWidget {
         dPrint('Arguments: $arguments');
         return Row(children: [
           ...List.generate(arguments.length, (i) {
+            debugPrint(arguments.length.toString());
+            if (arguments.length > 1 && i != arguments.length - 1) {
+              return Padding(
+                padding: const EdgeInsets.all(3),
+                child: Row(
+                  children: [
+                    GameBlock(key: ValueKey(arguments[i].uid), data: arguments[i]),
+                    // BLText(' ,', size: 20), // TODO: update later
+                  ],
+                ),
+              );
+            }
             return Padding(
               padding: const EdgeInsets.all(3),
               child: GameBlock(key: ValueKey(arguments[i].uid), data: arguments[i]),

@@ -4,6 +4,8 @@ import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/game/logic/game_manager.dart';
 import 'package:block_logic/logic/game/logic/game_provider.dart';
 import 'package:block_logic/logic/game/logic/time_box.dart';
+import 'package:block_logic/logic/services/account.dart';
+import 'package:block_logic/logic/services/auth.dart';
 import 'package:block_logic/logic/services/toast.dart';
 import 'package:block_logic/screens/game/test_dialog.dart';
 import 'package:flutter/material.dart';
@@ -16,8 +18,11 @@ class GameTestBtn extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final account = ref.read(accountServiceProvider.notifier);
+    final auth = ref.read(authServiceProvider.notifier);
     final hasBlocks = ref.watch(getRootDataProvider).isNotEmpty;
     final manager = ref.read(gameManagerProvider.notifier);
+    final gameState = ref.read(gameManagerProvider);
     final toast = ref.read(toastProvider.notifier);
     return BLButton(
         type: hasBlocks ? BtnType.normal : BtnType.grey,
@@ -31,11 +36,31 @@ class GameTestBtn extends ConsumerWidget {
             manager.pauseTimer();
             ref.invalidate(runTimerProvider);
           }
-          await showDialog(
-            context: context,
-            barrierDismissible: false,
-            builder: (context) => const TestDialog(),
-          );
+          final premium = await account.isPremium(auth.getUID());
+          if (premium == null) {
+            if (!context.mounted) return;
+            toast.showToast(context, 'Error checking premium status. Try again later.', type: NotifType.error);
+          }
+          if (premium == true && gameState.testCount < 300) {
+            if (!context.mounted) return;
+            await showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (context) => const TestDialog(),
+            );
+            gameState.testCount++;
+          } else if (premium == false && gameState.testCount < 50) {
+            if (!context.mounted) return;
+            await showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (context) => const TestDialog(),
+            );
+            gameState.testCount++;
+          } else {
+            if (!context.mounted) return;
+            toast.showToast(context, 'You are out of available tests. Will reset tomorrow.', type: NotifType.error);
+          }
           if (!practiceMode) {
             manager.resumeTimer();
             ref.invalidate(runTimerProvider);

@@ -53,6 +53,7 @@ class _ChangePasswordState extends ConsumerState<ChangePassword> {
               keyboardType: TextInputType.visiblePassword,
               isObscure: true,
               labelText: 'Password',
+              maxLength: 100,
               prefixIcon: const Icon(
                 Icons.lock,
                 color: Colors.white,
@@ -64,6 +65,7 @@ class _ChangePasswordState extends ConsumerState<ChangePassword> {
               controller: confirmPassController,
               keyboardType: TextInputType.visiblePassword,
               isObscure: true,
+              maxLength: 100,
               labelText: 'Confirm Password',
               prefixIcon: const Icon(
                 Icons.lock,

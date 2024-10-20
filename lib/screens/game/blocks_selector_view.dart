@@ -1,4 +1,5 @@
 import 'package:block_logic/logic/dev.dart';
+import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/game/block_data.dart';
 import 'package:block_logic/logic/game/logic/game_manager.dart';
 import 'package:block_logic/screens/game/block.dart';
@@ -7,9 +8,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class BlockSelectorView extends ConsumerStatefulWidget {
-  const BlockSelectorView({required this.challengeUID, required this.blockData, super.key});
   final List<GameBlockData> blockData;
   final String challengeUID;
+  final CodeBlockType type;
+  const BlockSelectorView({required this.challengeUID, required this.type, required this.blockData, super.key});
   @override
   ConsumerState<BlockSelectorView> createState() => _BlockSelectorViewState();
 }

@@ -1,16 +1,20 @@
 import 'package:block_logic/components/dialog/confirm.dart';
 import 'package:block_logic/components/panel/bordered.dart';
 import 'package:block_logic/components/text/text.dart';
+import 'package:block_logic/logic/dev.dart';
 import 'package:block_logic/logic/firebase_models/challenge.dart';
+import 'package:block_logic/logic/services/assets.dart';
 import 'package:block_logic/logic/services/audio.dart';
 import 'package:block_logic/logic/services/dialog.dart';
 import 'package:block_logic/logic/game/logic/game_manager.dart';
 import 'package:block_logic/logic/game/logic/game_provider.dart';
 import 'package:block_logic/logic/services/navigation.dart';
 import 'package:block_logic/logic/game/logic/time_box.dart';
+import 'package:block_logic/logic/services/shared_pref.dart';
 import 'package:block_logic/logic/services/ui.dart';
 import 'package:block_logic/screens/game/pause_dialog.dart';
 import 'package:block_logic/screens/game/time_box.dart';
+import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -69,12 +73,29 @@ class GameAppbar extends ConsumerWidget {
               if (!context.mounted) return;
               final result = await showDialog(context: context, builder: (context) => const ConfirmDialog());
               if (result is bool && result) {
-                await gameManager.leaveGame(false);
+                final value = await gameManager.leaveGame(false);
+                dPrint(value);
                 gameManager.resetTree();
                 ref.invalidate(getRootDataProvider);
                 // gameManager.setShouldResetAllBlocks(true);
                 // ref.invalidate(shouldResetAllBlocksProvider);
                 // ref.invalidate(shouldResetBlockProvider);
+
+                final assets = ref.read(assetsProvider);
+                final sharedPref = ref.read(sharedPrefProvider);
+
+                /// check if a backgroundMusic setting exists
+                final backgroundMusic = sharedPref.getBool('backgroundMusic');
+                if (backgroundMusic == null || backgroundMusic == true) {
+                  /// initialize the audio
+                  FlameAudio.bgm.play(assets.audioBG1);
+                } else {
+                  /// play silently to load the track
+                  FlameAudio.bgm.play(assets.audioBG1, volume: 0);
+
+                  /// pause after track loaded
+                  FlameAudio.bgm.pause();
+                }
                 if (!context.mounted) return;
                 nav.pop(context);
               }

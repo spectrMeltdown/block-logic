@@ -163,7 +163,7 @@ class _WaitingRoomState extends ConsumerState<WaitingRoom> {
                                 if (room.status == RoomStatus.inGame) {
                                   WidgetsBinding.instance.addPostFrameCallback((d) {
                                     if (!context.mounted) return;
-                                    nav.pushReplace(context, GameRoom(room));
+                                    enterGame(room);
                                   });
                                 }
                                 // if room not empty, and player is not in it
@@ -307,7 +307,9 @@ class _WaitingRoomState extends ConsumerState<WaitingRoom> {
     roomManager = ref.read(roomManagerProvider.notifier);
     auth = ref.read(authServiceProvider.notifier);
     leaderboardManager = ref.read(leaderboardManagerProvider.notifier);
-    FirebaseDatabase.instance.ref('rooms/${widget.roomID}/players/${auth.getUID()}').onDisconnect().set(false);
+    FirebaseDatabase.instance.ref('rooms/${widget.roomID}/players/${auth.getUID()}').onDisconnect().set(false).then((status) {
+      playerLeave = true;
+    });
   }
 
   void start(BuildContext context, Room room, [bool startLeave = false]) async {
@@ -358,6 +360,13 @@ class _WaitingRoomState extends ConsumerState<WaitingRoom> {
         nav.pushReplace(context, GameRoom(updatedRoom));
       }
     }
+  }
+
+  Future<void> enterGame(Room room) async {
+    if (processing) return;
+    processing = true;
+    nav.pushReplace(context, GameRoom(room));
+    processing = false;
   }
 }
 

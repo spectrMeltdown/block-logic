@@ -53,7 +53,7 @@ class TestingPage extends ConsumerWidget {
                           name: 'Leap Year Check',
                           shortDescription: 'Check if the given year is a leap year.',
                           additionalInfo: 'A leap year has 366 days, with an extra day in February (29 days instead of 28). It occurs every four years to keep the calendar year aligned with the solar year.',
-                          limitations: ['5 block lines', 'No functions', 'No classes'],
+                          // limitations: ['5 block lines', 'No functions', 'No classes'],
                           blocks: AllBlocks().getAll(),
                           difficulty: Difficulty.intermediate,
                           tags: ['conditionals', ''],

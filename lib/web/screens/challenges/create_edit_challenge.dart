@@ -39,7 +39,7 @@ class _SelectedChallengeState extends ConsumerState<CreateEditChallenge> {
   final limitationBtnKey = GlobalKey();
   late final Toast toast;
   List<String> tags = [];
-  List<String> limitations = [];
+  // List<String> limitations = [];
   int totalSelected = 0;
   late final DialogService dialog;
   Map<CodeBlockType, List<GameBlockData>>? blocks;
@@ -133,7 +133,7 @@ class _SelectedChallengeState extends ConsumerState<CreateEditChallenge> {
                     }
                     if (!widget.createMode) {
                       tags = challenge.tags ?? [];
-                      limitations = challenge.limitations ?? [];
+                      // limitations = challenge.limitations ?? [];
                       difficultySelection ??= challenge.difficulty;
                       blocks ??= challenge.blocks;
                       if (blocks != null) {
@@ -378,7 +378,7 @@ class _SelectedChallengeState extends ConsumerState<CreateEditChallenge> {
         name: name?.text.trim(),
         shortDescription: shortDescription?.text.trim(),
         additionalInfo: additionalInfo?.text.trim(),
-        limitations: limitations,
+        // limitations: limitations,
         tags: tags,
         difficulty: difficultySelection,
       );

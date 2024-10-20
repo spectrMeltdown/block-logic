@@ -184,9 +184,28 @@ class AccountService extends _$AccountService {
     }
   }
 
+  Future<bool?> isPremium(String uid) async {
+    if (uid.isEmpty) {
+      dPrint('Empty UID!');
+      return null;
+    }
+    try {
+      return UserAccount.fromRTDB(await state._db.ref('users/$uid').get()).premiumUser;
+    } catch (e) {
+      dPrint(state._errorHandler.call(e, this));
+      return null;
+    }
+  }
+
   Future<String?> update({UserAccount? user, AdminAccount? admin}) async {
     if (user != null && admin != null) {
       throw (ArgumentError('You cannot provide both user and admin!'));
+    }
+    if (user != null && user.id == null) {
+      throw (ArgumentError('User id is empty, cannot update.'));
+    }
+    if (admin != null && admin.id == null) {
+      throw (ArgumentError('Admin id is empty, cannot update.'));
     }
     try {
       if (admin != null) {

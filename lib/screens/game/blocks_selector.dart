@@ -153,6 +153,7 @@ class _GameBlocksState extends ConsumerState<GameBlocks> with TickerProviderStat
                 (index) {
                   return BlockSelectorView(
                     blockData: blocks[blocks.keys.toList()[index]] ?? [],
+                    type: blocks.keys.toList()[index],
                     challengeUID: widget.challengeUID,
                   );
                 },

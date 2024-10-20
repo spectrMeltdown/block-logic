@@ -216,6 +216,7 @@ class _SignupState extends ConsumerState<Signup> with RouteAware {
                                       Visibility(
                                         visible: useEmail,
                                         child: BLTextBox(
+                                          maxLength: 50,
                                           controller: emailController,
                                           labelText: 'Email',
                                           prefixIcon: const Icon(
@@ -263,6 +264,7 @@ class _SignupState extends ConsumerState<Signup> with RouteAware {
                                       Visibility(
                                         visible: useEmail,
                                         child: BLTextBox(
+                                          maxLength: 50,
                                           controller: passwordController,
                                           labelText: 'Password',
                                           prefixIcon: const Icon(

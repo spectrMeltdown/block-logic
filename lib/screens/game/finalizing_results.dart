@@ -38,20 +38,22 @@ class _FinalizingResultsState extends ConsumerState<FinalizingResults> {
     super.initState();
     manager = ref.read(gameManagerProvider.notifier);
     nav = ref.read(customNavigationProvider.notifier);
-    final assets = ref.read(assetsProvider);
-    final sharedPref = ref.read(sharedPrefProvider);
+    if (!FlameAudio.bgm.isPlaying) {
+      final assets = ref.read(assetsProvider);
+      final sharedPref = ref.read(sharedPrefProvider);
 
-    /// check if a backgroundMusic setting exists
-    final backgroundMusic = sharedPref.getBool('backgroundMusic');
-    if (backgroundMusic == null || backgroundMusic == true) {
-      /// initialize the audio
-      FlameAudio.bgm.play(assets.audioBG1);
-    } else {
-      /// play silently to load the track
-      FlameAudio.bgm.play(assets.audioBG1, volume: 0);
+      /// check if a backgroundMusic setting exists
+      final backgroundMusic = sharedPref.getBool('backgroundMusic');
+      if (backgroundMusic == null || backgroundMusic == true) {
+        /// initialize the audio
+        FlameAudio.bgm.play(assets.audioBG1);
+      } else {
+        /// play silently to load the track
+        FlameAudio.bgm.play(assets.audioBG1, volume: 0);
 
-      /// pause after track loaded
-      FlameAudio.bgm.pause();
+        /// pause after track loaded
+        FlameAudio.bgm.pause();
+      }
     }
     errorWidget = Column(
       children: [

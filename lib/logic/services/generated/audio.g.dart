@@ -20,7 +20,7 @@ final audioInitProvider = FutureProvider<void>.internal(
 );
 
 typedef AudioInitRef = FutureProviderRef<void>;
-String _$bLAudioStateHash() => r'af43cbb3341ba1389e8d2584ffa99befaa08d796';
+String _$bLAudioStateHash() => r'9f6fd54adcc0aa4f65749eddb6cd4468cdba7480';
 
 /// See also [BLAudioState].
 @ProviderFor(BLAudioState)

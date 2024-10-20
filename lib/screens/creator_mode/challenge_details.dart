@@ -37,11 +37,11 @@ class ChallengeDetails extends ConsumerWidget {
         const SizedBox(
           height: 10,
         ),
-        const BLText('Limitations: '),
-        if (challenge.limitations == null || challenge.limitations!.isEmpty) const BLText('No limitations set.'),
-        ...List.generate(challenge.limitations!.length, (i) {
-          return BLText(challenge.limitations![i]);
-        }),
+        // const BLText('Limitations: '),
+        // if (challenge.limitations == null || challenge.limitations!.isEmpty) const BLText('No limitations set.'),
+        // ...List.generate(challenge.limitations!.length, (i) {
+        //   return BLText(challenge.limitations![i]);
+        // }),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [

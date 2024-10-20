@@ -6,8 +6,6 @@ import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_providers/auth.dart';
 import 'package:block_logic/logic/firebase_providers/selected_user.dart';
 import 'package:block_logic/logic/services/account.dart';
-import 'package:block_logic/logic/services/assets.dart';
-import 'package:block_logic/logic/services/audio.dart';
 import 'package:block_logic/logic/services/auth.dart';
 import 'package:block_logic/logic/services/login_check.dart';
 import 'package:block_logic/logic/services/shared_pref.dart';
@@ -15,7 +13,6 @@ import 'package:block_logic/screens/auth/duplicate_login.dart';
 import 'package:block_logic/screens/auth/verify_email.dart';
 import 'package:block_logic/screens/main_menu.dart';
 
-import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -38,22 +35,6 @@ class Checkpoint extends ConsumerWidget {
     );
     final auth = ref.read(authServiceProvider.notifier);
     final sharedPref = ref.read(sharedPrefProvider);
-    final assets = ref.read(assetsProvider);
-    ref.read(audioInitProvider);
-    FlameAudio.bgm.initialize();
-
-    /// check if a backgroundMusic setting exists
-    final backgroundMusic = sharedPref.getBool('backgroundMusic');
-    if (backgroundMusic == null || backgroundMusic == true) {
-      /// initialize the audio
-      FlameAudio.bgm.play(assets.audioBG1);
-    } else {
-      /// play silently to load the track
-      FlameAudio.bgm.play(assets.audioBG1, volume: 0);
-
-      /// pause after track loaded
-      FlameAudio.bgm.pause();
-    }
     final user = ref.watch(authChangesProvider);
     return user.when(
       data: (user) {

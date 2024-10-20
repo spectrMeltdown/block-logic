@@ -123,7 +123,7 @@ class GameManager extends StateNotifier<GameState> {
   }
 
   Future<String?> leaveGame(bool isComplete) async {
-    if (state._processing) return '';
+    if (state._processing) return 'processing';
     state._processing = true;
     try {
       // create final score
@@ -132,19 +132,13 @@ class GameManager extends StateNotifier<GameState> {
         timeElapsed: state._timeElapsed,
         status: isComplete ? ScoreStatus.complete : ScoreStatus.incomplete,
       );
-      dPrint('0');
       // upload final score in db
       final scoreUpdate = await state.scoreManager.update(state._leaderboardID!, finalScore);
-      if (scoreUpdate != null) {
-        return scoreUpdate;
-      }
-      dPrint('1');
+      dPrint(scoreUpdate);
       // get current list of players after leaving
       final leave = await state.roomManager.leaveRoom(state._roomID!);
-      if (leave != null) {
-        return leave;
-      }
-      dPrint('2');
+      dPrint(leave);
+      dPrint('2 aaa');
       // if this player is the last to leave the room
       final lastPlayer = bool.tryParse(leave ?? '');
       if (lastPlayer != null && lastPlayer) {
@@ -155,22 +149,23 @@ class GameManager extends StateNotifier<GameState> {
             status: LeaderboardStatus.complete,
           ),
         );
-        dPrint('3');
+        dPrint('3 bbb');
         // reset the room status to available
         await state.roomManager.update(Room(
           id: state._roomID,
           status: RoomStatus.available,
           currentLeaderboardID: '',
         ));
-        dPrint('4');
+        dPrint('4 ccc');
         // leave room successful, detach disconnection watchers
         await FirebaseDatabase.instance.ref('rooms/${state._roomID}/players/${state._auth.getUID()}').onDisconnect().cancel();
         await FirebaseDatabase.instance.ref('leaderboards/${state._leaderboardID}/scores/${state._auth.getUID()}').onDisconnect().cancel();
       } else {
-        dPrint('4');
+        dPrint('5 ddd');
         // leave room successful, detach disconnection watchers
         await FirebaseDatabase.instance.ref('rooms/${state._roomID}/players/${state._auth.getUID()}').onDisconnect().cancel();
         await FirebaseDatabase.instance.ref('leaderboards/${state._leaderboardID}/scores/${state._auth.getUID()}').onDisconnect().cancel();
+        state._processing = false;
         return leave;
       }
       state.sharedPref.remove('currentLeaderboardID');
@@ -700,6 +695,10 @@ class GameManager extends StateNotifier<GameState> {
 enum ChildrenData { bodyUIDs, argumentUIDs, parameterUIDs, conditionUIDs, statementUIDs, arrayUIDs }
 
 class GameState {
+  bool dontShowAgain = false;
+  bool autoProceed = false;
+  int testCount = 0;
+
   List<String> inSelectorUIDsToDelete = [];
   // Map<String, GameBlockData> inSelectorUIDsToModify = {};
 

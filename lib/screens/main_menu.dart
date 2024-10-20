@@ -6,9 +6,11 @@ import 'package:block_logic/components/button/button.dart';
 import 'package:block_logic/components/util/animation_player.dart';
 import 'package:block_logic/components/util/spaced_col.dart';
 import 'package:block_logic/logic/enums.dart';
+import 'package:block_logic/logic/services/account.dart';
 import 'package:block_logic/logic/services/assets.dart';
 import 'package:block_logic/logic/services/auth.dart';
 import 'package:block_logic/logic/services/navigation.dart';
+import 'package:block_logic/logic/services/shared_pref.dart';
 import 'package:block_logic/logic/services/toast.dart';
 import 'package:block_logic/route_observer.dart';
 import 'package:block_logic/screens/auth/login.dart';
@@ -22,6 +24,7 @@ import 'package:block_logic/screens/tutorials/tutorials.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -158,6 +161,7 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> with WidgetsBin
   late final Toast toast;
   late final CustomNavigation nav;
   late final AuthService auth;
+  late final AccountService accountM;
   //late final VideoPlayerController _controller;
 
   @override
@@ -244,27 +248,38 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> with WidgetsBin
                               ),
                             ],
                           )),
-                      GestureDetector(
-                        onTap: () {
-                          showDialog(context: context, builder: (context) => const PremiumPromptDialog());
-                        },
-                        child: Row(
-                          children: [
-                            BLAnimationPlayer(
-                              assets.premiumCrown,
-                              size: 50,
-                              controller: _premiumCrown,
-                              controllerActions: (premiumCrown) {
-                                _premiumCrown.duration = premiumCrown.duration;
-                                _premiumCrown.repeat(min: 0.5, max: 1);
-                              },
-                            ),
-                            const SizedBox(
-                              width: 15,
-                            ),
-                          ],
+                      if (auth.getUID().isNotEmpty)
+                        GestureDetector(
+                          onTap: () async {
+                            final isPremium = await accountM.isPremium(auth.getUID());
+                            if (isPremium == null) {
+                              if (!context.mounted) return;
+                              toast.showToast(context, 'Problem getting premium status, try again later.', type: NotifType.warning);
+                            } else if (isPremium) {
+                              if (!context.mounted) return;
+                              showDialog(context: context, builder: (context) => const ThankYouDialog());
+                            } else {
+                              if (!context.mounted) return;
+                              showDialog(context: context, builder: (context) => const PremiumPromptDialog());
+                            }
+                          },
+                          child: Row(
+                            children: [
+                              BLAnimationPlayer(
+                                assets.premiumCrown,
+                                size: 50,
+                                controller: _premiumCrown,
+                                controllerActions: (premiumCrown) {
+                                  _premiumCrown.duration = premiumCrown.duration;
+                                  _premiumCrown.repeat(min: 0.5, max: 1);
+                                },
+                              ),
+                              const SizedBox(
+                                width: 15,
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
                     ],
                   ),
                   const SizedBox(
@@ -326,7 +341,28 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> with WidgetsBin
     toast = ref.read(toastProvider.notifier);
     assets = ref.read(assetsProvider);
     auth = ref.read(authServiceProvider.notifier);
+    accountM = ref.read(accountServiceProvider.notifier);
     nav = ref.read(customNavigationProvider.notifier);
+
+    if (!FlameAudio.bgm.isPlaying) {
+      if (!FlameAudio.bgm.isPlaying) {
+        final assets = ref.read(assetsProvider);
+        final sharedPref = ref.read(sharedPrefProvider);
+
+        /// check if a backgroundMusic setting exists
+        final backgroundMusic = sharedPref.getBool('backgroundMusic');
+        if (backgroundMusic == null || backgroundMusic == true) {
+          /// initialize the audio
+          FlameAudio.bgm.play(assets.audioBG1);
+        } else {
+          /// play silently to load the track
+          FlameAudio.bgm.play(assets.audioBG1, volume: 0);
+
+          /// pause after track loaded
+          FlameAudio.bgm.pause();
+        }
+      }
+    }
 
     /// for the entire title
     _titleAnimationController = AnimationController(

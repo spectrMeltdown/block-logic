@@ -38,6 +38,7 @@ class Assets {
   final String loadingBricks2 = 'assets/animations/loading-bricks-2.json';
   final String premiumCrown = 'assets/animations/premium-crown.json';
   final String like = 'assets/animations/like.json';
+  final String pulse = 'assets/animations/pulse.json';
 
   /// backgrounds
   // static final String bg1 = 'assets/animations/backgrounds/bg-1.json';
@@ -46,8 +47,8 @@ class Assets {
   // static final String bg4 = 'assets/animations/backgrounds/bg-4.json';
 
   /// background (video)
-  final String bg1 = 'assets/videos/bg-1.mp4';
-  final String bg2 = 'assets/videos/bg-2.mp4';
-  final String bg3 = 'assets/videos/bg-3.mp4';
-  final String bg4 = 'assets/videos/bg-4.mp4';
+  // final String bg1 = 'assets/videos/bg-1.mp4';
+  // final String bg2 = 'assets/videos/bg-2.mp4';
+  // final String bg3 = 'assets/videos/bg-3.mp4';
+  // final String bg4 = 'assets/videos/bg-4.mp4';
 }

@@ -8,6 +8,7 @@ import 'package:block_logic/components/text/title.dart';
 import 'package:block_logic/components/util/provider_default.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_providers/selected_rooms.dart';
+import 'package:block_logic/logic/services/account.dart';
 import 'package:block_logic/logic/services/auth.dart';
 import 'package:block_logic/logic/services/navigation.dart';
 import 'package:block_logic/logic/services/toast.dart';
@@ -30,10 +31,11 @@ class _CreatorModeState extends ConsumerState<CreatorMode> {
   int roomsLength = 0;
   late final Toast toast;
   late final CustomNavigation nav;
+  late final AccountService service;
+  late final AuthService auth;
 
   @override
   Widget build(BuildContext context) {
-    final auth = ref.watch(authServiceProvider.notifier);
     final ownRooms = ref.watch(SelectedRoomsProvider(auth.getUID()));
     // dPrint(IconTheme.of(context).color.toString());
     return Scaffold(
@@ -79,7 +81,11 @@ class _CreatorModeState extends ConsumerState<CreatorMode> {
                                         bold: true,
                                       ),
                                       BLText(
-                                        '- Limited to 10 rooms per user.',
+                                        '- Limited to 10 rooms for free users.',
+                                        softWrap: true,
+                                      ),
+                                      BLText(
+                                        '- Limited to 50 rooms for premium users.',
                                         softWrap: true,
                                       ),
                                       BLText(
@@ -141,10 +147,21 @@ class _CreatorModeState extends ConsumerState<CreatorMode> {
                 onPressed: () async {
                   if (processing) return;
                   processing = true;
-                  if (roomsLength == 10) {
+                  final premium = await service.isPremium(auth.getUID());
+                  if (premium == null) {
+                    processing = false;
                     if (!context.mounted) return;
-                    toast.showToast(context, 'You have reached the maximmum number of rooms.\nPlease delete a room to add another.', withTransparency: false, duration: const Duration(seconds: 6), alignment: Alignment.bottomCenter, margin: const EdgeInsets.only(bottom: 60, left: 20, right: 20), type: NotifType.error);
+                    toast.showToast(context, 'Error checking premium status. Try again later.', type: NotifType.error);
+                    return;
+                  }
+                  if (roomsLength > 10 && !premium) {
+                    if (!context.mounted) return;
+                    toast.showToast(context, 'Max number of rooms. (Upgrade to premium!)', withTransparency: false, duration: const Duration(seconds: 6), alignment: Alignment.bottomCenter, margin: const EdgeInsets.only(bottom: 60, left: 20, right: 20), type: NotifType.error);
+                  } else if (roomsLength > 50 && premium) {
+                    if (!context.mounted) return;
+                    toast.showToast(context, 'Max number of rooms reached.', withTransparency: false, duration: const Duration(seconds: 6), alignment: Alignment.bottomCenter, margin: const EdgeInsets.only(bottom: 60, left: 20, right: 20), type: NotifType.error);
                   } else {
+                    if (!context.mounted) return;
                     nav.push(context, const AddRoomBottomSheet(), transition: PageTransitionType.rightToLeftJoined, childCurrent: const CreatorMode());
                   }
                   processing = false;
@@ -180,6 +197,8 @@ class _CreatorModeState extends ConsumerState<CreatorMode> {
     // addBottomSheet = ref.read(bottomSheetServiceProvider.notifier);
     toast = ref.read(toastProvider.notifier);
     nav = ref.read(customNavigationProvider.notifier);
+    service = ref.read(accountServiceProvider.notifier);
+    auth = ref.read(authServiceProvider.notifier);
     super.initState();
   }
 }

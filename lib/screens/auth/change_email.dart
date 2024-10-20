@@ -77,6 +77,7 @@ class _ChangeEmailState extends ConsumerState<ChangeEmail> {
               controller: emailController,
               labelText: 'Your email',
               keyboardType: TextInputType.emailAddress,
+              maxLength: 100,
               prefixIcon: const Icon(
                 Icons.mail,
                 color: Colors.white,
@@ -91,6 +92,7 @@ class _ChangeEmailState extends ConsumerState<ChangeEmail> {
                 controller: passController,
                 keyboardType: TextInputType.visiblePassword,
                 labelText: 'Your secure password',
+                maxLength: 100,
                 isObscure: true,
                 prefixIcon: const Icon(
                   Icons.lock,

@@ -6,7 +6,6 @@ import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/text/title.dart';
 import 'package:block_logic/components/textbox.dart';
 import 'package:block_logic/logic/services/ui.dart';
-import 'package:block_logic/logic/dev.dart';
 import 'package:block_logic/screens/rooms/public_rooms.dart';
 import 'package:block_logic/screens/rooms/user_rooms.dart';
 
@@ -28,7 +27,7 @@ class _RoomSelectorState extends ConsumerState<RoomSelector> with TickerProvider
 
   @override
   void initState() {
-    populateChallenges();
+    // populateChallenges();
     tabController = TabController(length: 2, vsync: this);
     searchController.addListener(() {
       setState(() {
@@ -88,6 +87,7 @@ class _RoomSelectorState extends ConsumerState<RoomSelector> with TickerProvider
                       padding: const EdgeInsets.symmetric(horizontal: 30),
                       child: BLTextBox(
                         controller: searchController,
+                        maxLength: 50,
                         prefixIcon: const Icon(
                           Icons.search_rounded,
                           color: Colors.white,

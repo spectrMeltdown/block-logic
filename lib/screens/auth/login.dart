@@ -142,6 +142,7 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
                                         child: BLTextBox(
                                           controller: emailController,
                                           labelText: 'Email',
+                                          maxLength: 50,
                                           onFieldSubmitted: (p0) => submit(),
                                           prefixIcon: const Icon(
                                             FontAwesomeIcons.envelope,
@@ -177,6 +178,7 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
                                       Visibility(
                                         visible: useEmail,
                                         child: BLTextBox(
+                                          maxLength: 50,
                                           controller: passwordController,
                                           labelText: 'Password',
                                           onFieldSubmitted: (p0) => submit(),

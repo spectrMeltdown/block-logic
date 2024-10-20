@@ -30,6 +30,7 @@ class DialogChallengeInfo extends ConsumerWidget {
                 challenge.shortDescription ?? 'No description provided.',
                 softWrap: true,
               ),
+              SizedBox(height: 10),
               BLText(
                 challenge.additionalInfo ?? 'No additional info provided.',
                 softWrap: true,
@@ -40,22 +41,22 @@ class DialogChallengeInfo extends ConsumerWidget {
         const SizedBox(
           height: 20,
         ),
-        const BLSmallTitle('Limitations:'),
-        Padding(
-          padding: const EdgeInsets.only(left: 8),
-          child: challenge.limitations == null || challenge.limitations!.isEmpty
-              ? const BLText('No limitations set.')
-              : Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: List.generate(challenge.limitations!.length, (i) {
-                    return Wrap(
-                      children: [
-                        BLText('• ${challenge.limitations?[i] ?? 'No limitations provided.'}'),
-                      ],
-                    );
-                  }),
-                ),
-        ),
+        // const BLSmallTitle('Limitations:'),
+        // Padding(
+        //   padding: const EdgeInsets.only(left: 8),
+        //   child: challenge.limitations == null || challenge.limitations!.isEmpty
+        //       ? const BLText('No limitations set.')
+        //       : Column(
+        //           crossAxisAlignment: CrossAxisAlignment.start,
+        //           children: List.generate(challenge.limitations!.length, (i) {
+        //             return Wrap(
+        //               children: [
+        //                 BLText('• ${challenge.limitations?[i] ?? 'No limitations provided.'}'),
+        //               ],
+        //             );
+        //           }),
+        //         ),
+        // ),
         const SizedBox(
           height: 20,
         ),

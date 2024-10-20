@@ -35,6 +35,7 @@ class _OTPDialogState extends ConsumerState<OTPDialog> {
         children: [
           const BLText('Please enter the OTP we sent:'),
           BLTextBox(
+            maxLength: 6,
             controller: otpController,
             onFieldSubmitted: (p0) => submit(),
             validator: (value) => validator.validateOtp(value),

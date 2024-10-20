@@ -63,6 +63,7 @@ class _FeedbackDialogState extends ConsumerState<FeedbackDialog> {
                 BLTextBox(
                   controller: titleController,
                   labelText: 'Your title ...',
+                  maxLength: 100,
                   validator: (p0) {
                     if (p0 == null || p0.isEmpty) {
                       return 'Cannot be empty.';
@@ -77,6 +78,7 @@ class _FeedbackDialogState extends ConsumerState<FeedbackDialog> {
                   controller: messageController,
                   labelText: 'Your message ...',
                   keyboardType: TextInputType.multiline,
+                  maxLength: 300,
                   maxLines: null,
                   validator: (p0) {
                     if (p0 == null || p0.isEmpty) {

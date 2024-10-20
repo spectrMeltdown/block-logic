@@ -48,8 +48,11 @@ class LeaderboardManager extends _$LeaderboardManager {
     if (leaderboard.id == null || leaderboard.id!.isEmpty) return 'ID not provided';
     try {
       // dPrint(leaderboard.id);
-      await state._db.child(leaderboard.id!).runTransaction((obj) {
+      Object? scores;
+      final transact = await state._db.child(leaderboard.id!).runTransaction((obj) {
         final lb = Leaderboard.fromRTDB(obj, leaderboard.id);
+        scores = obj == null ? null : (obj as Map<Object?, Object?>)['scores']; // TODO: this works. Just reminder that in RTDB, children may need to be updated when using transaction
+        // dPrint(scores.toString());
         if (lb.id!.isNotEmpty && (lb.status != null || lb.status != LeaderboardStatus.complete)) {
           dPrint('transaction success');
           return Transaction.success(lb.copyWith(status: LeaderboardStatus.complete, players: null).toJSON());
@@ -57,10 +60,11 @@ class LeaderboardManager extends _$LeaderboardManager {
         dPrint('transaction abort');
         return Transaction.abort();
       });
-      // if (result.committed) {
-      // } else {
-      //   dPrint('NOT COMMIITED');
-      // }
+      if (transact.committed) {
+        state._db.child(leaderboard.id!).update({'scores': scores});
+      } else {
+        dPrint('NOT COMMIITED');
+      }
       return null;
     } catch (e) {
       return state._errorHandler.call(e, this);
