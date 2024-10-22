@@ -47,6 +47,8 @@ class _AddRoomBottomSheetState extends ConsumerState<AddRoomBottomSheet> {
   late final Toast toast;
   late final CreatorModeManager creatorMode;
   late final CustomNavigation nav;
+  final scrollController = ScrollController();
+  final scrollController2 = ScrollController();
 
   @override
   Widget build(BuildContext context) {
@@ -67,279 +69,287 @@ class _AddRoomBottomSheetState extends ConsumerState<AddRoomBottomSheet> {
                   child: Center(
                     child: Padding(
                       padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-                      child: SingleChildScrollView(
-                        child: BLBorderedPanel(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 30),
-                            child: ownRooms.when(
-                                data: (rooms) {
-                                  List<String> roomNames = [];
-                                  for (final room in rooms) {
-                                    roomNames.add(room.name ?? '');
-                                  }
-                                  return Form(
-                                    key: newRoomFormKey,
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            BLBackButton(
-                                              paddingY: 0,
-                                              disabled: processing,
-                                            ),
-                                            const BLSmallTitle(
-                                              'Create new room',
-                                              bottomPadding: 0,
-                                            ),
-                                          ],
-                                        ),
-                                        const SizedBox(
-                                          height: 20,
-                                        ),
-                                        const BLText('Room name'),
-                                        Flexible(
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: BLTextBox(
-                                              prefixIcon: const Icon(
-                                                Icons.abc,
+                      child: Scrollbar(
+                        controller: scrollController,
+                        child: SingleChildScrollView(
+                          controller: scrollController,
+                          child: BLBorderedPanel(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 30),
+                              child: ownRooms.when(
+                                  data: (rooms) {
+                                    List<String> roomNames = [];
+                                    for (final room in rooms) {
+                                      roomNames.add(room.name ?? '');
+                                    }
+                                    return Form(
+                                      key: newRoomFormKey,
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              BLBackButton(
+                                                paddingY: 0,
+                                                disabled: processing,
                                               ),
-                                              labelText: 'My room',
-                                              keyboardType: TextInputType.name,
-                                              controller: roomNameController,
-                                              maxLength: 50,
-                                              validator: (roomName) => textValidator.validateRoomName(roomName),
+                                              const BLSmallTitle(
+                                                'Create new room',
+                                                bottomPadding: 0,
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(
+                                            height: 20,
+                                          ),
+                                          const BLText('Room name'),
+                                          Flexible(
+                                            child: Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child: BLTextBox(
+                                                prefixIcon: const Icon(
+                                                  Icons.abc,
+                                                ),
+                                                labelText: 'My room',
+                                                keyboardType: TextInputType.name,
+                                                controller: roomNameController,
+                                                maxLength: 50,
+                                                validator: (roomName) => textValidator.validateRoomName(roomName),
+                                              ),
                                             ),
                                           ),
-                                        ),
-                                        const BLText('Max players'),
-                                        Flexible(
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: BLTextBox(
-                                              prefixIcon: const Icon(
-                                                Icons.numbers,
+                                          const BLText('Max players'),
+                                          Flexible(
+                                            child: Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child: BLTextBox(
+                                                prefixIcon: const Icon(
+                                                  Icons.numbers,
+                                                ),
+                                                labelText: 'Max 20, min 1',
+                                                maxLength: 2,
+                                                inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
+                                                keyboardType: TextInputType.number,
+                                                controller: maxPlayersController,
+                                                validator: (maxPlayers) => textValidator.validateMaxPlayers(maxPlayers),
                                               ),
-                                              labelText: 'Max 20, min 1',
-                                              maxLength: 2,
-                                              inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
-                                              keyboardType: TextInputType.number,
-                                              controller: maxPlayersController,
-                                              validator: (maxPlayers) => textValidator.validateMaxPlayers(maxPlayers),
                                             ),
                                           ),
-                                        ),
-                                        Row(
-                                          children: [
-                                            const BLText('Require password?'),
-                                            const SizedBox(width: 10),
-                                            BLSwitch(
-                                                state: includesPassword,
-                                                onPressed: (newValue) {
-                                                  setState(() {
-                                                    includesPassword = newValue;
-                                                  });
-                                                })
-                                          ],
-                                        ),
-                                        Visibility(
-                                          visible: includesPassword,
-                                          child: Flexible(
-                                            child: WidgetAnimator(
-                                              incomingEffect: WidgetTransitionEffects.incomingScaleUp(),
-                                              outgoingEffect: WidgetTransitionEffects.outgoingScaleDown(),
-                                              child: Padding(
-                                                padding: const EdgeInsets.all(8.0),
-                                                child: BLTextBox(
-                                                  prefixIcon: const Icon(
-                                                    FontAwesomeIcons.lock,
+                                          Row(
+                                            children: [
+                                              const BLText('Require password?'),
+                                              const SizedBox(width: 10),
+                                              BLSwitch(
+                                                  state: includesPassword,
+                                                  onPressed: (newValue) {
+                                                    setState(() {
+                                                      includesPassword = newValue;
+                                                    });
+                                                  })
+                                            ],
+                                          ),
+                                          Visibility(
+                                            visible: includesPassword,
+                                            child: Flexible(
+                                              child: WidgetAnimator(
+                                                incomingEffect: WidgetTransitionEffects.incomingScaleUp(),
+                                                outgoingEffect: WidgetTransitionEffects.outgoingScaleDown(),
+                                                child: Padding(
+                                                  padding: const EdgeInsets.all(8.0),
+                                                  child: BLTextBox(
+                                                    prefixIcon: const Icon(
+                                                      FontAwesomeIcons.lock,
+                                                    ),
+                                                    labelText: 'Your secure password ...',
+                                                    controller: passwordController,
+                                                    maxLength: 50,
+                                                    isObscure: true,
+                                                    validator: (pass) => textValidator.validateRoomPass(pass),
                                                   ),
-                                                  labelText: 'Your secure password ...',
-                                                  controller: passwordController,
-                                                  maxLength: 50,
-                                                  isObscure: true,
-                                                  validator: (pass) => textValidator.validateRoomPass(pass),
                                                 ),
                                               ),
                                             ),
                                           ),
-                                        ),
-                                        const BLText('Selected Challenges: '),
-                                        Column(
-                                          children: [
-                                            const SizedBox(height: 15),
-                                            if (selectedChallenges.isNotEmpty)
-                                              ...List.generate(selectedChallenges.length, (i) {
-                                                final currentChallenge = selectedChallenges[i];
-                                                return Padding(
-                                                  key: ValueKey(currentChallenge.id),
-                                                  padding: const EdgeInsets.symmetric(vertical: 5),
-                                                  child: Row(
-                                                    mainAxisAlignment: MainAxisAlignment.center,
-                                                    children: [
-                                                      Container(
-                                                        clipBehavior: Clip.antiAlias,
-                                                        decoration: const BoxDecoration(
-                                                          color: Colors.blueGrey,
-                                                          borderRadius: BorderRadius.all(
-                                                            Radius.circular(20),
+                                          const BLText('Selected Challenges: '),
+                                          Column(
+                                            children: [
+                                              const SizedBox(height: 15),
+                                              if (selectedChallenges.isNotEmpty)
+                                                ...List.generate(selectedChallenges.length, (i) {
+                                                  final currentChallenge = selectedChallenges[i];
+                                                  return Padding(
+                                                    key: ValueKey(currentChallenge.id),
+                                                    padding: const EdgeInsets.symmetric(vertical: 5),
+                                                    child: Row(
+                                                      mainAxisAlignment: MainAxisAlignment.center,
+                                                      children: [
+                                                        Container(
+                                                          clipBehavior: Clip.antiAlias,
+                                                          decoration: const BoxDecoration(
+                                                            color: Colors.blueGrey,
+                                                            borderRadius: BorderRadius.all(
+                                                              Radius.circular(20),
+                                                            ),
                                                           ),
-                                                        ),
-                                                        child: Row(
-                                                          mainAxisSize: MainAxisSize.min,
-                                                          children: [
-                                                            const SizedBox(width: 10),
-                                                            ConstrainedBox(
-                                                                constraints: const BoxConstraints(maxWidth: 150),
-                                                                child: BLText(
-                                                                  currentChallenge.name ?? '--',
-                                                                  softWrap: true,
-                                                                )),
-                                                            const SizedBox(width: 10),
-                                                            ConstrainedBox(
-                                                              constraints: const BoxConstraints(maxWidth: 50),
-                                                              child: SingleChildScrollView(
-                                                                scrollDirection: Axis.horizontal,
-                                                                child: BLText(
-                                                                  currentChallenge.difficulty?.capName() ?? '--',
-                                                                  bold: true,
-                                                                  color: currentChallenge.difficulty == Difficulty.beginner
-                                                                      ? Colors.green
-                                                                      : currentChallenge.difficulty == Difficulty.intermediate
-                                                                          ? Colors.amber
-                                                                          : Colors.deepOrange,
+                                                          child: Row(
+                                                            mainAxisSize: MainAxisSize.min,
+                                                            children: [
+                                                              const SizedBox(width: 10),
+                                                              ConstrainedBox(
+                                                                  constraints: const BoxConstraints(maxWidth: 150),
+                                                                  child: BLText(
+                                                                    currentChallenge.name ?? '--',
+                                                                    softWrap: true,
+                                                                  )),
+                                                              const SizedBox(width: 10),
+                                                              ConstrainedBox(
+                                                                constraints: const BoxConstraints(maxWidth: 50),
+                                                                child: Scrollbar(
+                                                                  controller: scrollController2,
+                                                                  child: SingleChildScrollView(
+                                                                    controller: scrollController2,
+                                                                    scrollDirection: Axis.horizontal,
+                                                                    child: BLText(
+                                                                      currentChallenge.difficulty?.capName() ?? '--',
+                                                                      bold: true,
+                                                                      color: currentChallenge.difficulty == Difficulty.beginner
+                                                                          ? Colors.green
+                                                                          : currentChallenge.difficulty == Difficulty.intermediate
+                                                                              ? Colors.amber
+                                                                              : Colors.deepOrange,
+                                                                    ),
+                                                                  ),
                                                                 ),
                                                               ),
-                                                            ),
-                                                            CloseButton(
-                                                              onPressed: () {
-                                                                setState(() {
-                                                                  selectedChallenges.removeWhere((challenge) => challenge.id == currentChallenge.id);
-                                                                });
-                                                              },
-                                                            )
-                                                          ],
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                );
-                                              }),
-                                            Row(
-                                              mainAxisAlignment: MainAxisAlignment.center,
-                                              children: [
-                                                BLTextButton(
-                                                    onPressed: () {
-                                                      FocusScope.of(context).unfocus();
-                                                      nav.push(
-                                                        context,
-                                                        ChallengeSelector(
-                                                          initialSelection: selectedChallenges,
-                                                          updateSelection: updateSelection,
-                                                        ),
-                                                      );
-                                                    },
-                                                    child: const Row(
-                                                      children: [
-                                                        BLText(
-                                                          'Choose Challenges',
-                                                          color: Colors.green,
-                                                        ),
-                                                        Icon(
-                                                          Icons.arrow_forward,
-                                                          color: Colors.green,
+                                                              CloseButton(
+                                                                onPressed: () {
+                                                                  setState(() {
+                                                                    selectedChallenges.removeWhere((challenge) => challenge.id == currentChallenge.id);
+                                                                  });
+                                                                },
+                                                              )
+                                                            ],
+                                                          ),
                                                         ),
                                                       ],
-                                                    )),
-                                              ],
-                                            )
-                                          ],
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(vertical: 10.0),
-                                          child: Center(child: errorMsg),
-                                        ),
-                                        Center(
-                                          child: Padding(
-                                            padding: const EdgeInsets.symmetric(vertical: 15),
-                                            child: BLButton(
-                                              onPressed: () async {
-                                                FocusScope.of(context).unfocus();
-                                                if (newRoomFormKey.currentState!.validate()) {
-                                                  if (processing == true) return;
-                                                  processing = true;
-
-                                                  // check if the input room name has a duplicate
-                                                  if (roomNames.contains(roomNameController.text.trim())) {
-                                                    processing = false;
-                                                    setState(() {
-                                                      errorMsg = const BLText('A room with this name already exists. Try another.');
-                                                    });
-                                                    return;
-                                                  }
-
-                                                  // check if no challenge ids are selected
-                                                  if (selectedChallenges.isEmpty) {
-                                                    processing = false;
-                                                    setState(() {
-                                                      errorMsg = const BLText(
-                                                        'You must select at least one challenge.',
-                                                        color: Colors.red,
-                                                      );
-                                                    });
-                                                    return;
-                                                  }
-
-                                                  // add the room
-                                                  final error = await creatorMode.addRoom(
-                                                    Room(
-                                                      adminLocked: false,
-                                                      hostID: FirebaseAuth.instance.currentUser!.uid,
-                                                      players: <String, bool>{},
-                                                      status: RoomStatus.available,
-                                                      name: roomNameController.text.trim(),
-                                                      maxPlayers: int.parse(maxPlayersController.text.trim()),
-                                                      challengeIDs: selectedChallenges.map((challenge) => challenge.id!).toList(),
-                                                      password: includesPassword == false ? null : passwordController.text.trim(),
                                                     ),
                                                   );
-                                                  if (error != null) {
-                                                    setState(() {
-                                                      errorMsg = BLText(error);
-                                                    });
-                                                  } else {
-                                                    if (!context.mounted) return;
-                                                    nav.pop(context);
-                                                  }
-                                                  processing = false;
-                                                }
-                                              },
-                                              type: BtnType.green,
-                                              paddingX: 100,
-                                              child: const Row(
-                                                mainAxisSize: MainAxisSize.min,
+                                                }),
+                                              Row(
+                                                mainAxisAlignment: MainAxisAlignment.center,
                                                 children: [
-                                                  SizedBox(
-                                                    width: 10,
-                                                  ),
-                                                  BLText(
-                                                    'Create',
-                                                    size: 16,
-                                                    color: Colors.white,
-                                                  )
+                                                  BLTextButton(
+                                                      onPressed: () {
+                                                        FocusScope.of(context).unfocus();
+                                                        nav.push(
+                                                          context,
+                                                          ChallengeSelector(
+                                                            initialSelection: selectedChallenges,
+                                                            updateSelection: updateSelection,
+                                                          ),
+                                                        );
+                                                      },
+                                                      child: const Row(
+                                                        children: [
+                                                          BLText(
+                                                            'Choose Challenges',
+                                                            color: Colors.green,
+                                                          ),
+                                                          Icon(
+                                                            Icons.arrow_forward,
+                                                            color: Colors.green,
+                                                          ),
+                                                        ],
+                                                      )),
                                                 ],
+                                              )
+                                            ],
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.symmetric(vertical: 10.0),
+                                            child: Center(child: errorMsg),
+                                          ),
+                                          Center(
+                                            child: Padding(
+                                              padding: const EdgeInsets.symmetric(vertical: 15),
+                                              child: BLButton(
+                                                onPressed: () async {
+                                                  FocusScope.of(context).unfocus();
+                                                  if (newRoomFormKey.currentState!.validate()) {
+                                                    if (processing == true) return;
+                                                    processing = true;
+
+                                                    // check if the input room name has a duplicate
+                                                    if (roomNames.contains(roomNameController.text.trim())) {
+                                                      processing = false;
+                                                      setState(() {
+                                                        errorMsg = const BLText('A room with this name already exists. Try another.');
+                                                      });
+                                                      return;
+                                                    }
+
+                                                    // check if no challenge ids are selected
+                                                    if (selectedChallenges.isEmpty) {
+                                                      processing = false;
+                                                      setState(() {
+                                                        errorMsg = const BLText(
+                                                          'You must select at least one challenge.',
+                                                          color: Colors.red,
+                                                        );
+                                                      });
+                                                      return;
+                                                    }
+
+                                                    // add the room
+                                                    final error = await creatorMode.addRoom(
+                                                      Room(
+                                                        adminLocked: false,
+                                                        hostID: FirebaseAuth.instance.currentUser!.uid,
+                                                        players: <String, bool>{},
+                                                        status: RoomStatus.available,
+                                                        name: roomNameController.text.trim(),
+                                                        maxPlayers: int.parse(maxPlayersController.text.trim()),
+                                                        challengeIDs: selectedChallenges.map((challenge) => challenge.id!).toList(),
+                                                        password: includesPassword == false ? null : passwordController.text.trim(),
+                                                      ),
+                                                    );
+                                                    if (error != null) {
+                                                      setState(() {
+                                                        errorMsg = BLText(error);
+                                                      });
+                                                    } else {
+                                                      if (!context.mounted) return;
+                                                      nav.pop(context);
+                                                    }
+                                                    processing = false;
+                                                  }
+                                                },
+                                                type: BtnType.green,
+                                                paddingX: 100,
+                                                child: const Row(
+                                                  mainAxisSize: MainAxisSize.min,
+                                                  children: [
+                                                    SizedBox(
+                                                      width: 10,
+                                                    ),
+                                                    BLText(
+                                                      'Create',
+                                                      size: 16,
+                                                      color: Colors.white,
+                                                    )
+                                                  ],
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                  );
-                                },
-                                error: genericError,
-                                loading: genericLoading),
+                                          )
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                  error: genericError,
+                                  loading: genericLoading),
+                            ),
                           ),
                         ),
                       ),

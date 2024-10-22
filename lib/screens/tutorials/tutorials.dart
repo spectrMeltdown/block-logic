@@ -24,6 +24,7 @@ class Tutorials extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final nav = ref.read(customNavigationProvider.notifier);
+    final scrollController = ScrollController();
     return Scaffold(
       body: Background(
           child: SafeArea(
@@ -35,44 +36,48 @@ class Tutorials extends ConsumerWidget {
             ),
             const BLTitle('Tutorials'),
             Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    BLCard(
-                        color: Colors.teal,
-                        onPressed: () {
-                          nav.push(context, const TutorialChallengeSelector());
-                        },
-                        child: Center(
-                            child: Padding(
-                          padding: const EdgeInsets.only(top: 5),
-                          child: WidgetAnimator(
-                            atRestEffect: WidgetRestingEffects.size(effectStrength: 1),
-                            child: const BLSmallTitle(
-                              'Practice',
-                              color: Colors.amber,
+              child: Scrollbar(
+                controller: scrollController,
+                child: SingleChildScrollView(
+                  controller: scrollController,
+                  child: Column(
+                    children: [
+                      BLCard(
+                          color: Colors.teal,
+                          onPressed: () {
+                            nav.push(context, const TutorialChallengeSelector());
+                          },
+                          child: Center(
+                              child: Padding(
+                            padding: const EdgeInsets.only(top: 5),
+                            child: WidgetAnimator(
+                              atRestEffect: WidgetRestingEffects.size(effectStrength: 1),
+                              child: const BLSmallTitle(
+                                'Practice',
+                                color: Colors.amber,
+                              ),
                             ),
-                          ),
-                        ))),
-                    const SizedBox(
-                      height: 12,
-                    ),
-                    ...List.generate(TutorialType.values.length, (i) {
-                      final tutorial = getData(TutorialType.values[i]);
-                      return Column(
-                        children: [
-                          TutorialItem(
-                            onPressed: () => nav.push(context, tutorial[0]),
-                            type: TutorialType.values[i],
-                            childText: tutorial[1],
-                          ),
-                          const SizedBox(
-                            height: 12,
-                          )
-                        ],
-                      );
-                    })
-                  ],
+                          ))),
+                      const SizedBox(
+                        height: 12,
+                      ),
+                      ...List.generate(TutorialType.values.length, (i) {
+                        final tutorial = getData(TutorialType.values[i]);
+                        return Column(
+                          children: [
+                            TutorialItem(
+                              onPressed: () => nav.push(context, tutorial[0]),
+                              type: TutorialType.values[i],
+                              childText: tutorial[1],
+                            ),
+                            const SizedBox(
+                              height: 12,
+                            )
+                          ],
+                        );
+                      })
+                    ],
+                  ),
                 ),
               ),
             ),

@@ -103,8 +103,8 @@ class StorageChart extends ConsumerWidget {
                 ],
               ),
               SizedBox(
-                height: 400,
-                width: 500,
+                height: 500,
+                width: 550,
                 child: analyticsAsyncValue.when(
                   data: (totalSizeUsed) {
                     final totalSizeMB = totalSizeUsed / (1024 * 1024);

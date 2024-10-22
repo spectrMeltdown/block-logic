@@ -13,42 +13,30 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class TutorialChallengeSelector extends ConsumerStatefulWidget {
+class TutorialChallengeSelector extends ConsumerWidget {
   const TutorialChallengeSelector({super.key});
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _TutorialChallengeSelectorState();
-}
-
-class _TutorialChallengeSelectorState extends ConsumerState<TutorialChallengeSelector> {
-  late final CustomNavigation nav;
-  final List<Challenge> practiceChallenges = [
-    Challenge(
-      id: 'testing2',
-      name: 'Give me a five!',
-      shortDescription: 'Print the number 5',
-      additionalInfo: 'This should be a simple one..',
-      difficulty: Difficulty.beginner,
-      blocks: AllBlocks().beginnerTesting(),
-      solutionMatch: [5],
-    ),
-    if (kDebugMode)
+  Widget build(BuildContext context, ref) {
+    final List<Challenge> practiceChallenges = [
       Challenge(
-        blocks: AllBlocks().getAll(),
-        difficulty: Difficulty.advanced,
-        shortDescription: 'No Challenge here!',
+        id: 'testing2',
+        name: 'Give me a five!',
+        shortDescription: 'Print the number 5',
+        additionalInfo: 'This should be a simple one..',
+        difficulty: Difficulty.beginner,
+        blocks: AllBlocks().beginnerTesting(),
         solutionMatch: [5],
-        name: 'Testing',
-      )
-  ];
-  @override
-  void initState() {
-    nav = ref.read(customNavigationProvider.notifier);
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
+      ),
+      if (kDebugMode)
+        Challenge(
+          blocks: AllBlocks().getAll(),
+          difficulty: Difficulty.advanced,
+          shortDescription: 'No Challenge here!',
+          solutionMatch: [5],
+          name: 'Testing',
+        )
+    ];
     return Scaffold(
       body: Background(
         child: SafeArea(

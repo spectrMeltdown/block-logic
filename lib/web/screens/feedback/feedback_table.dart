@@ -40,7 +40,7 @@ class _FeedbackTableState extends ConsumerState<FeedbackTable> {
     // double height = MediaQuery.of(context).size.height;
     final feedbacks = ref.watch(AllFeedbackProvider(widget.searchQuery));
     return ConstrainedBox(
-      constraints: BoxConstraints(maxWidth: 800, minWidth: 500),
+      constraints: BoxConstraints(maxWidth: 1000, minWidth: 500),
       child: feedbacks.when(
           data: (feedbacks) {
             if (widget.searchQuery.isNotEmpty && feedbacks.isEmpty) {
@@ -74,9 +74,14 @@ class _FeedbackTableState extends ConsumerState<FeedbackTable> {
                               dialog.show(context, ViewFeedback(feedbacksList[i].id!));
                             },
                             cells: [
-                              DataCell(BLText(feedbacksList[i].title ?? '--')),
                               DataCell(ConstrainedBox(
-                                constraints: BoxConstraints(maxWidth: width >= mobileMax ? width * 0.4 : width * 0.3),
+                                constraints: BoxConstraints(maxWidth: width >= mobileMax ? width * 0.1 : width * 0.1),
+                                child: BLText(
+                                  feedbacksList[i].title ?? '--',
+                                ),
+                              )),
+                              DataCell(ConstrainedBox(
+                                constraints: BoxConstraints(maxWidth: width >= mobileMax ? width * 0.2 : width * 0.1),
                                 child: BLText(
                                   feedbacksList[i].message ?? '--',
                                 ),

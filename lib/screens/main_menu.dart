@@ -75,11 +75,7 @@ List<Widget> loggedInMenu(BuildContext context, CustomNavigation nav) {
       height: 30,
     ),
     BLButton(
-      onPressed: () async {
-        final uid = FirebaseAuth.instance.currentUser?.uid;
-        if (uid != null) {
-          await FirebaseDatabase.instance.ref('users').child(uid).update({'sessionID': ''});
-        }
+      onPressed: () {
         SystemNavigator.pop();
 
         /// exit(0) works for development, but the above is preferred
@@ -126,11 +122,7 @@ List<Widget> loggedOutMenu(BuildContext context, CustomNavigation nav) {
       height: 30,
     ),
     BLButton(
-      onPressed: () async {
-        final uid = FirebaseAuth.instance.currentUser?.uid;
-        if (uid != null) {
-          await FirebaseDatabase.instance.ref('users').child(uid).update({'sessionID': ''});
-        }
+      onPressed: () {
         SystemNavigator.pop();
 
         /// exit(0) works for development, but the above is preferred
@@ -257,7 +249,7 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> with WidgetsBin
                               toast.showToast(context, 'Problem getting premium status, try again later.', type: NotifType.warning);
                             } else if (isPremium) {
                               if (!context.mounted) return;
-                              showDialog(context: context, builder: (context) => const ThankYouDialog());
+                              showDialog(context: context, builder: (context) => const ThankYouDialog(premium: true));
                             } else {
                               if (!context.mounted) return;
                               showDialog(context: context, builder: (context) => const PremiumPromptDialog());
@@ -380,15 +372,6 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> with WidgetsBin
     ));
 
     _premiumCrown = AnimationController(vsync: this);
-
-    /// video bg
-    // _controller = VideoPlayerController.asset(assets.bg1,
-    //     videoPlayerOptions: VideoPlayerOptions(allowBackgroundPlayback: true))
-    //   ..initialize().then((_) {
-    //     _controller.play();
-    //     setState(() {});
-    //   });
-    //_controller.setLooping(true);
     WidgetsBinding.instance.addObserver(this);
   }
 }

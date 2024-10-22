@@ -105,6 +105,10 @@ class TermsAndConditions extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final nav = ref.read(customNavigationProvider.notifier);
+    final scrollController = ScrollController();
+    final width = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.height;
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Background(
@@ -115,17 +119,15 @@ class TermsAndConditions extends ConsumerWidget {
               children: [
                 const BLSmallTitle('Terms & Conditions'),
                 Expanded(
-                  child: SingleChildScrollView(
-                    child: Center(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: width * 0.05, vertical: height * 0.01),
+                    child: Scrollbar(
+                      controller: scrollController,
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
-                        child: SpacedColumn(
-                          spacing: 20,
-                          children: [
-                            SingleChildScrollView(
-                              child: Text(getTC()),
-                            ),
-                          ],
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: SingleChildScrollView(
+                          controller: scrollController,
+                          child: Text(getTC()),
                         ),
                       ),
                     ),

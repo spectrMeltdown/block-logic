@@ -164,10 +164,10 @@ class GameCodeBlockState extends ConsumerState<GameBlock> with SingleTickerProvi
       return Draggable<GameBlockData>(
           hitTestBehavior: HitTestBehavior.opaque,
           data: widget.data, // drag target will not detect if data is null
-          dragAnchorStrategy: (draggable, context, position) {
-            // make feedback block appear on the right top corner
-            return const Offset(-30, 50);
-          },
+          // dragAnchorStrategy: (draggable, context, position) {
+          //   // make feedback block appear on the right top corner
+          //   return const Offset(-30, 50);
+          // },
           onDragCompleted: onDragCompleted,
           childWhenDragging: AnimatedOpacity(
             opacity: 0.3,
@@ -204,7 +204,11 @@ class GameCodeBlockState extends ConsumerState<GameBlock> with SingleTickerProvi
                 pulseAnimation.repeat(min: 0, max: 1);
               },
             ),
-            Positioned(top: 0, right: 0, child: Transform.scale(scale: 0.8, child: block))
+            Positioned(
+              top: -5,
+              right: -5,
+              child: Transform.scale(scale: 0.8, child: block),
+            ),
           ],
         ), // the widget that follws the touch position
         child: block);

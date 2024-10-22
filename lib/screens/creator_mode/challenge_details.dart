@@ -34,9 +34,7 @@ class ChallengeDetails extends ConsumerWidget {
           challenge.additionalInfo ?? 'No additional info found.',
           softWrap: true,
         ),
-        const SizedBox(
-          height: 10,
-        ),
+        const SizedBox(height: 10),
         // const BLText('Limitations: '),
         // if (challenge.limitations == null || challenge.limitations!.isEmpty) const BLText('No limitations set.'),
         // ...List.generate(challenge.limitations!.length, (i) {

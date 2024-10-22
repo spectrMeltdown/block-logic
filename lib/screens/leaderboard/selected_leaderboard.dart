@@ -200,6 +200,7 @@ class _LeaderboardState extends ConsumerState<SelectedLeaderboard> {
                     ],
                   ),
                   LayoutBuilder(builder: (context, constraints) {
+                    final scrollController = ScrollController();
                     return Column(
                       children: [
                         scores.when(
@@ -233,12 +234,16 @@ class _LeaderboardState extends ConsumerState<SelectedLeaderboard> {
                                               children: [
                                                 ConstrainedBox(
                                                   constraints: BoxConstraints(maxWidth: constraints.maxWidth / 4),
-                                                  child: SingleChildScrollView(
-                                                    scrollDirection: Axis.horizontal,
-                                                    clipBehavior: Clip.antiAlias,
-                                                    child: BLDisplayName(
-                                                      completed[i].accountID!,
-                                                      AccountType.user,
+                                                  child: Scrollbar(
+                                                    controller: scrollController,
+                                                    child: SingleChildScrollView(
+                                                      controller: scrollController,
+                                                      scrollDirection: Axis.horizontal,
+                                                      clipBehavior: Clip.antiAlias,
+                                                      child: BLDisplayName(
+                                                        completed[i].accountID!,
+                                                        AccountType.user,
+                                                      ),
                                                     ),
                                                   ),
                                                 ),

@@ -97,7 +97,15 @@ class _CreateAdminState extends ConsumerState<CreateAdmin> {
                 SpacedRow(
                   mainAxisAlignment: MainAxisAlignment.end,
                   spacing: 10,
-                  children: [const AdminBackBtn(), BLAdminButton(type: AdminBtnType.teal, child: const BLText('Submit'), onPressed: () => submit()), const SizedBox(width: 15)],
+                  children: [
+                    const AdminBackBtn(),
+                    BLAdminButton(
+                      type: AdminBtnType.teal,
+                      child: const BLText('Submit'),
+                      onPressed: () => submit(),
+                    ),
+                    const SizedBox(width: 15),
+                  ],
                 )
               ],
             ),

@@ -143,8 +143,8 @@ class DatabaseChart extends ConsumerWidget {
                       ],
                     ),
                     SizedBox(
-                      height: 400,
-                      width: 500,
+                      height: 500,
+                      width: 550,
                       child: PieChart(
                         PieChartData(
                           sections: pieChartSections,

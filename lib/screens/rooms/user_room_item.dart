@@ -139,8 +139,8 @@ class _UserRoomItemState extends ConsumerState<UserRoomItem> {
 }
 
 Future<void> resetRoom(String roomID) async {
-  String leaderboardID = '';
-  final result = await FirebaseDatabase.instance.ref('rooms/$roomID').runTransaction((obj) {
+  // String leaderboardID = '';
+  await FirebaseDatabase.instance.ref('rooms/$roomID').runTransaction((obj) {
     var room = obj == null ? null : Room.fromRTDB(obj);
     if (room != null) {
       // leaderboardID = room.currentLeaderboardID ?? '';
@@ -149,16 +149,16 @@ Future<void> resetRoom(String roomID) async {
     }
     return Transaction.abort();
   });
-  if (result.committed && leaderboardID.isNotEmpty) {
-    // also set relevant leaderboard to incomplete
-    await FirebaseDatabase.instance.ref('leaderboards/$leaderboardID').runTransaction((obj) {
-      var lb = obj == null ? null : Leaderboard.fromRTDB(obj);
-      // dPrint(room?.toJSON().toString());
-      if (lb != null) {
-        lb = lb.copyWith(status: LeaderboardStatus.incomplete);
-        return Transaction.success(lb.toJSON());
-      }
-      return Transaction.abort();
-    });
-  }
+  // if (result.committed && leaderboardID.isNotEmpty) {
+  //   // also set relevant leaderboard to incomplete
+  //   await FirebaseDatabase.instance.ref('leaderboards/$leaderboardID').runTransaction((obj) {
+  //     var lb = obj == null ? null : Leaderboard.fromRTDB(obj);
+  //     // dPrint(room?.toJSON().toString());
+  //     if (lb != null) {
+  //       lb = lb.copyWith(status: LeaderboardStatus.incomplete);
+  //       return Transaction.success(lb.toJSON());
+  //     }
+  //     return Transaction.abort();
+  //   });
+  // }
 }

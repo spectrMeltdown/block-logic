@@ -87,7 +87,7 @@ class GameManager extends StateNotifier<GameState> {
   // when pausing game
   void pauseTimer() => state.runTimer = true;
   void resumeTimer() => state.runTimer = false;
-  void updateTimeElapsed() => state._timeElapsed++;
+  void updateTimeElapsed() => state.timeElapsed++;
 
 // initiate the manager and game
   Future<String?> init(Room room) async {
@@ -129,7 +129,7 @@ class GameManager extends StateNotifier<GameState> {
       // create final score
       final finalScore = Score(
         id: FirebaseAuth.instance.currentUser!.uid,
-        timeElapsed: state._timeElapsed,
+        timeElapsed: state.timeElapsed,
         status: isComplete ? ScoreStatus.complete : ScoreStatus.incomplete,
       );
       // upload final score in db
@@ -143,12 +143,12 @@ class GameManager extends StateNotifier<GameState> {
       final lastPlayer = bool.tryParse(leave ?? '');
       if (lastPlayer != null && lastPlayer) {
         // finalize the leaderboard
-        await state.leaderboardManager.update(
-          Leaderboard(
-            id: state._leaderboardID,
-            status: LeaderboardStatus.complete,
-          ),
-        );
+        // await state.leaderboardManager.update(
+        //   Leaderboard(
+        //     id: state._leaderboardID,
+        //     // status: LeaderboardStatus.complete,
+        //   ),
+        // );
         dPrint('3 bbb');
         // reset the room status to available
         await state.roomManager.update(Room(
@@ -747,7 +747,7 @@ class GameState {
   String? _leaderboardID;
   String? _roomID;
   // int? _score;
-  int _timeElapsed = 0;
+  int timeElapsed = 0;
 
   SharedPreferences sharedPref;
 

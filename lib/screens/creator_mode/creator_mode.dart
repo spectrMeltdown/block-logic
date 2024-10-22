@@ -147,17 +147,17 @@ class _CreatorModeState extends ConsumerState<CreatorMode> {
                 onPressed: () async {
                   if (processing) return;
                   processing = true;
-                  final premium = await service.isPremium(auth.getUID());
+                  bool? premium = await service.isPremium(auth.getUID());
                   if (premium == null) {
                     processing = false;
                     if (!context.mounted) return;
                     toast.showToast(context, 'Error checking premium status. Try again later.', type: NotifType.error);
-                    return;
+                    premium = false;
                   }
-                  if (roomsLength > 10 && !premium) {
+                  if (roomsLength >= 5 && !premium) {
                     if (!context.mounted) return;
                     toast.showToast(context, 'Max number of rooms. (Upgrade to premium!)', withTransparency: false, duration: const Duration(seconds: 6), alignment: Alignment.bottomCenter, margin: const EdgeInsets.only(bottom: 60, left: 20, right: 20), type: NotifType.error);
-                  } else if (roomsLength > 50 && premium) {
+                  } else if (roomsLength >= 20 && premium) {
                     if (!context.mounted) return;
                     toast.showToast(context, 'Max number of rooms reached.', withTransparency: false, duration: const Duration(seconds: 6), alignment: Alignment.bottomCenter, margin: const EdgeInsets.only(bottom: 60, left: 20, right: 20), type: NotifType.error);
                   } else {

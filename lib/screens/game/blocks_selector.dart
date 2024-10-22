@@ -24,7 +24,7 @@ class _GameBlocksState extends ConsumerState<GameBlocks> with TickerProviderStat
   late GameManager gameManager;
   String currentUID = '';
   Map<CodeBlockType, List<GameBlockData>> blocks = {};
-
+  final scrollController = ScrollController();
   @override
   void initState() {
     super.initState();
@@ -116,26 +116,30 @@ class _GameBlocksState extends ConsumerState<GameBlocks> with TickerProviderStat
           padding: const EdgeInsets.symmetric(horizontal: 15),
           child: SizedBox(
             width: double.maxFinite,
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  TabBar(
-                      indicator: const BoxDecoration(color: Colors.transparent),
-                      isScrollable: true,
-                      tabAlignment: TabAlignment.start,
-                      labelColor: Colors.white,
-                      labelPadding: const EdgeInsets.symmetric(horizontal: 3),
-                      indicatorColor: BLUI().getAppColor(''),
-                      controller: blocksTabController,
-                      tabs: List.generate(blocks.keys.length, (i) {
-                        return CustomTab(
-                          type: blocks.keys.toList()[i],
-                          isSelected: i == blocksTabController.index,
-                          paddingX: 10,
-                        );
-                      })),
-                ],
+            child: Scrollbar(
+              controller: scrollController,
+              child: SingleChildScrollView(
+                controller: scrollController,
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    TabBar(
+                        indicator: const BoxDecoration(color: Colors.transparent),
+                        isScrollable: true,
+                        tabAlignment: TabAlignment.start,
+                        labelColor: Colors.white,
+                        labelPadding: const EdgeInsets.symmetric(horizontal: 3),
+                        indicatorColor: BLUI().getAppColor(''),
+                        controller: blocksTabController,
+                        tabs: List.generate(blocks.keys.length, (i) {
+                          return CustomTab(
+                            type: blocks.keys.toList()[i],
+                            isSelected: i == blocksTabController.index,
+                            paddingX: 10,
+                          );
+                        })),
+                  ],
+                ),
               ),
             ),
           ),

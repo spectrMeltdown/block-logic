@@ -27,116 +27,107 @@ class TopThreePlayers extends ConsumerWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(playerPhotoURL.length, (i) {
-        if (i == 1) {
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 10),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 5),
-              child: Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  SizedBox(
-                    height: 90,
-                    width: 90,
-                    child: WidgetAnimator(
-                      incomingEffect: WidgetTransitionEffects.incomingSlideInFromBottom(delay: picStartDelay),
-                      child: playerPhotoURL[i].isEmpty || playerPhotoURL[i] == 'default'
-                          ? FittedBox(
-                              fit: BoxFit.contain,
-                              child: Container(
-                                decoration: const BoxDecoration(
-                                  color: Colors.grey,
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(20),
-                                  ),
-                                ),
-                                child: const Padding(
-                                  padding: EdgeInsets.all(8.0),
-                                  child: Icon(FontAwesomeIcons.user),
-                                ),
-                              ),
-                            )
-                          : BLCircular(
-                              url: playerPhotoURL[i],
-                              iconSize: 100,
-                            ),
-                    ),
-                  ),
-                  Positioned(
-                      left: 17,
-                      bottom: -40,
-                      child: WidgetAnimator(
-                        incomingEffect: WidgetTransitionEffects.incomingOffsetThenScale(delay: picStartDelay),
-                        child: Image.asset(
-                          assets.leadeboardFirst,
-                          width: 60,
-                          height: 60,
-                          fit: BoxFit.scaleDown,
-                        ),
-                      ))
-                ],
-              ),
-            ),
+        if (i == 0) {
+          return TopPlayerItem(
+            playerPhotoURL: playerPhotoURL[1],
+            picDelay: picStartDelay + picDelay,
+            iconStartDelay: iconStartDelay + iconDelay,
+            medalIcon: assets.leadeboardSecond,
+            leftPos: -20,
           );
-        } else if (i == 0 || i == 2) {
-          return Padding(
-            padding: const EdgeInsets.only(top: 60),
-            child: Stack(
-              clipBehavior: Clip.none,
-              children: [
-                SizedBox(
-                  height: 60,
-                  width: 60,
-                  child: WidgetAnimator(
-                    incomingEffect: WidgetTransitionEffects.incomingSlideInFromBottom(delay: i == 0 ? picStartDelay + picDelay : picStartDelay + picDelay + picDelay),
-                    child: playerPhotoURL[i].isEmpty || playerPhotoURL[i] == 'default'
-                        ? FittedBox(
-                            fit: BoxFit.contain,
-                            child: Container(
-                              decoration: const BoxDecoration(
-                                color: Colors.grey,
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(20),
-                                ),
-                              ),
-                              child: const Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Icon(FontAwesomeIcons.user),
-                              ),
-                            ),
-                          )
-                        : BLCircular(
-                            url: playerPhotoURL[i],
-                            iconSize: 60,
-                          ),
-                  ),
-                ),
-                Positioned(
-                    bottom: -30,
-                    left: i == 0 ? -20 : 30,
-                    child: WidgetAnimator(
-                      incomingEffect: WidgetTransitionEffects.incomingOffsetThenScale(delay: i == 0 ? iconStartDelay + iconDelay : iconStartDelay + iconDelay + iconDelay),
-                      child: Image.asset(
-                        i == 0 ? assets.leadeboardSecond : assets.leadeboardThird,
-                        width: 50,
-                        height: 50,
-                        fit: BoxFit.scaleDown,
-                      ),
-                      // BLCircular(
-                      //   width: 50,
-                      //   height: 50,
-                      //   fit: BoxFit.scaleDown,
-                      //   asset:
-                      //   backgroundColor: Colors.transparent,
-                      // ),
-                    ))
-              ],
-            ),
+        } else if (i == 1) {
+          return TopPlayerItem(
+            playerPhotoURL: playerPhotoURL[0],
+            picDelay: picStartDelay,
+            iconStartDelay: iconStartDelay,
+            width: 90,
+            height: 90,
+            medalIcon: assets.leadeboardFirst,
+            leftPos: 17,
+          );
+        } else {
+          return TopPlayerItem(
+            playerPhotoURL: playerPhotoURL[2],
+            picDelay: picStartDelay + picDelay + picDelay,
+            iconStartDelay: iconStartDelay + iconDelay + iconDelay,
+            medalIcon: assets.leadeboardThird,
+            leftPos: 30,
           );
         }
-        // dPrint('Received an extra $i top player.');
-        return const BlankWidget();
       }),
+    );
+  }
+}
+
+class TopPlayerItem extends ConsumerWidget {
+  final Duration picDelay;
+  final String playerPhotoURL;
+  final Duration iconStartDelay;
+  final String medalIcon;
+  final double leftPos;
+  final double bottom;
+  final double? width;
+  final double? height;
+  const TopPlayerItem({
+    required this.picDelay,
+    required this.playerPhotoURL,
+    required this.iconStartDelay,
+    required this.medalIcon,
+    required this.leftPos,
+    this.width,
+    this.height,
+    this.bottom = -30,
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Padding(
+      padding: EdgeInsets.only(top: width != null ? 0 : 60, bottom: width != null ? 10 : 0),
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          SizedBox(
+            height: height ?? 60,
+            width: width ?? 60,
+            child: WidgetAnimator(
+              incomingEffect: WidgetTransitionEffects.incomingSlideInFromBottom(delay: picDelay),
+              child: playerPhotoURL.isEmpty || playerPhotoURL == 'default'
+                  ? FittedBox(
+                      fit: BoxFit.contain,
+                      child: Container(
+                        decoration: const BoxDecoration(
+                          color: Colors.grey,
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(20),
+                          ),
+                        ),
+                        child: const Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Icon(FontAwesomeIcons.user),
+                        ),
+                      ),
+                    )
+                  : BLCircular(
+                      url: playerPhotoURL,
+                      iconSize: 60,
+                    ),
+            ),
+          ),
+          Positioned(
+              bottom: bottom,
+              left: leftPos,
+              child: WidgetAnimator(
+                incomingEffect: WidgetTransitionEffects.incomingOffsetThenScale(delay: iconStartDelay),
+                child: Image.asset(
+                  medalIcon,
+                  width: 50,
+                  height: 50,
+                  fit: BoxFit.scaleDown,
+                ),
+              ))
+        ],
+      ),
     );
   }
 }

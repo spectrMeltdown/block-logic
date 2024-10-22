@@ -325,7 +325,7 @@ class _WaitingRoomState extends ConsumerState<WaitingRoom> {
         roomName: room.name,
         players: room.players!.keys.toList(),
         totalScore: room.challengeIDs!.length,
-        status: LeaderboardStatus.pending,
+        // status: LeaderboardStatus.pending,
         date: DateTime.now(),
       ),
     );

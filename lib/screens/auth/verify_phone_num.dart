@@ -50,6 +50,8 @@ class _VerifyPhoneNumState extends ConsumerState<VerifyPhoneNum> {
   late final AuthService auth;
   late final CustomNavigation nav;
   late final SharedPreferences sharedPref;
+  final scrollController = ScrollController();
+
   @override
   Widget build(BuildContext context) {
     account = ref.watch(authChangesProvider);
@@ -61,94 +63,98 @@ class _VerifyPhoneNumState extends ConsumerState<VerifyPhoneNum> {
         child: Column(
           children: [
             Expanded(
-              child: SingleChildScrollView(
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(minHeight: media.size.height - media.padding.top),
-                  child: account.when(
-                      data: (account) {
-                        if (account == null) {
-                          return const Center(
-                            child: BLText(
-                              'You need be logged in to perform this action.',
-                            ),
-                          );
-                        }
-                        if (!kDebugMode) {
-                          if (initSent == false) {
-                            sendOTP();
-                            initSent = true;
+              child: Scrollbar(
+                controller: scrollController,
+                child: SingleChildScrollView(
+                  controller: scrollController,
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(minHeight: media.size.height - media.padding.top),
+                    child: account.when(
+                        data: (account) {
+                          if (account == null) {
+                            return const Center(
+                              child: BLText(
+                                'You need be logged in to perform this action.',
+                              ),
+                            );
                           }
-                        }
-                        return Padding(
-                          padding: EdgeInsets.only(bottom: media.viewInsets.bottom),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 8),
-                            child: Form(
-                              key: formKey,
-                              child: Center(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    const BLSmallTitle('Verify phone number'),
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                                      child: BLText(
-                                        'We need to verify the phone number ${widget.phoneNum}.\n',
-                                        alignCenter: true,
-                                        softWrap: true,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      width: 250,
-                                      child: BLTextBox(
-                                        controller: otpInput,
-                                        inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
-                                        onFieldSubmitted: (p0) => verifyOTP(account),
-                                        prefixIcon: const Icon(Icons.numbers),
-                                        labelText: '6-digit code',
-                                        keyboardType: TextInputType.number,
-                                        maxLength: 6,
-                                        validator: (otp) => validator.validateOtp(otp),
-                                      ),
-                                    ),
-                                    const SizedBox(
-                                      height: 20,
-                                    ),
-                                    BLTextButton(
-                                        onPressed: () => sendOTP(),
+                          if (!kDebugMode) {
+                            if (initSent == false) {
+                              sendOTP();
+                              initSent = true;
+                            }
+                          }
+                          return Padding(
+                            padding: EdgeInsets.only(bottom: media.viewInsets.bottom),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 8),
+                              child: Form(
+                                key: formKey,
+                                child: Center(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      const BLSmallTitle('Verify phone number'),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(horizontal: 20),
                                         child: BLText(
-                                          timer.isActive ? 'Send OTP ($seconds)' : 'Send OTP',
-                                          color: timer.isActive ? Colors.grey : null,
-                                        )),
-                                    BLButton(
-                                        onPressed: () => verifyOTP(account),
-                                        child: const BLText(
-                                          'Verify',
-                                          size: 18,
+                                          'We need to verify the phone number ${widget.phoneNum}.\n',
+                                          alignCenter: true,
+                                          softWrap: true,
                                           color: Colors.white,
-                                        )),
-                                    const SizedBox(
-                                      height: 30,
-                                    ),
-                                    BLTextButton(
-                                        onPressed: () {
-                                          // nav.pushReplace(context, const MainMenuScreen());
-                                          nav.pop(context);
-                                        },
-                                        child: const BLText(
-                                          'Cancel',
-                                          color: Colors.deepOrange,
-                                        ))
-                                  ],
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: 250,
+                                        child: BLTextBox(
+                                          controller: otpInput,
+                                          inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
+                                          onFieldSubmitted: (p0) => verifyOTP(account),
+                                          prefixIcon: const Icon(Icons.numbers),
+                                          labelText: '6-digit code',
+                                          keyboardType: TextInputType.number,
+                                          maxLength: 6,
+                                          validator: (otp) => validator.validateOtp(otp),
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        height: 20,
+                                      ),
+                                      BLTextButton(
+                                          onPressed: () => sendOTP(),
+                                          child: BLText(
+                                            timer.isActive ? 'Send OTP ($seconds)' : 'Send OTP',
+                                            color: timer.isActive ? Colors.grey : null,
+                                          )),
+                                      BLButton(
+                                          onPressed: () => verifyOTP(account),
+                                          child: const BLText(
+                                            'Verify',
+                                            size: 18,
+                                            color: Colors.white,
+                                          )),
+                                      const SizedBox(
+                                        height: 30,
+                                      ),
+                                      BLTextButton(
+                                          onPressed: () {
+                                            // nav.pushReplace(context, const MainMenuScreen());
+                                            nav.pop(context);
+                                          },
+                                          child: const BLText(
+                                            'Cancel',
+                                            color: Colors.deepOrange,
+                                          ))
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        );
-                      },
-                      error: genericError,
-                      loading: genericLoading),
+                          );
+                        },
+                        error: genericError,
+                        loading: genericLoading),
+                  ),
                 ),
               ),
             ),

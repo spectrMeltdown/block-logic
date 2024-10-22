@@ -57,7 +57,7 @@ class _PremiumPromptDialogState extends ConsumerState<PremiumPromptDialog> {
                 SizedBox(width: 15),
                 Flexible(
                     child: BLText(
-                  'Larger room limit! (50 rooms!)',
+                  'Larger room limit! (20 rooms!)',
                   softWrap: true,
                 ))
               ],
@@ -72,7 +72,7 @@ class _PremiumPromptDialogState extends ConsumerState<PremiumPromptDialog> {
                 SizedBox(width: 15),
                 Flexible(
                     child: BLText(
-                  'More code testing! (300 tests per day!)',
+                  'More code testing! (100 tests per day!)',
                   softWrap: true,
                 ))
               ],
@@ -150,7 +150,8 @@ class _PremiumPromptDialogState extends ConsumerState<PremiumPromptDialog> {
 }
 
 class ThankYouDialog extends ConsumerWidget {
-  const ThankYouDialog({super.key});
+  final bool premium;
+  const ThankYouDialog({this.premium = false, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -159,7 +160,7 @@ class ThankYouDialog extends ConsumerWidget {
         child: Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        BLSmallTitle('You are now a\npremium user!'),
+        BLSmallTitle(premium ? 'You are already a premium user.' : 'You are now a\npremium user!'),
         BLText('Thanks for supporting us!!'),
         SizedBox(height: 15),
         BLButton(

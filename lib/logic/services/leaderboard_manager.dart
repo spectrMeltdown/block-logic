@@ -44,36 +44,37 @@ class LeaderboardManager extends _$LeaderboardManager {
   //   }
   // }
 
-  Future<String?> update(Leaderboard leaderboard) async {
-    if (leaderboard.id == null || leaderboard.id!.isEmpty) return 'ID not provided';
-    try {
-      // dPrint(leaderboard.id);
-      Object? scores;
-      final transact = await state._db.child(leaderboard.id!).runTransaction((obj) {
-        final lb = Leaderboard.fromRTDB(obj, leaderboard.id);
-        scores = obj == null ? null : (obj as Map<Object?, Object?>)['scores']; // TODO: this works. Just reminder that in RTDB, children may need to be updated when using transaction
-        // dPrint(scores.toString());
-        if (lb.id!.isNotEmpty && (lb.status != null || lb.status != LeaderboardStatus.complete)) {
-          dPrint('transaction success');
-          return Transaction.success(lb.copyWith(status: LeaderboardStatus.complete, players: null).toJSON());
-        }
-        dPrint('transaction abort');
-        return Transaction.abort();
-      });
-      if (transact.committed) {
-        state._db.child(leaderboard.id!).update({'scores': scores});
-      } else {
-        dPrint('NOT COMMIITED');
-      }
-      return null;
-    } catch (e) {
-      return state._errorHandler.call(e, this);
-    }
-  }
+  // Future<String?> update(Leaderboard leaderboard) async {
+  //   if (leaderboard.id == null || leaderboard.id!.isEmpty) return 'ID not provided';
+  //   try {
+  //     // dPrint(leaderboard.id);
+  //     Object? scores;
+  //     final transact = await state._db.child(leaderboard.id!).runTransaction((obj) {
+  //       final lb = Leaderboard.fromRTDB(obj, leaderboard.id);
+  //       scores = obj == null ? null : (obj as Map<Object?, Object?>)['scores']; // TODO: this works. Just reminder that in RTDB, children may need to be updated when using transaction
+  //       // dPrint(scores.toString());
+  //       if (lb.id!.isNotEmpty && (lb.status != null || lb.status != LeaderboardStatus.complete)) {
+  //         dPrint('transaction success');
+  //         return Transaction.success(lb.copyWith(status: LeaderboardStatus.complete, players: null).toJSON());
+  //       }
+  //       dPrint('transaction abort');
+  //       return Transaction.abort();
+  //     });
+  //     if (transact.committed) {
+  //       state._db.child(leaderboard.id!).update({'scores': scores});
+  //     } else {
+  //       dPrint('NOT COMMIITED');
+  //     }
+  //     return null;
+  //   } catch (e) {
+  //     return state._errorHandler.call(e, this);
+  //   }
+  // }
 
   Future<String?> updatePlayers(String leaderboardID, Map<String, dynamic> players) async {
     final ref = state._db.child(leaderboardID);
     try {
+      // TODO: change to transaction
       await ref.update({'players': players.keys.toList()});
       final leaderboard = Leaderboard.fromRTDB(await ref.get());
       if (leaderboard.players!.isEmpty) {

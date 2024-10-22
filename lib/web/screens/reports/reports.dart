@@ -1,4 +1,5 @@
 import 'package:block_logic/components/async/loading.dart';
+import 'package:block_logic/components/scrollable.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/text/title_small.dart';
 import 'package:block_logic/components/util/blank_widget.dart';
@@ -453,7 +454,7 @@ class _ReportsState extends ConsumerState<Reports> {
                                       size: 23,
                                     ),
                                     if (yearCount > 0)
-                                      SingleChildScrollView(
+                                      BLScrollable(
                                         scrollDirection: Axis.horizontal,
                                         child: IntrinsicWidth(
                                           child: Graph(
@@ -470,7 +471,7 @@ class _ReportsState extends ConsumerState<Reports> {
                                       size: 23,
                                     ),
                                     if (monthCount > 0)
-                                      SingleChildScrollView(
+                                      BLScrollable(
                                         scrollDirection: Axis.horizontal,
                                         child: Graph(
                                           type: selectedType!,
@@ -485,7 +486,7 @@ class _ReportsState extends ConsumerState<Reports> {
                                       size: 23,
                                     ),
                                     if (weeklyCount > 0)
-                                      SingleChildScrollView(
+                                      BLScrollable(
                                         scrollDirection: Axis.horizontal,
                                         child: IntrinsicWidth(
                                           child: Graph(
@@ -502,7 +503,7 @@ class _ReportsState extends ConsumerState<Reports> {
                                       size: 23,
                                     ),
                                     if (dailyCount > 0)
-                                      SingleChildScrollView(
+                                      BLScrollable(
                                         scrollDirection: Axis.horizontal,
                                         child: IntrinsicWidth(
                                           child: Graph(

@@ -20,6 +20,7 @@ class ChallengeBox extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final gameManager = ref.read(gameManagerProvider.notifier);
     final challengeDialog = ref.read(dialogServiceProvider.notifier);
+    final scrollController = ScrollController();
     return GestureDetector(
       onTapUp: (details) async {
         gameManager.pauseTimer();
@@ -29,42 +30,46 @@ class ChallengeBox extends ConsumerWidget {
         ref.invalidate(runTimerProvider);
       },
       child: BLPanel(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(2),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                BLText(
-                  'Challenge:',
-                  bold: true,
-                  color: BLUI().getAppColor('blue'),
-                ),
-                BLText(
-                  '${challenge.shortDescription}\n',
-                  size: 14,
-                  softWrap: true,
-                ),
-                // BLText(
-                //   'Limitations:',
-                //   bold: true,
-                //   color: BLUI().getAppColor('orange'),
-                // ),
-                // challenge.limitations == null || challenge.limitations!.isEmpty
-                //     ? const BLText('No limitations set', size: 14)
-                //     : ListView.builder(
-                //         physics: const NeverScrollableScrollPhysics(),
-                //         padding: EdgeInsets.zero,
-                //         shrinkWrap: true,
-                //         itemCount: challenge.limitations!.length,
-                //         itemBuilder: (context, i) {
-                //           return BLText(
-                //             '• ${challenge.limitations![i]}',
-                //             size: 14,
-                //             softWrap: true,
-                //           );
-                //         })
-              ],
+        child: Scrollbar(
+          controller: scrollController,
+          child: SingleChildScrollView(
+            controller: scrollController,
+            child: Padding(
+              padding: const EdgeInsets.all(2),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  BLText(
+                    'Challenge:',
+                    bold: true,
+                    color: BLUI().getAppColor('blue'),
+                  ),
+                  BLText(
+                    '${challenge.shortDescription}\n',
+                    size: 14,
+                    softWrap: true,
+                  ),
+                  // BLText(
+                  //   'Limitations:',
+                  //   bold: true,
+                  //   color: BLUI().getAppColor('orange'),
+                  // ),
+                  // challenge.limitations == null || challenge.limitations!.isEmpty
+                  //     ? const BLText('No limitations set', size: 14)
+                  //     : ListView.builder(
+                  //         physics: const NeverScrollableScrollPhysics(),
+                  //         padding: EdgeInsets.zero,
+                  //         shrinkWrap: true,
+                  //         itemCount: challenge.limitations!.length,
+                  //         itemBuilder: (context, i) {
+                  //           return BLText(
+                  //             '• ${challenge.limitations![i]}',
+                  //             size: 14,
+                  //             softWrap: true,
+                  //           );
+                  //         })
+                ],
+              ),
             ),
           ),
         ),

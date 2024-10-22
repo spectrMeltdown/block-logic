@@ -36,12 +36,13 @@ class GameTestBtn extends ConsumerWidget {
             manager.pauseTimer();
             ref.invalidate(runTimerProvider);
           }
-          final premium = await account.isPremium(auth.getUID());
+          bool? premium = await account.isPremium(auth.getUID());
           if (premium == null) {
             if (!context.mounted) return;
             toast.showToast(context, 'Error checking premium status. Try again later.', type: NotifType.error);
+            premium = false; // set to free plan temporary
           }
-          if (premium == true && gameState.testCount < 300) {
+          if (premium == true && gameState.testCount <= 100) {
             if (!context.mounted) return;
             await showDialog(
               context: context,
@@ -49,7 +50,7 @@ class GameTestBtn extends ConsumerWidget {
               builder: (context) => const TestDialog(),
             );
             gameState.testCount++;
-          } else if (premium == false && gameState.testCount < 50) {
+          } else if (gameState.testCount <= 10) {
             if (!context.mounted) return;
             await showDialog(
               context: context,
@@ -58,8 +59,13 @@ class GameTestBtn extends ConsumerWidget {
             );
             gameState.testCount++;
           } else {
-            if (!context.mounted) return;
-            toast.showToast(context, 'You are out of available tests. Will reset tomorrow.', type: NotifType.error);
+            if (premium) {
+              if (!context.mounted) return;
+              toast.showToast(context, 'You are out of available tests. (Resets daily)', type: NotifType.error);
+            } else {
+              if (!context.mounted) return;
+              toast.showToast(context, 'You are out of available tests. Upgrade to premium or wait tomorrow.', type: NotifType.error);
+            }
           }
           if (!practiceMode) {
             manager.resumeTimer();

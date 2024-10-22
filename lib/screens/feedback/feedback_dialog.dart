@@ -32,6 +32,7 @@ class _FeedbackDialogState extends ConsumerState<FeedbackDialog> {
   final formKey = GlobalKey<FormState>();
   bool processing = false;
   Widget msg = const BlankWidget();
+  final scrollController = ScrollController();
 
   @override
   Widget build(BuildContext context) {
@@ -42,105 +43,109 @@ class _FeedbackDialogState extends ConsumerState<FeedbackDialog> {
         key: formKey,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
-                  children: [
-                    const Icon(FontAwesomeIcons.paperPlane),
-                    const SizedBox(width: 10),
-                    BLSmallTitle(
-                      widget.title ?? 'Send Feedback',
-                      bottomPadding: 2,
-                    )
-                  ],
-                ),
-                const SizedBox(height: 20),
-                const BLText('Title:'),
-                const SizedBox(height: 5),
-                BLTextBox(
-                  controller: titleController,
-                  labelText: 'Your title ...',
-                  maxLength: 100,
-                  validator: (p0) {
-                    if (p0 == null || p0.isEmpty) {
-                      return 'Cannot be empty.';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 15),
-                const BLText('Message:'),
-                const SizedBox(height: 5),
-                BLTextBox(
-                  controller: messageController,
-                  labelText: 'Your message ...',
-                  keyboardType: TextInputType.multiline,
-                  maxLength: 300,
-                  maxLines: null,
-                  validator: (p0) {
-                    if (p0 == null || p0.isEmpty) {
-                      return 'Cannot be empty.';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 10),
-                msg,
-                const SizedBox(height: 5),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    BLTextButton(
-                        onPressed: () {
-                          nav.pop(context);
-                        },
-                        child: BLText(
-                          'Cancel',
-                          color: processing ? Colors.grey : Colors.deepOrange,
-                        )),
-                    BLTextButton(
-                        onPressed: () async {
-                          if (processing) return;
-                          setState(() {
-                            processing = true;
-                          });
-                          if (formKey.currentState!.validate()) {
-                            final result = await feedbackManager.send(
-                              FeedbackData(
-                                title: titleController.text.trim(),
-                                message: messageController.text.trim(),
-                                createdAt: DateTime.now(),
-                                userID: auth.getUID(),
-                              ),
-                            );
-                            if (result == null) {
-                              if (!context.mounted) return;
-                              nav.pop(context);
-                              if (!context.mounted) return;
-                              toast.showToast(context, 'Feedback sent. Thank you!', type: NotifType.success);
-                            } else {
-                              setState(() {
-                                msg = BLText(
-                                  result,
-                                  color: Colors.deepOrange,
-                                );
-                              });
+          child: Scrollbar(
+            controller: scrollController,
+            child: SingleChildScrollView(
+              controller: scrollController,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    children: [
+                      const Icon(FontAwesomeIcons.paperPlane),
+                      const SizedBox(width: 10),
+                      BLSmallTitle(
+                        widget.title ?? 'Send Feedback',
+                        bottomPadding: 2,
+                      )
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  const BLText('Title:'),
+                  const SizedBox(height: 5),
+                  BLTextBox(
+                    controller: titleController,
+                    labelText: 'Your title ...',
+                    maxLength: 100,
+                    validator: (p0) {
+                      if (p0 == null || p0.isEmpty) {
+                        return 'Cannot be empty.';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 15),
+                  const BLText('Message:'),
+                  const SizedBox(height: 5),
+                  BLTextBox(
+                    controller: messageController,
+                    labelText: 'Your message ...',
+                    keyboardType: TextInputType.multiline,
+                    maxLength: 300,
+                    maxLines: null,
+                    validator: (p0) {
+                      if (p0 == null || p0.isEmpty) {
+                        return 'Cannot be empty.';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 10),
+                  msg,
+                  const SizedBox(height: 5),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      BLTextButton(
+                          onPressed: () {
+                            nav.pop(context);
+                          },
+                          child: BLText(
+                            'Cancel',
+                            color: processing ? Colors.grey : Colors.deepOrange,
+                          )),
+                      BLTextButton(
+                          onPressed: () async {
+                            if (processing) return;
+                            setState(() {
+                              processing = true;
+                            });
+                            if (formKey.currentState!.validate()) {
+                              final result = await feedbackManager.send(
+                                FeedbackData(
+                                  title: titleController.text.trim(),
+                                  message: messageController.text.trim(),
+                                  createdAt: DateTime.now(),
+                                  userID: auth.getUID(),
+                                ),
+                              );
+                              if (result == null) {
+                                if (!context.mounted) return;
+                                nav.pop(context);
+                                if (!context.mounted) return;
+                                toast.showToast(context, 'Feedback sent. Thank you!', type: NotifType.success);
+                              } else {
+                                setState(() {
+                                  msg = BLText(
+                                    result,
+                                    color: Colors.deepOrange,
+                                  );
+                                });
+                              }
                             }
-                          }
-                          setState(() {
-                            processing = false;
-                          });
-                        },
-                        child: BLText(
-                          'Submit',
-                          color: processing ? Colors.grey : Colors.green,
-                        ))
-                  ],
-                )
-              ],
+                            setState(() {
+                              processing = false;
+                            });
+                          },
+                          child: BLText(
+                            'Submit',
+                            color: processing ? Colors.grey : Colors.green,
+                          ))
+                    ],
+                  )
+                ],
+              ),
             ),
           ),
         ),

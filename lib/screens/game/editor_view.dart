@@ -13,6 +13,8 @@ class EditorView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, ref) {
+    final scrollController = ScrollController();
+    final scrollController2 = ScrollController();
     // final validator = BlockValidator();
     final blockData = ref.watch(getRootDataProvider);
     // dPrint(blockData.toString());
@@ -53,9 +55,9 @@ class EditorView extends ConsumerWidget {
     if (blockData.isEmpty) return buildDragTarget([]);
 
     return SingleChildScrollView(
-      clipBehavior: Clip.antiAlias,
+      controller: scrollController,
       child: SingleChildScrollView(
-          clipBehavior: Clip.antiAlias,
+          controller: scrollController2,
           scrollDirection: Axis.horizontal,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

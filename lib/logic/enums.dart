@@ -52,7 +52,7 @@ enum FirestoreCollections { admins, users, rooms, reports, leaderboards, scores,
 /// Similar to [ScoreStatus]
 /// - incomplete if the host destroyed the room, or if the admin locked it
 /// - pending if game is currently ongoing
-enum LeaderboardStatus { pending, incomplete, complete }
+// enum LeaderboardStatus { pending, incomplete, complete }
 
 enum LoadingType { fill, tight }
 

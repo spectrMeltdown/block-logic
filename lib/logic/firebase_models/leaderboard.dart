@@ -8,14 +8,14 @@ class Leaderboard {
   final String? roomName; // needs to be saved in leaderboard in case room gets deleted
   final DateTime? date;
   final int? totalScore; // refers to num of challenges
-  final LeaderboardStatus? status;
+  // final LeaderboardStatus? status;
   final List<String>? players;
   Leaderboard({
     this.roomName,
     this.id,
     this.players,
     this.roomID,
-    this.status,
+    // this.status,
     this.date,
     this.totalScore,
   });
@@ -31,21 +31,21 @@ class Leaderboard {
       dPrint('Unknown type!!');
     }
 
-    LeaderboardStatus? status;
-    if (data['status'] == LeaderboardStatus.complete.name) {
-      status = LeaderboardStatus.complete;
-    } else if (data['status'] == LeaderboardStatus.incomplete.name) {
-      status = LeaderboardStatus.incomplete;
-    } else if (data['status'] == LeaderboardStatus.pending.name) {
-      status = LeaderboardStatus.pending;
-    }
+    // LeaderboardStatus? status;
+    // if (data['status'] == LeaderboardStatus.complete.name) {
+    //   status = LeaderboardStatus.complete;
+    // } else if (data['status'] == LeaderboardStatus.incomplete.name) {
+    //   status = LeaderboardStatus.incomplete;
+    // } else if (data['status'] == LeaderboardStatus.pending.name) {
+    //   status = LeaderboardStatus.pending;
+    // }
 
     return Leaderboard(
       id: doc is DataSnapshot && doc.key != null ? doc.key : key,
       roomName: data['roomName'] ?? '',
       roomID: data['roomID'] ?? '',
       totalScore: data['totalScore'],
-      status: status,
+      // status: status,
       players: data['players'] == null ? <String>[] : (data['players'] as List<dynamic>).map((player) => player as String).toList(),
       date: data['date'] == null ? null : DateTime.fromMillisecondsSinceEpoch(data['date']),
     );
@@ -57,7 +57,7 @@ class Leaderboard {
     String? roomName,
     DateTime? date,
     int? totalScore,
-    LeaderboardStatus? status,
+    // LeaderboardStatus? status,
     List<String>? players,
   }) {
     return Leaderboard(
@@ -66,7 +66,7 @@ class Leaderboard {
       roomName: roomName ?? this.roomName,
       date: date ?? this.date,
       totalScore: totalScore ?? this.totalScore,
-      status: status ?? this.status,
+      // status: status ?? this.status,
       players: players ?? this.players,
     );
   }
@@ -85,9 +85,9 @@ class Leaderboard {
     if (totalScore != null) {
       toJSONMap.addAll({'totalScore': totalScore});
     }
-    if (status != null) {
-      toJSONMap.addAll({'status': status!.name});
-    }
+    // if (status != null) {
+    //   toJSONMap.addAll({'status': status!.name});
+    // }
     if (players != null) {
       toJSONMap.addAll({'players': players});
     }

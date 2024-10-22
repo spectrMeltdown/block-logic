@@ -53,6 +53,7 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
   late final AccountService accountService;
   late final TextValidator validator;
   late Timer otpCooldownTimer;
+  final scrollController = ScrollController();
   String verificationID = '';
   String resendToken = '';
   bool processing = false;
@@ -75,221 +76,218 @@ class _LoginState extends ConsumerState<Login> with RouteAware {
           children: [
             Background(
               child: SafeArea(
-                child: SingleChildScrollView(
-                  child: Container(
-                    padding: EdgeInsets.only(bottom: mediaQ.viewInsets.bottom),
-                    height: kIsWeb ? mediaQ.size.height : null,
-                    child: Column(
-                      mainAxisAlignment: kIsWeb ? MainAxisAlignment.center : MainAxisAlignment.start,
-                      children: [
-                        if (!kIsWeb)
-                          const Align(
-                            child: Align(
-                              alignment: Alignment.centerLeft,
-                              child: BLBackButton(),
+                child: Scrollbar(
+                  controller: scrollController,
+                  child: SingleChildScrollView(
+                    controller: scrollController,
+                    child: Container(
+                      padding: EdgeInsets.only(bottom: mediaQ.viewInsets.bottom),
+                      height: kIsWeb ? mediaQ.size.height : null,
+                      child: Column(
+                        mainAxisAlignment: kIsWeb ? MainAxisAlignment.center : MainAxisAlignment.start,
+                        children: [
+                          if (!kIsWeb)
+                            const Align(
+                              child: Align(
+                                alignment: Alignment.centerLeft,
+                                child: BLBackButton(),
+                              ),
                             ),
-                          ),
-                        Align(
-                          alignment: Alignment.center,
-                          child: Container(
-                            constraints: BoxConstraints(
-                                maxWidth: width <= mobileMax
-                                    ? kIsWeb
-                                        ? 450
-                                        : 330
-                                    : 600),
-                            child: BLPanel(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: kIsWeb ? 50 : 20,
-                                  vertical: kIsWeb ? 50 : 35,
-                                ),
-                                child: Form(
-                                  key: _loginFormKey,
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      const SizedBox(height: 5),
-                                      const BLTitle(
-                                        kIsWeb ? 'Welcome!' : 'Welcome back, dev!',
-                                        bottomPadding: 10,
-                                      ),
-                                      const SizedBox(height: 10),
-                                      if (!kIsWeb)
-                                        Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            const Icon(
-                                              FontAwesomeIcons.arrowRightArrowLeft,
+                          Align(
+                            alignment: Alignment.center,
+                            child: Container(
+                              constraints: BoxConstraints(
+                                  maxWidth: width <= mobileMax
+                                      ? kIsWeb
+                                          ? 450
+                                          : 330
+                                      : 600),
+                              child: BLPanel(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: kIsWeb ? 50 : 20,
+                                    vertical: kIsWeb ? 50 : 35,
+                                  ),
+                                  child: Form(
+                                    key: _loginFormKey,
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        const SizedBox(height: 5),
+                                        const BLTitle(
+                                          kIsWeb ? 'Welcome!' : 'Welcome back, dev!',
+                                          bottomPadding: 10,
+                                        ),
+                                        const SizedBox(height: 10),
+                                        if (!kIsWeb)
+                                          Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              const Icon(
+                                                FontAwesomeIcons.arrowRightArrowLeft,
+                                                color: Colors.white,
+                                                size: 16,
+                                              ),
+                                              BLTextButton(
+                                                onPressed: () {
+                                                  setState(() {
+                                                    useEmail = !useEmail;
+                                                  });
+                                                },
+                                                child: BLText(
+                                                  useEmail ? 'Login with phone' : 'Login with email',
+                                                  color: Colors.amber,
+                                                  bold: true,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        Visibility(
+                                          visible: useEmail,
+                                          child: BLTextBox(
+                                            controller: emailController,
+                                            labelText: 'Email',
+                                            maxLength: 50,
+                                            onFieldSubmitted: (p0) => submit(),
+                                            prefixIcon: const Icon(
+                                              FontAwesomeIcons.envelope,
                                               color: Colors.white,
-                                              size: 16,
                                             ),
-                                            BLTextButton(
-                                              onPressed: () {
-                                                setState(() {
-                                                  useEmail = !useEmail;
-                                                });
-                                              },
+                                            keyboardType: TextInputType.emailAddress,
+                                            validator: (email) {
+                                              return validator.validateEmail(email?.trim());
+                                            },
+                                          ),
+                                        ),
+                                        Visibility(
+                                          visible: !useEmail && !kIsWeb,
+                                          child: BLTextBox(
+                                            prefixIcon: const Padding(
+                                              padding: EdgeInsets.only(top: 3),
                                               child: BLText(
-                                                useEmail ? 'Login with phone' : 'Login with email',
-                                                color: Colors.amber,
+                                                '+63',
                                                 bold: true,
+                                                color: Colors.white,
                                               ),
                                             ),
-                                          ],
-                                        ),
-                                      Visibility(
-                                        visible: useEmail,
-                                        child: BLTextBox(
-                                          controller: emailController,
-                                          labelText: 'Email',
-                                          maxLength: 50,
-                                          onFieldSubmitted: (p0) => submit(),
-                                          prefixIcon: const Icon(
-                                            FontAwesomeIcons.envelope,
-                                            color: Colors.white,
+                                            onFieldSubmitted: (p0) => submit(),
+                                            inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
+                                            controller: phoneController,
+                                            maxLength: 10,
+                                            labelText: 'Phone number',
+                                            keyboardType: TextInputType.phone,
+                                            validator: (phoneNum) => validator.validatePhoneNum(phoneNum, required: true),
                                           ),
-                                          keyboardType: TextInputType.emailAddress,
-                                          validator: (email) {
-                                            return validator.validateEmail(email?.trim());
-                                          },
                                         ),
-                                      ),
-                                      Visibility(
-                                        visible: !useEmail && !kIsWeb,
-                                        child: BLTextBox(
-                                          prefixIcon: const Padding(
-                                            padding: EdgeInsets.only(top: 3),
-                                            child: BLText(
-                                              '+63',
-                                              bold: true,
+                                        const SizedBox(height: 15),
+                                        Visibility(
+                                          visible: useEmail,
+                                          child: BLTextBox(
+                                            maxLength: 50,
+                                            controller: passwordController,
+                                            labelText: 'Password',
+                                            onFieldSubmitted: (p0) => submit(),
+                                            prefixIcon: const Icon(
+                                              FontAwesomeIcons.lock,
                                               color: Colors.white,
                                             ),
+                                            isObscure: true,
+                                            keyboardType: TextInputType.visiblePassword,
+                                            validator: (password) => validator.validatePassword(password?.trim()),
                                           ),
-                                          onFieldSubmitted: (p0) => submit(),
-                                          inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
-                                          controller: phoneController,
-                                          maxLength: 10,
-                                          labelText: 'Phone number',
-                                          keyboardType: TextInputType.phone,
-                                          validator: (phoneNum) => validator.validatePhoneNum(phoneNum, required: true),
                                         ),
-                                      ),
-                                      const SizedBox(height: 15),
-                                      Visibility(
-                                        visible: useEmail,
-                                        child: BLTextBox(
-                                          maxLength: 50,
-                                          controller: passwordController,
-                                          labelText: 'Password',
-                                          onFieldSubmitted: (p0) => submit(),
-                                          prefixIcon: const Icon(
-                                            FontAwesomeIcons.lock,
-                                            color: Colors.white,
+                                        Visibility(
+                                          visible: !useEmail,
+                                          child: BLTextBox(
+                                            controller: otpController,
+                                            inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
+                                            prefixIcon: const Icon(Icons.numbers),
+                                            labelText: '6-digit code',
+                                            keyboardType: TextInputType.number,
+                                            maxLength: 6,
+                                            validator: (otp) => validator.validateOtp(otp),
                                           ),
-                                          isObscure: true,
-                                          keyboardType: TextInputType.visiblePassword,
-                                          validator: (password) {
-                                            return validator.validatePassword(password?.trim());
-                                          },
                                         ),
-                                      ),
-                                      Visibility(
-                                        visible: !useEmail,
-                                        child: BLTextBox(
-                                          controller: otpController,
-                                          inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
-                                          prefixIcon: const Icon(Icons.numbers),
-                                          labelText: '6-digit code',
-                                          keyboardType: TextInputType.number,
-                                          maxLength: 6,
-                                          validator: (otp) => validator.validateOtp(otp),
-                                        ),
-                                      ),
-                                      Row(
-                                        // mainAxisAlignment: useEmail ? MainAxisAlignment.start : MainAxisAlignment.end,
-                                        children: [
-                                          if (useEmail)
-                                            BLTextButton(
-                                                onPressed: () async {
-                                                  bool? result = await showDialog(
-                                                      context: context,
-                                                      builder: (context) => ForgotPasswordDialog(
-                                                            useEmail: useEmail,
-                                                          ));
-                                                  if (result != null) {
+                                        Row(
+                                          // mainAxisAlignment: useEmail ? MainAxisAlignment.start : MainAxisAlignment.end,
+                                          children: [
+                                            if (useEmail)
+                                              BLTextButton(
+                                                  onPressed: () async {
+                                                    bool? result = await showDialog(
+                                                        context: context,
+                                                        builder: (context) => ForgotPasswordDialog(
+                                                              useEmail: useEmail,
+                                                            ));
+                                                    if (result != null) {
+                                                      if (!context.mounted) return;
+                                                      toast.showToast(context, 'A reset link was sent to your email.', type: NotifType.info);
+                                                    }
+                                                  },
+                                                  child: BLText(
+                                                    'Forgot password?',
+                                                    size: 15,
+                                                    color: Colors.lightBlue.shade100,
+                                                  )),
+                                            Visibility(
+                                              visible: !useEmail,
+                                              child: BLTextButton(
+                                                onPressed: () {
+                                                  if (validator.validatePhoneNum(phoneController.text, required: true) != null) {
                                                     if (!context.mounted) return;
-                                                    toast.showToast(context, 'A reset link was sent to your email.', type: NotifType.info);
+                                                    toast.showToast(context, 'Please provide phone number.', type: NotifType.error);
+                                                  } else if (!otpCooldownTimer.isActive) {
+                                                    sendOTP(context);
                                                   }
                                                 },
                                                 child: BLText(
-                                                  'Forgot password?',
-                                                  size: 15,
-                                                  color: Colors.lightBlue.shade100,
-                                                )),
-                                          Visibility(
-                                            visible: !useEmail,
-                                            child: BLTextButton(
-                                              onPressed: () {
-                                                if (validator.validatePhoneNum(phoneController.text, required: true) != null) {
-                                                  if (!context.mounted) return;
-                                                  toast.showToast(context, 'Please provide phone number.', type: NotifType.error);
-                                                } else if (!otpCooldownTimer.isActive) {
-                                                  sendOTP(context);
-                                                }
-                                              },
-                                              child: BLText(
-                                                'Send OTP ${otpCooldownTimer.isActive ? '($secondsLeft)' : ''}',
-                                                color: otpCooldownTimer.isActive ? Colors.grey : Colors.lightBlue.shade100,
+                                                  'Send OTP ${otpCooldownTimer.isActive ? '($secondsLeft)' : ''}',
+                                                  color: otpCooldownTimer.isActive ? Colors.grey : Colors.lightBlue.shade100,
+                                                ),
                                               ),
-                                            ),
-                                          )
-                                        ],
-                                      ),
-                                      const SizedBox(
-                                        height: 30,
-                                      ),
-                                      BLButton(
-                                          type: useEmail
-                                              ? BtnType.green
-                                              : !firstOTPSent
-                                                  ? BtnType.grey
-                                                  : processing
-                                                      ? BtnType.grey
-                                                      : BtnType.green,
-                                          padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 10),
-                                          onPressed: () {
-                                            FocusScope.of(context).unfocus();
-                                            if (firstOTPSent == false && !useEmail) {
-                                              if (!context.mounted) return;
-                                              toast.showToast(context, 'Send OTP first', type: NotifType.error);
-                                              return;
-                                            }
-                                            submit();
-                                          },
-                                          child: const BLText(
-                                            'Login',
-                                            color: Colors.white,
-                                          )),
-                                      if (!kIsWeb)
-                                        Row(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          children: [
-                                            BLTextButton(
-                                                onPressed: () => nav.pushReplace(context, const Signup()),
-                                                child: BLText(
-                                                  'Create an account',
-                                                  underlined: true,
-                                                  size: 15,
-                                                  color: Colors.lightBlue.shade100,
-                                                ))
+                                            )
                                           ],
                                         ),
-                                    ],
-                                  ),
-                                )),
+                                        const SizedBox(height: 30),
+                                        BLButton(
+                                            type: useEmail
+                                                ? BtnType.green
+                                                : !firstOTPSent
+                                                    ? BtnType.grey
+                                                    : processing
+                                                        ? BtnType.grey
+                                                        : BtnType.green,
+                                            padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 10),
+                                            onPressed: () {
+                                              FocusScope.of(context).unfocus();
+                                              if (firstOTPSent == false && !useEmail) {
+                                                if (!context.mounted) return;
+                                                toast.showToast(context, 'Send OTP first', type: NotifType.error);
+                                                return;
+                                              }
+                                              submit();
+                                            },
+                                            child: const BLText('Login')),
+                                        if (!kIsWeb)
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: [
+                                              BLTextButton(
+                                                  onPressed: () => nav.pushReplace(context, const Signup()),
+                                                  child: BLText(
+                                                    'Create an account',
+                                                    underlined: true,
+                                                    size: 15,
+                                                    color: Colors.lightBlue.shade100,
+                                                  ))
+                                            ],
+                                          ),
+                                      ],
+                                    ),
+                                  )),
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),

@@ -29,6 +29,14 @@ import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+final timeWatcher = StateProvider.autoDispose<bool>((ref) {
+  final time = ref.watch(gameManagerProvider.select((e) => e.timeElapsed));
+  if (time >= 1560) {
+    return true;
+  }
+  return false;
+});
+
 class GameRoom extends ConsumerStatefulWidget {
   final Room room;
   const GameRoom(this.room, {super.key});
@@ -86,15 +94,15 @@ class _GameRoomState extends ConsumerState<GameRoom> {
     // this is a Future, but it is set to ref.watch because read will return first value only, which may still be a loading/error state
     final challenges = ref.watch(SelectedChallengesProvider(widget.room.challengeIDs!));
     final innerProcessing = ref.watch(processingProvider);
+    final timeLimitReached = ref.watch(timeWatcher);
 
     if (playerLeft) {
       Future.delayed(Duration.zero, () {
         playerLeave();
       });
     }
-
     // if out of challenges, go to finalize result screen
-    if (challengeLength != null && currentChallenge == challengeLength) {
+    if (timeLimitReached || challengeLength != null && currentChallenge == challengeLength) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         nav.pushReplace(context, FinalizingResults(widget.room.currentLeaderboardID!));
       });
@@ -105,6 +113,7 @@ class _GameRoomState extends ConsumerState<GameRoom> {
         ),
       );
     }
+
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) async {

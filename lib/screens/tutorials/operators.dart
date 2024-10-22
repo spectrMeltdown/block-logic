@@ -8,18 +8,13 @@ import 'package:block_logic/logic/services/tutorials.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class Operators extends ConsumerStatefulWidget {
+class Operators extends ConsumerWidget {
   const Operators({super.key});
-
   @override
-  ConsumerState<Operators> createState() => _OperatorsState();
-}
-
-class _OperatorsState extends ConsumerState<Operators> {
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, ref) {
     final tutorialData = ref.read(tutorialDataProvider);
     final nav = ref.read(customNavigationProvider.notifier);
+    final scrollController = ScrollController();
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Background(
@@ -50,131 +45,135 @@ class _OperatorsState extends ConsumerState<Operators> {
                   ),
                   child: Padding(
                     padding: const EdgeInsets.only(top: 5),
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
-                            child: BLRichText([
-                              const TextSpan(
-                                text: 'Operators are special symbols in Python that perform operations on variables and values. '
-                                    'They can be used for mathematical calculations, comparisons, logical operations, and more.\n\n',
-                              ),
-                              TextSpan(
-                                text: '1. Types of Operators:\n',
-                                style: tutorialData.paragraphStyle.copyWith(fontSize: 18, fontWeight: FontWeight.bold),
-                              ),
-                              const TextSpan(
-                                text: '   - Python has various types of operators, including:\n',
-                              ),
-                              const TextSpan(
-                                text: '     - ',
-                              ),
-                              TextSpan(
-                                text: 'Arithmetic Operators',
-                                style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
-                              ),
-                              const TextSpan(
-                                text: ': Used for basic math operations like addition, subtraction, etc.\n'
-                                    '     Example: ',
-                              ),
-                              TextSpan(
-                                text: 'result = 10 + 5',
-                                style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
-                              ),
-                              const TextSpan(
-                                text: ' (result will be 15)\n',
-                              ),
-                              const TextSpan(
-                                text: '     - ',
-                              ),
-                              TextSpan(
-                                text: 'Comparison Operators',
-                                style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
-                              ),
-                              const TextSpan(
-                                text: ': Used to compare two values.\n'
-                                    '     Example: ',
-                              ),
-                              TextSpan(
-                                text: 'x == y',
-                                style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
-                              ),
-                              const TextSpan(
-                                text: ' checks if x is equal to y.\n',
-                              ),
-                              const TextSpan(
-                                text: '     - ',
-                              ),
-                              TextSpan(
-                                text: 'Logical Operators',
-                                style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
-                              ),
-                              const TextSpan(
-                                text: ': Used to combine conditional statements.\n'
-                                    '     Example: ',
-                              ),
-                              TextSpan(
-                                text: 'if (x > 5 and y < 10):',
-                                style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
-                              ),
-                              const TextSpan(
-                                text: ' checks if both conditions are true.\n',
-                              ),
-                              const TextSpan(
-                                text: '     - ',
-                              ),
-                              TextSpan(
-                                text: 'Bitwise Operators',
-                                style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
-                              ),
-                              const TextSpan(
-                                text: ': Operate on bits and perform bit-by-bit operations.\n'
-                                    '     Example: ',
-                              ),
-                              TextSpan(
-                                text: 'result = x & y',
-                                style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
-                              ),
-                              const TextSpan(
-                                text: ' performs a bitwise AND operation.\n',
-                              ),
-                              const TextSpan(
-                                text: '     - ',
-                              ),
-                              TextSpan(
-                                text: 'Assignment Operators',
-                                style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
-                              ),
-                              const TextSpan(
-                                text: ': Used to assign values to variables.\n'
-                                    '     Example: ',
-                              ),
-                              TextSpan(
-                                text: 'x = 10',
-                                style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
-                              ),
-                              const TextSpan(
-                                text: ' assigns 10 to x.\n',
-                              ),
-                              TextSpan(
-                                text: '2. Importance of Operators:\n',
-                                style: tutorialData.paragraphStyle.copyWith(fontSize: 18, fontWeight: FontWeight.bold),
-                              ),
-                              const TextSpan(
-                                text: '   - Understanding operators is essential for performing calculations and controlling the flow of your code.\n\n',
-                              ),
-                              TextSpan(
-                                text: '3. Conclusion:\n',
-                                style: tutorialData.paragraphStyle.copyWith(fontSize: 18, fontWeight: FontWeight.bold),
-                              ),
-                              TextSpan(
-                                text: '   - Mastering operators will enhance your ability to write effective Python programs.',
-                                style: tutorialData.paragraphStyle.copyWith(fontStyle: FontStyle.italic),
-                              ),
-                            ]),
-                          )
-                        ],
+                    child: Scrollbar(
+                      controller: scrollController,
+                      child: SingleChildScrollView(
+                        controller: scrollController,
+                        child: Column(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+                              child: BLRichText([
+                                const TextSpan(
+                                  text: 'Operators are special symbols in Python that perform operations on variables and values. '
+                                      'They can be used for mathematical calculations, comparisons, logical operations, and more.\n\n',
+                                ),
+                                TextSpan(
+                                  text: '1. Types of Operators:\n',
+                                  style: tutorialData.paragraphStyle.copyWith(fontSize: 18, fontWeight: FontWeight.bold),
+                                ),
+                                const TextSpan(
+                                  text: '   - Python has various types of operators, including:\n',
+                                ),
+                                const TextSpan(
+                                  text: '     - ',
+                                ),
+                                TextSpan(
+                                  text: 'Arithmetic Operators',
+                                  style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
+                                ),
+                                const TextSpan(
+                                  text: ': Used for basic math operations like addition, subtraction, etc.\n'
+                                      '     Example: ',
+                                ),
+                                TextSpan(
+                                  text: 'result = 10 + 5',
+                                  style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
+                                ),
+                                const TextSpan(
+                                  text: ' (result will be 15)\n',
+                                ),
+                                const TextSpan(
+                                  text: '     - ',
+                                ),
+                                TextSpan(
+                                  text: 'Comparison Operators',
+                                  style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
+                                ),
+                                const TextSpan(
+                                  text: ': Used to compare two values.\n'
+                                      '     Example: ',
+                                ),
+                                TextSpan(
+                                  text: 'x == y',
+                                  style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
+                                ),
+                                const TextSpan(
+                                  text: ' checks if x is equal to y.\n',
+                                ),
+                                const TextSpan(
+                                  text: '     - ',
+                                ),
+                                TextSpan(
+                                  text: 'Logical Operators',
+                                  style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
+                                ),
+                                const TextSpan(
+                                  text: ': Used to combine conditional statements.\n'
+                                      '     Example: ',
+                                ),
+                                TextSpan(
+                                  text: 'if (x > 5 and y < 10):',
+                                  style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
+                                ),
+                                const TextSpan(
+                                  text: ' checks if both conditions are true.\n',
+                                ),
+                                const TextSpan(
+                                  text: '     - ',
+                                ),
+                                TextSpan(
+                                  text: 'Bitwise Operators',
+                                  style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
+                                ),
+                                const TextSpan(
+                                  text: ': Operate on bits and perform bit-by-bit operations.\n'
+                                      '     Example: ',
+                                ),
+                                TextSpan(
+                                  text: 'result = x & y',
+                                  style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
+                                ),
+                                const TextSpan(
+                                  text: ' performs a bitwise AND operation.\n',
+                                ),
+                                const TextSpan(
+                                  text: '     - ',
+                                ),
+                                TextSpan(
+                                  text: 'Assignment Operators',
+                                  style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
+                                ),
+                                const TextSpan(
+                                  text: ': Used to assign values to variables.\n'
+                                      '     Example: ',
+                                ),
+                                TextSpan(
+                                  text: 'x = 10',
+                                  style: tutorialData.paragraphStyle.copyWith(color: Colors.lightBlue.shade200),
+                                ),
+                                const TextSpan(
+                                  text: ' assigns 10 to x.\n',
+                                ),
+                                TextSpan(
+                                  text: '2. Importance of Operators:\n',
+                                  style: tutorialData.paragraphStyle.copyWith(fontSize: 18, fontWeight: FontWeight.bold),
+                                ),
+                                const TextSpan(
+                                  text: '   - Understanding operators is essential for performing calculations and controlling the flow of your code.\n\n',
+                                ),
+                                TextSpan(
+                                  text: '3. Conclusion:\n',
+                                  style: tutorialData.paragraphStyle.copyWith(fontSize: 18, fontWeight: FontWeight.bold),
+                                ),
+                                TextSpan(
+                                  text: '   - Mastering operators will enhance your ability to write effective Python programs.',
+                                  style: tutorialData.paragraphStyle.copyWith(fontStyle: FontStyle.italic),
+                                ),
+                              ]),
+                            )
+                          ],
+                        ),
                       ),
                     ),
                   ),
