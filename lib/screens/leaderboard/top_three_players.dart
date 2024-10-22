@@ -1,6 +1,5 @@
 import 'package:block_logic/components/circular_image.dart';
 import 'package:block_logic/components/text/text.dart';
-import 'package:block_logic/components/util/blank_widget.dart';
 
 import 'package:block_logic/logic/services/assets.dart';
 import 'package:flutter/material.dart';

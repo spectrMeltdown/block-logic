@@ -1,5 +1,4 @@
 import 'package:block_logic/logic/enums.dart';
-import 'package:block_logic/logic/firebase_models/leaderboard.dart';
 import 'package:block_logic/logic/firebase_models/room.dart';
 import 'package:block_logic/logic/firebase_models/score.dart';
 import 'package:block_logic/logic/game/block_data.dart';

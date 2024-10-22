@@ -2,7 +2,6 @@ import 'package:block_logic/components/card/card_translucent.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/util/provider_default.dart';
 import 'package:block_logic/logic/enums.dart';
-import 'package:block_logic/logic/firebase_models/leaderboard.dart';
 import 'package:block_logic/logic/firebase_models/room.dart';
 import 'package:block_logic/logic/firebase_providers/selected_user.dart';
 import 'package:block_logic/logic/services/dialog.dart';

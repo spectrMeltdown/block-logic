@@ -2,7 +2,6 @@ import 'package:block_logic/components/background.dart';
 import 'package:block_logic/components/button/button.dart';
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/text/title_small.dart';
-import 'package:block_logic/components/util/spaced_col.dart';
 import 'package:block_logic/logic/services/navigation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

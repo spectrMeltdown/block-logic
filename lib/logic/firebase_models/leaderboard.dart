@@ -1,5 +1,4 @@
 import 'package:block_logic/logic/dev.dart';
-import 'package:block_logic/logic/enums.dart';
 import 'package:firebase_database/firebase_database.dart';
 
 class Leaderboard {
