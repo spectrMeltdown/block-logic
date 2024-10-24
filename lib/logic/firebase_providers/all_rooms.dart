@@ -4,12 +4,13 @@ import 'package:block_logic/logic/firebase_models/room.dart';
 import 'package:firebase_database/firebase_database.dart';
 
 import 'package:flutter/foundation.dart';
+import 'package:riverpod/riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'generated/all_rooms.g.dart';
 
 @riverpod
-Stream<List<Room>> rooms(RoomsRef ref, {String? searchQuery, String? uid}) async* {
+Stream<List<Room>> rooms(Ref ref, {String? searchQuery, String? uid}) async* {
   final db = FirebaseDatabase.instance;
   final controller = StreamController<List<Room>>();
   db.ref('rooms').onValue.listen((event) {

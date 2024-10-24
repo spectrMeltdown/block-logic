@@ -6,7 +6,7 @@ part of '../auth.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$authChangesHash() => r'd1e5a35846b19bc6914dce00ccbc504c7fee796d';
+String _$authChangesHash() => r'af561ead9a063c1a97c5968fe4aa51ab49a0f3f2';
 
 /// fired only when login/loggout
 ///

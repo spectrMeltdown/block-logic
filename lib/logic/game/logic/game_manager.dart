@@ -2,6 +2,7 @@ import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_models/room.dart';
 import 'package:block_logic/logic/firebase_models/score.dart';
 import 'package:block_logic/logic/game/block_data.dart';
+import 'package:block_logic/logic/game/logic/game_provider.dart';
 import 'package:block_logic/logic/services/auth.dart';
 import 'package:block_logic/logic/services/error_handler.dart';
 import 'package:block_logic/logic/services/leaderboard_manager.dart';
@@ -86,7 +87,10 @@ class GameManager extends StateNotifier<GameState> {
   // when pausing game
   void pauseTimer() => state.runTimer = true;
   void resumeTimer() => state.runTimer = false;
-  void updateTimeElapsed() => state.timeElapsed++;
+  void updateTimeElapsed() {
+    // dPrint('Time elapsed is: ${state.timeElapsed}');
+    state.timeElapsed = state.timeElapsed += 1;
+  }
 
 // initiate the manager and game
   Future<String?> init(Room room) async {
@@ -281,7 +285,7 @@ class GameManager extends StateNotifier<GameState> {
 
   void setShouldResetAllBlocks(bool newState) => state.shouldResetAllBlocks = newState;
 
-  void moveToRoot(String uid) {
+  void moveToRoot(String uid, WidgetRef ref) {
     // dPrint('move to root');
     if (uid.isEmpty) throw ('UID was empty!');
     GameBlockData data = state.dataTree[uid]!.copyWith();
@@ -289,9 +293,9 @@ class GameManager extends StateNotifier<GameState> {
     // copy the parent
     final parent = state.dataTree[data.parentUID]?.copyWith();
     if (parent != null) {
+      dPrint('parent was not null');
       updateParentChildren(parent, data.uid ?? '');
     }
-
     // if not statement
     if (data.type != CodeBlockType.statement) {
       dPrint('root move: not statement');
@@ -406,6 +410,8 @@ class GameManager extends StateNotifier<GameState> {
         if (data.statementUIDs != null) {
           parent = parent.copyWith(statementUIDs: [...parent.statementUIDs ?? [], ...data.statementUIDs ?? []]);
         } else {
+          parent = parent.copyWith(statementUIDs: [...parent.statementUIDs!.where((e) => e != data.uid)]);
+          state.dataTree[parent.uid!] = parent;
           parent = parent.copyWith(statementUIDs: [...parent.statementUIDs ?? [], data.uid!]);
         }
         break;
@@ -590,7 +596,7 @@ class GameManager extends StateNotifier<GameState> {
     }
   }
 
-  void updateParentChildren(GameBlockData parent, String childUID) {
+  void updateParentChildren(GameBlockData parent, String childUID, {bool returnBlock = false}) {
     bool removeInstead = false;
     GameBlockData newParent = parent.copyWith();
     if (parent.argumentUIDs != null) {
@@ -620,7 +626,7 @@ class GameManager extends StateNotifier<GameState> {
     }
     if (parent.statementUIDs != null) {
       final List<String> list = List.from(parent.statementUIDs!);
-      if (parent.statementUIDs != null && parent.statementUIDs!.length == 1 || parent.statementUIDs!.isEmpty) {
+      if (parent.statementUIDs != null && parent.statementUIDs!.isEmpty || parent.statementUIDs!.length == 1 && returnBlock) {
         removeInstead = true;
       } else {
         list.removeWhere((i) => i == childUID);
@@ -629,17 +635,18 @@ class GameManager extends StateNotifier<GameState> {
     }
 
     if (removeInstead) {
+      dPrint('Removing parent ${newParent.uid}');
       state.uidsToDelete.add(newParent.uid!);
     } else {
       state.dataTree[newParent.uid!] = newParent;
     }
   }
 
-  void deleteSelectedData() {
+  void deleteSelectedData({bool returnBlock = false}) {
     dPrint('Data to delete: ${state.uidsToDelete}');
     // update parents first, uidsToDelete may increase
     for (final data in state.uidParentsToModify.entries) {
-      updateParentChildren(data.value.copyWith(), data.key);
+      updateParentChildren(data.value.copyWith(), data.key, returnBlock: returnBlock);
       dPrint('Parents to modify: \nChild: ${data.key} \n Parent:${data.value.uid}');
     }
     dPrint('Data to delete (with addons): ${state.uidsToDelete}');

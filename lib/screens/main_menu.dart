@@ -4,9 +4,11 @@ import 'package:animate_do/animate_do.dart';
 import 'package:block_logic/components/background.dart';
 import 'package:block_logic/components/button/button.dart';
 import 'package:block_logic/components/util/animation_player.dart';
+import 'package:block_logic/components/util/provider_default.dart';
 import 'package:block_logic/components/util/spaced_col.dart';
+import 'package:block_logic/logic/dev.dart';
 import 'package:block_logic/logic/enums.dart';
-import 'package:block_logic/logic/services/account.dart';
+import 'package:block_logic/logic/firebase_models/user_account.dart';
 import 'package:block_logic/logic/services/assets.dart';
 import 'package:block_logic/logic/services/auth.dart';
 import 'package:block_logic/logic/services/navigation.dart';
@@ -21,6 +23,7 @@ import 'package:block_logic/screens/premium_prompt_dialog.dart';
 import 'package:block_logic/screens/rooms/rooms.dart';
 import 'package:block_logic/screens/settings/settings_page.dart';
 import 'package:block_logic/screens/tutorials/tutorials.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/foundation.dart';
@@ -28,112 +31,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-List<Widget> loggedInMenu(BuildContext context, CustomNavigation nav) {
-  return [
-    BLButton(
-      onPressed: () => nav.push(context, const RoomSelector()),
-      type: BtnType.green,
-      child: const Text(
-        'Start',
-        style: TextStyle(fontSize: 16),
-      ),
-    ),
-    BLButton(
-      onPressed: () => nav.push(context, const LeaderboardsPage()),
-      child: const Text(
-        'Leaderboards',
-        style: TextStyle(fontSize: 16),
-      ),
-    ),
-    BLButton(
-      onPressed: () => nav.push(context, const Tutorials()),
-      child: const Text(
-        'Tutorials',
-        style: TextStyle(fontSize: 16),
-      ),
-    ),
-    BLButton(
-      onPressed: () => nav.push(
-        context,
-        const CreatorMode(),
-      ),
-      child: const Text(
-        'Creator Mode',
-        style: TextStyle(fontSize: 16),
-      ),
-    ),
-    BLButton(
-      onPressed: () => nav.push(context, const SettingsPage()),
-      child: const Text(
-        'Settings',
-        style: TextStyle(fontSize: 16),
-      ),
-    ),
-    const SizedBox(
-      height: 30,
-    ),
-    BLButton(
-      onPressed: () {
-        SystemNavigator.pop();
-
-        /// exit(0) works for development, but the above is preferred
-        if (kDebugMode) exit(0);
-      },
-      type: BtnType.red,
-      child: const Text(
-        'Exit',
-        style: TextStyle(fontSize: 16),
-      ),
-    ),
-  ];
-}
-
-List<Widget> loggedOutMenu(BuildContext context, CustomNavigation nav) {
-  return [
-    BLButton(
-      onPressed: () => nav.push(
-          context,
-          const Login(
-            accountType: FirestoreCollections.users,
-          )),
-      type: BtnType.green,
-      child: const Text(
-        'Login to Play',
-        style: TextStyle(fontSize: 16),
-      ),
-    ),
-    BLButton(
-      onPressed: () => nav.push(context, const Tutorials()),
-      child: const Text(
-        'Tutorials',
-        style: TextStyle(fontSize: 16),
-      ),
-    ),
-    BLButton(
-      onPressed: () => nav.push(context, const SettingsPage()),
-      child: const Text(
-        'Settings',
-        style: TextStyle(fontSize: 16),
-      ),
-    ),
-    const SizedBox(
-      height: 30,
-    ),
-    BLButton(
-      onPressed: () {
-        SystemNavigator.pop();
-
-        /// exit(0) works for development, but the above is preferred
-        if (kDebugMode) exit(0);
-      },
-      type: BtnType.red,
-      child: const Text(
-        'Exit',
-        style: TextStyle(fontSize: 16),
-      ),
-    ),
-  ];
-}
+final isPremiumStream = StreamProvider.family.autoDispose<bool?, String>((ref, uid) async* {
+  if (uid.isEmpty) {
+    dPrint('Empty UID!');
+    yield null;
+  } else {
+    final stream = FirebaseDatabase.instance.ref('users/$uid').onValue;
+    await for (final doc in stream) {
+      if (doc.snapshot.exists) {
+        yield UserAccount.fromRTDB(doc.snapshot.value).premiumUser;
+      } else {
+        yield null;
+      }
+    }
+  }
+});
 
 class MainMenuScreen extends ConsumerStatefulWidget {
   const MainMenuScreen({super.key});
@@ -151,11 +63,58 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> with WidgetsBin
   late final Toast toast;
   late final CustomNavigation nav;
   late final AuthService auth;
-  late final AccountService accountM;
-  //late final VideoPlayerController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    toast = ref.read(toastProvider.notifier);
+    assets = ref.read(assetsProvider);
+    auth = ref.read(authServiceProvider.notifier);
+    nav = ref.read(customNavigationProvider.notifier);
+
+    if (!FlameAudio.bgm.isPlaying) {
+      if (!FlameAudio.bgm.isPlaying) {
+        final assets = ref.read(assetsProvider);
+        final sharedPref = ref.read(sharedPrefProvider);
+
+        /// check if a backgroundMusic setting exists
+        final backgroundMusic = sharedPref.getBool('backgroundMusic');
+        if (backgroundMusic == null || backgroundMusic == true) {
+          /// initialize the audio
+          FlameAudio.bgm.play(assets.audioBG1);
+        } else {
+          /// play silently to load the track
+          FlameAudio.bgm.play(assets.audioBG1, volume: 0);
+
+          /// pause after track loaded
+          FlameAudio.bgm.pause();
+        }
+      }
+    }
+
+    /// for the entire title
+    _titleAnimationController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 5),
+    )..repeat(reverse: true, period: const Duration(milliseconds: 2000));
+
+    /// for blur property of the title
+    _blurRadiusAnimation = Tween<double>(
+      begin: 0,
+      end: 100,
+    ).animate(CurvedAnimation(
+      parent: _titleAnimationController,
+      curve: Curves.easeInOut,
+    ));
+
+    _premiumCrown = AnimationController(vsync: this);
+    WidgetsBinding.instance.addObserver(this);
+  }
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(authServiceProvider);
+    final isPremium = ref.watch(isPremiumStream(auth.getUID()));
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Stack(
@@ -239,37 +198,44 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> with WidgetsBin
                             ],
                           )),
                       if (auth.getUID().isNotEmpty)
-                        GestureDetector(
-                          onTap: () async {
-                            final isPremium = await accountM.isPremium(auth.getUID());
-                            if (isPremium == null) {
-                              if (!context.mounted) return;
-                              toast.showToast(context, 'Problem getting premium status, try again later.', type: NotifType.warning);
-                            } else if (isPremium) {
-                              if (!context.mounted) return;
-                              showDialog(context: context, builder: (context) => const ThankYouDialog(premium: true));
-                            } else {
-                              if (!context.mounted) return;
-                              showDialog(context: context, builder: (context) => const PremiumPromptDialog());
-                            }
-                          },
-                          child: Row(
-                            children: [
-                              BLAnimationPlayer(
-                                assets.premiumCrown,
-                                size: 50,
-                                controller: _premiumCrown,
-                                controllerActions: (premiumCrown) {
-                                  _premiumCrown.duration = premiumCrown.duration;
-                                  _premiumCrown.repeat(min: 0.5, max: 1);
+                        isPremium.when(
+                            data: (isPremium) {
+                              if (isPremium != null && isPremium == true) {
+                                return SizedBox.shrink();
+                              }
+                              return GestureDetector(
+                                onTap: () async {
+                                  if (isPremium == null) {
+                                    if (!context.mounted) return;
+                                    toast.showToast(context, 'Problem getting premium status, try again later.', type: NotifType.warning);
+                                  } else if (isPremium) {
+                                    if (!context.mounted) return;
+                                    showDialog(context: context, builder: (context) => const ThankYouDialog(premium: true));
+                                  } else {
+                                    if (!context.mounted) return;
+                                    showDialog(context: context, builder: (context) => const PremiumPromptDialog());
+                                  }
                                 },
-                              ),
-                              const SizedBox(
-                                width: 15,
-                              ),
-                            ],
-                          ),
-                        ),
+                                child: Row(
+                                  children: [
+                                    BLAnimationPlayer(
+                                      assets.premiumCrown,
+                                      size: 50,
+                                      controller: _premiumCrown,
+                                      controllerActions: (premiumCrown) {
+                                        _premiumCrown.duration = premiumCrown.duration;
+                                        _premiumCrown.repeat(min: 0.5, max: 1);
+                                      },
+                                    ),
+                                    const SizedBox(
+                                      width: 15,
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                            error: genericError,
+                            loading: genericLoading),
                     ],
                   ),
                   const SizedBox(
@@ -325,51 +291,110 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> with WidgetsBin
     super.dispose();
   }
 
-  @override
-  void initState() {
-    super.initState();
-    toast = ref.read(toastProvider.notifier);
-    assets = ref.read(assetsProvider);
-    auth = ref.read(authServiceProvider.notifier);
-    accountM = ref.read(accountServiceProvider.notifier);
-    nav = ref.read(customNavigationProvider.notifier);
+  List<Widget> loggedInMenu(BuildContext context, CustomNavigation nav) {
+    return [
+      BLButton(
+        onPressed: () => nav.push(context, const RoomSelector()),
+        type: BtnType.green,
+        child: const Text(
+          'Start',
+          style: TextStyle(fontSize: 16),
+        ),
+      ),
+      BLButton(
+        onPressed: () => nav.push(context, const LeaderboardsPage()),
+        child: const Text(
+          'Leaderboards',
+          style: TextStyle(fontSize: 16),
+        ),
+      ),
+      BLButton(
+        onPressed: () => nav.push(context, const Tutorials()),
+        child: const Text(
+          'Tutorials',
+          style: TextStyle(fontSize: 16),
+        ),
+      ),
+      BLButton(
+        onPressed: () => nav.push(
+          context,
+          const CreatorMode(),
+        ),
+        child: const Text(
+          'Creator Mode',
+          style: TextStyle(fontSize: 16),
+        ),
+      ),
+      BLButton(
+        onPressed: () => nav.push(context, const SettingsPage()),
+        child: const Text(
+          'Settings',
+          style: TextStyle(fontSize: 16),
+        ),
+      ),
+      const SizedBox(
+        height: 30,
+      ),
+      BLButton(
+        onPressed: () {
+          SystemNavigator.pop();
 
-    if (!FlameAudio.bgm.isPlaying) {
-      if (!FlameAudio.bgm.isPlaying) {
-        final assets = ref.read(assetsProvider);
-        final sharedPref = ref.read(sharedPrefProvider);
+          /// exit(0) works for development, but the above is preferred
+          if (kDebugMode) exit(0);
+        },
+        type: BtnType.red,
+        child: const Text(
+          'Exit',
+          style: TextStyle(fontSize: 16),
+        ),
+      ),
+    ];
+  }
 
-        /// check if a backgroundMusic setting exists
-        final backgroundMusic = sharedPref.getBool('backgroundMusic');
-        if (backgroundMusic == null || backgroundMusic == true) {
-          /// initialize the audio
-          FlameAudio.bgm.play(assets.audioBG1);
-        } else {
-          /// play silently to load the track
-          FlameAudio.bgm.play(assets.audioBG1, volume: 0);
+  List<Widget> loggedOutMenu(BuildContext context, CustomNavigation nav) {
+    return [
+      BLButton(
+        onPressed: () => nav.push(
+            context,
+            const Login(
+              accountType: FirestoreCollections.users,
+            )),
+        type: BtnType.green,
+        child: const Text(
+          'Login to Play',
+          style: TextStyle(fontSize: 16),
+        ),
+      ),
+      BLButton(
+        onPressed: () => nav.push(context, const Tutorials()),
+        child: const Text(
+          'Tutorials',
+          style: TextStyle(fontSize: 16),
+        ),
+      ),
+      BLButton(
+        onPressed: () => nav.push(context, const SettingsPage()),
+        child: const Text(
+          'Settings',
+          style: TextStyle(fontSize: 16),
+        ),
+      ),
+      const SizedBox(
+        height: 30,
+      ),
+      BLButton(
+        onPressed: () {
+          SystemNavigator.pop();
 
-          /// pause after track loaded
-          FlameAudio.bgm.pause();
-        }
-      }
-    }
-
-    /// for the entire title
-    _titleAnimationController = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 5),
-    )..repeat(reverse: true, period: const Duration(milliseconds: 2000));
-
-    /// for blur property of the title
-    _blurRadiusAnimation = Tween<double>(
-      begin: 0,
-      end: 100,
-    ).animate(CurvedAnimation(
-      parent: _titleAnimationController,
-      curve: Curves.easeInOut,
-    ));
-
-    _premiumCrown = AnimationController(vsync: this);
-    WidgetsBinding.instance.addObserver(this);
+          /// exit(0) works for development, but the above is preferred
+          if (kDebugMode) exit(0);
+        },
+        type: BtnType.red,
+        child: const Text(
+          'Exit',
+          style: TextStyle(fontSize: 16),
+        ),
+      ),
+    ];
   }
 }

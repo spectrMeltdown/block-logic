@@ -1,12 +1,13 @@
 import 'package:block_logic/logic/firebase_models/feedback.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:riverpod/riverpod.dart';
 
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'generated/feedback.g.dart';
 
 @riverpod
-Stream<List<FeedbackData?>> feedback(FeedbackRef ref) async* {
+Stream<List<FeedbackData?>> feedback(Ref ref) async* {
   final db = FirebaseDatabase.instance;
   final stream = db.ref('feedback').onValue;
   await for (final query in stream) {

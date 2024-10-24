@@ -29,14 +29,6 @@ import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final timeWatcher = StateProvider.autoDispose<bool>((ref) {
-  final time = ref.watch(gameManagerProvider.select((e) => e.timeElapsed));
-  if (time >= 1560) {
-    return true;
-  }
-  return false;
-});
-
 class GameRoom extends ConsumerStatefulWidget {
   final Room room;
   const GameRoom(this.room, {super.key});
@@ -67,7 +59,8 @@ class _GameRoomState extends ConsumerState<GameRoom> {
     gameManager.resetTree();
     // gameManager.setShouldResetAllBlocks(true);
     ref.invalidate(getRootDataProvider);
-    ref.invalidate(shouldResetAllBlocksProvider);
+    ref.invalidate(gameManagerProvider);
+    // ref.invalidate(shouldResetAllBlocksProvider);
 
     final assets = ref.read(assetsProvider);
     final sharedPref = ref.read(sharedPrefProvider);
@@ -94,15 +87,18 @@ class _GameRoomState extends ConsumerState<GameRoom> {
     // this is a Future, but it is set to ref.watch because read will return first value only, which may still be a loading/error state
     final challenges = ref.watch(SelectedChallengesProvider(widget.room.challengeIDs!));
     final innerProcessing = ref.watch(processingProvider);
-    final timeLimitReached = ref.watch(timeWatcher);
-
+    final timeLimitReached = ref.watch(gameManagerProvider.select((e) => e.timeElapsed >= 5));
+    dPrint('Time limit (not ran): $timeLimitReached');
     if (playerLeft) {
+      dPrint('Player left: $playerLeft');
       Future.delayed(Duration.zero, () {
         playerLeave();
       });
     }
+
     // if out of challenges, go to finalize result screen
     if (timeLimitReached || challengeLength != null && currentChallenge == challengeLength) {
+      dPrint('Time limit: $timeLimitReached');
       WidgetsBinding.instance.addPostFrameCallback((_) {
         nav.pushReplace(context, FinalizingResults(widget.room.currentLeaderboardID!));
       });
@@ -132,6 +128,8 @@ class _GameRoomState extends ConsumerState<GameRoom> {
             gameManager.resetTree();
             // gameManager.setShouldResetAllBlocks(true);
             ref.invalidate(getRootDataProvider);
+            ref.invalidate(gameManagerProvider);
+
             // ref.invalidate(shouldResetAllBlocksProvider);
 
             final assets = ref.read(assetsProvider);
@@ -207,8 +205,8 @@ class _GameRoomState extends ConsumerState<GameRoom> {
 
   @override
   void dispose() {
-    sub.cancel();
     super.dispose();
+    sub.cancel();
   }
 
   @override

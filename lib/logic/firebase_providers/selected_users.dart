@@ -1,6 +1,7 @@
 import 'package:block_logic/logic/dev.dart';
 import 'package:block_logic/logic/firebase_models/user_account.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:riverpod/riverpod.dart';
 
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -8,7 +9,7 @@ part 'generated/selected_users.g.dart';
 
 @riverpod
 Future<List<UserAccount>> selectedUsers(
-  SelectedUsersRef ref,
+  Ref ref,
   List<String> ids,
 ) async {
   dPrint('IDs were: $ids');

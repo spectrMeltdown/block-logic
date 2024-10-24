@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:riverpod/riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'generated/tutorials.g.dart';
 
 @riverpod
-TutorialData tutorialData(TutorialDataRef ref) {
+TutorialData tutorialData(Ref ref) {
   return TutorialData();
 }
 

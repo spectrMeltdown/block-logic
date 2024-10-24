@@ -1,5 +1,6 @@
 import 'package:block_logic/logic/firebase_models/leaderboard.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:riverpod/riverpod.dart';
 
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -7,7 +8,7 @@ part 'generated/selected_leaderboards.g.dart';
 
 /// returns leaderboard under a given room
 @riverpod
-Stream<List<Leaderboard>?> selectedLeaderboards(SelectedLeaderboardsRef ref, String roomID) async* {
+Stream<List<Leaderboard>?> selectedLeaderboards(Ref ref, String roomID) async* {
   if (roomID.isNotEmpty) {
     final db = FirebaseDatabase.instance;
     final stream = db.ref('leaderboards').orderByChild('roomID').equalTo(roomID).onValue;

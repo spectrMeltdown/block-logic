@@ -182,9 +182,9 @@ class GameCodeBlockState extends ConsumerState<GameBlock> with SingleTickerProvi
         delay: const Duration(milliseconds: 200),
         data: widget.data, // drag target will not detect if data is null
         onDragUpdate: (details) {},
-        dragAnchorStrategy: (draggable, context, position) {
-          return const Offset(-30, 50);
-        },
+        // dragAnchorStrategy: (draggable, context, position) {
+        //   return const Offset(20, 50);
+        // },
         onDragStarted: onDragStarted,
         onDragEnd: onDragEnd,
         childWhenDragging: AnimatedOpacity(
@@ -192,25 +192,7 @@ class GameCodeBlockState extends ConsumerState<GameBlock> with SingleTickerProvi
           duration: Duration.zero,
           child: block,
         ),
-        feedback: Stack(
-          clipBehavior: Clip.none,
-          children: [
-            BLAnimationPlayer(
-              assets.pulse,
-              size: 50,
-              controller: pulseAnimation,
-              controllerActions: (pulse) {
-                pulseAnimation.duration = pulse.duration;
-                pulseAnimation.repeat(min: 0, max: 1);
-              },
-            ),
-            Positioned(
-              top: -5,
-              right: -5,
-              child: Transform.scale(scale: 0.8, child: block),
-            ),
-          ],
-        ), // the widget that follws the touch position
+        feedback: Transform.scale(scale: 0.7, child: block), // the widget that follws the touch position
         child: block);
   }
 }

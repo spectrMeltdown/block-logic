@@ -59,7 +59,7 @@ class ReturnBlockOverlay extends ConsumerWidget {
 
                 // actual removal from tree
                 gameManager.removeSelectedInSelectorUIDs();
-                gameManager.deleteSelectedData();
+                gameManager.deleteSelectedData(returnBlock: true);
 
                 ref.invalidate(getRootDataProvider);
                 ref.invalidate(getSelfDataProvider);

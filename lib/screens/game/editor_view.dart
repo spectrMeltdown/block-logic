@@ -1,4 +1,5 @@
 import 'package:block_logic/components/text/text.dart';
+import 'package:block_logic/logic/dev.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/game/block_data.dart';
 import 'package:block_logic/logic/game/logic/game_provider.dart';
@@ -17,6 +18,7 @@ class EditorView extends ConsumerWidget {
     final scrollController2 = ScrollController();
     // final validator = BlockValidator();
     final blockData = ref.watch(getRootDataProvider);
+    dPrint(blockData.toString());
     // dPrint(blockData.toString());
     Widget buildDragTarget(List<GameBlockData> blockData) {
       // dPrint(gameState.dataTree.toString());
@@ -36,7 +38,7 @@ class EditorView extends ConsumerWidget {
         onAcceptWithDetails: (dataToAccept, gameManager) {
           if (dataToAccept.state == CodeBlockState.inEditor) {
             // gameManager.moveToRoot(initData.uid!);
-            gameManager.moveToRoot(dataToAccept.uid!);
+            gameManager.moveToRoot(dataToAccept.uid!, ref);
           } else {
             gameManager.addRootData(dataToAccept);
           }

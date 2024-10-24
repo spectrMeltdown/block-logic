@@ -49,7 +49,12 @@ class SolutionChecker extends StateNotifier<SolutionCheckerState> {
       if (response.statusCode == 200) {
         dPrint('Response data: ${response.body}');
         final body = jsonDecode(response.body) as Map<String, dynamic>;
-        final output = body['result'].toString();
+        late final String output;
+        if (body['result'].toString().isEmpty && code.isNotEmpty) {
+          output = 'Empty!';
+        } else {
+          output = body['result'].toString();
+        }
         // final output = 'Code execution success:\n\n${body['result']}';
         return output;
       } else if (response.statusCode == 500) {
@@ -66,104 +71,6 @@ class SolutionChecker extends StateNotifier<SolutionCheckerState> {
       return state.errorHandler.call(e, this);
     }
   }
-
-//   Future<String?> onlineResult(String code) async {
-//     try {
-//       final url = Uri.parse(Jdoodle().executeEndpoint);
-//       final body = jsonEncode({
-//         'clientId': '152c230638b61745c6862327865fb06',
-//         'clientSecret': '5172be7d10a61698182966a70673360cf6c112dcd7bc5352b9e118c4773c5d8b',
-//         'script': code,
-//         'stdin': '',
-//         'language': 'python3',
-//         'versionIndex': '3',
-//         'compileOnly': false,
-//       });
-//       final response = await http.post(
-//         url,
-//         headers: {
-//           'Content-Type': 'application/json',
-//         },
-//         body: body,
-//       );
-
-// // {
-// //   "output": "Hello, World!\n",
-// //   "statusCode": 200,
-// //   "memory": "1024",
-// //   "cpuTime": "0.01",
-// //   "compilationStatus": 0
-// // }
-
-//       if (response.statusCode == 200) {
-//         dPrint('Response data: ${response.body}');
-//         final result = jsonDecode(response.body) as Map<String, dynamic>;
-//         final output = result['output'].toString();
-//         return output.replaceFirst(RegExp(r'jdoodle.py'), 'main.py');
-//         // return output.substring(output.indexOf(RegExp(r'Traceback (most recent call last)'), output.indexOf('')));
-//         // if (result['isExecutionSuccess']) {
-
-//         // }
-//       } else {
-//         dPrint('Request failed with status: ${response.statusCode}');
-//         dPrint('Request failed with status: ${response.body}');
-//       }
-//       return null;
-//     } catch (e) {
-//       dPrint('error here');
-//       return state.errorHandler.call(e, this);
-//     }
-//     // return null;
-//   }
-
-//   Future<String?> onlineResult(String code) async {
-//     try {
-//       final url = Uri.parse(Jdoodle().executeEndpoint);
-//       final body = jsonEncode({
-//         'clientId': '152c230638b61745c6862327865fb06',
-//         'clientSecret': '5172be7d10a61698182966a70673360cf6c112dcd7bc5352b9e118c4773c5d8b',
-//         'script': code,
-//         'stdin': '',
-//         'language': 'python3',
-//         'versionIndex': '3',
-//         'compileOnly': false,
-//       });
-//       final response = await http.post(
-//         url,
-//         headers: {
-//           'Content-Type': 'application/json',
-//         },
-//         body: body,
-//       );
-
-// // {
-// //   "output": "Hello, World!\n",
-// //   "statusCode": 200,
-// //   "memory": "1024",
-// //   "cpuTime": "0.01",
-// //   "compilationStatus": 0
-// // }
-
-//       if (response.statusCode == 200) {
-//         dPrint('Response data: ${response.body}');
-//         final result = jsonDecode(response.body) as Map<String, dynamic>;
-//         final output = result['output'].toString();
-//         return output.replaceFirst(RegExp(r'jdoodle.py'), 'main.py');
-//         // return output.substring(output.indexOf(RegExp(r'Traceback (most recent call last)'), output.indexOf('')));
-//         // if (result['isExecutionSuccess']) {
-
-//         // }
-//       } else {
-//         dPrint('Request failed with status: ${response.statusCode}');
-//         dPrint('Request failed with status: ${response.body}');
-//       }
-//       return null;
-//     } catch (e) {
-//       dPrint('error here');
-//       return state.errorHandler.call(e, this);
-//     }
-//     // return null;
-//   }
 
   Future<String?> check() async {
     final gameState = ref.read(gameManagerProvider);

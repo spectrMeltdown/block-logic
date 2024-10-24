@@ -2,13 +2,14 @@ import 'dart:async';
 
 import 'package:block_logic/logic/firebase_models/user_account.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:riverpod/riverpod.dart';
 
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'generated/all_user.g.dart';
 
 @riverpod
-Stream<List<UserAccount>> allUsers(AllUsersRef ref, {String searchQuery = ''}) async* {
+Stream<List<UserAccount>> allUsers(Ref ref, {String searchQuery = ''}) async* {
   final db = FirebaseDatabase.instance;
   final controller = StreamController<List<UserAccount>>();
   final result = <UserAccount>[];

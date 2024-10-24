@@ -1,9 +1,10 @@
+import 'package:riverpod/riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'generated/assets.g.dart';
 
 @Riverpod(keepAlive: true)
-Assets assets(AssetsRef ref) => Assets();
+Assets assets(Ref ref) => Assets();
 
 class Assets {
   /// images

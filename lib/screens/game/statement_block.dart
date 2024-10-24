@@ -66,7 +66,7 @@ class StatementBox extends ConsumerWidget {
             onWillAcceptWithDetails: (dataToAccept) {
               // dPrint('Self: ${data?.uid}');
               // dPrint('To accept: ${dataToAccept.uid}');
-              if (data?.statementUIDs?.contains(dataToAccept.uid) ?? false || dataToAccept.uid == data?.uid || dataToAccept.uid == data?.parentUID) {
+              if (dataToAccept.uid == data?.uid || dataToAccept.uid == data?.parentUID) {
                 return false;
               }
               return true;

@@ -2,13 +2,14 @@ import 'package:block_logic/logic/dev.dart';
 import 'package:block_logic/logic/services/assets.dart';
 import 'package:block_logic/logic/services/shared_pref.dart';
 import 'package:flame_audio/flame_audio.dart';
+import 'package:riverpod/riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 part 'generated/audio.g.dart';
 
 @Riverpod(keepAlive: true)
-Future<void> audioInit(AudioInitRef ref) async {
+Future<void> audioInit(Ref ref) async {
   final assets = ref.read(assetsProvider);
 // cache assets for faster loading
   await FlameAudio.audioCache.loadAll([assets.audioBG1]);

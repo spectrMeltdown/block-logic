@@ -1,12 +1,13 @@
 import 'package:block_logic/logic/firebase_models/room.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:riverpod/riverpod.dart';
 
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'generated/selected_rooms.g.dart';
 
 @riverpod
-Stream<List<Room>> selectedRooms(SelectedRoomsRef ref, String accountID, {String? searchQuery}) async* {
+Stream<List<Room>> selectedRooms(Ref ref, String accountID, {String? searchQuery}) async* {
   if (accountID.isNotEmpty) {
     final db = FirebaseDatabase.instance;
     final stream = db.ref('rooms').orderByChild('hostID').equalTo(accountID).onValue;

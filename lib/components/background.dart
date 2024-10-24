@@ -4,11 +4,10 @@ import 'package:block_logic/logic/services/ui.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:video_player/video_player.dart';
 
 class Background extends ConsumerWidget {
   final Widget child;
-  final VideoPlayerController? controller;
+  // final VideoPlayerController? controller;
   final bool grid;
   final String? asset;
   final StackFit fit;
@@ -16,7 +15,7 @@ class Background extends ConsumerWidget {
     required this.child,
     this.grid = true,
     this.fit = StackFit.loose,
-    this.controller,
+    // this.controller,
     this.asset,
     super.key,
   });
@@ -29,28 +28,25 @@ class Background extends ConsumerWidget {
       fit: fit,
       children: [
         // (asset != null)
-        //     ? BLAnimationPlayer(
-        //         asset!,
-        //         size: double.maxFinite,
-        //       )
-        (asset != null)
-            ? controller != null && controller!.value.isInitialized
-                ? VideoPlayer(controller!)
-                : const BlankWidget()
-            : Container(
-                decoration: !kIsWeb
-                    ? BoxDecoration(
-                        image: DecorationImage(
-                          image: (grid == true ? AssetImage(assets.backgroundGrid) : AssetImage(assets.backgroundNoGrid)),
-                          fit: BoxFit.cover,
-                        ),
-                      )
-                    : BoxDecoration(
-                        gradient: RadialGradient(colors: [
-                          blui.getAppColor('darkblue'),
-                          Colors.black87,
-                        ], radius: 1.5),
-                      )),
+        //     ? controller != null && controller!.value.isInitialized
+        //         ? //VideoPlayer(controller!)
+        //         : const BlankWidget()
+        //     :
+
+        Container(
+            decoration: !kIsWeb
+                ? BoxDecoration(
+                    image: DecorationImage(
+                      image: (grid == true ? AssetImage(assets.backgroundGrid) : AssetImage(assets.backgroundNoGrid)),
+                      fit: BoxFit.cover,
+                    ),
+                  )
+                : BoxDecoration(
+                    gradient: RadialGradient(colors: [
+                      blui.getAppColor('darkblue'),
+                      Colors.black87,
+                    ], radius: 1.5),
+                  )),
         Padding(padding: kIsWeb ? EdgeInsets.zero : const EdgeInsets.symmetric(horizontal: 5, vertical: 0), child: child)
       ],
     );

@@ -58,25 +58,28 @@ class GameAppbar extends ConsumerWidget {
             }
 
             // dPrint('pause timer: ${gameManager.getTimer()}');
+            bool result = false;
             final leave = await dialog.show(context, const PauseDialog());
             if (leave is bool && leave) {
               if (practiceMode) {
                 gameManager.resetTree();
                 // gameManager.setShouldResetAllBlocks(true);
-                // ref.invalidate(getRootDataProvider);
+                ref.invalidate(getRootDataProvider);
                 // ref.invalidate(shouldResetAllBlocksProvider);
+                // ref.invalidate(gameManagerProvider);
                 if (!context.mounted) return;
                 nav.pop(context);
                 nav.pop(context);
                 return;
               }
               if (!context.mounted) return;
-              final result = await showDialog(context: context, builder: (context) => const ConfirmDialog());
-              if (result is bool && result) {
+              result = await showDialog(context: context, builder: (context) => const ConfirmDialog()) ?? false;
+              if (result) {
                 final value = await gameManager.leaveGame(false);
                 dPrint(value);
                 gameManager.resetTree();
                 ref.invalidate(getRootDataProvider);
+                // ref.invalidate(gameManagerProvider);
                 // gameManager.setShouldResetAllBlocks(true);
                 // ref.invalidate(shouldResetAllBlocksProvider);
                 // ref.invalidate(shouldResetBlockProvider);

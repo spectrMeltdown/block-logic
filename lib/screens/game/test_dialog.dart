@@ -40,7 +40,7 @@ class TestDialog extends ConsumerWidget {
                 return loadingCode;
               }
 
-              if (snapshot.data == null || snapshot.data!.isEmpty) {
+              if (snapshot.data == null || !snapshot.data!.contains('Empty!') || snapshot.data!.isEmpty) {
                 return Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [

@@ -1,5 +1,6 @@
 import 'package:block_logic/logic/firebase_models/challenge.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:riverpod/riverpod.dart';
 
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -7,7 +8,7 @@ part 'generated/selected_challenge.g.dart';
 
 @riverpod
 Future<Challenge?> selectedChallenge(
-  SelectedChallengeRef ref,
+  Ref ref,
   String challengeID, {
   bool? createMode,
 }) async {

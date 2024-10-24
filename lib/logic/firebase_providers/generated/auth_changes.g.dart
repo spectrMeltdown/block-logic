@@ -6,7 +6,7 @@ part of '../auth_changes.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$authInfoChangesHash() => r'e0bc9fa3a445c9ed61e3b05d8b7d689a6e635c92';
+String _$authInfoChangesHash() => r'35af7e7be14d969dec1d4efb42df9f733cea5ccc';
 
 /// fired when update email/password/phoneNum/displayName/photoURL
 ///

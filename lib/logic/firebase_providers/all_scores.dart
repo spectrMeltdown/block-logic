@@ -2,13 +2,14 @@ import 'package:block_logic/logic/dev.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_models/score.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:riverpod/riverpod.dart';
 
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'generated/all_scores.g.dart';
 
 @riverpod
-Stream<Map<ScoreStatus, List<Score>>?> allScores(AllScoresRef ref, String leaderboardID) async* {
+Stream<Map<ScoreStatus, List<Score>>?> allScores(Ref ref, String leaderboardID) async* {
   if (leaderboardID.isNotEmpty) {
     final db = FirebaseDatabase.instance;
     final stream = db.ref('leaderboards/$leaderboardID/scores').onValue;

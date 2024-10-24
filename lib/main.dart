@@ -25,20 +25,11 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   if (!kIsWeb) {
-    // await initializeService();
     await FirebaseAppCheck.instance.activate();
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
     SystemChrome.setPreferredOrientations(
       <DeviceOrientation>[DeviceOrientation.portraitUp],
     );
-    // FlutterError.onError = (errorDetails) {
-    //   FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
-    // };
-    // Pass all uncaught asynchronous errors that aren't handled by the Flutter framework to Crashlytics
-    // PlatformDispatcher.instance.onError = (error, stack) {
-    //   FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-    //   return true;
-    // };
   } else {
     usePathUrlStrategy();
   }
@@ -73,15 +64,6 @@ class BlockLogic extends ConsumerWidget {
     }
 
     return MaterialApp.router(
-      // builder: (context, child) => ResponsiveBreakpoints.builder(
-      //   child: child!,
-      //   breakpoints: [
-      //     const Breakpoint(start: 0, end: 450, name: MOBILE),
-      //     const Breakpoint(start: 451, end: 800, name: TABLET),
-      //     const Breakpoint(start: 801, end: 1920, name: DESKTOP),
-      //     const Breakpoint(start: 1921, end: double.infinity, name: '4K'),
-      //   ],
-      // ),
       title: 'Block-Logic',
       debugShowCheckedModeBanner: false,
       builder: FToastBuilder(),
@@ -91,22 +73,3 @@ class BlockLogic extends ConsumerWidget {
     );
   }
 }
-
-// Initialize the background service
-// Future<void> initializeService() async {
-//   final service = FlutterBackgroundService();
-
-//   await service.configure(
-//     androidConfiguration: AndroidConfiguration(
-//       onStart: closeAppService, // function to run
-//       isForegroundMode: true, // persistent notification (for debug)
-//       autoStart: true, // Start automatically when the app goes to the background
-//     ),
-//     iosConfiguration: IosConfiguration(
-//       onForeground: closeAppService,
-//       autoStart: false,
-//     ),
-//   );
-
-//   service.startService();
-// }

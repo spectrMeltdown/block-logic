@@ -1,12 +1,13 @@
 import 'package:block_logic/logic/firebase_models/leaderboard.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:riverpod/riverpod.dart';
 
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'generated/selected_user_leaderboards.g.dart';
 
 @riverpod
-Stream<List<Leaderboard>> selectedUserLeaderboards(SelectedUserLeaderboardsRef ref, String uid) async* {
+Stream<List<Leaderboard>> selectedUserLeaderboards(Ref ref, String uid) async* {
   if (uid.isNotEmpty) {
     final db = FirebaseDatabase.instance;
     final stream = db.ref('leaderboards').onValue;

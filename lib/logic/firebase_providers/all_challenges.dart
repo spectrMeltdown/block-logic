@@ -2,13 +2,14 @@ import 'dart:async';
 
 import 'package:block_logic/logic/firebase_models/challenge.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:riverpod/riverpod.dart';
 
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'generated/all_challenges.g.dart';
 
 @riverpod
-Stream<List<Challenge>> challenges(ChallengesRef ref, {String searchQuery = ''}) async* {
+Stream<List<Challenge>> challenges(Ref ref, {String searchQuery = ''}) async* {
   final db = FirebaseDatabase.instance;
   final controller = StreamController<List<Challenge>>();
   db.ref('challenges').onValue.listen((event) {

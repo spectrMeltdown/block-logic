@@ -7,14 +7,12 @@ class Leaderboard {
   final String? roomName; // needs to be saved in leaderboard in case room gets deleted
   final DateTime? date;
   final int? totalScore; // refers to num of challenges
-  // final LeaderboardStatus? status;
   final List<String>? players;
   Leaderboard({
     this.roomName,
     this.id,
     this.players,
     this.roomID,
-    // this.status,
     this.date,
     this.totalScore,
   });

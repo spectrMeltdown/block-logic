@@ -1,6 +1,7 @@
 import 'package:block_logic/logic/firebase_models/challenge.dart';
 import 'package:block_logic/logic/services/error_handler.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:riverpod/riverpod.dart';
 
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -8,7 +9,7 @@ part 'generated/selected_challenges.g.dart';
 
 @riverpod
 Future<List<Challenge>> selectedChallenges(
-  SelectedChallengesRef ref,
+  Ref ref,
   List<String> challengeIDs,
 ) async {
   final errorhandler = ref.read(errorHandlerProvider.notifier);
