@@ -49,7 +49,7 @@ class GameTestBtn extends ConsumerWidget {
               barrierDismissible: false,
               builder: (context) => const TestDialog(),
             );
-            gameState.testCount++;
+            manager.incrementTestCount();
           } else if (gameState.testCount <= 10) {
             if (!context.mounted) return;
             await showDialog(

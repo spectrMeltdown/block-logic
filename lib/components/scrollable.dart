@@ -14,6 +14,7 @@ class BLScrollable extends StatelessWidget {
         child: SingleChildScrollView(
           controller: controller ?? defaultController,
           scrollDirection: scrollDirection,
+          child: child,
         ));
   }
 }

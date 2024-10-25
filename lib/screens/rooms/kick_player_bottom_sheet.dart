@@ -62,22 +62,11 @@ class _KickPlayerState extends ConsumerState<KickPlayerBottomSheet> with TickerP
         animationController: BottomSheet.createAnimationController(this),
         onClosing: () {},
         builder: (context) {
-          return room.when(
-              data: (data) {
-                if (data == null || data.players == null) {
-                  return const BLText(
-                    'Couldn\'t load the players...',
-                    color: Colors.red,
-                  );
-                }
-                if (data.players!.isEmpty) {
-                  return const BLText(
-                    'No players found.',
-                  );
-                }
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 20),
-                  child: Column(
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20),
+            child: room.when(
+                data: (data) {
+                  return Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       const Padding(
@@ -87,10 +76,19 @@ class _KickPlayerState extends ConsumerState<KickPlayerBottomSheet> with TickerP
                           children: [BLSmallTitle('Select players:'), CloseButton()],
                         ),
                       ),
+                      if (data == null || data.players == null)
+                        const BLText(
+                          'Couldn\'t load the players...',
+                          color: Colors.red,
+                        ),
+                      if (data!.players!.isEmpty)
+                        BLText(
+                          'No players found.',
+                        ),
                       ListView.builder(
                         padding: EdgeInsets.zero,
                         shrinkWrap: true,
-                        itemCount: data.players!.length,
+                        itemCount: data.players?.length,
                         itemBuilder: (context, i) {
                           if (data.players!.keys.toList()[i] == data.hostID) {
                             return const BlankWidget();
@@ -131,11 +129,11 @@ class _KickPlayerState extends ConsumerState<KickPlayerBottomSheet> with TickerP
                             },
                             child: const BLText('Kick'))
                     ],
-                  ),
-                );
-              },
-              error: genericError,
-              loading: genericLoading);
+                  );
+                },
+                error: genericError,
+                loading: genericLoading),
+          );
         });
   }
 }

@@ -13,11 +13,43 @@ part 'generated/reports_manager.g.dart';
 
 @riverpod
 class ReportsManager extends _$ReportsManager {
-  Future<String?> add(ReportType type, int count, {String dataUID = ''}) async {
+  Future<String?> add(ReportType type, {int? number}) async {
+    if (type != ReportType.challengesPlayed || type != ReportType.roomsPlayed && number != null) {
+      throw (ArgumentError('number can only be used on challengesPlayed & roomsPlayed'));
+    }
     try {
       // check because web & mobile share some screens
       if (!kIsWeb) {
-        await state._db.push().set(Report(
+        late final int count;
+        switch (type) {
+          case ReportType.rooms:
+            final rooms = await state._db.ref('rooms').get();
+            count = rooms.children.length;
+            break;
+          case ReportType.premiumUsers:
+            final premium = await state._db.ref('users').orderByChild('premiumUser').equalTo(true).get();
+            count = premium.children.length;
+            break;
+          case ReportType.basicUsers:
+            final basic = await state._db.ref('users').orderByChild('premiumUser').equalTo(false).get();
+            count = basic.children.length;
+            break;
+          case ReportType.users:
+            final users = await state._db.ref('users').get();
+            count = users.children.length;
+            break;
+          case ReportType.leaderboards:
+            final leaderboards = await state._db.ref('leaderboards').get();
+            count = leaderboards.children.length;
+            break;
+          case ReportType.challengesPlayed:
+            count = number!;
+            break;
+          case ReportType.roomsPlayed:
+            count = 1;
+            break;
+        }
+        await state._reports.push().set(Report(
               type: type,
               count: count,
               date: DateTime.now(),
@@ -35,7 +67,7 @@ class ReportsManager extends _$ReportsManager {
     try {
       // get all reports
       final List<Report> existingReports = [];
-      final docs = await state._db.get();
+      final docs = await state._reports.get();
       if (docs.exists && docs.children.isNotEmpty) {
         for (final doc in docs.children) {
           existingReports.add(Report.fromRTDB(doc));
@@ -60,7 +92,7 @@ class ReportsManager extends _$ReportsManager {
         for (final report in reportsToDelete) {
           dPrint('Deleting ${report.type}');
           if (report.id != null) {
-            state._db.child(report.id!).remove();
+            state._reports.child(report.id!).remove();
           } else {
             dPrint('report.id was null!!');
           }
@@ -72,35 +104,35 @@ class ReportsManager extends _$ReportsManager {
     }
   }
 
-  Future<String?> remove({String dataUID = '', String userUID = ''}) async {
-    if (dataUID.isEmpty && userUID.isEmpty) {
-      throw ('Provide a data or user uid!!');
-    }
-    if (dataUID.isNotEmpty && userUID.isNotEmpty) {
-      throw ('Do not provide both!!');
-    }
-    try {
-      // check because web & mobile share some screens
-      late final DataSnapshot query;
-      if (!kIsWeb) {
-        if (dataUID.isNotEmpty) {
-          query = await state._db.orderByChild('dataUID').equalTo(dataUID).get();
-        } else {
-          query = await state._db.orderByChild('userUID').equalTo(userUID).get();
-        }
-        if (query.children.isNotEmpty) {
-          for (final doc in query.children) {
-            await doc.ref.remove();
-          }
-        } else {
-          return 'Report(s) not found.';
-        }
-      }
-      return null;
-    } catch (e) {
-      return state._errorHandler.call(e, this);
-    }
-  }
+  // Future<String?> remove({String dataUID = '', String userUID = ''}) async {
+  //   if (dataUID.isEmpty && userUID.isEmpty) {
+  //     throw ('Provide a data or user uid!!');
+  //   }
+  //   if (dataUID.isNotEmpty && userUID.isNotEmpty) {
+  //     throw ('Do not provide both!!');
+  //   }
+  //   try {
+  //     // check because web & mobile share some screens
+  //     late final DataSnapshot query;
+  //     if (!kIsWeb) {
+  //       if (dataUID.isNotEmpty) {
+  //         query = await state._db.orderByChild('dataUID').equalTo(dataUID).get();
+  //       } else {
+  //         query = await state._db.orderByChild('userUID').equalTo(userUID).get();
+  //       }
+  //       if (query.children.isNotEmpty) {
+  //         for (final doc in query.children) {
+  //           await doc.ref.remove();
+  //         }
+  //       } else {
+  //         return 'Report(s) not found.';
+  //       }
+  //     }
+  //     return null;
+  //   } catch (e) {
+  //     return state._errorHandler.call(e, this);
+  //   }
+  // }
 
   @override
   ReportsState build() {
@@ -127,7 +159,8 @@ class ReportsManager extends _$ReportsManager {
 
 class ReportsState {
   final ErrorHandler _errorHandler;
-  final _db = FirebaseDatabase.instance.ref('reports');
+  final _reports = FirebaseDatabase.instance.ref('reports');
+  final _db = FirebaseDatabase.instance;
   //final AccountService _accountService;
 
   ReportsState({

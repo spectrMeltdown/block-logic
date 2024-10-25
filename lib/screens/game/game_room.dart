@@ -19,7 +19,7 @@ import 'package:block_logic/logic/game/logic/game_provider.dart';
 import 'package:block_logic/logic/services/navigation.dart';
 import 'package:block_logic/logic/services/room_manager.dart';
 import 'package:block_logic/logic/services/shared_pref.dart';
-import 'package:block_logic/logic/game/logic/should_reset_all_blocks.dart';
+import 'package:block_logic/logic/services/toast.dart';
 import 'package:block_logic/screens/game/finalizing_results.dart';
 import 'package:block_logic/screens/game/game_challenge.dart';
 import 'package:block_logic/screens/game/pause_dialog.dart';
@@ -49,6 +49,9 @@ class _GameRoomState extends ConsumerState<GameRoom> {
   int? challengeLength;
   bool playerLeft = false;
   final uid = FirebaseAuth.instance.currentUser!.uid;
+  bool timeLimitReached = false;
+  late final Toast toast;
+  late Timer timeLimitTimer;
 
   Future<void> playerLeave() async {
     dPrint('Player leave invoked');
@@ -87,11 +90,9 @@ class _GameRoomState extends ConsumerState<GameRoom> {
     // this is a Future, but it is set to ref.watch because read will return first value only, which may still be a loading/error state
     final challenges = ref.watch(SelectedChallengesProvider(widget.room.challengeIDs!));
     final innerProcessing = ref.watch(processingProvider);
-    final timeLimitReached = ref.watch(gameManagerProvider.select((e) => e.timeElapsed >= 5));
-    dPrint('Time limit (not ran): $timeLimitReached');
     if (playerLeft) {
       dPrint('Player left: $playerLeft');
-      Future.delayed(Duration.zero, () {
+      Future.microtask(() {
         playerLeave();
       });
     }
@@ -99,8 +100,13 @@ class _GameRoomState extends ConsumerState<GameRoom> {
     // if out of challenges, go to finalize result screen
     if (timeLimitReached || challengeLength != null && currentChallenge == challengeLength) {
       dPrint('Time limit: $timeLimitReached');
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        nav.pushReplace(context, FinalizingResults(widget.room.currentLeaderboardID!));
+      Future.microtask(() {
+        if (processing) return;
+        processing = true;
+        if (context.mounted) {
+          nav.pushReplace(context, FinalizingResults(widget.room.currentLeaderboardID!));
+          if (timeLimitReached) toast.showToast(context, 'Time limit reached!', type: NotifType.error);
+        }
       });
       return const PopScope(
         canPop: false,
@@ -124,11 +130,10 @@ class _GameRoomState extends ConsumerState<GameRoom> {
           final result = await showDialog(context: context, builder: (context) => const ConfirmDialog());
           if (result is bool && result) {
             final value = await gameManager.leaveGame(false);
-            dPrint(value);
-            gameManager.resetTree();
+            dPrint('Leave room: $value');
+            // gameManager.resetTree();
             // gameManager.setShouldResetAllBlocks(true);
-            ref.invalidate(getRootDataProvider);
-            ref.invalidate(gameManagerProvider);
+            // ref.invalidate(gameManagerProvider);
 
             // ref.invalidate(shouldResetAllBlocksProvider);
 
@@ -207,11 +212,26 @@ class _GameRoomState extends ConsumerState<GameRoom> {
   void dispose() {
     super.dispose();
     sub.cancel();
+    timeLimitTimer.cancel();
+  }
+
+  Timer createTimer() {
+    return Timer.periodic(Duration(seconds: 1), (timer) {
+      if (timer.tick >= 7200) {
+        // 2 hrs max
+        setState(() {
+          timeLimitReached = true;
+        });
+      }
+      // dPrint('Timer tick: ${timer.tick}');
+    });
   }
 
   @override
   void initState() {
     super.initState();
+    toast = ref.read(toastProvider.notifier);
+    timeLimitTimer = createTimer();
     final db = FirebaseDatabase.instance;
     final roomRef = db.ref('rooms/${widget.room.id}/players/$uid');
     final leaderboardsRef = db.ref('leaderboards/${widget.room.currentLeaderboardID}/scores/$uid');
@@ -237,6 +257,7 @@ class _GameRoomState extends ConsumerState<GameRoom> {
       dPrint('testing');
     });
     gameManager = ref.read(gameManagerProvider.notifier);
+    final gameState = ref.read(gameManagerProvider);
     final assets = ref.read(assetsProvider);
     final sharedPref = ref.read(sharedPrefProvider);
 
@@ -253,6 +274,8 @@ class _GameRoomState extends ConsumerState<GameRoom> {
       FlameAudio.bgm.pause();
     }
     gameManager.init(widget.room);
+    dPrint('Fresh timeElasped: ${gameState.timeElapsed}');
+    dPrint('Test Count: ${gameState.testCount}');
     sharedPref.setString('currentLeaderboardID', widget.room.currentLeaderboardID!);
     sharedPref.setString('currentRoomID', widget.room.id!);
     roomManager = ref.read(roomManagerProvider.notifier);

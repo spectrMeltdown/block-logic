@@ -2,7 +2,6 @@ import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_models/room.dart';
 import 'package:block_logic/logic/firebase_models/score.dart';
 import 'package:block_logic/logic/game/block_data.dart';
-import 'package:block_logic/logic/game/logic/game_provider.dart';
 import 'package:block_logic/logic/services/auth.dart';
 import 'package:block_logic/logic/services/error_handler.dart';
 import 'package:block_logic/logic/services/leaderboard_manager.dart';
@@ -23,6 +22,11 @@ final gameManagerProvider = StateNotifierProvider<GameManager, GameState>((ref) 
   final roomManager = ref.read(roomManagerProvider.notifier);
   final auth = ref.read(authServiceProvider.notifier);
   final sharedPref = ref.read(sharedPrefProvider);
+
+  ref.onDispose(() {
+    dPrint('disposed gameManagerProvider');
+  });
+
   return GameManager(
     scoreManager: scoreManager,
     roomManager: roomManager,
@@ -88,8 +92,7 @@ class GameManager extends StateNotifier<GameState> {
   void pauseTimer() => state.runTimer = true;
   void resumeTimer() => state.runTimer = false;
   void updateTimeElapsed() {
-    // dPrint('Time elapsed is: ${state.timeElapsed}');
-    state.timeElapsed = state.timeElapsed += 1;
+    state.timeElapsed++;
   }
 
 // initiate the manager and game
@@ -104,6 +107,21 @@ class GameManager extends StateNotifier<GameState> {
 // save for later
     state._roomID = room.id;
     state._leaderboardID = room.currentLeaderboardID;
+    state.testCount = state.sharedPref.getInt('testCount') ?? 0;
+    final savedDate = state.sharedPref.getInt('testCountLastDate');
+    state.lastDate = savedDate != null ? DateTime.fromMillisecondsSinceEpoch(savedDate) : null;
+    if (state.lastDate == null) {
+      state.sharedPref.setInt('testCountLastDate', DateTime.now().millisecondsSinceEpoch);
+    } else {
+      // only compare month and years
+      final adjustedLastDate = DateTime(2000, state.lastDate!.month, state.lastDate!.day);
+      final adjustedDate = DateTime(2000, DateTime.now().month, DateTime.now().day);
+      // if the date today is after last recorded date, reset testCount & set testCountLastDate to today
+      if (adjustedDate.isAfter(adjustedLastDate)) {
+        state.sharedPref.setInt('testCount', 0);
+        state.sharedPref.setInt('testCountLastDate', DateTime.now().millisecondsSinceEpoch);
+      }
+    }
 
     /// add self to leaderboard list of players (meaning you actually got into the game from the room)
     // await leaderboardManager.updatePlayers(_leaderboardID!, {
@@ -135,13 +153,15 @@ class GameManager extends StateNotifier<GameState> {
         timeElapsed: state.timeElapsed,
         status: isComplete ? ScoreStatus.complete : ScoreStatus.incomplete,
       );
+
       // upload final score in db
       final scoreUpdate = await state.scoreManager.update(state._leaderboardID!, finalScore);
-      dPrint(scoreUpdate);
+      dPrint('Score update result: $scoreUpdate');
+
       // get current list of players after leaving
       final leave = await state.roomManager.leaveRoom(state._roomID!);
-      dPrint(leave);
-      dPrint('2 aaa');
+      dPrint('Leave result: $leave');
+
       // if this player is the last to leave the room
       final lastPlayer = bool.tryParse(leave ?? '');
       if (lastPlayer != null && lastPlayer) {
@@ -152,32 +172,26 @@ class GameManager extends StateNotifier<GameState> {
         //     // status: LeaderboardStatus.complete,
         //   ),
         // );
-        dPrint('3 bbb');
         // reset the room status to available
-        await state.roomManager.update(Room(
+        final updateRoom = await state.roomManager.update(Room(
           id: state._roomID,
           status: RoomStatus.available,
           currentLeaderboardID: '',
         ));
-        dPrint('4 ccc');
-        // leave room successful, detach disconnection watchers
-        await FirebaseDatabase.instance.ref('rooms/${state._roomID}/players/${state._auth.getUID()}').onDisconnect().cancel();
-        await FirebaseDatabase.instance.ref('leaderboards/${state._leaderboardID}/scores/${state._auth.getUID()}').onDisconnect().cancel();
-      } else {
-        dPrint('5 ddd');
-        // leave room successful, detach disconnection watchers
-        await FirebaseDatabase.instance.ref('rooms/${state._roomID}/players/${state._auth.getUID()}').onDisconnect().cancel();
-        await FirebaseDatabase.instance.ref('leaderboards/${state._leaderboardID}/scores/${state._auth.getUID()}').onDisconnect().cancel();
-        state._processing = false;
-        return leave;
+        dPrint('Update room result: $updateRoom');
       }
+      await FirebaseDatabase.instance.ref('rooms/${state._roomID}/players/${state._auth.getUID()}').onDisconnect().cancel();
+      await FirebaseDatabase.instance.ref('leaderboards/${state._leaderboardID}/scores/${state._auth.getUID()}').onDisconnect().cancel();
       state.sharedPref.remove('currentLeaderboardID');
       state.sharedPref.remove('currentRoomID');
       state._processing = false;
-      return null;
+      return leave;
     } catch (e) {
       state._processing = false;
       return state._errorHandler.call(e, this);
+    } finally {
+      resetTree();
+      state.timeElapsed = 0;
     }
   }
 
@@ -676,34 +690,20 @@ class GameManager extends StateNotifier<GameState> {
     // }
   }
 
-  // void updateParentInSelectorUIDs() {
-  //   if (parent.argumentUIDs != null) {
-  //     parent.argumentUIDs!.removeWhere((i) => i == childUID);
-  //   }
-  //   if (parent.parameterUIDs != null) {
-  //     parent.parameterUIDs!.removeWhere((i) => i == childUID);
-  //   }
-  //   if (parent.arrayUIDs != null) {
-  //     parent.arrayUIDs!.removeWhere((i) => i == childUID);
-  //   }
-  //   if (parent.bodyUIDs != null) {
-  //     parent.bodyUIDs!.removeWhere((i) => i == childUID);
-  //   }
-  //   if (parent.conditionUIDs != null) {
-  //     parent.conditionUIDs!.removeWhere((i) => i == childUID);
-  //   }
-  //   if (parent.statementUIDs != null) {
-  //     parent.statementUIDs!.removeWhere((i) => i == childUID);
-  //   }
-  // }
+  void incrementTestCount() {
+    state.testCount++;
+    state.sharedPref.setInt('testCount', state.testCount);
+  }
 }
 
 enum ChildrenData { bodyUIDs, argumentUIDs, parameterUIDs, conditionUIDs, statementUIDs, arrayUIDs }
 
 class GameState {
+  // these three should persist
   bool dontShowAgain = false;
   bool autoProceed = false;
   int testCount = 0;
+  DateTime? lastDate;
 
   List<String> inSelectorUIDsToDelete = [];
   // Map<String, GameBlockData> inSelectorUIDsToModify = {};

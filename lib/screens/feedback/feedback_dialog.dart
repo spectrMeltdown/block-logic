@@ -4,6 +4,7 @@ import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/text/title_small.dart';
 import 'package:block_logic/components/textbox.dart';
 import 'package:block_logic/components/util/blank_widget.dart';
+import 'package:block_logic/logic/dev.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_models/feedback.dart';
 import 'package:block_logic/logic/services/auth.dart';
@@ -51,7 +52,15 @@ class _FeedbackDialogState extends ConsumerState<FeedbackDialog> {
     if (seconds != null) {
       cooldownExpire = DateTime.fromMillisecondsSinceEpoch(seconds);
     }
+
+    // if cooldown is done, remove saved variables
+    if (cooldownExpire.year != 0 && DateTime.now().isAfter(cooldownExpire)) {
+      sharedPref.remove('feedbackSentCount');
+      sharedPref.remove('cooldownExpire');
+    }
     feedbackSentCount = sharedPref.getInt('feedbackSentCount') ?? 0;
+    dPrint('Cooldown expiry: $cooldownExpire');
+    dPrint('feedbackSentCount');
   }
 
   @override
@@ -59,7 +68,7 @@ class _FeedbackDialogState extends ConsumerState<FeedbackDialog> {
     return PopScope(
       canPop: !processing,
       child: BLDialog(
-          child: cooldownExpire.year != 0 && DateTime.now().isAfter(cooldownExpire)
+          child: cooldownExpire.year != 0 && DateTime.now().isBefore(cooldownExpire)
               ? Padding(
                   padding: const EdgeInsets.all(15),
                   child: Column(
@@ -175,10 +184,10 @@ class _FeedbackDialogState extends ConsumerState<FeedbackDialog> {
                                         );
                                         if (result == null) {
                                           feedbackSentCount++;
-                                          debugPrint(feedbackSentCount.toString());
+                                          debugPrint('Updated feedback count: $feedbackSentCount');
                                           await sharedPref.setInt('feedbackSentCount', feedbackSentCount);
-                                          if (feedbackSentCount >= 5) {
-                                            await sharedPref.setInt('cooldownExpire', DateTime.now().add(Duration(days: 1)).day);
+                                          if (feedbackSentCount > 5) {
+                                            await sharedPref.setInt('cooldownExpire', DateTime.now().add(Duration(days: 1)).millisecondsSinceEpoch);
                                           }
                                           if (!context.mounted) return;
                                           nav.pop(context);

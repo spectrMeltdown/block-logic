@@ -11,7 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ReportTypeSelector extends ConsumerStatefulWidget {
-  final ReportType initial;
+  final ReportType? initial;
   const ReportTypeSelector({required this.initial, super.key});
 
   @override
@@ -22,15 +22,19 @@ class _ReportTypeSelectorState extends ConsumerState<ReportTypeSelector> {
   late final Toast toast;
   late final CustomNavigation nav;
   late final Map<ReportType, bool> selectedReports;
-  bool hasSelection = true;
+  bool hasSelection = false;
 
   @override
   void initState() {
+    super.initState();
     nav = ref.read(customNavigationProvider.notifier);
     toast = ref.read(toastProvider.notifier);
     selectedReports = {for (final report in ReportType.values) report: false};
-    selectedReports[widget.initial] = true;
-    super.initState();
+    if (widget.initial != null) {
+      selectedReports[widget.initial!] = true;
+      hasSelection = true;
+    }
+    dPrint(selectedReports.toString());
   }
 
   void updateReportType(ReportType type, bool add) {
@@ -58,10 +62,10 @@ class _ReportTypeSelectorState extends ConsumerState<ReportTypeSelector> {
       child: ListView(
         shrinkWrap: true,
         children: [
-          const BLSmallTitle('Select reports to print:'),
+          const BLSmallTitle('Select reports to generate:'),
           const SizedBox(height: 15),
           ...List.generate(selectedReports.length, (i) {
-            final reportType = ReportType.values.toList()[i];
+            final reportType = selectedReports.keys.toList()[i];
             return ReportTypeSelectorItem(
               type: reportType,
               initial: selectedReports[reportType]!,
@@ -76,7 +80,7 @@ class _ReportTypeSelectorState extends ConsumerState<ReportTypeSelector> {
               SizedBox(width: 20),
               BLAdminButton(
                 type: hasSelection ? AdminBtnType.green : AdminBtnType.grey,
-                child: const BLText('Confirm & Download'),
+                child: const BLText('Print'),
                 onPressed: () {
                   if (!hasSelection) {
                     toast.showToast(context, 'Select a report type.', type: NotifType.error);
@@ -113,14 +117,8 @@ class _ReportTypeSelectorItemState extends ConsumerState<ReportTypeSelectorItem>
 
   @override
   void initState() {
-    selected = widget.initial;
     super.initState();
-  }
-
-  void toggleSelected() {
-    setState(() {
-      selected = !selected;
-    });
+    selected = widget.initial;
   }
 
   @override
@@ -129,16 +127,11 @@ class _ReportTypeSelectorItemState extends ConsumerState<ReportTypeSelectorItem>
       padding: const EdgeInsets.all(8.0),
       child: CheckboxListTile(
         value: selected,
-        selected: selected,
         onChanged: (value) {
-          if (value != null) {
-            if (value) {
-              widget.updateReportType(widget.type, false);
-            } else {
-              widget.updateReportType(widget.type, true);
-            }
-            toggleSelected();
-          }
+          widget.updateReportType(widget.type, value!);
+          setState(() {
+            selected = value;
+          });
         },
         title: BLText(widget.type.capName()),
       ),

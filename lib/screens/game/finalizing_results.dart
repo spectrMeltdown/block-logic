@@ -74,7 +74,7 @@ class _FinalizingResultsState extends ConsumerState<FinalizingResults> {
   Future<void> leave() async {
     final result = await manager.leaveGame(true);
     if (result != null) {
-      dPrint(result);
+      dPrint('Leave result is: $result');
     } else {
       dPrint('Leave Room success');
     }
@@ -93,14 +93,16 @@ class _FinalizingResultsState extends ConsumerState<FinalizingResults> {
           if (leaderboard == null) {
             return errorWidget;
           }
-          WidgetsBinding.instance.addPostFrameCallback((duration) {
-            nav.pushReplace(
-                context,
-                SelectedLeaderboard(
-                  leaderboard,
-                  showBackButton: false,
-                  // roomTitle: widget.room.name!,
-                ));
+          Future.microtask(() {
+            if (context.mounted) {
+              nav.pushReplace(
+                  context,
+                  SelectedLeaderboard(
+                    leaderboard,
+                    showBackButton: false,
+                    // roomTitle: widget.room.name!,
+                  ));
+            }
           });
           return Scaffold(
             body: Background(child: loading),

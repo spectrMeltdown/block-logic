@@ -4,6 +4,7 @@ import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/text/title_small.dart';
 import 'package:block_logic/components/util/animation_player.dart';
 import 'package:block_logic/components/util/provider_default.dart';
+import 'package:block_logic/logic/dev.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/services/assets.dart';
 import 'package:block_logic/logic/services/navigation.dart';
@@ -39,8 +40,8 @@ class TestDialog extends ConsumerWidget {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return loadingCode;
               }
-
-              if (snapshot.data == null || !snapshot.data!.contains('Empty!') || snapshot.data!.isEmpty) {
+              dPrint('Test data is : ${snapshot.data}');
+              if (snapshot.data == null || snapshot.data!.contains('Empty!') || snapshot.data!.isEmpty) {
                 return Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [

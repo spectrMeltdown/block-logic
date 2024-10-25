@@ -15,7 +15,7 @@ import 'package:intl/intl.dart';
 import 'package:tuple/tuple.dart';
 
 class DeleteSelectorDialog extends ConsumerStatefulWidget {
-  final ReportType initialType;
+  final ReportType? initialType;
   const DeleteSelectorDialog({required this.initialType, super.key});
 
   @override
@@ -27,7 +27,7 @@ class _DeleteDialogState extends ConsumerState<DeleteSelectorDialog> {
   late final CustomNavigation nav;
   late final Map<ReportType, bool> selectedReports;
   DateTimeRange? dateRange;
-  bool hasSelection = true;
+  bool hasSelection = false;
 
   @override
   void initState() {
@@ -35,7 +35,10 @@ class _DeleteDialogState extends ConsumerState<DeleteSelectorDialog> {
     nav = ref.read(customNavigationProvider.notifier);
     toast = ref.read(toastProvider.notifier);
     selectedReports = {for (final report in ReportType.values) report: false};
-    selectedReports[widget.initialType] = true;
+    if (widget.initialType != null) {
+      selectedReports[widget.initialType!] = true;
+      hasSelection = true;
+    }
   }
 
   void updateReportType(ReportType type, bool add) {

@@ -24,10 +24,13 @@ class _GraphState extends State<Graph> {
   List<int> years = [];
   late List<int> months;
   List<FlSpot> spots = [];
+  int highestCount = 1;
 
   @override
   void initState() {
     super.initState();
+    // dPrint('Graph init called');
+    // dPrint(widget.reports.toString());
     months = List.generate(13, (i) => i)..remove(0);
     selectedMonth = months.first;
   }
@@ -38,11 +41,23 @@ class _GraphState extends State<Graph> {
 
     for (final entry in widget.reports.entries) {
       // skip if the value is empty
-      final count = entry.value.length;
+      int count = 0;
+
+      if (widget.type == ReportType.challengesPlayed || widget.type == ReportType.roomsPlayed) {
+        for (final report in entry.value) {
+          if (report.count != null) count += report.count!;
+        }
+      } else {
+        count = entry.value.length;
+      }
       if (count.isNaN || count.isInfinite || count <= 0) {
         continue;
       }
-
+      if (count > highestCount) {
+        setState(() {
+          highestCount = count;
+        });
+      }
       double time = 0;
       final reportDate = entry.key;
       switch (widget.period) {
@@ -254,6 +269,7 @@ class _GraphState extends State<Graph> {
 
   @override
   Widget build(BuildContext context) {
+    // dPrint('Graph called');
     if (years.isEmpty) {
       years = createYears();
       setState(() {
@@ -372,7 +388,11 @@ class _GraphState extends State<Graph> {
                           ],
                           gridData: FlGridData(
                             show: true, // To display the grid
-                            horizontalInterval: 1, // Spacing for horizontal grid lines
+                            horizontalInterval: highestCount >= 100
+                                ? 10
+                                : highestCount >= 50
+                                    ? 5
+                                    : 1, // Spacing for horizontal grid lines
                             verticalInterval: 1, // Spacing for vertical grid lines
                           ),
                           titlesData: FlTitlesData(
@@ -380,6 +400,7 @@ class _GraphState extends State<Graph> {
                             rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
                             bottomTitles: AxisTitles(
                               sideTitles: SideTitles(
+                                  reservedSize: 40,
                                   showTitles: true,
                                   interval: 1,
                                   getTitlesWidget: (value, meta) {
@@ -391,12 +412,24 @@ class _GraphState extends State<Graph> {
                             ),
                             leftTitles: AxisTitles(
                               sideTitles: SideTitles(
+                                  reservedSize: highestCount >= 1000
+                                      ? 40
+                                      : highestCount >= 100
+                                          ? 30
+                                          : 20,
                                   minIncluded: false,
                                   showTitles: true,
                                   // interval: spots.any((e) => e.y > 16) ? 2 : 1, // TODO: change interval if total is too big to fit
-                                  interval: 1,
+                                  interval: highestCount >= 80
+                                      ? 10
+                                      : highestCount >= 40
+                                          ? 5
+                                          : 1,
                                   getTitlesWidget: (value, meta) {
-                                    return BLText(value.toInt().toString()); // Display report count as an integer
+                                    return BLText(
+                                      value.toInt().toString(),
+                                      overflow: true,
+                                    ); // Display report count as an integer
                                   }),
                             ),
                           ),

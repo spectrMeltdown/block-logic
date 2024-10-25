@@ -76,9 +76,8 @@ class GameAppbar extends ConsumerWidget {
               result = await showDialog(context: context, builder: (context) => const ConfirmDialog()) ?? false;
               if (result) {
                 final value = await gameManager.leaveGame(false);
-                dPrint(value);
-                gameManager.resetTree();
-                ref.invalidate(getRootDataProvider);
+                dPrint('Leave Room $value');
+                // ref.invalidate(getRootDataProvider);
                 // ref.invalidate(gameManagerProvider);
                 // gameManager.setShouldResetAllBlocks(true);
                 // ref.invalidate(shouldResetAllBlocksProvider);

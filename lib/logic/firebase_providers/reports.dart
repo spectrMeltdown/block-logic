@@ -47,13 +47,16 @@ final reportsProvider = StreamProvider.family.autoDispose<Object?, ReportParams>
         }
 
         if (params.dateRange == null) {
+          dPrint('returning list instead');
           controller.add(list);
         } else {
+          dPrint('returning grouped reports');
           controller.add(groupReportsByTimePeriod(
             list.where((report) => report.date!.isAfter(params.dateRange!.start) && report.date!.isBefore(params.dateRange!.end)).toList(),
           ));
         }
       } else {
+        dPrint('snapshot.children was empty');
         controller.add({});
       }
     }).onError((e) {

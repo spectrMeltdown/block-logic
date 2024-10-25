@@ -393,8 +393,8 @@ class _SignupState extends ConsumerState<Signup> with RouteAware {
                                                     // save sessionID to shared_pref
                                                     auth.saveSessionID(sessionID);
                                                     auth.uploadSessionID(sessionID);
-                                                    await reportsManager.add(ReportType.basicUsers, 1);
-                                                    await reportsManager.add(ReportType.users, 1);
+                                                    await reportsManager.add(ReportType.basicUsers);
+                                                    await reportsManager.add(ReportType.users);
                                                   }
                                                   if (!context.mounted) return;
                                                   nav.pushReplace(context, const Checkpoint());

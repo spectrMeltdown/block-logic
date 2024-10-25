@@ -17,6 +17,7 @@ import 'package:block_logic/logic/services/auth.dart';
 import 'package:block_logic/logic/services/dialog.dart';
 import 'package:block_logic/logic/services/leaderboard_manager.dart';
 import 'package:block_logic/logic/services/navigation.dart';
+import 'package:block_logic/logic/services/reports_manager.dart';
 import 'package:block_logic/logic/services/room_manager.dart';
 import 'package:block_logic/logic/services/toast.dart';
 import 'package:block_logic/screens/game/game_room.dart';
@@ -43,6 +44,7 @@ class _WaitingRoomState extends ConsumerState<WaitingRoom> {
   late final RoomManager roomManager;
   late final Toast toast;
   late final AuthService auth;
+  late final ReportsManager reportsManager;
   late final LeaderboardManager leaderboardManager;
   bool alreadyPopped = false;
   bool playerLeave = false;
@@ -161,8 +163,11 @@ class _WaitingRoomState extends ConsumerState<WaitingRoom> {
                                 }
                                 // if host has started the game, join the game
                                 if (room.status == RoomStatus.inGame) {
-                                  WidgetsBinding.instance.addPostFrameCallback((d) {
-                                    if (!context.mounted) return;
+                                  // WidgetsBinding.instance.addPostFrameCallback((d) {
+                                  //   if (!context.mounted) return;
+                                  //   enterGame(room);
+                                  // });
+                                  Future.microtask(() {
                                     enterGame(room);
                                   });
                                 }
@@ -302,19 +307,31 @@ class _WaitingRoomState extends ConsumerState<WaitingRoom> {
   void initState() {
     super.initState();
     toast = ref.read(toastProvider.notifier);
+    reportsManager = ref.read(reportsManagerProvider.notifier);
     nav = ref.read(customNavigationProvider.notifier);
     dialog = ref.read(dialogServiceProvider.notifier);
     roomManager = ref.read(roomManagerProvider.notifier);
     auth = ref.read(authServiceProvider.notifier);
     leaderboardManager = ref.read(leaderboardManagerProvider.notifier);
-    FirebaseDatabase.instance.ref('rooms/${widget.roomID}/players/${auth.getUID()}').onDisconnect().set(false).then((status) {
-      playerLeave = true;
-    });
+    FirebaseDatabase.instance.ref('rooms/${widget.roomID}/players/${auth.getUID()}').onDisconnect().set(false);
   }
 
   void start(BuildContext context, Room room, [bool startLeave = false]) async {
     if (processing) return;
     toggleProcessing();
+    if (startLeave == true) {
+      if (room.players != null && room.players!.length <= 1) {
+        toast.showToast(context, 'You are the only player!', type: NotifType.error);
+        toggleProcessing();
+        return;
+      }
+      room = room.copyWith(
+        players: Map.fromEntries(
+          room.players!.entries.where((e) => e.key != room.hostID),
+        ),
+      );
+    }
+
     final leaderboardID = '${room.id}--${DateTime.now().millisecondsSinceEpoch}';
 
     /// create leaderboard ahead of time
@@ -338,6 +355,12 @@ class _WaitingRoomState extends ConsumerState<WaitingRoom> {
         currentLeaderboardID: leaderboardID,
       ),
     );
+
+    /// update reports
+    reportsManager.add(ReportType.roomsPlayed);
+    reportsManager.add(ReportType.challengesPlayed, number: room.challengeIDs!.length);
+    reportsManager.add(ReportType.leaderboards);
+
     // if id not returned, exit function
     if (result != null || result2 != null) {
       if (!context.mounted) return;
@@ -366,10 +389,10 @@ class _WaitingRoomState extends ConsumerState<WaitingRoom> {
     if (processing) return;
     processing = true;
     nav.pushReplace(context, GameRoom(room));
-    processing = false;
   }
 }
 
+// players that have left the game by closing it abruptly
 Future<void> removePlayersWithFalseValue(String roomID) async {
   final result = await FirebaseDatabase.instance.ref('rooms/$roomID/players').runTransaction((obj) {
     var players = (obj as Map<Object?, Object?>?)?.map((k, v) => MapEntry<String, Object?>(k as String, v as bool)).cast<String, Object?>();

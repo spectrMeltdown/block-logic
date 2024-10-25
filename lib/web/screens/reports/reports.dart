@@ -46,7 +46,6 @@ class _ReportsState extends ConsumerState<Reports> {
   bool processing = false;
   late final ReportsManager reportsManager;
   late final Toast toast;
-  final pw.Document pdf = pw.Document();
 
   @override
   void initState() {
@@ -56,11 +55,13 @@ class _ReportsState extends ConsumerState<Reports> {
     super.initState();
   }
 
-  Future<Uint8List> generatePDFBytes() async {
+  Future<Uint8List> generatePDFBytes(ReportType? selectedType) async {
+    final pw.Document pdf = pw.Document();
     pdf.addPage(
       pw.Page(
         build: (pw.Context context) {
           final name = ReportType.values.firstWhere((e) => e == selectedType).capName();
+
           return pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
@@ -70,6 +71,7 @@ class _ReportsState extends ConsumerState<Reports> {
                 style: pw.TextStyle(fontSize: 20, fontWeight: pw.FontWeight.bold),
               )),
               pw.SizedBox(height: 5),
+
               pw.Center(
                   child: pw.Text(
                 dateRange == null ? '(Total only)' : '${DateFormat('dd / MMM / y').format(dateRange!.start)} - ${DateFormat('dd / MMM / y').format(dateRange!.end)}',
@@ -101,23 +103,21 @@ class _ReportsState extends ConsumerState<Reports> {
   }
 
   Future<void> generatePdf() async {
-    if (reportsEmpty) {
+    if (reportsEmpty && selectedType != null) {
       toast.showToast(context, 'No reports found in this category!', type: NotifType.error);
       return;
     }
     final reportsToPrint = await showDialog<Map<ReportType, bool>>(
       context: context,
       builder: (context) => ReportTypeSelector(
-        initial: selectedType!,
+        initial: selectedType,
       ),
     );
     // initalize the print data
     final Map<ReportType, Map<TimePeriod, int>> printData = {for (final type in ReportType.values) type: {}};
 
-    if (reportsToPrint == null) {
-      if (!mounted) return;
-      return;
-    }
+    // no selection
+    if (reportsToPrint == null) return;
 
     // loop through selected categories
     for (final entry in reportsToPrint.entries) {
@@ -144,8 +144,17 @@ class _ReportsState extends ConsumerState<Reports> {
       }
     }
 
-    Uint8List pdfBytes = await generatePDFBytes();
-    await Printing.sharePdf(bytes: pdfBytes, filename: '${selectedType!.name}-${DateTime.now()}.pdf');
+    if (selectedType != null && reportsToPrint.length <= 1) {
+      Uint8List pdfBytes = await generatePDFBytes(selectedType);
+      await Printing.sharePdf(bytes: pdfBytes, filename: '${selectedType?.name}-${DateTime.now()}.pdf');
+    } else {
+      for (final entry in reportsToPrint.entries) {
+        if (entry.value) {
+          Uint8List pdfBytes = await generatePDFBytes(entry.key);
+          await Printing.sharePdf(bytes: pdfBytes, filename: '${entry.key.name}-${DateTime.now()}.pdf');
+        }
+      }
+    }
   }
 
   @override
@@ -411,14 +420,32 @@ class _ReportsState extends ConsumerState<Reports> {
                           printData = {for (var entry in entries) entry.key: entry.value.length};
 
                           // total overall
-                          for (final value in mapData[TimePeriod.yearly]!.values) {
-                            count += value.length;
+                          if (selectedType != null) {
+                            if (selectedType == ReportType.challengesPlayed || selectedType == ReportType.roomsPlayed) {
+                              for (final value in mapData[TimePeriod.yearly]!.values) {
+                                for (final report in value) {
+                                  if (report.count != null) count += report.count!;
+                                }
+                              }
+                            } else {
+                              for (final value in mapData[TimePeriod.yearly]!.values) {
+                                count += value.length;
+                              }
+                            }
                           }
                         }
                         // if no date range selected, list is given here
                         else {
                           final listData = reports as List<Report>;
-                          count = listData.length;
+                          if (selectedType != null) {
+                            if (selectedType == ReportType.challengesPlayed || selectedType == ReportType.roomsPlayed) {
+                              for (final report in listData) {
+                                if (report.count != null) count += report.count!;
+                              }
+                            } else {
+                              count = listData.length;
+                            }
+                          }
                         }
                         setState(() {
                           total = count;
@@ -447,73 +474,77 @@ class _ReportsState extends ConsumerState<Reports> {
                                 final monthCount = groupReports[TimePeriod.monthly]!.length;
                                 final weeklyCount = groupReports[TimePeriod.weekly]!.length;
                                 final dailyCount = groupReports[TimePeriod.daily]!.length;
+                                // dPrint('YearCount is: $yearCount');
+                                // dPrint('monthCount is: $monthCount');
+                                // dPrint('weeklyCount is: $weeklyCount');
+                                // dPrint('dailyCount is: $dailyCount');
                                 return Column(
                                   children: [
                                     BLText(
                                       TimePeriod.yearly.capitalizedName,
                                       size: 23,
                                     ),
-                                    if (yearCount > 0)
-                                      BLScrollable(
-                                        scrollDirection: Axis.horizontal,
-                                        child: IntrinsicWidth(
-                                          child: Graph(
-                                            type: selectedType!,
-                                            period: TimePeriod.yearly,
-                                            reports: groupReports[TimePeriod.yearly]!,
-                                          ),
-                                        ),
-                                      ),
-                                    if (yearCount <= 0) BLText('No reports available.'),
-                                    SizedBox(width: 20),
+                                    yearCount > 1
+                                        ? BLScrollable(
+                                            scrollDirection: Axis.horizontal,
+                                            child: IntrinsicWidth(
+                                              child: Graph(
+                                                type: selectedType!,
+                                                period: TimePeriod.yearly,
+                                                reports: groupReports[TimePeriod.yearly]!,
+                                              ),
+                                            ),
+                                          )
+                                        : BLText('No reports available.'),
+                                    SizedBox(height: 20),
                                     BLText(
                                       TimePeriod.monthly.capitalizedName,
                                       size: 23,
                                     ),
-                                    if (monthCount > 0)
-                                      BLScrollable(
-                                        scrollDirection: Axis.horizontal,
-                                        child: Graph(
-                                          type: selectedType!,
-                                          period: TimePeriod.monthly,
-                                          reports: groupReports[TimePeriod.monthly]!,
-                                        ),
-                                      ),
-                                    if (monthCount <= 0) BLText('No reports available.'),
-                                    SizedBox(width: 20),
+                                    monthCount > 1
+                                        ? BLScrollable(
+                                            scrollDirection: Axis.horizontal,
+                                            child: Graph(
+                                              type: selectedType!,
+                                              period: TimePeriod.monthly,
+                                              reports: groupReports[TimePeriod.monthly]!,
+                                            ),
+                                          )
+                                        : BLText('No reports available.'),
+                                    SizedBox(height: 20),
                                     BLText(
                                       TimePeriod.weekly.capitalizedName,
                                       size: 23,
                                     ),
-                                    if (weeklyCount > 0)
-                                      BLScrollable(
-                                        scrollDirection: Axis.horizontal,
-                                        child: IntrinsicWidth(
-                                          child: Graph(
-                                            type: selectedType!,
-                                            period: TimePeriod.weekly,
-                                            reports: groupReports[TimePeriod.weekly]!,
-                                          ),
-                                        ),
-                                      ),
-                                    if (weeklyCount <= 0) BLText('No reports available.'),
-                                    SizedBox(width: 20),
+                                    weeklyCount > 1
+                                        ? BLScrollable(
+                                            scrollDirection: Axis.horizontal,
+                                            child: IntrinsicWidth(
+                                              child: Graph(
+                                                type: selectedType!,
+                                                period: TimePeriod.weekly,
+                                                reports: groupReports[TimePeriod.weekly]!,
+                                              ),
+                                            ),
+                                          )
+                                        : BLText('No reports available.'),
+                                    SizedBox(height: 20),
                                     BLText(
                                       TimePeriod.daily.capitalizedName,
                                       size: 23,
                                     ),
-                                    if (dailyCount > 0)
-                                      BLScrollable(
-                                        scrollDirection: Axis.horizontal,
-                                        child: IntrinsicWidth(
-                                          child: Graph(
-                                            type: selectedType!,
-                                            period: TimePeriod.daily,
-                                            reports: groupReports[TimePeriod.daily]!,
-                                          ),
-                                        ),
-                                      ),
-                                    if (dailyCount <= 0) BLText('No reports available.'),
+                                    dailyCount > 1
+                                        ? BLScrollable(
+                                            scrollDirection: Axis.horizontal,
+                                            child: IntrinsicWidth(
+                                              child: Graph(
+                                                type: selectedType!,
+                                                period: TimePeriod.daily,
+                                                reports: groupReports[TimePeriod.daily]!,
+                                              ),
+                                            ),
+                                          )
+                                        : BLText('No reports available.'),
                                   ],
                                 );
                               }),
@@ -557,7 +588,7 @@ class _ReportsState extends ConsumerState<Reports> {
     final result = await showDialog(
         context: context,
         builder: (context) => DeleteSelectorDialog(
-              initialType: selectedType!,
+              initialType: selectedType,
             ));
     if (result is Tuple2<List<ReportType>, DateTimeRange>) {
       final deleteResult = await reportsManager.delete(result.item1, result.item2);

@@ -1,14 +1,19 @@
 import 'package:block_logic/components/background.dart';
 import 'package:block_logic/components/button/back.dart';
 import 'package:block_logic/components/card/card.dart';
+import 'package:block_logic/components/dialog/confirm.dart';
+import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/text/title_small.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_models/challenge.dart';
 import 'package:block_logic/logic/game/logic/all_blocks.dart';
+import 'package:block_logic/logic/services/assets.dart';
 import 'package:block_logic/logic/services/navigation.dart';
+import 'package:block_logic/logic/services/shared_pref.dart';
 import 'package:block_logic/logic/services/ui.dart';
 import 'package:block_logic/logic/dev.dart';
 import 'package:block_logic/screens/game/game_challenge.dart';
+import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -20,7 +25,25 @@ class TutorialChallengeSelector extends ConsumerWidget {
   Widget build(BuildContext context, ref) {
     final List<Challenge> practiceChallenges = [
       Challenge(
+        id: 'testing1',
+        name: 'Sum of two numbers',
+        shortDescription: 'Write a program that assigns two numbers and outputs their sum.',
+        additionalInfo: 'Involves simple arithmetic operations in Python.',
+        blocks: AllBlocks().sumOfTwoNumbers(),
+        difficulty: Difficulty.beginner,
+        solutionMatch: ['The sum is: 15'],
+      ),
+      Challenge(
         id: 'testing2',
+        name: '"Hello, World!"',
+        shortDescription: 'Print the string "Hello, World!" to the console.',
+        additionalInfo: 'Simple printing in Python.',
+        blocks: AllBlocks().helloWorld(),
+        difficulty: Difficulty.beginner,
+        solutionMatch: ['Hello, World!'],
+      ),
+      Challenge(
+        id: 'testing3',
         name: 'Give me a five!',
         shortDescription: 'Print the number 5',
         additionalInfo: 'This should be a simple one..',
@@ -30,6 +53,7 @@ class TutorialChallengeSelector extends ConsumerWidget {
       ),
       if (kDebugMode)
         Challenge(
+          id: 'testing',
           blocks: AllBlocks().getAll(),
           difficulty: Difficulty.advanced,
           shortDescription: 'No Challenge here!',
@@ -87,20 +111,86 @@ class TutorialChallengeSelectorItem extends ConsumerWidget {
           onPressed: () {
             nav.push(
                 context,
-                Scaffold(
-                  body: Background(
-                      child: SafeArea(
-                          child: GameChallenge(
-                    key: ValueKey(challenge.id),
-                    currentChallenge: 0,
-                    roomName: 'Practice Room',
-                    challenge: challenge,
-                    challengeCount: 1,
-                    practiceMode: true,
-                  ))),
+                TutorialGameChallenge(
+                  challenge: challenge,
                 ));
           },
-          child: Center(child: BLSmallTitle(challenge.name ?? ''))),
+          child: Center(
+              child: Column(
+            children: [
+              BLText(
+                challenge.name ?? '',
+                size: 20,
+                softWrap: true,
+                bold: true,
+              ),
+              BLText(
+                '${challenge.difficulty?.capName()}',
+              ),
+            ],
+          ))),
+    );
+  }
+}
+
+class TutorialGameChallenge extends ConsumerWidget {
+  final Challenge challenge;
+  const TutorialGameChallenge({required this.challenge, super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    // final nav = ref.read(customNavigationProvider.notifier);
+    final assets = ref.read(assetsProvider);
+    final sharedPref = ref.read(sharedPrefProvider);
+
+    /// check if a backgroundMusic setting exists
+    final backgroundMusic = sharedPref.getBool('backgroundMusic');
+    if (backgroundMusic == null || backgroundMusic == true) {
+      /// initialize the audio
+      FlameAudio.bgm.play(assets.audioBG1);
+    } else {
+      /// play silently to load the track
+      FlameAudio.bgm.play(assets.audioBGGame, volume: 0);
+
+      /// pause after track loaded
+      FlameAudio.bgm.pause();
+    }
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+        final shouldLeave = await showDialog(context: context, builder: (context) => const ConfirmDialog()) ?? false;
+        if (shouldLeave is bool && shouldLeave) {
+// final nav = ref.read(customNavigationProvider.notifier);
+          final assets = ref.read(assetsProvider);
+          final sharedPref = ref.read(sharedPrefProvider);
+
+          /// check if a backgroundMusic setting exists
+          final backgroundMusic = sharedPref.getBool('backgroundMusic');
+          if (backgroundMusic == null || backgroundMusic == true) {
+            /// initialize the audio
+            FlameAudio.bgm.play(assets.audioBG1);
+          } else {
+            /// play silently to load the track
+            FlameAudio.bgm.play(assets.audioBG1, volume: 0);
+
+            /// pause after track loaded
+            FlameAudio.bgm.pause();
+          }
+        }
+      },
+      child: Scaffold(
+        body: Background(
+            child: SafeArea(
+                child: GameChallenge(
+          key: ValueKey(challenge.id),
+          currentChallenge: 0,
+          roomName: 'Practice Room',
+          challenge: challenge,
+          challengeCount: 1,
+          practiceMode: true,
+        ))),
+      ),
     );
   }
 }

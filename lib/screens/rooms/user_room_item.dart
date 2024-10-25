@@ -82,7 +82,10 @@ class _UserRoomItemState extends ConsumerState<UserRoomItem> {
             onLongPress: () async {
               final result = await showDialog(
                 context: context,
-                builder: (context) => InGameControlsDialog(widget.room.id!),
+                builder: (context) => InGameControlsDialog(
+                  widget.room.id!,
+                  notWaitingRoom: true,
+                ),
               );
               if (result is String && result == 'kickPlayer') {
                 if (!context.mounted) return;

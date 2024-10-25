@@ -272,8 +272,17 @@ class AccountSettingsWidget extends ConsumerWidget {
                                 // dPrint('Reauth result = $reauth');
                                 if (reauth == null) {
                                   if (!kIsWeb) {
-                                    await reportManager.remove(userUID: user.uid);
+                                    // await reportManager.add();
                                   }
+                                  final isPremium = await accountService.isPremium(auth.getUID());
+                                  if (isPremium != null) {
+                                    if (isPremium) {
+                                      reportManager.add(ReportType.premiumUsers);
+                                    } else {
+                                      reportManager.add(ReportType.basicUsers);
+                                    }
+                                  }
+                                  reportManager.add(ReportType.users);
                                   await auth.deleteAccount();
                                   if (!context.mounted) return;
                                   nav.pushAndRemove(context, const Checkpoint());

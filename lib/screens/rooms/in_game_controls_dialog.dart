@@ -67,7 +67,10 @@ class _InGameControlsState extends ConsumerState<InGameControlsDialog> {
               final String? result = await roomM.removePlayers(widget.roomID, [], removeAll: true);
               if (result == null) {
                 if (!context.mounted) return;
-                if (!widget.notWaitingRoom) {
+                if (widget.notWaitingRoom) {
+                  nav.pop(context);
+                  nav.pop(context);
+                } else {
                   nav.pop(context);
                 }
               } else {

@@ -17,7 +17,6 @@ import 'package:block_logic/logic/services/navigation.dart';
 import 'package:block_logic/logic/services/shared_pref.dart';
 import 'package:block_logic/logic/services/ui.dart';
 import 'package:block_logic/screens/feedback/random_dialog.dart';
-import 'package:block_logic/screens/game/game_room.dart';
 import 'package:block_logic/screens/leaderboard/top_three_players.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -324,36 +323,6 @@ class _LeaderboardState extends ConsumerState<SelectedLeaderboard> {
                                     ],
                                   ),
                                 );
-                                // return ListView.builder(
-                                //   shrinkWrap: true,
-                                //   padding: EdgeInsets.zero,
-                                //   itemCount: (lists[0].length + lists[1].length + lists[2].length),
-                                //   itemBuilder: (context, i) {
-                                //     return Column(
-                                //       children: [
-
-                                //         const BLText('Pending'),
-                                //         ...List.generate(pending!.length, (i) {
-                                //           return SelectedLeaderboardItem(
-                                //             rank: i,
-                                //             playerUID: pending[i].id!,
-                                //             time: DateTime.fromMillisecondsSinceEpoch(pending[i].timeElapsed!),
-                                //             score: pending[i].playerScore!,
-                                //           );
-                                //         }),
-                                //         const BLText('Incomplete'),
-                                //         ...List.generate(incomplete!.length, (i) {
-                                //           return SelectedLeaderboardItem(
-                                //             rank: i,
-                                //             playerUID: incomplete[i].id!,
-                                //             time: DateTime.fromMillisecondsSinceEpoch(incomplete[i].timeElapsed!),
-                                //             score: incomplete[i].playerScore!,
-                                //           );
-                                //         }),
-                                //       ],
-                                //     );
-                                //   },
-                                // );
                               },
                               error: genericError,
                               loading: genericLoading)

@@ -128,12 +128,13 @@ class _VerifyEmailState extends ConsumerState<VerifyEmail> with TickerProviderSt
       if (isEmailVerified) {
         timer.cancel();
         sharedPref.remove('emailSent');
-        WidgetsBinding.instance.addPostFrameCallback((_) {
+        Future.microtask(() {
           // if(!context.mounted) return; toast.showToast(context,'Email verified successfully');
           if (kIsWeb) {
+            if (!mounted) return;
             context.go('/dashboard');
           } else {
-            if (!context.mounted) return;
+            if (!mounted) return;
             nav.pushAndRemove(context, const Checkpoint());
           }
         });

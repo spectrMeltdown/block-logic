@@ -22,7 +22,7 @@ class PremiumPromptDialog extends ConsumerStatefulWidget {
 
 class _PremiumPromptDialogState extends ConsumerState<PremiumPromptDialog> {
   late final CustomNavigation nav;
-  late final ReportsManager reportManager;
+  late final ReportsManager reportsManager;
   late final AccountService accountS;
   late final AuthService auth;
   bool processing = false;
@@ -33,7 +33,7 @@ class _PremiumPromptDialogState extends ConsumerState<PremiumPromptDialog> {
     nav = ref.read(customNavigationProvider.notifier);
     auth = ref.read(authServiceProvider.notifier);
     accountS = ref.read(accountServiceProvider.notifier);
-    reportManager = ref.read(reportsManagerProvider.notifier);
+    reportsManager = ref.read(reportsManagerProvider.notifier);
   }
 
   @override
@@ -108,9 +108,9 @@ class _PremiumPromptDialogState extends ConsumerState<PremiumPromptDialog> {
                   setState(() {
                     processing = true;
                   });
-                  await reportManager.add(ReportType.premiumUsers, 1);
                   // TODO: add removal of basic user, update user to premium
                   await accountS.update(user: UserAccount(id: auth.getUID(), premiumUser: true));
+                  await reportsManager.add(ReportType.premiumUsers);
                   if (!context.mounted) return;
                   await showDialog(context: context, builder: (context) => ThankYouDialog());
                   if (!context.mounted) return;

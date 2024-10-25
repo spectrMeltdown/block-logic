@@ -16,6 +16,7 @@ import 'package:block_logic/logic/firebase_models/room.dart';
 import 'package:block_logic/logic/firebase_providers/selected_rooms.dart';
 import 'package:block_logic/logic/services/creator_mode.dart';
 import 'package:block_logic/logic/services/navigation.dart';
+import 'package:block_logic/logic/services/reports_manager.dart';
 import 'package:block_logic/logic/services/toast.dart';
 import 'package:block_logic/logic/services/validator_text.dart';
 import 'package:block_logic/screens/creator_mode/challange_selector.dart';
@@ -45,6 +46,7 @@ class _AddRoomBottomSheetState extends ConsumerState<AddRoomBottomSheet> {
   final newRoomFormKey = GlobalKey<FormState>();
   late final TextValidator textValidator;
   late final Toast toast;
+  late final ReportsManager reportsManager;
   late final CreatorModeManager creatorMode;
   late final CustomNavigation nav;
   final scrollController = ScrollController();
@@ -319,6 +321,7 @@ class _AddRoomBottomSheetState extends ConsumerState<AddRoomBottomSheet> {
                                                         errorMsg = BLText(error);
                                                       });
                                                     } else {
+                                                      reportsManager.add(ReportType.rooms);
                                                       if (!context.mounted) return;
                                                       nav.pop(context);
                                                     }
@@ -379,6 +382,7 @@ class _AddRoomBottomSheetState extends ConsumerState<AddRoomBottomSheet> {
     creatorMode = ref.read(creatorModeManagerProvider.notifier);
     toast = ref.read(toastProvider.notifier);
     nav = ref.read(customNavigationProvider.notifier);
+    reportsManager = ref.read(reportsManagerProvider.notifier);
     super.initState();
   }
 
