@@ -15,6 +15,6 @@ class AccountModel extends TimestampModel {
     this.displayName,
     this.profilePicLink,
     this.phoneNum,
-    super.createdAt,
+    super.createdOn,
   });
 }

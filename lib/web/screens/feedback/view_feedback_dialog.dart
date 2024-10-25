@@ -67,8 +67,8 @@ class _SelectedFeedbackState extends ConsumerState<ViewFeedback> {
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const BLText('Created at: '),
-                        BLText(feedback.createdAt == null ? '--' : DateFormat('dd/MM/yyyy').format(feedback.createdAt!)),
+                        const BLText('Created on: '),
+                        BLText(feedback.createdOn == null ? '--' : DateFormat('dd/MM/yyyy').format(feedback.createdOn!)),
                       ],
                     ),
                     Row(

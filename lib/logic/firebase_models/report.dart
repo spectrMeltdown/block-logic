@@ -20,7 +20,7 @@ class Report {
     this.dataUID,
     // this.startDate,
     // this.endDate,
-    // super.createdAt,
+    // super.createdOn,
   });
 
   factory Report.fromRTDB(Object? doc, [String? key]) {
@@ -66,8 +66,8 @@ class Report {
     // data: data['data'] ?? '',
     // startDate: (data['startDate'] as ServerValue.timestamp).toDate(),
     // endDate: (data['endDate'] as ServerValue.timestamp).toDate(),
-    // createdAt: data['createdAt'] == null ? null : (data['createdAt'] as ServerValue.timestamp).toDate(),
-    // modifiedAt: (data['modifiedAt'] as ServerValue.timestamp).toDate(),
+    // createdOn: data['createdOn'] == null ? null : (data['createdOn'] as ServerValue.timestamp).toDate(),
+    // modifiedOn: (data['modifiedOn'] as ServerValue.timestamp).toDate(),
     return Report(
       id: doc is DataSnapshot && doc.key != null ? doc.key : key,
       count: data['count'],
@@ -98,11 +98,11 @@ class Report {
     if (dataUID != null) {
       toJSONMap.addAll({'dataUID': dataUID});
     }
-    // if (createdAt != null) {
-    //   toJSONMap.addAll({'createdAt': ServerValue.timestamp.fromDate(createdAt!)});
+    // if (createdOn != null) {
+    //   toJSONMap.addAll({'createdOn': ServerValue.timestamp.fromDate(createdOn!)});
     // }
-    // if (modifiedAt != null) {
-    //   toJSONMap.addAll({'modifiedAt': modifiedAt});
+    // if (modifiedOn != null) {
+    //   toJSONMap.addAll({'modifiedOn': modifiedOn});
     // }
     // if (data != null) {
     //   toJSONMap.addAll({'data': data});

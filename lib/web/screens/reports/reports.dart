@@ -41,7 +41,7 @@ class _ReportsState extends ConsumerState<Reports> {
   ReportType? selectedType;
   DateTimeRange? dateRange = kDebugMode ? DateTimeRange(start: DateTime(2024, 9, 25), end: DateTime.now()) : null;
   int total = 0;
-  Map<TimePeriod, int> printData = {};
+  Map<ReportType, Map<TimePeriod, Map<ReportDate, int>>> printData = {};
   bool reportsEmpty = false;
   bool processing = false;
   late final ReportsManager reportsManager;
@@ -55,45 +55,125 @@ class _ReportsState extends ConsumerState<Reports> {
     super.initState();
   }
 
-  Future<Uint8List> generatePDFBytes(ReportType? selectedType) async {
-    final pw.Document pdf = pw.Document();
-    pdf.addPage(
-      pw.Page(
-        build: (pw.Context context) {
-          final name = ReportType.values.firstWhere((e) => e == selectedType).capName();
-
-          return pw.Column(
-            crossAxisAlignment: pw.CrossAxisAlignment.start,
-            children: [
-              pw.Center(
-                  child: pw.Text(
-                'Block-Logic $name Report',
-                style: pw.TextStyle(fontSize: 20, fontWeight: pw.FontWeight.bold),
-              )),
-              pw.SizedBox(height: 5),
-
-              pw.Center(
-                  child: pw.Text(
-                dateRange == null ? '(Total only)' : '${DateFormat('dd / MMM / y').format(dateRange!.start)} - ${DateFormat('dd / MMM / y').format(dateRange!.end)}',
-                style: const pw.TextStyle(fontSize: 14),
-              )),
-              pw.SizedBox(height: 20),
-              pw.Text('Created at: ${DateFormat('MMMM d, y, hh:mm a').format(DateTime.now())}'),
-              pw.SizedBox(height: 10),
-              pw.Text('Total $name: $total', style: const pw.TextStyle(fontSize: 20)),
-              // if (from != null || to != null) pw.SizedBox(height: 10),
-              if (dateRange != null) pw.SizedBox(height: 10),
-              // if (from != null || to != null)
-              if (dateRange != null)
-                ...printData.entries.map((entry) {
-                  return pw.Text('${entry.key.name}: ${entry.value}', style: const pw.TextStyle(fontSize: 20));
-                })
-            ],
-          );
-        },
-      ),
+  pw.Widget pad(pw.Widget widget) {
+    return pw.Padding(
+      padding: pw.EdgeInsets.all(5),
+      child: widget,
     );
+  }
+
+  Future<Uint8List> generatePDFBytes() async {
+    final pw.Document pdf = pw.Document();
+    // create new page for each type
+    dPrint('DATA TO PRINT: $printData');
+    for (final type in printData.entries) {
+      pdf.addPage(
+        pw.Page(
+          build: (pw.Context context) {
+            final name = type.key.capName();
+            int total = 0;
+            for (final timePeriod in type.value.entries) {
+              if (type.key == ReportType.challengesPlayed || type.key == ReportType.roomsPlayed) {
+                for (final reportDate in timePeriod.value.entries) {
+                  total += reportDate.value;
+                }
+              } else {
+                total = timePeriod.value.values.length;
+              }
+            }
+            return pw.Column(
+              crossAxisAlignment: pw.CrossAxisAlignment.start,
+              children: [
+                pw.Center(
+                    child: pw.Text(
+                  'Block-Logic $name Report',
+                  style: pw.TextStyle(fontSize: 20, fontWeight: pw.FontWeight.bold),
+                )),
+                pw.SizedBox(height: 5),
+
+                pw.Center(
+                    child: pw.Text(
+                  dateRange == null ? '(Total only)' : '${DateFormat('MMM dd, y').format(dateRange!.start)} - ${DateFormat('MMM dd, y').format(dateRange!.end)}',
+                  style: const pw.TextStyle(fontSize: 14),
+                )),
+                pw.SizedBox(height: 20),
+                pw.Text('Created on: ${DateFormat('MMMM d, y, hh:mm a').format(DateTime.now())}'),
+                pw.SizedBox(height: 10),
+                pw.Text('Total $name: $total', style: const pw.TextStyle(fontSize: 20)),
+
+                // print the totals per timeperiod
+                if (dateRange != null) pw.SizedBox(height: 10),
+                // if (dateRange != null)
+                //   ...printData.entries.map((entry) {
+                //     return pw.Text('${entry.key.name}: ${entry.value}', style: const pw.TextStyle(fontSize: 20));
+                //   }),
+                if (dateRange != null)
+                  pw.Column(
+                    children: List.generate(type.value.entries.length, (i) {
+                      final timePeriod = type.value.entries.toList()[i];
+                      final reportDates = timePeriod.value.entries.toList()..sort((a, b) => compareReportDate(a.key, b.key));
+                      return pw.Padding(
+                          padding: pw.EdgeInsets.symmetric(vertical: 10),
+                          child: pw.Table(
+                            border: pw.TableBorder.all(),
+                            defaultColumnWidth: pw.FlexColumnWidth(1),
+                            children: [
+                              pw.TableRow(
+                                children: [
+                                  pad(pw.Text('${timePeriod.key.formalName}(s)', style: pw.TextStyle(fontWeight: pw.FontWeight.bold))),
+                                  pad(pw.Text('Count', style: pw.TextStyle(fontWeight: pw.FontWeight.bold))),
+                                ],
+                              ),
+                              ...List.generate(reportDates.length, (i) {
+                                final dateEntry = reportDates[i];
+                                final date = DateTime(dateEntry.key.year ?? 2024, dateEntry.key.month ?? DateTime.now().month, dateEntry.key.day ?? DateTime.now().day);
+                                switch (timePeriod.key) {
+                                  case TimePeriod.yearly:
+                                    return pw.TableRow(children: [
+                                      pad(pw.Text('   ${DateFormat('y').format(date)}')),
+                                      pad(pw.Text('${dateEntry.value}')),
+                                    ]);
+                                  case TimePeriod.monthly:
+                                    return pw.TableRow(children: [
+                                      pad(pw.Text('   ${DateFormat('MMMM').format(date)}')),
+                                      pad(pw.Text('${dateEntry.value}')),
+                                    ]);
+                                  case TimePeriod.weekly:
+                                    return pw.TableRow(children: [
+                                      pad(pw.Text('   Week ${dateEntry.key.week}')),
+                                      pad(pw.Text('${dateEntry.value}')),
+                                    ]);
+                                  case TimePeriod.daily:
+                                    return pw.TableRow(children: [
+                                      pad(pw.Text('   Day ${DateFormat('d').format(date)}')),
+                                      pad(pw.Text('${dateEntry.value}')),
+                                    ]);
+                                }
+                              })
+                            ],
+                          ));
+                    }),
+                  )
+              ],
+            );
+          },
+        ),
+      );
+    }
     return pdf.save();
+  }
+
+  int compareReportDate(ReportDate a, ReportDate b) {
+    if (a.year != b.year) {
+      return (a.year ?? 0).compareTo(b.year ?? 0);
+    }
+    if (a.month != b.month) {
+      return (a.month ?? 0).compareTo(b.month ?? 0);
+    }
+    if (a.week != b.week) {
+      return (a.week ?? 0).compareTo(b.week ?? 0);
+    }
+    return (a.day ?? 0).compareTo(b.day ?? 0);
   }
 
   void toggleProcessing() {
@@ -107,53 +187,52 @@ class _ReportsState extends ConsumerState<Reports> {
       toast.showToast(context, 'No reports found in this category!', type: NotifType.error);
       return;
     }
+
     final reportsToPrint = await showDialog<Map<ReportType, bool>>(
       context: context,
       builder: (context) => ReportTypeSelector(
         initial: selectedType,
       ),
     );
-    // initalize the print data
-    final Map<ReportType, Map<TimePeriod, int>> printData = {for (final type in ReportType.values) type: {}};
 
     // no selection
     if (reportsToPrint == null) return;
+    printData.clear();
 
     // loop through selected categories
-    for (final entry in reportsToPrint.entries) {
-      // if not equal to current selected type & is selected
-      if (entry.value && entry.key != selectedType) {
+    for (final reportToPrint in reportsToPrint.entries) {
+      // if report was selected
+      if (reportToPrint.value) {
         // get the new category of reports
-        final newCategory = await ref.read(reportsProvider(ReportParams(
+        final timePeriods = await ref.read(reportsProvider(ReportParams(
           dateRange: dateRange,
-          stream: streams.entries.firstWhere((e) => e.key == entry.key).value,
+          stream: streams.entries.firstWhere((e) => e.key == reportToPrint.key).value,
         )).future) as Map<TimePeriod, Map<ReportDate, List<Report>>>;
 
-        //construct count of the new category
-        final Map<TimePeriod, int> newCategoryCount = {for (final category in newCategory.keys) category: 0};
-        for (final category in newCategory.entries) {
-          newCategoryCount[category.key] = category.value.length;
+        // dPrint('TIME PERIODS: $timePeriods');
+        for (final timePeriod in timePeriods.entries) {
+          for (final reportDate in timePeriod.value.entries) {
+            for (final report in reportDate.value) {
+              // ensure no null values when accessing deep in map
+              printData.putIfAbsent(reportToPrint.key, () => {}).putIfAbsent(timePeriod.key, () => {}).putIfAbsent(reportDate.key, () => 0);
+              if (reportToPrint.key == ReportType.challengesPlayed || reportToPrint.key == ReportType.roomsPlayed) {
+                if (report.count != null) {
+                  // replace the value in the map
+                  printData[reportToPrint.key]![timePeriod.key]![reportDate.key] = printData[reportToPrint.key]![timePeriod.key]![reportDate.key]! + report.count!;
+                }
+              } else {
+                printData[reportToPrint.key]![timePeriod.key]![reportDate.key] = reportDate.value.length;
+              }
+            }
+          }
         }
-
-        // add the new count to the printData
-        printData[entry.key] = newCategoryCount;
-      }
-      // add the selectedType (or entry.key) to the printData, if selected
-      else if (entry.value) {
-        printData[entry.key] = this.printData;
       }
     }
-
-    if (selectedType != null && reportsToPrint.length <= 1) {
-      Uint8List pdfBytes = await generatePDFBytes(selectedType);
-      await Printing.sharePdf(bytes: pdfBytes, filename: '${selectedType?.name}-${DateTime.now()}.pdf');
+    Uint8List pdfBytes = await generatePDFBytes();
+    if (printData.entries.length == 1) {
+      await Printing.sharePdf(bytes: pdfBytes, filename: '${printData.entries.first.key.name}-${DateTime.now()}.pdf');
     } else {
-      for (final entry in reportsToPrint.entries) {
-        if (entry.value) {
-          Uint8List pdfBytes = await generatePDFBytes(entry.key);
-          await Printing.sharePdf(bytes: pdfBytes, filename: '${entry.key.name}-${DateTime.now()}.pdf');
-        }
-      }
+      await Printing.sharePdf(bytes: pdfBytes, filename: 'report-${DateTime.now()}.pdf');
     }
   }
 
@@ -414,12 +493,10 @@ class _ReportsState extends ConsumerState<Reports> {
                         int count = 0;
                         // returns map if dateRange selected
                         if (reports is Map) {
-                          dPrint('Reports is map');
+                          // dPrint('Reports is map');
                           final mapData = reports as Map<TimePeriod, Map<ReportDate, List<Report>>>;
-                          final entries = mapData.entries.toList();
-                          printData = {for (var entry in entries) entry.key: entry.value.length};
 
-                          // total overall
+                          // total
                           if (selectedType != null) {
                             if (selectedType == ReportType.challengesPlayed || selectedType == ReportType.roomsPlayed) {
                               for (final value in mapData[TimePeriod.yearly]!.values) {
@@ -455,7 +532,7 @@ class _ReportsState extends ConsumerState<Reports> {
                           // mainAxisSize: MainAxisSize.min,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            BLSmallTitle('Overall Total: $total'),
+                            BLSmallTitle('Total: $total'),
                             Padding(
                               padding: EdgeInsets.symmetric(horizontal: 70),
                               child: Divider(

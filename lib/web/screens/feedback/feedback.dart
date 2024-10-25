@@ -11,7 +11,7 @@ class FeedbackManager extends ConsumerStatefulWidget {
   ConsumerState<FeedbackManager> createState() => _FeedbackManagerState();
 }
 
-enum FeedbackProps { title, message, user, createdAt }
+enum FeedbackProps { title, message, user, createdOn }
 
 class _FeedbackManagerState extends ConsumerState<FeedbackManager> {
   final pageScrollController = ScrollController();

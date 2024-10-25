@@ -7,7 +7,7 @@ class AdminAccount extends AccountModel {
     super.id,
     super.displayName,
     super.profilePicLink,
-    super.createdAt,
+    super.createdOn,
   });
 
   factory AdminAccount.fromRTDB(Object? doc, [String? key]) {
@@ -23,7 +23,7 @@ class AdminAccount extends AccountModel {
 
     return AdminAccount(
       id: doc is DataSnapshot && doc.key != null ? doc.key : key,
-      createdAt: data['createdAt'] == null ? null : DateTime.fromMillisecondsSinceEpoch(data['createdAt']),
+      createdOn: data['createdOn'] == null ? null : DateTime.fromMillisecondsSinceEpoch(data['createdOn']),
       displayName: data['displayName'] ?? '',
       profilePicLink: data['profilePicLink'] ?? '',
     );
@@ -31,8 +31,8 @@ class AdminAccount extends AccountModel {
 
   Map<String, dynamic> toJSON() {
     Map<String, dynamic> toJSONMap = {};
-    if (createdAt != null) {
-      toJSONMap.addAll({'createdAt': createdAt!.millisecondsSinceEpoch});
+    if (createdOn != null) {
+      toJSONMap.addAll({'createdOn': createdOn!.millisecondsSinceEpoch});
     }
     if (displayName != null) {
       toJSONMap.addAll({'displayName': displayName});

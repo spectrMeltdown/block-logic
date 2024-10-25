@@ -78,18 +78,18 @@ Map<TimePeriod, Map<ReportDate, List<Report>>> groupReportsByTimePeriod(List<Rep
   };
 
   for (final report in reports) {
-    final createdAt = report.date!;
+    final createdOn = report.date!;
 
     // Group by yearly
-    final yearKey = ReportDate(year: createdAt.year);
+    final yearKey = ReportDate(year: createdOn.year);
     if (groupedReports[TimePeriod.yearly]?[yearKey] == null) {
       groupedReports[TimePeriod.yearly]?[yearKey] = [];
     }
     groupedReports[TimePeriod.yearly]?[yearKey]?.add(report);
 
     // Group by monthly
-    // final monthKey = year * 100 + createdAt.month;
-    final monthKey = ReportDate(year: yearKey.year, month: createdAt.month);
+    // final monthKey = year * 100 + createdOn.month;
+    final monthKey = ReportDate(year: yearKey.year, month: createdOn.month);
     // dPrint(monthKey.toString());
     if (groupedReports[TimePeriod.monthly]?[monthKey] == null) {
       groupedReports[TimePeriod.monthly]?[monthKey] = [];
@@ -97,7 +97,7 @@ Map<TimePeriod, Map<ReportDate, List<Report>>> groupReportsByTimePeriod(List<Rep
     groupedReports[TimePeriod.monthly]?[monthKey]?.add(report);
 
     // Group by weekly
-    final weekKey = ReportDate(year: yearKey.year, week: createdAt.weekOfYear());
+    final weekKey = ReportDate(year: yearKey.year, week: createdOn.weekOfYear());
     // dPrint(weekKey.toString());
     if (groupedReports[TimePeriod.weekly]?[weekKey] == null) {
       groupedReports[TimePeriod.weekly]?[weekKey] = [];
@@ -105,7 +105,7 @@ Map<TimePeriod, Map<ReportDate, List<Report>>> groupReportsByTimePeriod(List<Rep
     groupedReports[TimePeriod.weekly]?[weekKey]?.add(report);
 
     // Group by daily
-    final dayKey = ReportDate(year: yearKey.year, month: monthKey.month, day: createdAt.day);
+    final dayKey = ReportDate(year: yearKey.year, month: monthKey.month, day: createdOn.day);
     // dPrint(dayKey.toString());
     if (groupedReports[TimePeriod.daily]?[dayKey] == null) {
       groupedReports[TimePeriod.daily]?[dayKey] = [];

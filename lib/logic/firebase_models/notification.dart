@@ -6,12 +6,12 @@
 //   final String id;
 //   final String? title;
 //   final String? message;
-//   final DateTime? createdAt;
+//   final DateTime? createdOn;
 //   Notification({
 //     required this.id,
 //     required this.title,
 //     required this.message,
-//     required this.createdAt,
+//     required this.createdOn,
 //   });
 
 //   factory Notification.fromRTDB(dynamic doc) {
@@ -24,13 +24,13 @@
 //       id: doc.key,
 //       title: data['title'] ?? '',
 //       message: data['message'] ?? '',
-//       createdAt: data['createdAt'] == null ? null :(data['createdAt'] as ServerValue.timestamp).toDate(),
+//       createdOn: data['createdOn'] == null ? null :(data['createdOn'] as ServerValue.timestamp).toDate(),
 //     );
 //   }
 // Map<String, dynamic> toJSON() {
 //     Map<String, dynamic> toJSONMap = {};
-//     if (createdAt != null) {
-//       toJSONMap.addAll({'backgroundMusic': ServerValue.timestamp.fromDate(createdAt!)});
+//     if (createdOn != null) {
+//       toJSONMap.addAll({'backgroundMusic': ServerValue.timestamp.fromDate(createdOn!)});
 //     }
 //     if (displayName != null) {
 //       toJSONMap.addAll({'backgroundMusic': displayName});

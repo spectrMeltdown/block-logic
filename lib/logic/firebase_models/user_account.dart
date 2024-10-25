@@ -10,7 +10,7 @@ class UserAccount extends AccountModel {
     super.phoneNum,
     super.displayName,
     super.profilePicLink,
-    super.createdAt,
+    super.createdOn,
     // super.verificationID,
     // super.resendToken,
     this.premiumUser,
@@ -30,7 +30,7 @@ class UserAccount extends AccountModel {
 
     return UserAccount(
       id: doc is DataSnapshot && doc.key != null ? doc.key : key,
-      createdAt: data['createdAt'] == null ? null : DateTime.fromMillisecondsSinceEpoch(data['createdAt']),
+      createdOn: data['createdOn'] == null ? null : DateTime.fromMillisecondsSinceEpoch(data['createdOn']),
       displayName: data['displayName'] ?? '',
       profilePicLink: data['profilePicLink'] ?? '',
       phoneNum: data['phoneNum'] ?? '',
@@ -42,8 +42,8 @@ class UserAccount extends AccountModel {
   }
   Map<String, dynamic> toJSON() {
     Map<String, dynamic> toJSONMap = {};
-    if (createdAt != null) {
-      toJSONMap.addAll({'createdAt': createdAt!.millisecondsSinceEpoch});
+    if (createdOn != null) {
+      toJSONMap.addAll({'createdOn': createdOn!.millisecondsSinceEpoch});
     }
     if (profilePicLink != null) {
       toJSONMap.addAll({'profilePicLink': profilePicLink});

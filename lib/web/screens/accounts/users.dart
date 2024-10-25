@@ -55,7 +55,7 @@ class _UsersState extends ConsumerState<Users> {
                           child: BLProfilePic(type: AccountType.user, users[i].id ?? ''),
                         )),
                         DataCell(BLDisplayName(users[i].id ?? '', AccountType.user)),
-                        DataCell(BLText(users[i].createdAt != null ? DateFormat('dd / MM / yyyy').format(users[i].createdAt!) : '--')),
+                        DataCell(BLText(users[i].createdOn != null ? DateFormat('dd / MM / yyyy').format(users[i].createdOn!) : '--')),
                         DataCell(Wrap(
                           children: [
                             BLAdminButton(

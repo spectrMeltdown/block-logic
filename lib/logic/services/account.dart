@@ -150,7 +150,7 @@ class AccountService extends _$AccountService {
       // String? result;
       if (type == AccountType.user) {
         await state._db.ref('users').child(createdID ?? FirebaseAuth.instance.currentUser!.uid).set(UserAccount(
-              createdAt: DateTime.now(),
+              createdOn: DateTime.now(),
               premiumUser: false,
               displayName: displayName ?? state._auth!.displayName,
               phoneNum: phoneNum,
@@ -170,7 +170,7 @@ class AccountService extends _$AccountService {
         // }
       } else {
         await state._db.ref('admins').child(createdID ?? FirebaseAuth.instance.currentUser!.uid).set(AdminAccount(
-              createdAt: DateTime.now(),
+              createdOn: DateTime.now(),
               displayName: displayName ?? state._auth!.displayName,
               // phoneNum: phoneNum,
               profilePicLink: 'default',

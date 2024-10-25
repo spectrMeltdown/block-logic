@@ -6,13 +6,13 @@ class FeedbackData {
   final String? title;
   final String? userID;
   final String? message;
-  final DateTime? createdAt;
+  final DateTime? createdOn;
   FeedbackData({
     this.id,
     this.title,
     this.userID,
     this.message,
-    this.createdAt,
+    this.createdOn,
   });
 
   factory FeedbackData.fromRTDB(Object? doc, [String? key]) {
@@ -31,13 +31,13 @@ class FeedbackData {
       title: data['title'] ?? '',
       message: data['message'] ?? '',
       userID: data['userID'] ?? '',
-      createdAt: data['createdAt'] == null ? null : DateTime.fromMillisecondsSinceEpoch(data['createdAt']),
+      createdOn: data['createdOn'] == null ? null : DateTime.fromMillisecondsSinceEpoch(data['createdOn']),
     );
   }
   Map<String, dynamic> toJSON() {
     Map<String, dynamic> toJSONMap = {};
-    if (createdAt != null) {
-      toJSONMap.addAll({'createdAt': createdAt!.millisecondsSinceEpoch});
+    if (createdOn != null) {
+      toJSONMap.addAll({'createdOn': createdOn!.millisecondsSinceEpoch});
     }
     if (message != null) {
       toJSONMap.addAll({'message': message});
