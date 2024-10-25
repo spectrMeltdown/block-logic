@@ -135,17 +135,17 @@ class _ReportsState extends ConsumerState<Reports> {
                                     ]);
                                   case TimePeriod.monthly:
                                     return pw.TableRow(children: [
-                                      pad(pw.Text('   ${DateFormat('MMMM').format(date)}')),
+                                      pad(pw.Text('   ${DateFormat('MMMM').format(date)}, ${DateFormat('y').format(date)}')),
                                       pad(pw.Text('${dateEntry.value}')),
                                     ]);
                                   case TimePeriod.weekly:
                                     return pw.TableRow(children: [
-                                      pad(pw.Text('   Week ${dateEntry.key.week}')),
+                                      pad(pw.Text('   Week ${dateEntry.key.week}, ${DateFormat('y').format(date)}')),
                                       pad(pw.Text('${dateEntry.value}')),
                                     ]);
                                   case TimePeriod.daily:
                                     return pw.TableRow(children: [
-                                      pad(pw.Text('   Day ${DateFormat('d').format(date)}')),
+                                      pad(pw.Text('   ${DateFormat('MMM d, y').format(date)}')),
                                       pad(pw.Text('${dateEntry.value}')),
                                     ]);
                                 }
@@ -228,10 +228,12 @@ class _ReportsState extends ConsumerState<Reports> {
         }
       }
     }
-    Uint8List pdfBytes = await generatePDFBytes();
+    final pdfBytes = await generatePDFBytes();
     if (printData.entries.length == 1) {
       await Printing.sharePdf(bytes: pdfBytes, filename: '${printData.entries.first.key.name}-${DateTime.now()}.pdf');
     } else {
+      // TODO: currently getting error if printing directly. Issue is fresh on github
+      // final result = await Printing.layoutPdf(onLayout: (format) => pdfBytes, name: 'report-${DateTime.now()}.pdf');
       await Printing.sharePdf(bytes: pdfBytes, filename: 'report-${DateTime.now()}.pdf');
     }
   }
