@@ -80,7 +80,7 @@ class _ReportTypeSelectorState extends ConsumerState<ReportTypeSelector> {
               SizedBox(width: 20),
               BLAdminButton(
                 type: hasSelection ? AdminBtnType.green : AdminBtnType.grey,
-                child: const BLText('Print'),
+                child: const BLText('Generate'),
                 onPressed: () {
                   if (!hasSelection) {
                     toast.showToast(context, 'Select a report type.', type: NotifType.error);
