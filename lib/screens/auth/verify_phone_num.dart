@@ -98,7 +98,7 @@ class _VerifyPhoneNumState extends ConsumerState<VerifyPhoneNum> {
                                       Padding(
                                         padding: const EdgeInsets.symmetric(horizontal: 20),
                                         child: BLText(
-                                          'We need to verify the phone number ${widget.phoneNum}.\n',
+                                          'We need to verify the phone number \n+63 ${widget.phoneNum}.\n',
                                           alignCenter: true,
                                           softWrap: true,
                                           color: Colors.white,

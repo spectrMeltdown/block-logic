@@ -240,6 +240,10 @@ class AccountService extends _$AccountService {
   }) async {
     String? error;
     dPrint(phoneNumber);
+    dPrint(phoneNumber.trim().substring(0, 3));
+    if (phoneNumber.trim().substring(0, 3) != '+63') {
+      phoneNumber = '+63${phoneNumber.trim()}';
+    }
     state.toast.showToast(context, 'Sending OTP', type: NotifType.info);
     try {
       await FirebaseAuth.instance.verifyPhoneNumber(

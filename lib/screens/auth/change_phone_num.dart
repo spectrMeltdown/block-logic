@@ -45,7 +45,9 @@ class _ChangePhoneNumState extends ConsumerState<ChangePhoneNum> {
               if (user == null) {
                 return const BLText('Couldn\'t find that user...');
               }
-              oldPhoneNum ??= user.phoneNumber?.substring(3, user.phoneNumber!.length) ?? '';
+              if (user.phoneNumber != null && user.phoneNumber!.isNotEmpty) {
+                oldPhoneNum ??= user.phoneNumber?.substring(3, user.phoneNumber!.length) ?? '';
+              }
               if (set == false) {
                 setState(() {
                   phoneNumController = TextEditingController(text: oldPhoneNum);
