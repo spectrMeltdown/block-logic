@@ -18,6 +18,7 @@ import 'package:block_logic/screens/tutorials/practice_dialog.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class GameSubmitButton extends ConsumerStatefulWidget {
   final void Function()? updateChallenge;
@@ -183,9 +184,30 @@ class _GameSubmitButtonState extends ConsumerState<GameSubmitButton> {
           }
 
           // if there was an error updating score, notify the player
+          if (!context.mounted) return;
+          ScaffoldMessenger.of(context).clearSnackBars();
+          if (!context.mounted) return;
           if (result != null) {
-            if (!context.mounted) return;
             toast.showToast(context, result, type: NotifType.error);
+          } else if (correct && result == null && !widget.practiceMode) {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                duration: Duration(seconds: 3),
+                padding: EdgeInsets.symmetric(vertical: 5),
+                backgroundColor: Colors.green.shade800,
+                content: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [Icon(FontAwesomeIcons.circleCheck, size: 16), SizedBox(width: 10), BLText('Correct!')],
+                )));
+            // toast.showToast(context, 'Correct!', type: NotifType.success);
+          } else if (!widget.practiceMode) {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                duration: Duration(seconds: 3),
+                padding: EdgeInsets.symmetric(vertical: 5),
+                backgroundColor: Colors.red.shade800,
+                content: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [Icon(FontAwesomeIcons.circleXmark, size: 16), SizedBox(width: 10), BLText('Wrong...')],
+                )));
           }
 
           // remove overlay

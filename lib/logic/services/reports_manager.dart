@@ -14,7 +14,7 @@ part 'generated/reports_manager.g.dart';
 @riverpod
 class ReportsManager extends _$ReportsManager {
   Future<String?> add(ReportType type, {int? number}) async {
-    if (type != ReportType.challengesPlayed || type != ReportType.roomsPlayed && number != null) {
+    if (type != ReportType.challengesPlayed && number != null) {
       throw (ArgumentError('number can only be used on challengesPlayed & roomsPlayed'));
     }
     try {
