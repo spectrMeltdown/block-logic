@@ -4,7 +4,6 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'generated/auth_changes.g.dart';
 
+/// fired only when login/loggout
 @riverpod
-
-/// fired when update email/password/phoneNum/displayName/photoURL
-Stream<User?> authInfoChanges(Ref ref) => FirebaseAuth.instance.userChanges();
+Stream<User?> authChanges(Ref ref) => FirebaseAuth.instance.authStateChanges();

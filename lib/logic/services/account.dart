@@ -250,14 +250,6 @@ class AccountService extends _$AccountService {
         phoneNumber: phoneNumber.trim(),
         verificationCompleted: (PhoneAuthCredential credential) async {
           dPrint('VERIFICATION COMPLETED');
-          // await state.sharedPref.remove('resendToken');
-          // await state.sharedPref.remove('verificationID');
-          // if (type == AccountType.user) {
-
-          //   await update(user: UserAccount(id: state._auth!.uid, verificationID: null, resendToken: null));
-          // } else {
-          //   await update(admin: AdminAccount(id: state._auth!.uid, verificationID: null, resendToken: null));
-          // }
           await state._auth!.linkWithCredential(credential);
         },
         verificationFailed: (FirebaseAuthException e) {

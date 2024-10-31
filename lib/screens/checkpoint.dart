@@ -3,7 +3,7 @@ import 'package:block_logic/components/background.dart';
 import 'package:block_logic/components/error.dart';
 import 'package:block_logic/components/util/provider_default.dart';
 import 'package:block_logic/logic/enums.dart';
-import 'package:block_logic/logic/firebase_providers/auth.dart';
+import 'package:block_logic/logic/firebase_providers/auth_changes.dart';
 import 'package:block_logic/logic/firebase_providers/selected_user.dart';
 import 'package:block_logic/logic/services/account.dart';
 import 'package:block_logic/logic/services/auth.dart';

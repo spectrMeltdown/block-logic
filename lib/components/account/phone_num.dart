@@ -1,6 +1,6 @@
 import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/util/provider_default.dart';
-import 'package:block_logic/logic/firebase_providers/auth_changes.dart';
+import 'package:block_logic/logic/firebase_providers/auth_user_changes.dart';
 import 'package:block_logic/logic/firebase_providers/selected_user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

@@ -11,7 +11,7 @@ import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/text/title_small.dart';
 import 'package:block_logic/components/util/provider_default.dart';
 import 'package:block_logic/logic/enums.dart';
-import 'package:block_logic/logic/firebase_providers/auth.dart';
+import 'package:block_logic/logic/firebase_providers/auth_changes.dart';
 import 'package:block_logic/logic/services/account.dart';
 import 'package:block_logic/logic/services/auth.dart';
 import 'package:block_logic/logic/services/navigation.dart';

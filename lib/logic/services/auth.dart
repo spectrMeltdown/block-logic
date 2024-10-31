@@ -1,7 +1,7 @@
 import 'package:block_logic/logic/dev.dart';
 import 'package:block_logic/logic/enums.dart';
 import 'package:block_logic/logic/firebase_models/user_account.dart';
-import 'package:block_logic/logic/firebase_providers/auth.dart';
+import 'package:block_logic/logic/firebase_providers/auth_changes.dart';
 import 'package:block_logic/logic/services/account.dart';
 import 'package:block_logic/logic/services/error_handler.dart';
 import 'package:block_logic/logic/services/shared_pref.dart';
@@ -15,30 +15,6 @@ part 'generated/auth.g.dart';
 
 @riverpod
 class AuthService extends _$AuthService {
-  /// Returns verificationID
-  // Future<String?> addPhoneNumber(String phoneNumber) async {
-  //   String? verificationID;
-
-  //   await state._auth.verifyPhoneNumber( context: context,
-  //     phoneNumber: phoneNumber,
-  //     verificationCompleted: (PhoneAuthCredential credential) async {
-  //       // Automatic verification (e.g., on Android)
-  //       await state._auth.currentUser?.updatePhoneNumber(credential);
-  //     },
-  //     verificationFailed: (FirebaseAuthException e) {
-  //
-  //     codeSent: (String verificationId, int? resendToken) {
-  //
-  //       verificationID = verificationId;
-  //     },
-  //     codeAutoRetrievalTimeout: (String verificationId) {
-  //       // Auto-retrieval timeout
-
-  //     },
-  //   );
-  //   return verificationID;
-  // }
-
   @override
   AuthServiceState build() {
     final errorHandler = ref.read(errorHandlerProvider.notifier);
@@ -126,7 +102,6 @@ class AuthService extends _$AuthService {
 
       await state._account.initFirestoreData(
         displayName: displayName,
-        // phoneNum: null,
         type: type,
       );
       return null;

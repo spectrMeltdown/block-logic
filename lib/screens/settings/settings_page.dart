@@ -7,7 +7,7 @@ import 'package:block_logic/components/text/text.dart';
 import 'package:block_logic/components/text/title.dart';
 import 'package:block_logic/components/text/title_small.dart';
 import 'package:block_logic/components/util/provider_default.dart';
-import 'package:block_logic/logic/firebase_providers/auth.dart';
+import 'package:block_logic/logic/firebase_providers/auth_changes.dart';
 import 'package:block_logic/logic/services/navigation.dart';
 import 'package:block_logic/screens/about_us.dart';
 import 'package:block_logic/screens/settings/account_settings.dart';
