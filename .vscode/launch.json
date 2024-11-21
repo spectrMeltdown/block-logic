@@ -31,9 +31,6 @@
         "chrome",
         "--web-renderer",
         "html"
-        //"web-server",
-        //"--web-port",
-        //"8000"
       ],
     },
   ]
