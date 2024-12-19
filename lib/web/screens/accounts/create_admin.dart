@@ -50,10 +50,9 @@ class _CreateAdminState extends ConsumerState<CreateAdmin> {
                 const BLSmallTitle('New admin'),
                 Wrap(
                   alignment: WrapAlignment.spaceBetween,
-                  crossAxisAlignment: WrapCrossAlignment.center,
                   spacing: 10,
                   children: [
-                    const BLText('Display Name', size: 16),
+                    SizedBox(width: 150, child: const BLText('Display Name', size: 16)),
                     BLTextBox(
                       constraints: const BoxConstraints(maxWidth: 400),
                       onFieldSubmitted: (p0) => submit(),
@@ -67,7 +66,7 @@ class _CreateAdminState extends ConsumerState<CreateAdmin> {
                   crossAxisAlignment: WrapCrossAlignment.center,
                   spacing: 10,
                   children: [
-                    const BLText('Email', size: 16),
+                    SizedBox(width: 150, child: const BLText('Email', size: 16)),
                     BLTextBox(
                       constraints: const BoxConstraints(maxWidth: 400),
                       onFieldSubmitted: (p0) => submit(),
@@ -81,7 +80,7 @@ class _CreateAdminState extends ConsumerState<CreateAdmin> {
                   crossAxisAlignment: WrapCrossAlignment.center,
                   spacing: 10,
                   children: [
-                    const BLText('Password'),
+                    SizedBox(width: 150, child: const BLText('Password')),
                     BLTextBox(
                       constraints: const BoxConstraints(maxWidth: 400),
                       onFieldSubmitted: (p0) => submit(),
