@@ -33,7 +33,7 @@ class _BLTitleState extends State<BLTitle> {
             color: Colors.white,
             fontSize: widget.size ?? getTitleSize(width),
             shadows: <Shadow>[
-              Shadow(blurRadius: 40, color: Colors.white.withOpacity(0.8)),
+              Shadow(blurRadius: 40, color: Colors.white.withValues(alpha: 0.8)),
             ],
             height: 1),
       ),

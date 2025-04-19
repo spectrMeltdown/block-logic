@@ -650,7 +650,7 @@ class _ReportsState extends ConsumerState<Reports> {
         ),
         if (processing)
           Container(
-            color: Colors.black.withOpacity(0.8),
+            color: Colors.black.withValues(alpha: 0.8),
             child: const BLLoading(
               message: 'Processing ...',
             ),

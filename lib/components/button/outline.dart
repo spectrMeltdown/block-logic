@@ -40,7 +40,7 @@ class BLOutlineButton extends ConsumerWidget {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8), // Adjust the radius for rounded corners
               ),
-              backgroundColor: blui.getBtnColor(type).withOpacity(0.1),
+              backgroundColor: blui.getBtnColor(type).withValues(alpha: 0.1),
               side: BorderSide(color: blui.getBtnColor(type))),
           onPressed: () {
             audio?.playBtn();

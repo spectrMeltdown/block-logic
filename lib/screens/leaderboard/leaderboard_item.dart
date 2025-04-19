@@ -48,7 +48,7 @@ class _LeaderboardItemState extends ConsumerState<LeaderboardItem> with Automati
                 ? Colors.deepOrange
                 : Colors.white
             : Colors.white,
-        color: Colors.white.withOpacity(0.3),
+        color: Colors.white.withValues(alpha: 0.3),
         onLongPress: () {
           if (widget.deleteMode == false) {
             setState(() {

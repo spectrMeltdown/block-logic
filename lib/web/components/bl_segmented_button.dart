@@ -13,8 +13,7 @@ class BlSegmentedButton extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() =>
-      _BlSegmentedButtonState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _BlSegmentedButtonState();
 }
 
 class _BlSegmentedButtonState extends ConsumerState<BlSegmentedButton> {
@@ -28,7 +27,7 @@ class _BlSegmentedButtonState extends ConsumerState<BlSegmentedButton> {
         backgroundColor: WidgetStateProperty.resolveWith<Color?>(
           (Set<WidgetState> states) {
             if (states.contains(WidgetState.selected)) {
-              return Colors.white.withOpacity(0.4); // Selected color
+              return Colors.white.withValues(alpha: 0.4); // Selected color
             }
             return null;
           },

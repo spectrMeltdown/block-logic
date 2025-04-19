@@ -24,7 +24,7 @@ class _HeaderState extends ConsumerState<Header> {
         Container(
           decoration: BoxDecoration(boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.6),
+              color: Colors.black.withValues(alpha: 0.6),
               spreadRadius: 2,
               blurRadius: 20,
               offset: const Offset(0, 0),

@@ -114,7 +114,7 @@ class _CreateAdminState extends ConsumerState<CreateAdmin> {
             child: Visibility(
                 visible: processing,
                 child: Container(
-                  color: Colors.black.withOpacity(0.7),
+                  color: Colors.black.withValues(alpha: 0.7),
                   child: const BLLoading(
                     message: 'Creating admin (don\'t exit) ...',
                   ),

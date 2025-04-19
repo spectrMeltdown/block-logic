@@ -444,7 +444,7 @@ class _SignupState extends ConsumerState<Signup> with RouteAware {
             Visibility(
                 visible: processing,
                 child: Container(
-                  color: Colors.black.withOpacity(0.7),
+                  color: Colors.black.withValues(alpha: 0.7),
                   child: const BLLoading(message: 'Creating account ...'),
                 ))
           ],

@@ -190,7 +190,7 @@ class _SidebarState extends ConsumerState<Sidebar> {
               color: selected == i
                   ? Colors.blue
                   : hovered == i
-                      ? Colors.blueGrey.withOpacity(0.5) // Hover color
+                      ? Colors.blueGrey.withValues(alpha: 0.5) // Hover color
                       : Colors.transparent, // Default color
             ),
             padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 15),

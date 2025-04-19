@@ -36,7 +36,7 @@ class BLAdminButton extends StatelessWidget {
               if (states.contains(WidgetState.hovered)) {
                 return getBgColor(type); // Change color when hovered
               }
-              return getBgColor(type).withOpacity(0.9); // Default background color
+              return getBgColor(type).withValues(alpha: 0.9); // Default background color
             },
           ),
           padding: WidgetStateProperty.all<EdgeInsets>(

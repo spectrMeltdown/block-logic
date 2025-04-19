@@ -44,7 +44,7 @@ class _BLCardState extends ConsumerState<BLTranslucentCard> {
   final Color darkShade = Colors.blueGrey.shade800;
   final List<BoxShadow> cardShadow = [
     BoxShadow(
-      color: Colors.white.withOpacity(0.5),
+      color: Colors.white.withValues(alpha: 0.5),
       spreadRadius: 2,
       blurRadius: 20,
     ),
@@ -150,7 +150,7 @@ class _BLCardState extends ConsumerState<BLTranslucentCard> {
   @override
   void initState() {
     super.initState();
-    cardColor = [Colors.grey.withOpacity(0.5), darkShade];
+    cardColor = [Colors.grey.withValues(alpha: 0.5), darkShade];
     cardColorPressed = [Colors.grey.brighten(0.2), darkShade];
   }
 

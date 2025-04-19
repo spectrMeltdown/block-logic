@@ -362,7 +362,7 @@ class _AddRoomBottomSheetState extends ConsumerState<AddRoomBottomSheet> {
                 Visibility(
                   visible: processing,
                   child: Container(
-                    color: Colors.black.withOpacity(0.7),
+                    color: Colors.black.withValues(alpha: 0.7),
                     child: const BLLoading(
                       message: 'Processing ...',
                     ),

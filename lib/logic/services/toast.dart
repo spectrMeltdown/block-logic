@@ -225,7 +225,7 @@ Color _getColor(NotifType type, [bool withTransparency = false]) {
       color = Colors.red.shade800;
       break;
   }
-  return withTransparency ? color.withOpacity(0.3) : color;
+  return withTransparency ? color.withValues(alpha: 0.3) : color;
 }
 
 IconData? _getIcon(NotifType type) {

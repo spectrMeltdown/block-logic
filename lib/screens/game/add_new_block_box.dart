@@ -14,11 +14,11 @@ class AddNewBlockBox extends StatelessWidget {
       height: height,
       decoration: BoxDecoration(
         borderRadius: const BorderRadius.all(Radius.circular(10)),
-        color: Colors.black.withOpacity(0.3),
+        color: Colors.black.withValues(alpha: 0.3),
       ),
       child: Icon(
         Icons.add_outlined,
-        color: Colors.white.withOpacity(0.3),
+        color: Colors.white.withValues(alpha: 0.3),
       ),
     );
   }

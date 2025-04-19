@@ -8,8 +8,7 @@ class AnimatedTVScreenEffect extends StatefulWidget {
   State<AnimatedTVScreenEffect> createState() => _AnimatedTVScreenEffectState();
 }
 
-class _AnimatedTVScreenEffectState extends State<AnimatedTVScreenEffect>
-    with SingleTickerProviderStateMixin {
+class _AnimatedTVScreenEffectState extends State<AnimatedTVScreenEffect> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
 
   @override
@@ -56,17 +55,16 @@ class AnimatedTVScreenPainter extends CustomPainter {
     Paint paint = Paint();
 
     // Draw scanlines
-    paint.color = Colors.black.withOpacity(0.1 + (0.1 * animationValue));
+    paint.color = Colors.black.withValues(alpha: 0.1 + (0.1 * animationValue));
     for (double y = 0; y < size.height; y += 4) {
       canvas.drawRect(Rect.fromLTWH(0, y, size.width, 2), paint);
     }
 
     // Draw color distortion (optional)
-    paint.color = Colors.blue.withOpacity(0.05 + (0.05 * animationValue));
+    paint.color = Colors.blue.withValues(alpha: 0.05 + (0.05 * animationValue));
     canvas.drawRect(Rect.fromLTWH(0, 0, size.width / 2, size.height), paint);
-    paint.color = Colors.red.withOpacity(0.05 + (0.05 * animationValue));
-    canvas.drawRect(
-        Rect.fromLTWH(size.width / 2, 0, size.width / 2, size.height), paint);
+    paint.color = Colors.red.withValues(alpha: 0.05 + (0.05 * animationValue));
+    canvas.drawRect(Rect.fromLTWH(size.width / 2, 0, size.width / 2, size.height), paint);
   }
 
   @override

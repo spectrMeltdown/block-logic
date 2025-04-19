@@ -197,7 +197,7 @@ class _GameRoomState extends ConsumerState<GameRoom> {
             Visibility(
                 visible: processing || innerProcessing,
                 child: Container(
-                  color: Colors.black.withOpacity(0.7),
+                  color: Colors.black.withValues(alpha: 0.7),
                   child: const BLLoading(
                     message: 'Loading ...',
                   ),

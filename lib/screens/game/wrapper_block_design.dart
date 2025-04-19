@@ -51,13 +51,13 @@ class BlockDesignWrapper extends ConsumerWidget {
               borderRadius: const BorderRadius.all(
                 Radius.circular(10),
               ),
-              color: blui.getBlockColor(data.type).withOpacity(opacity),
+              color: blui.getBlockColor(data.type).withValues(alpha: opacity),
             ),
             child: updateSelection != null || kIsWeb
                 ? BLText(
                     data.name,
                     size: kIsWeb ? 18 : null,
-                    color: data.type != CodeBlockType.keywords ? Colors.white.withOpacity(opacity) : Colors.black,
+                    color: data.type != CodeBlockType.keywords ? Colors.white.withValues(alpha: opacity) : Colors.black,
                     softWrap: true,
                   )
                 : child),

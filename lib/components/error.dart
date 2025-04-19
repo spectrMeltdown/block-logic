@@ -28,8 +28,8 @@ class BLError extends StatelessWidget {
             ],
           )),
         );
-      default:
-        return const BlankWidget();
+      // default:
+      //   return const BlankWidget();
     }
   }
 }
