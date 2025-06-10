@@ -2,8 +2,5 @@
   "yaml.schemas": {
     "https://json.schemastore.org/dart-test.json": "file:///c%3A/Users/Discrete/SSD/block_logic/build.yaml"
   },
-  // "editor.tokenColorCustomizations": {
-  //   "comments": "",
-  //   "textMateRules": []
-  // }
+  "dart.flutterSdkPath": ".fvm/versions/3.29.3"
 }
