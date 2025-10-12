@@ -43,21 +43,27 @@ class Toast extends _$Toast {
     // dPrint(title);
     final toast = FToast().init(context);
     toast.removeCustomToast();
+
+    // Define the positioned toast builder with correct type
+    dynamic positionedBuilder = !kIsWeb
+        ? null
+        : (BuildContext context, Widget child) =>
+            Positioned(top: 20, right: 10, child: child);
+
     toast.showToast(
         toastDuration: const Duration(seconds: 5),
         gravity: ToastGravity.TOP,
         ignorePointer: true,
-        positionedToastBuilder: !kIsWeb
-            ? null
-            : (context, child) {
-                return Positioned(top: 20, right: 10, child: child);
-              },
+        positionedToastBuilder: positionedBuilder,
         child: Container(
           alignment: alignment,
           margin: margin,
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: paddingX, vertical: 10),
-            decoration: BoxDecoration(borderRadius: const BorderRadius.all(Radius.circular(10)), border: Border.all(color: _getColor(type)), color: _getColor(type, withTransparency)),
+            decoration: BoxDecoration(
+                borderRadius: const BorderRadius.all(Radius.circular(10)),
+                border: Border.all(color: _getColor(type)),
+                color: _getColor(type, withTransparency)),
             child: LayoutBuilder(builder: (context, constraints) {
               final icon = Icon(
                 _getIcon(type),

@@ -34,7 +34,7 @@ class AppTheme {
       ),
       colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo.shade400),
       scaffoldBackgroundColor: Colors.transparent,
-      tabBarTheme: const TabBarTheme(dividerColor: Colors.transparent),
+      tabBarTheme: const TabBarThemeData(dividerColor: Colors.transparent),
       inputDecorationTheme: InputDecorationTheme(
         prefixIconColor: Colors.white,
         suffixIconColor: Colors.white,
@@ -45,7 +45,7 @@ class AppTheme {
         side: BorderSide(color: Colors.white),
       ),
       dialogBackgroundColor: kIsWeb ? Colors.blueGrey.shade900 : null,
-      dialogTheme: DialogTheme(
+      dialogTheme: DialogThemeData(
         backgroundColor: Colors.blueGrey.shade900,
       ),
       bottomSheetTheme: BottomSheetThemeData(
@@ -55,7 +55,12 @@ class AppTheme {
         color: Colors.white,
       ),
       canvasColor: Colors.blue, // Background color for dropdown menu
-      dropdownMenuTheme: const DropdownMenuThemeData(menuStyle: MenuStyle(padding: WidgetStatePropertyAll(EdgeInsets.zero)), inputDecorationTheme: InputDecorationTheme(contentPadding: EdgeInsets.zero)),
+      dropdownMenuTheme: const DropdownMenuThemeData(
+          menuStyle:
+              MenuStyle(padding: WidgetStatePropertyAll(EdgeInsets.zero)),
+          inputDecorationTheme:
+              InputDecorationTheme(contentPadding: EdgeInsets.zero)),
       menuButtonTheme: const MenuButtonThemeData(),
-      scrollbarTheme: const ScrollbarThemeData(thumbColor: WidgetStatePropertyAll(Colors.white60)));
+      scrollbarTheme: const ScrollbarThemeData(
+          thumbColor: WidgetStatePropertyAll(Colors.white60)));
 }
