@@ -50,8 +50,8 @@ generated/
 *.g.dart
 
 # Helper repos (but not submodules)
-.cursor
-TODOS
+.cursor/
+TODO/
 
 # Other
 .env
