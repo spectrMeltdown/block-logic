@@ -2,8 +2,8 @@ name: Build and Upload APK to GitHub Release
 
 on:
   push:
-    tags: 
-      - "v*.*.*"
+    tags:
+      - "*.*.*"
 
 jobs:
   build:
